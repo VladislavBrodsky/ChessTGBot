@@ -1,0 +1,10 @@
+{
+  "id": "2026-10-12-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-12",
+  "slot": 2,
+  "category": "Chess News",
+  "scheduled_at": "2026-10-12T11:00:00Z",
+  "status": "planned",
+  "qa": null
+}

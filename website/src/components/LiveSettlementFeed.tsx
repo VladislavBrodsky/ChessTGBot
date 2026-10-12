@@ -10,19 +10,15 @@ import {
 } from "@/content/settlements-data";
 
 export function LiveSettlementFeed() {
-  // We cycle through all 200 items without repeating until all 200 have been shown.
-  // Using a Fisher-Yates shuffled deck of indices ensures 0 repetition across all 200 items.
+  // We maintain a shuffled sequence of all 200 items: 0 repetition across all 200 items!
   const deckRef = useRef<number[]>([]);
   const deckIndexRef = useRef<number>(3); // Indices 0, 1, 2 are initially shown
-  const [isPaused, setIsPaused] = useState(false);
 
-  // Initialize and get the next item from the non-repeating deck
   const getNextItem = (): SettlementItem => {
     if (
       deckRef.current.length === 0 ||
       deckIndexRef.current >= deckRef.current.length
     ) {
-      // Build array of 0..199
       const indices = Array.from(
         { length: SETTLEMENT_VERSIONS.length },
         (_, i) => i
@@ -40,54 +36,56 @@ export function LiveSettlementFeed() {
     return SETTLEMENT_VERSIONS[nextIdx];
   };
 
-  // Start with first 3 items from SETTLEMENT_VERSIONS for deterministic SSR render
+  // Exactly 3 initial items for deterministic SSR
   const [items, setItems] = useState<SettlementItem[]>(() => [
-    { ...SETTLEMENT_VERSIONS[0], time: "14s ago" },
-    { ...SETTLEMENT_VERSIONS[1], time: "38s ago" },
-    { ...SETTLEMENT_VERSIONS[2], time: "1m ago" },
+    { ...SETTLEMENT_VERSIONS[0], id: "init-1", time: "14s ago" },
+    { ...SETTLEMENT_VERSIONS[1], id: "init-2", time: "38s ago" },
+    { ...SETTLEMENT_VERSIONS[2], id: "init-3", time: "1m ago" },
   ]);
 
-  const [latestId, setLatestId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
+  // Pause background execution when scrolled out of view to save battery and memory
   useEffect(() => {
-    if (isPaused) return;
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: "150px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
-    // Organic timing between 2.4s and 3.4s to feel like a live busy global arena
-    const randomDelay = Math.floor(Math.random() * 800) + 2600;
-
-    const timeout = setTimeout(() => {
+  // Continuous, reliable live ticker (every 2.4s) — pauses when offscreen
+  useEffect(() => {
+    if (!isVisible) return;
+    const timer = setInterval(() => {
       const next = getNextItem();
-      // Generate a unique instance ID so keys never collide even across multiple deck cycles
-      const uniqueId = `${next.id}-${Date.now()}`;
+      const uniqueId = `live-${next.id}-${Date.now()}`;
       const newItem: SettlementItem = {
         ...next,
         id: uniqueId,
         time: "Just now",
       };
 
-      setLatestId(uniqueId);
       setItems((prev) => {
-        // Keep up to 3-4 items, updating relative timestamps smoothly
-        const updated = prev.slice(0, 3).map((item, index) => {
-          let updatedTime = item.time;
-          if (index === 0) updatedTime = "12s ago";
-          else if (index === 1) updatedTime = "35s ago";
-          else updatedTime = "1m ago";
-          return { ...item, time: updatedTime };
-        });
-        return [newItem, ...updated];
+        const updatedFirst = { ...prev[0], time: "12s ago" };
+        const updatedSecond = prev[1] ? { ...prev[1], time: "38s ago" } : null;
+        return updatedSecond
+          ? [newItem, updatedFirst, updatedSecond]
+          : [newItem, updatedFirst];
       });
-    }, randomDelay);
+    }, 2400);
 
-    return () => clearTimeout(timeout);
-  }, [items, isPaused]);
+    return () => clearInterval(timer);
+  }, [isVisible]);
 
   return (
-    <div
-      className="relative h-full w-full flex flex-col justify-between"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
+    <div ref={containerRef} className="relative h-full w-full flex flex-col justify-between">
       {/* Terminal status bar */}
       <div className="flex items-center justify-between pb-2 border-b border-line/60 font-mono text-[11px] shrink-0">
         <span className="flex items-center gap-1.5 text-fg-default font-semibold">
@@ -107,29 +105,28 @@ export function LiveSettlementFeed() {
         </div>
       </div>
 
-      {/* Live Settlement Items Container with Progressive Blur */}
-      <div className="relative flex-1 overflow-hidden my-auto pt-1.5 min-h-[140px]">
+      {/* Live Settlement Items Container */}
+      <div className="relative flex-1 overflow-hidden flex flex-col justify-start pt-2">
         <div className="space-y-1.5">
-          <AnimatePresence initial={false} mode="popLayout">
-            {items.slice(0, 3).map((item) => {
-              const isNew = item.id === latestId;
-              return (
-                <motion.div
-                  key={item.id}
-                  layout
-                  initial={{ opacity: 0, y: -22, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 18, scale: 0.95 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 420,
-                    damping: 32,
-                    mass: 0.8,
-                  }}
-                  className={`flex items-center justify-between gap-3 rounded-xl border border-line bg-surface/90 px-3 py-2 shadow-2xs transition-all hover:border-fg-muted/40 ${
-                    isNew
-                      ? "ring-1 ring-emerald-500/40 bg-surface/95"
-                      : "hover:bg-surface"
+          <AnimatePresence initial={false}>
+            {items.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, scale: 0.96, y: -14, height: 0 }}
+                animate={{ opacity: 1, scale: 1, y: 0, height: "auto" }}
+                exit={{ opacity: 0, scale: 0.96, y: 10, height: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 360,
+                  damping: 34,
+                  mass: 0.8,
+                }}
+                className="overflow-hidden"
+              >
+                <div
+                  className={`flex items-center justify-between gap-3 rounded-xl border border-line bg-surface/95 px-3 py-2 shadow-2xs transition-colors hover:border-fg-muted/40 ${
+                    idx === 0 ? "ring-1 ring-emerald-500/35 shadow-xs" : ""
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -148,22 +145,24 @@ export function LiveSettlementFeed() {
                     </div>
                   </div>
                   <div className="text-right shrink-0 flex items-center gap-2 font-mono">
-                    <span className="text-[10px] text-fg-muted">{item.time}</span>
+                    <span className="text-[10px] text-fg-muted">
+                      {item.time}
+                    </span>
                     <span className="font-bold text-emerald-600 text-[13px]">
                       {item.payout}
                     </span>
                   </div>
-                </motion.div>
-              );
-            })}
+                </div>
+              </motion.div>
+            ))}
           </AnimatePresence>
         </div>
 
-        {/* Magic UI Progressive Blur UI Component */}
+        {/* Magic UI Progressive Blur UI Component at the bottom edge */}
         <ProgressiveBlur
           position="bottom"
-          height="35%"
-          blurLevels={[0.5, 1, 2, 4, 8, 16]}
+          height="16px"
+          blurLevels={[0.5, 1, 2, 4]}
           className="pointer-events-none"
         />
       </div>

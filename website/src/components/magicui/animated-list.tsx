@@ -17,15 +17,33 @@ export const AnimatedList = React.memo(
       () => React.Children.toArray(children),
       [children]
     );
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-      if (childrenArray.length === 0) return;
+      const el = containerRef.current;
+      if (!el || typeof IntersectionObserver === "undefined") {
+        setIsVisible(true);
+        return;
+      }
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          setIsVisible(entry.isIntersecting);
+        },
+        { rootMargin: "150px" }
+      );
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+      if (!isVisible || childrenArray.length === 0) return;
       const interval = setInterval(() => {
         setIndex((prevIndex) => (prevIndex + 1) % childrenArray.length);
       }, delay);
 
       return () => clearInterval(interval);
-    }, [childrenArray.length, delay]);
+    }, [isVisible, childrenArray.length, delay]);
 
     const itemsToShow = useMemo(() => {
       if (childrenArray.length === 0) return [];
@@ -39,7 +57,7 @@ export const AnimatedList = React.memo(
     }, [index, childrenArray, maxItems]);
 
     return (
-      <div className={`flex flex-col items-center gap-2.5 ${className}`}>
+      <div ref={containerRef} className={`flex flex-col items-center gap-2.5 ${className}`}>
         <AnimatePresence initial={false}>
           {itemsToShow.map((item, i) => (
             <AnimatedListItem

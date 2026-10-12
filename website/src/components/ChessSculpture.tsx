@@ -18,7 +18,7 @@ export function ChessSculpture({
           sizes="(max-width: 639px) 52vw, (max-width: 767px) 280px, (max-width: 1279px) 40vw, 448px"
           alt={art.alt}
           className="chess-sculpture relative z-10 h-auto w-full"
-          loading="eager"
+          priority={variant === "home"}
           fetchPriority="high"
         />
       </SculptureMotion>

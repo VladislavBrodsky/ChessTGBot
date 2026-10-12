@@ -187,6 +187,7 @@ const NODES = [
 ];
 
 export function GlobeShowcase() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<number | null>(null);
   const pointerInteractionMovement = useRef(0);
@@ -194,8 +195,22 @@ export function GlobeShowcase() {
   const animationRef = useRef<number>(0);
   const tickerRef = useRef<HTMLDivElement>(null);
 
+  const [isVisible, setIsVisible] = useState(false);
   const [matchIndex, setMatchIndex] = useState(0);
   const [isCrossfading, setIsCrossfading] = useState(false);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   const current = LIVE_MATCHES[matchIndex];
   const tierConfig = TIER_COLORS[current.tier] || TIER_COLORS["popular"];
@@ -224,8 +239,9 @@ export function GlobeShowcase() {
     };
   }, [city1Coords, city2Coords, tierConfig.arc]);
 
-  // Setup globe WebGL with cobe
+  // Setup globe WebGL with cobe only when in viewport
   useEffect(() => {
+    if (!isVisible) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -233,17 +249,19 @@ export function GlobeShowcase() {
     const onResize = () => { width = canvas.offsetWidth; };
     window.addEventListener("resize", onResize);
 
-    const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 2 : 2, 2);
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, isMobile ? 1.5 : 2);
+    const mapSamples = isMobile ? 6000 : 10000;
 
     const globe = createGlobe(canvas, {
       devicePixelRatio: dpr,
       width: (width || 500) * 2,
       height: (width || 500) * 2,
-      phi: 0,
+      phi: phiRef.current,
       theta: 0.22,
       dark: 0,
       diffuse: 1.4,
-      mapSamples: 16000,
+      mapSamples,
       mapBrightness: 3.6,
       baseColor: [0.89, 0.91, 0.93],
       markerColor: [16 / 255, 185 / 255, 129 / 255],
@@ -293,10 +311,11 @@ export function GlobeShowcase() {
       globe.destroy();
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [isVisible]);
 
-  // Smooth match flip every 3.2s
+  // Smooth match flip every 3.2s only when visible
   useEffect(() => {
+    if (!isVisible) return;
     const timer = setInterval(() => {
       setIsCrossfading(true);
       setTimeout(() => {
@@ -305,10 +324,11 @@ export function GlobeShowcase() {
       }, 200);
     }, 3200);
     return () => clearInterval(timer);
-  }, []);
+  }, [isVisible]);
 
-  // Continuous smooth ticker scroll via requestAnimationFrame
+  // Continuous smooth ticker scroll only when visible
   useEffect(() => {
+    if (!isVisible) return;
     let pos = 0;
     let raf: number;
     const tick = () => {
@@ -324,10 +344,13 @@ export function GlobeShowcase() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [isVisible]);
 
   return (
-    <div className="relative flex flex-col items-center justify-center select-none w-full py-2">
+    <div
+      ref={containerRef}
+      className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[460px]"
+    >
 
       {/* ── Ambient Radial Atmosphere Halo (Frameless, NO white box) ── */}
       <div

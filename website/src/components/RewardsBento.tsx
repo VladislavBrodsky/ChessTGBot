@@ -117,7 +117,7 @@ export function RewardsBento() {
         </div>
 
         {/* Dedicated bottom visual container — Live Animated Settlement Terminal (UNDER TEXT) */}
-        <div className="relative h-48 w-full overflow-hidden bg-inset/30 border-t border-line/50 p-3.5 flex flex-col justify-between">
+        <div className="relative h-56 w-full overflow-hidden bg-inset/30 border-t border-line/50 p-3.5 flex flex-col justify-between">
           <LiveSettlementFeed />
         </div>
       </div>
@@ -152,7 +152,7 @@ export function RewardsBento() {
         </div>
 
         {/* Dedicated bottom visual container — 3D Spheric Crypto Vault (UNDER TEXT) */}
-        <div className="relative h-48 w-full overflow-hidden bg-gradient-to-b from-inset/30 via-surface/40 to-amber-500/[0.05] border-t border-line/50 flex items-center justify-center select-none">
+        <div className="relative h-56 w-full overflow-hidden bg-gradient-to-b from-inset/30 via-surface/40 to-amber-500/[0.05] border-t border-line/50 flex items-center justify-center select-none">
           {/* Ambient lighting glow */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="size-32 rounded-full bg-amber-400/15 blur-2xl animate-pulse" />

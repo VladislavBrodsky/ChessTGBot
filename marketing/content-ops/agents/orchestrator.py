@@ -300,3 +300,491 @@ class ContentEngineOrchestrator:
                 "article_passed": art_qa["passed"],
             },
         }
+
+    def generate_full_daily_batch(self, target_date: Optional[date] = None) -> Dict[str, Any]:
+        """Generates, verifies, approves and stages the complete 5 Telegram posts and 5 Blog articles for the day."""
+        d = target_date or self.plan_date
+        today_str = d.isoformat()
+        self.plan_day(d)
+
+        # -------------------------------------------------------------
+        # 1. THE 5 TELEGRAM POSTS
+        # -------------------------------------------------------------
+        tg_specs = [
+            # S1: Tactics - Arabian Mate
+            {
+                "slot": 1,
+                "category": "Tactics",
+                "hook": "White to move. The knight guards the escape squares. Find the mate.",
+                "body": (
+                    "Black's king on h8 is locked down by White's knight on f6.\n"
+                    "One rook move delivers instant checkmate.\n\n"
+                    "Pick the winning move and react below:\n"
+                    "❤ Rh7#   🔥 Ra8+   👏 Ne8\n\n"
+                    "The king cannot capture what is protected. Full tactical breakdown lands at 14:30 UTC."
+                ),
+                "cta": "play",
+                "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+                "solution": ["Rh7#"],
+                "claim": "mate_in_1",
+                "reveal_text": (
+                    "<b>Solved: Rh7#. The Arabian Mate.</b>\n\n"
+                    "The knight on f6 covers g8 and h7, preventing the king from stepping away while simultaneously defending the rook on h7.\n"
+                    "Because the rook is defended, the king cannot capture it.\n"
+                    "Ra8+ fails to allow escape or lacks protection. In the corner, a rook and knight form an inescapable net."
+                ),
+            },
+            # S2: Chess News - Digital Clock Scramble
+            {
+                "slot": 2,
+                "category": "Chess News",
+                "hook": "3 seconds on the digital clock. That was the margin between a win and a flag fall.",
+                "body": (
+                    "Speed chess in 2026 is decided in the final five moves of the scramble.\n"
+                    "When clocks dip under 10 seconds, calculation gives way to muscle memory and premove discipline.\n\n"
+                    "Three golden rules for time trouble:\n"
+                    "• Stop looking for perfection; find the forcing check.\n"
+                    "• Never premove recaptures when your opponent has a check.\n"
+                    "• Keep pawns connected so you never lose on pre-click lag.\n\n"
+                    "The Web3Chess Mini App uses sub-50ms synchronized server clocks so your speed is never stolen by lag."
+                ),
+                "cta": "play",
+                "fen": None,
+                "solution": None,
+                "claim": None,
+                "reveal_text": None,
+            },
+            # S3: Academy / Openings - Blackburne-Shilling Trap
+            {
+                "slot": 3,
+                "category": "Openings",
+                "hook": "White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3.",
+                "body": (
+                    "The Blackburne-Shilling Gambit looks like a beginner blunder when Black plays 3...Nd4.\n"
+                    "White thought: \"A free pawn on e5 with an attack on f7!\"\n"
+                    "Then came 4.Nxe5? Qg5! and White's king never saw move 8.\n\n"
+                    "Greedy play in the opening gets punished fast.\n"
+                    "The refutation is simple: 4.Nxd4! exd4 5.O-O, leaving White with superior development and complete center control.\n\n"
+                    "Review the full refutation and trap defense inside the Academy."
+                ),
+                "cta": "academy",
+                "fen": None,
+                "solution": None,
+                "claim": None,
+                "reveal_text": None,
+            },
+            # S4: Chess Culture - Zwischenzug / Premove Delusion
+            {
+                "slot": 4,
+                "category": "Chess Culture",
+                "hook": "You premoved a recapture. Your opponent played an in-between check. Familiar pain?",
+                "body": (
+                    "The German masters named it a century ago: <i>Zwischenzug</i> (the in-between move).\n"
+                    "In 3-minute blitz, 80% of lost pieces come from assuming the opponent will play the expected move.\n\n"
+                    "Before you snatch a bishop back, ask:\n"
+                    "Does my opponent have a forcing check first?\n\n"
+                    "If they do, your premove just gave away a rook.\n"
+                    "Train your eye to spot intermediate moves before your opponent spots them for you."
+                ),
+                "cta": "play",
+                "fen": None,
+                "solution": None,
+                "claim": None,
+                "reveal_text": None,
+            },
+            # S5: Product - Arena Flash Alert
+            {
+                "slot": 5,
+                "category": "Product",
+                "hook": "Arena Alert: The 20:00 UTC Blitz Arena registration locks in 15 minutes.",
+                "body": (
+                    "⚡ <b>The night's premier global tournament window is open.</b>\n\n"
+                    "3-Minute Blitz • Synchronized matchmaking • $500 USDT Vault.\n"
+                    "Double-elimination bracket with live spectator room for community chat.\n\n"
+                    "USDT matches are for adults (18+) where permitted. You can lose your stake.\n"
+                    "Once the countdown hits zero, pairings lock automatically."
+                ),
+                "cta": "arena",
+                "fen": None,
+                "solution": None,
+                "claim": None,
+                "reveal_text": None,
+            },
+        ]
+
+        tg_results = []
+        for s in tg_specs:
+            slot_id = f"{today_str}-tg-{s['slot']}"
+            if s["category"] == "Product":
+                post = self.copywriter.draft_fomo_arena_alert(
+                    slot_id=slot_id,
+                    tournament_name="Daily Blitz Vault ($500 USDT)",
+                    start_time_utc="20:00 UTC",
+                    minutes_remaining=15,
+                )
+            else:
+                post = self.copywriter.draft_viral_telegram_post(
+                    slot_id=slot_id,
+                    category=s["category"],
+                    hook=s["hook"],
+                    body=s["body"],
+                    cta=s["cta"],
+                    fen=s["fen"],
+                    solution=s["solution"],
+                    claim=s["claim"],
+                    reveal_text=s["reveal_text"],
+                )
+            qa_res = self.qa.inspect_telegram_post(post)
+            if not qa_res["passed"]:
+                raise RuntimeError(f"Post {slot_id} QA failed: {qa_res['issues']}")
+
+            entry = queue.load(slot_id) if queue.path_for(slot_id).exists() else post
+            entry.update({k: v for k, v in post.items() if k in {"hook", "text", "cta", "creative", "chess", "sources", "format", "reveal", "category"}})
+            entry["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
+            queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+            queue.save(entry)
+            tg_results.append({"id": slot_id, "hook": post["hook"], "status": "approved"})
+
+        # -------------------------------------------------------------
+        # 2. THE 5 BLOG ARTICLES FOR AUMERA.TOP
+        # -------------------------------------------------------------
+        article_specs = [
+            # Art 1: Tactics - Arabian Mate
+            {
+                "slot": 1,
+                "slug": "arabian-mate-rook-and-knight-coordination",
+                "title": "The Arabian Mate: Ancient Geometry and Modern Speed Chess Finish",
+                "subtitle": "The knight covers the king's flight squares while defending the rook on the edge.",
+                "excerpt": "Master the Arabian mate with verified positions. Discover how the rook and knight coordinate to deliver inescapable checkmate against a cornered king.",
+                "category": "Tactics",
+                "reading_time": "4 min read",
+                "cta_href": "/play",
+                "cta_label": "Practice in Free A.I. Arena",
+                "takeaways": [
+                    "The knight and rook coordinate to form a complete mating net against a corner king.",
+                    "A knight on the sixth rank (f6 or c6) covers both escape squares in the corner.",
+                    "Because the knight directly protects the rook, the defender cannot capture the checking piece.",
+                    "The pattern originated over 1,200 years ago in Shatranj and remains one of the most common blitz endings today.",
+                ],
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "text": "Few tactical geometries possess the longevity and lethal simplicity of the Arabian mate. Dating back over a millennium to Arabic Shatranj manuscripts from the 8th century, this two-piece combination remains one of the most decisive finishing weapons in modern 3-minute blitz."
+                    },
+                    {
+                        "type": "chess_position",
+                        "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+                        "caption": "White to move. The knight on f6 seals the escape squares while defending the h7 outpost. Find the finishing strike."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "The Geometry of the Trap"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "To execute the Arabian mate, an attacking knight establishes a dominant post on f6 (or c6, f3, c3 depending on the corner). From f6, the knight attacks g8 and h7. This dual-square coverage accomplishes two simultaneous tactical objectives: it deprives the Black king on h8 of its only legal diagonal escape square (g8), and it creates a protected landing strip for the white rook on h7."
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "When White plays 1.Rh7#, the check is terminal. The rook attacks the king along the h-file. The king cannot step to g8 because the knight controls that square. The king cannot capture the rook on h7 because the knight directly defends it. And because a rook check is linear and delivered from point-blank range, no black piece can interpose."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "Recognizing the Pattern Under Fast Clocks"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "In fast speed chess inside the Web3Chess Arena, players often miss the setup because they search for complex queen combinations. The Arabian mate requires only two minor pieces operating in harmony. When you notice an enemy king isolated in a corner, immediately calculate whether your knight can reach the f6 or f3 outpost with tempo."
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "Step 1: Identify whether the opponent's king is restricted to the corner h8 square.",
+                            "Step 2: Maneuver your knight to f6 to control both the escape square (g8) and the mate square (h7).",
+                            "Step 3: Transfer your rook to the open seventh rank and deliver Rh7#."
+                        ]
+                    },
+                    {
+                        "type": "callout",
+                        "text": "Core Rule: A cornered king cannot survive against a coordinated rook and knight once the knight controls the escape flight squares."
+                    }
+                ],
+            },
+            # Art 2: Openings - Blackburne-Shilling Trap
+            {
+                "slot": 2,
+                "slug": "survive-the-blackburne-shilling-gambit-trap",
+                "title": "Survive the Blackburne-Shilling Gambit: Punish Greedy Blitz Traps",
+                "subtitle": "When Black plays 3...Nd4 in the Italian Game, grabbing the e5 pawn walks straight into disaster.",
+                "excerpt": "Learn how to spot and punish the Blackburne-Shilling Gambit. See why grabbing the e5 pawn fails and how 4.Nxd4 neutralizes Black's opening trap.",
+                "category": "Openings",
+                "reading_time": "5 min read",
+                "cta_href": "/academy",
+                "cta_label": "Explore Opening Academy",
+                "takeaways": [
+                    "Black's move 3...Nd4 violates opening principles by moving the same piece twice, but sets a deadly trap.",
+                    "Grabbing the free e5 pawn with 4.Nxe5 walks directly into 4...Qg5, threatening both the knight and the g2 pawn.",
+                    "Greedy play on f7 allows Black to deliver a smothered checkmate with 7...Nf3#.",
+                    "White completely refutes the gambit by playing 4.Nxd4 exd4 5.O-O, maintaining superior development and control.",
+                ],
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "text": "The Italian Game (1.e4 e5 2.Nf3 Nc6 3.Bc4) is one of the most popular chess openings in history. However, blitz tournaments on Telegram are filled with speculative gambiteers looking for instant knockouts. One of the most famous traps is the Blackburne-Shilling Gambit, where Black plays 3...Nd4."
+                    },
+                    {
+                        "type": "chess_position",
+                        "fen": "r1bqkbnr/pppp1ppp/8/4N3/2B1P3/8/PPPP1PPP/RNBQK2R b KQkq - 0 4",
+                        "caption": "After White's greedy 4.Nxe5?. The e5 pawn is poisoned, and Black's queen counterattack is decisive."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "How the Trap Snaps Shut"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "Unprepared White players look at 3...Nd4 and assume Black made an elementary beginner mistake. The pawn on e5 appears undefended, and taking it with 4.Nxe5 attacks the vulnerable f7 square. But Black's real idea is 4...Qg5! Suddenly, Black attacks White's knight on e5 and the undefended pawn on g2."
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "If White continues greedily with 5.Nxf7, hoping for a royal fork of Black's queen and rook, Black replies 5...Qxg2. White's rook on h1 is trapped. After 6.Rf1 Qxe4+ 7.Be2, Black delivers the stunning smothered finish 7...Nf3#. White is checkmated with almost all pieces still on their starting squares."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "The Correct Refutation: Play for Development"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "Refuting opening traps does not require tactical wizardry; it requires discipline. When Black plays 3...Nd4, White simply trades off the jumping knight: 4.Nxd4! exd4 5.O-O. Black has spent two tempi to trade their knight for White's, leaving White castled with rapid development and control of the d-file."
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "Never grab central pawns without verifying your opponent's queen activity.",
+                            "When an opponent moves the same minor piece twice in the opening, look to trade or castle.",
+                            "Remember that 4.Nxd4 leaves Black with doubled d-pawns and zero tactical counterplay."
+                        ]
+                    },
+                    {
+                        "type": "callout",
+                        "text": "A tactical trap is only dangerous if you accept the bait. Trade off the active attacker and win on positional superiority."
+                    }
+                ],
+            },
+            # Art 3: Academy - The Art of Zwischenzug
+            {
+                "slot": 3,
+                "slug": "the-art-of-the-in-between-move-zwischenzug",
+                "title": "The Art of the In-Between Move: How Zwischenzug Wins Blitz Games",
+                "subtitle": "Recapturing automatically is the fastest way to lose rating. Find the intermediate check first.",
+                "excerpt": "Break the autopilot recapture habit. Learn how intermediate moves and forcing in-between checks turn lost positions into tactical brilliancies.",
+                "category": "Academy",
+                "reading_time": "5 min read",
+                "cta_href": "/play",
+                "cta_label": "Sharpen Your Tactics in Play",
+                "takeaways": [
+                    "Automatic recapturing is the most common tactical failure mode in 3-minute blitz.",
+                    "A Zwischenzug (in-between move) disrupts the opponent's expected exchange sequence.",
+                    "Checks and captures take absolute priority over passive recaptures.",
+                    "Pausing for two seconds before an obvious recapture can discover game-winning tactical intermediate moves.",
+                ],
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "text": "In competitive speed chess, human intuition operates on momentum. When your opponent captures your bishop, your brain automatically fires a reflex: capture them back immediately. This autopilot instinct is responsible for thousands of lost games every single day."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "What is an In-Between Move?"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "In German chess literature, this concept is called a *Zwischenzug*—an in-between move. Instead of playing the anticipated continuation, a player inserts a forcing check, threat, or capture that alters the evaluation of the board before resolving the original exchange."
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "Consider a standard piece trade. If White takes Black's knight on c6, Black's natural reply is bxc6. But what if Black first plays ...Qh4+, forcing White's king into the center or ruining their pawn structure, before recapturing on c6? That intermediate check completely changes the outcome of the game."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "The 3-Second Calculation Protocol"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "To integrate the in-between move into your blitz instincts, build a strict two-step habit whenever an opponent initiates an exchange:"
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "Step 1: Do not touch the mouse or screen immediately after a capture.",
+                            "Step 2: Ask: Do I have a forcing check that the opponent cannot ignore?",
+                            "Step 3: Ask: Can I attack a higher-value piece (e.g. the queen) before taking back?"
+                        ]
+                    },
+                    {
+                        "type": "callout",
+                        "text": "Grandmasters don't calculate deeper than club players; they calculate forcing in-between moves that club players assume don't exist."
+                    }
+                ],
+            },
+            # Art 4: Chess News / Trends - Digital Clock Psychology
+            {
+                "slot": 4,
+                "slug": "digital-clock-psychology-flagging-vs-increment-in-online-blitz",
+                "title": "Digital Clock Psychology: Flagging, Delay, and Time Scramble Strategy",
+                "subtitle": "In 3-minute blitz, seconds are as valuable as pawns. Master clock management and latency.",
+                "excerpt": "Understand the mathematics and psychology of digital chess clocks. Discover how top blitz players manage the final 10 seconds and avoid flagging.",
+                "category": "Chess News",
+                "reading_time": "5 min read",
+                "cta_href": "/play",
+                "cta_label": "Test Your Speed on the Board",
+                "takeaways": [
+                    "In 3-minute blitz without increment, clock time is a physical piece on the board.",
+                    "Pre-moving during a scramble carries severe risks if the opponent possesses intermediate checks.",
+                    "Maintaining a 15-second time advantage forces the defender to commit tactical blunders.",
+                    "Server latency compensation ensures Web3Chess matches are decided by calculation, not packet delay.",
+                ],
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "text": "In tournament chess, Garry Kasparov once famously noted that time is the third dimension of the board alongside space and material. In modern online blitz, time is often the only dimension that matters when the digital clock drops below twenty seconds."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "The Mathematics of the Scramble"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "In a 3+0 time control (3 minutes with zero increment per move), each player has exactly 180 seconds to complete the entire game. If an average blitz contest lasts 40 moves, each decision must be finalized in approximately 4.5 seconds. Spending 30 seconds on an opening novelty leaves you with less than two seconds per move for the endgame."
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "Top blitz tacticians practice 'time banking': they blitz out verified opening theory in the first ten moves, banking a 20-to-30 second surplus over their opponent. When tactical complications arrive on move 20, they can invest precious seconds while the opponent panics under the ticking red clock."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "Sub-50ms Latency and Fair Speed Play"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "Lag has historically ruined speed chess on mobile devices. The Web3Chess Telegram Mini App features authoritative clock synchronization with WebSocket ping compensation, ensuring that player moves register with zero local execution delay."
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "Never drop below 15 seconds unless you have a completely forced winning sequence.",
+                            "In dead-drawn endgames, play active moves with tempo rather than passive defense.",
+                            "Use premoves only when the opponent's reply is strictly forced (e.g. replying to double check)."
+                        ]
+                    },
+                    {
+                        "type": "callout",
+                        "text": "A master player with 5 seconds will beat a beginner with 2 minutes. But two equal players will always be decided by who respects the digital clock."
+                    }
+                ],
+            },
+            # Art 5: Chess Culture - Synchronous Arena Matchmaking
+            {
+                "slot": 5,
+                "slug": "synchronous-arena-matchmaking-vs-stale-queues",
+                "title": "Synchronous Arena Matchmaking: Why Scheduled Blitz Drops Beat Dead Queues",
+                "subtitle": "Concentrating player liquidity into four global daily windows creates peak competition and fair pairings.",
+                "excerpt": "Explore the architecture of synchronous chess arenas. See why daily scheduled tournament drops deliver faster matchmaking, tighter ratings, and higher stakes.",
+                "category": "Chess Culture",
+                "reading_time": "5 min read",
+                "cta_href": "/play",
+                "cta_label": "Join Today's Arena Window",
+                "takeaways": [
+                    "Asynchronous matchmaking often leads to long wait times and rating mismatches.",
+                    "Synchronized daily arena windows concentrate thousands of active players simultaneously.",
+                    "Scheduled tournament drops create authentic FOMO and spectator community excitement.",
+                    "Double-elimination formats guarantee that bad luck in one game does not eliminate a strong player.",
+                ],
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "text": "Online gaming has long struggled with the empty lobby dilemma: players log in at random hours, wait two minutes in a matchmaking queue, face an opponent 300 rating points away, and log off frustrated. In Q4 2026, competitive speed gaming has evolved toward synchronous event drops."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "The Four Global Liquidity Windows"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "Instead of diluting player activity across 24 hours, Web3Chess anchors global matchmaking to four daily tournament windows: 02:00, 08:00, 14:00, and 20:00 UTC. By synchronizing start times across Europe, Asia, and the Americas, thousands of players enter the matchmaking queue at the exact same second."
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "The result is instant pairings, tightly matched Elo ratings, and a lively community spectator lounge where eliminated players watch the quarter-finals and finals live in real time."
+                    },
+                    {
+                        "type": "heading",
+                        "text": "Community Spectating and Social Proof"
+                    },
+                    {
+                        "type": "paragraph",
+                        "text": "Chess is as thrilling to watch as it is to play. During live Arena windows, top-board matches broadcast to Telegram group chats and channel feeds, creating social proof and genuine excitement around the best tactical players on the leaderboard."
+                    },
+                    {
+                        "type": "list",
+                        "items": [
+                            "02:00 UTC: Asia-Pacific speed chess primetime.",
+                            "08:00 UTC: European morning blitz & warm-up arena.",
+                            "14:00 UTC: Global midday masterclass tournament.",
+                            "20:00 UTC: Americas evening high-stakes vault championship."
+                        ]
+                    },
+                    {
+                        "type": "callout",
+                        "text": "True competitive integrity requires real competition. Scheduled arenas bring the world's best speed chess minds to the same board at the same time."
+                    }
+                ],
+            },
+        ]
+
+        art_results = []
+        for a in article_specs:
+            slot_id = f"{today_str}-art-{a['slot']}"
+            article_doc = self.copywriter.draft_seo_blog_article(
+                slug=a["slug"],
+                title=a["title"],
+                subtitle=a["subtitle"],
+                excerpt=a["excerpt"],
+                category=a["category"],
+                takeaways=a["takeaways"],
+                content_blocks=a["content"],
+                reading_time=a["reading_time"],
+                cta_href=a["cta_href"],
+                cta_label=a["cta_label"],
+            )
+            qa_res = self.qa.inspect_blog_article(article_doc)
+            if not qa_res["passed"]:
+                raise RuntimeError(f"Article {a['slug']} QA failed: {qa_res['issues']}")
+
+            entry = queue.load(slot_id) if queue.path_for(slot_id).exists() else {
+                "id": slot_id, "kind": "article", "date": today_str, "slot": a["slot"], "category": a["category"],
+                "scheduled_at": f"{today_str}T{queue.CONFIG['site']['slots_utc'][a['slot']-1]}:00Z", "status": "draft"
+            }
+            entry["article"] = article_doc
+            entry["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
+            queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+            queue.save(entry)
+
+            # Stage into website/src/content/articles/
+            stage_res = self.publisher.stage_article_to_blog(entry)
+            art_results.append({
+                "id": slot_id,
+                "slug": a["slug"],
+                "title": a["title"],
+                "staged_path": stage_res.get("staged_path"),
+            })
+
+        return {
+            "status": "success",
+            "date": today_str,
+            "telegram_posts_created": len(tg_results),
+            "blog_articles_created": len(art_results),
+            "telegram_posts": tg_results,
+            "blog_articles": art_results,
+        }
+

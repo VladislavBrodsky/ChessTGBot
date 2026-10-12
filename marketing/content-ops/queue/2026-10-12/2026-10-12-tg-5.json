@@ -1,0 +1,10 @@
+{
+  "id": "2026-10-12-tg-5",
+  "kind": "telegram",
+  "date": "2026-10-12",
+  "slot": 5,
+  "category": "Product",
+  "scheduled_at": "2026-10-12T20:30:00Z",
+  "status": "planned",
+  "qa": null
+}

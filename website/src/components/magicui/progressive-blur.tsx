@@ -34,8 +34,9 @@ export function ProgressiveBlur({
       style={{
         height: position === "both" ? "100%" : height,
       }}
+      aria-hidden="true"
     >
-      {/* First blur layer (pseudo element) */}
+      {/* First blur layer */}
       <div
         className="absolute inset-0"
         style={{
@@ -86,7 +87,7 @@ export function ProgressiveBlur({
         );
       })}
 
-      {/* Last blur layer (pseudo element) */}
+      {/* Last blur layer */}
       <div
         className="absolute inset-0"
         style={{

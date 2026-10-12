@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Marketing Online Users Range [1374, 3278] ──────────────────────────────
@@ -144,8 +144,26 @@ export function LiveSocialProof() {
     return () => clearInterval(timer);
   }, []);
 
-  // Subtle organic fluctuation every 12 seconds, clamped strictly to [1374, 3278]
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Pause background execution when scrolled out of view to save battery and memory
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: "100px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Subtle organic fluctuation every 12 seconds, only when visible
+  useEffect(() => {
+    if (!isVisible) return;
     const timer = setInterval(() => {
       setLiveCount((prev) => {
         const delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
@@ -154,7 +172,7 @@ export function LiveSocialProof() {
       });
     }, 12000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isVisible]);
 
   // Compute active 4-avatar cohort for the current 60-minute window
   const activeAvatars = useMemo(() => {
@@ -164,19 +182,20 @@ export function LiveSocialProof() {
     );
   }, [hourSlot]);
 
-  // Rotate activity every 3.2 seconds
+  // Rotate activity every 3.2 seconds, only when visible and not paused
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || !isVisible) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % ACTIVITIES.length);
     }, 3200);
     return () => clearInterval(timer);
-  }, [isPaused]);
+  }, [isPaused, isVisible]);
 
   const active = ACTIVITIES[index];
 
   return (
     <div
+      ref={containerRef}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       className="group/proof relative inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-[#0C0D0F]/95 text-white border border-white/[0.12] py-1.5 px-2.5 sm:px-3.5 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_35px_-5px_rgba(16,185,129,0.2)] max-w-full overflow-hidden"

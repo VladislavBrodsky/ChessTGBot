@@ -7,20 +7,40 @@ import { MobileCta } from "@/components/MobileCta";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { BlogCard } from "@/components/BlogCard";
 import { Faq } from "@/components/Faq";
+import dynamic from "next/dynamic";
 import { Footer } from "@/components/Footer";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
-import { TextAnimate } from "@/components/magicui/text-animate";
 import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { LiveSocialProof } from "@/components/LiveSocialProof";
 import { BorderBeam } from "@/components/magicui/border-beam";
-import { ChessEcosystemOrbit } from "@/components/ChessEcosystemOrbit";
-import { GlobeShowcase } from "@/components/GlobeShowcase";
-import { RewardsBento } from "@/components/RewardsBento";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
+
+import { RewardsBento } from "@/components/RewardsBento";
+
+const ChessEcosystemOrbit = dynamic(
+  () =>
+    import("@/components/ChessEcosystemOrbit").then(
+      (m) => m.ChessEcosystemOrbit,
+    ),
+  {
+    loading: () => <div className="min-h-[380px] w-full" />,
+  },
+);
+
+const GlobeShowcase = dynamic(
+  () => import("@/components/GlobeShowcase").then((m) => m.GlobeShowcase),
+  {
+    loading: () => (
+      <div className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[460px]">
+        <div className="size-80 rounded-full bg-surface border border-line/40 opacity-40 animate-pulse" />
+      </div>
+    ),
+  },
+);
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
@@ -89,15 +109,11 @@ export default function HomePage() {
               <Badge tone="accent" icon="telegram-logo">Live PvP Arena · Real Crypto Stakes</Badge>
               <h1 id="home-title" className="poster hero-title">
                 <span className="block whitespace-nowrap">
-                  <TextAnimate animation="blurInUp" by="word">
-                    Play chess
-                  </TextAnimate>
+                  Play chess
                 </span>
                 <span className="block whitespace-nowrap">
                   <span className="hero-emphasis inline-block">
-                    <TextAnimate animation="blurInUp" by="word" delay={0.12}>
-                      Win real crypto
-                    </TextAnimate>
+                    Win real crypto
                   </span>
                 </span>
               </h1>

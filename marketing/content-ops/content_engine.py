@@ -42,6 +42,7 @@ def main():
     parser.add_argument("--status", action="store_true", help="Display status of today's queued content slots")
     parser.add_argument("--run-strategy", action="store_true", help="Run CMO strategy brief and competitive research audit")
     parser.add_argument("--first-post", action="store_true", help="Create, validate and stage the first viral flagship post & article")
+    parser.add_argument("--generate-today", action="store_true", help="Generate, QA-validate, approve and stage all 5 Telegram posts and 5 Blog articles for today")
     parser.add_argument("--plan", action="store_true", help="Generate daily slots for the calendar")
     parser.add_argument("--days", type=int, default=1, help="Number of days to plan (default: 1)")
     parser.add_argument("--stage", action="store_true", help="Stage all approved articles into website/src/content/articles/")
@@ -72,6 +73,12 @@ def main():
         print("\n🚀 Executing Multi-Agent Flagship Post & Article Generation Flow...")
         result = orchestrator.create_first_flagship_post()
         print("\n✅ Successfully created and staged flagship content:")
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    elif args.generate_today:
+        print("\n🚀 Generating Full Daily Batch: 5 Viral Telegram Posts & 5 SEO Blog Articles...")
+        result = orchestrator.generate_full_daily_batch()
+        print("\n✅ Completed Full Daily Batch:")
         print(json.dumps(result, indent=2, ensure_ascii=False))
 
     elif args.plan:
