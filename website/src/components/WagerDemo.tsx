@@ -96,9 +96,9 @@ export function WagerDemo() {
       <div className="rounded-xl bg-inset p-3 border border-line text-caption text-fg-muted font-mono flex items-center justify-between">
         <span className="flex items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-emerald-500" />
-          Smart escrow settlement
+          Automated match escrow
         </span>
-        <span className="text-fg-default font-semibold">Instant TON credit</span>
+        <span className="text-fg-default font-semibold">Instant balance credit</span>
       </div>
     </div>
   );

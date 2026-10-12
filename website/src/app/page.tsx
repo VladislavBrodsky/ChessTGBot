@@ -390,7 +390,7 @@ export default function HomePage() {
                 </Badge>
                 <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Global Liquidity · Non-Custodial Escrow
+                  Global Liquidity · Automated Match Escrow
                 </span>
               </div>
 
@@ -399,23 +399,23 @@ export default function HomePage() {
               </h2>
 
               <p className="max-w-[46ch] section-lead text-fg-muted">
-                Active grandmasters, blitz tacticians, and rivals across 120+ countries compete around the clock. Every duel is protected by non-custodial smart escrow, neural anti-cheat radar, and instant on-chain payouts.
+                Active grandmasters, blitz tacticians, and rivals across 120+ countries compete around the clock. Every duel is protected by automated match escrow, deterministic move validation, and instant pot settlement.
               </p>
 
               {/* ── Safe Space & Security Architecture ── */}
               <div className="space-y-2.5">
-                {/* 1. Non-Custodial Match Escrow */}
+                {/* 1. Automated Match Escrow */}
                 <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:bg-surface-inset/50">
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 mt-0.5">
                     <Icon name="lock" size={17} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-[13px]">Non-Custodial Match Escrow</span>
-                      <span className="font-mono text-[10px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Audited Rails</span>
+                      <span className="font-semibold text-fg-default text-[13px]">Automated Match Escrow</span>
+                      <span className="font-mono text-[10px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Locked at Start</span>
                     </div>
                     <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
-                      Both stakes lock in isolated smart contracts before move 1. Pot settles directly to the winner’s TON wallet upon checkmate or clock flag.
+                      Both stakes lock into match escrow before move 1. 95% of the pot credits instantly to the winner’s balance upon checkmate or clock flag.
                     </p>
                   </div>
                 </div>
@@ -554,7 +554,7 @@ export default function HomePage() {
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1 text-emerald-600 font-semibold">
                     <span className="size-1.5 rounded-full bg-emerald-500" />
-                    0% Custody Risk
+                    Automated Escrow
                   </span>
                   <span className="text-fg-default font-semibold">Sub-25ms WebSocket</span>
                 </div>
@@ -586,7 +586,7 @@ export default function HomePage() {
               </h2>
 
               <p className="max-w-[44ch] section-lead text-fg-muted">
-                No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your favorite non-custodial wallet, and settles match pots directly on-chain.
+                No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your TON wallet, and settles match pots directly to your balance.
               </p>
 
               <div className="grid gap-3 pt-2 text-body-sm text-fg-muted">

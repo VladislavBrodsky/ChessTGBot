@@ -87,7 +87,7 @@ export default function WagersPage() {
         <section aria-labelledby="balance-heading">
           <div className="section-index">
             <span>02 / How your balance moves</span>
-            <span>Non-custodial deposit to wallet</span>
+            <span>From TON transfer to wallet payout</span>
           </div>
           <h2 id="balance-heading" className="editorial-title mb-6">
             From deposit to your own wallet
@@ -163,7 +163,7 @@ export default function WagersPage() {
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
                 <span className="size-2 rounded-full bg-amber-500" />
-                <span>Non-custodial release</span>
+                <span>Bot chat confirmation</span>
               </div>
             </Card>
 

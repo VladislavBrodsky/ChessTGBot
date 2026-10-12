@@ -67,9 +67,9 @@ export function SettlementBreakdown() {
       <div className="mt-5 pt-3.5 border-t border-line flex items-center justify-between text-caption font-mono text-fg-muted">
         <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
           <Icon name="shield-check" size={14} />
-          Smart escrow audited
+          Automated match escrow
         </span>
-        <span className="text-fg-default">Zero platform custody hold</span>
+        <span className="text-fg-default">Instant platform pot credit</span>
       </div>
     </Card>
   );

@@ -66,7 +66,7 @@ export default async function PlayPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 rounded-full bg-emerald-500" />
-                  <span>Non-custodial TON wallet connection</span>
+                  <span>TON wallet deposit and withdrawal rails</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 rounded-full bg-emerald-500" />
@@ -156,7 +156,7 @@ export default async function PlayPage() {
         <div className="mt-6 grid grid-cols-3 gap-3 rounded-xl border border-line bg-inset p-3.5 text-center font-mono text-caption">
           <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium">
             <Icon name="shield-check" size={16} className="text-emerald-600 shrink-0" />
-            <span>Non-Custodial Escrow</span>
+            <span>Automated Match Escrow</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium border-x border-line">
             <Icon name="lightning" size={16} className="text-amber-500 shrink-0" />
