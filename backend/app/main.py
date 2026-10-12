@@ -173,6 +173,10 @@ class SecurityHeadersMiddleware:
                 if b"content-security-policy" not in existing:
                     # The backend API doesn't serve HTML, so we restrict everything.
                     headers.append((b"content-security-policy", b"default-src 'none'; frame-ancestors 'none'"))
+                if b"referrer-policy" not in existing:
+                    headers.append((b"referrer-policy", b"strict-origin-when-cross-origin"))
+                if b"permissions-policy" not in existing:
+                    headers.append((b"permissions-policy", b"accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"))
                 
                 message = {**message, "headers": headers}
             await send(message)
