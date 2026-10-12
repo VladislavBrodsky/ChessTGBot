@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import createGlobe from "cobe";
-import { Icon } from "@/icons";
 
 // ── Complete Verified Global City Coordinates ───────────────────────────
 const CITIES: Record<string, [number, number]> = {
