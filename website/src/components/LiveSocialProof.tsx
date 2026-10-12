@@ -20,12 +20,6 @@ export function LiveSocialProof() {
     const hour = now.getUTCHours();
     return 1420 + ((dayOfYear * 7 + hour * 13) % 240);
   });
-  const [boxesOpened] = useState(() => {
-    const now = new Date();
-    const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
-    const hour = now.getUTCHours();
-    return 340 + ((dayOfYear * 11 + hour * 5) % 180);
-  });
   const [potSettled] = useState(() => {
     const now = new Date();
     const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
@@ -50,7 +44,7 @@ export function LiveSocialProof() {
       dotColor: "bg-purple-500",
       text: (
         <>
-          🇦🇪 <span className="font-semibold text-fg-default">@CryptoMorphy</span> won <strong className="text-emerald-700 dark:text-emerald-400 font-bold">+$47.50</strong> in 3+2 Blitz
+          🇦🇪 <span className="font-semibold text-fg-default">@CryptoMorphy</span> won <strong className="text-emerald-700 dark:text-emerald-400 font-bold">+$47.50</strong>
         </>
       ),
     },
@@ -60,7 +54,7 @@ export function LiveSocialProof() {
       dotColor: "bg-amber-500",
       text: (
         <>
-          🇯🇵 <span className="font-semibold text-fg-default">@kenji_chess</span> unboxed <strong className="text-amber-600 font-bold">50 TON</strong> King’s Chest · <span className="font-mono text-fg-muted text-[11px]">{boxesOpened} opened</span>
+          🇯🇵 <span className="font-semibold text-fg-default">@kenji_chess</span> unboxed <strong className="text-amber-600 font-bold">50 TON</strong>
         </>
       ),
     },
@@ -70,7 +64,7 @@ export function LiveSocialProof() {
       dotColor: "bg-blue-500",
       text: (
         <>
-          🇳🇴 <span className="font-semibold text-fg-default">@magnus_ton</span> won <strong className="text-emerald-700 dark:text-emerald-400 font-bold">+$190.00</strong> Rapid on-chain
+          🇳🇴 <span className="font-semibold text-fg-default">@magnus_ton</span> won <strong className="text-emerald-700 dark:text-emerald-400 font-bold">+$190.00</strong>
         </>
       ),
     },
@@ -80,7 +74,7 @@ export function LiveSocialProof() {
       dotColor: "bg-emerald-500",
       text: (
         <>
-          <strong className="font-semibold text-fg-default">${potSettled.toLocaleString()}</strong> won by players in last 24h
+          <strong className="font-semibold text-fg-default">${potSettled.toLocaleString()}</strong> won by players today
         </>
       ),
     },
@@ -90,7 +84,7 @@ export function LiveSocialProof() {
       dotColor: "bg-cyan-500",
       text: (
         <>
-          🇺🇿 <span className="font-semibold text-fg-default">@gm_vlad</span> withdrew <strong className="text-emerald-700 dark:text-emerald-400 font-bold">95 USDT</strong> via TON (3.8s)
+          🇺🇿 <span className="font-semibold text-fg-default">@gm_vlad</span> withdrew <strong className="text-emerald-700 dark:text-emerald-400 font-bold">95 USDT</strong>
         </>
       ),
     },
@@ -106,7 +100,7 @@ export function LiveSocialProof() {
   const active = signals[index];
 
   return (
-    <div className="inline-flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 rounded-2xl border border-line bg-surface/85 p-2 sm:pr-4 shadow-2xs backdrop-blur-md transition-all hover:border-fg-muted/30">
+    <div className="inline-flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-2xl border border-line bg-surface/85 p-2 sm:pr-4 shadow-2xs backdrop-blur-md transition-all hover:border-fg-muted/30 max-w-full">
       {/* Real Players Avatar Stack */}
       <div className="flex items-center gap-2 shrink-0">
         <div className="relative">
@@ -131,7 +125,7 @@ export function LiveSocialProof() {
           <span className={`size-1.5 rounded-full ${active.dotColor} animate-ping`} />
           {active.badge}
         </span>
-        <span className="text-body-xs text-fg-default/90 truncate">{active.text}</span>
+        <span className="text-body-xs text-fg-default/90 whitespace-nowrap">{active.text}</span>
       </div>
 
       {/* Mini carousel indicators */}

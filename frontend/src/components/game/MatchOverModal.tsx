@@ -200,7 +200,7 @@ export default function MatchOverModal({
             <span>🎁</span>
             <span>{te('rewards.jackpot_ton_1000')}</span>
           </div>
-          <p className="mt-0.5 text-[10px] font-medium text-brand-muted">
+          <p className="mt-0.5 text-caption font-medium text-brand-muted">
             {te('virtual_only')}
           </p>
         </div>

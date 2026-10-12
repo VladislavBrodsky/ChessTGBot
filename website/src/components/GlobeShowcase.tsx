@@ -336,34 +336,34 @@ export function GlobeShowcase() {
       />
 
       {/* ── Floating Live Match Pill (Compact, modern glass pill) ── */}
-      <div className="relative z-20 mb-3 w-full max-w-[460px] px-2" aria-live="polite">
+      <div className="relative z-20 mb-3 w-full max-w-[500px] px-2" aria-live="polite">
         <div
-          className={`flex items-center justify-between gap-3 rounded-full border border-line bg-surface/90 px-4 py-2 shadow-sm backdrop-blur-md transition-all duration-200 ${
+          className={`flex items-center justify-between gap-2.5 sm:gap-3 rounded-full border border-line bg-surface/90 px-3.5 sm:px-4 py-2 shadow-sm backdrop-blur-md transition-all duration-200 ${
             isCrossfading ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
           }`}
         >
           {/* Left: Players */}
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
             <span className="relative flex size-2 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            <span className="font-semibold text-fg-default text-[13px] truncate">
+            <span className="font-semibold text-fg-default text-[12px] sm:text-[13px] whitespace-nowrap">
               {current.flag1} {current.p1}
             </span>
-            <span className="text-fg-muted text-[12px] font-mono shrink-0">⚔</span>
-            <span className="font-semibold text-fg-default text-[13px] truncate">
+            <span className="text-fg-muted text-[11px] sm:text-[12px] font-mono shrink-0 px-0.5">⚔</span>
+            <span className="font-semibold text-fg-default text-[12px] sm:text-[13px] whitespace-nowrap">
               {current.flag2} {current.p2}
             </span>
           </div>
 
           {/* Right: Stake & Format */}
-          <div className="flex items-center gap-2 font-mono text-caption shrink-0">
-            <span className={`font-bold tabular-nums ${tierConfig.text}`}>
+          <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-caption shrink-0">
+            <span className={`font-bold tabular-nums text-[12px] sm:text-[13px] ${tierConfig.text}`}>
               {current.stake}
             </span>
-            <span className="hidden sm:inline text-fg-muted text-[11px]">
-              ({current.format})
+            <span className="hidden sm:inline text-fg-muted text-[10px] sm:text-[11px]">
+              ({current.format.replace("Classical ", "").replace("Rapid ", "").replace("Blitz ", "").replace("Bullet ", "")})
             </span>
             <span className={`hidden md:inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full border ${tierConfig.badge}`}>
               {current.label}

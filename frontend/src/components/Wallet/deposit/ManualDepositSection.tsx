@@ -43,21 +43,21 @@ export function ManualDepositSection({
     <div className="space-y-4 pt-2">
       {/* ── Supported Rails & Multi-Chain Badges ── */}
       <div className="flex items-center justify-between p-2.5 rounded-xl border border-brand-border bg-brand-surface">
-        <span className="text-[11px] font-mono text-brand-muted">Accepted:</span>
+        <span className="text-caption font-mono text-brand-muted">Accepted:</span>
         <div className="flex items-center gap-1.5">
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-[11px] font-bold">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-caption font-bold">
             <SiTether size={12} className="text-[#26A17B]" />
             <span>USDT</span>
           </div>
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-[11px] font-bold">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-caption font-bold">
             <SiTon size={12} className="text-[#0098EA]" />
             <span>TON</span>
           </div>
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 text-[11px] font-bold">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 text-caption font-bold">
             <SiBitcoin size={12} className="text-[#F7931A]" />
             <span>BTC</span>
           </div>
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-[11px] font-bold">
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-caption font-bold">
             <SiEthereum size={12} className="text-[#627EEA]" />
             <span>ETH</span>
           </div>

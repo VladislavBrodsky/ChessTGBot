@@ -18,7 +18,11 @@ interface DailyStatus {
   rewards: number[];
 }
 
-export default function DailyCheckinModal() {
+interface DailyCheckinModalProps {
+  onClose?: () => void;
+}
+
+export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = {}) {
   const t = useTranslations('Gamification');
   const tc = useTranslations('Common');
   const [status, setStatus] = useState<DailyStatus | null>(null);
@@ -31,7 +35,10 @@ export default function DailyCheckinModal() {
   const confettiTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const closeModal = () => {
-    if (!claiming) setIsOpen(false);
+    if (!claiming) {
+      setIsOpen(false);
+      onClose?.();
+    }
   };
   const dialogRef = useDialogAccessibility(Boolean(isOpen && status), closeModal);
 

@@ -20,7 +20,7 @@ import { CountUp } from '@/components/ui/CountUp';
 import { HeroCardSkeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
 import XPProgressBar from '@/components/XPProgressBar';
-import DailyCheckinModal from '@/components/DailyCheckinModal';
+import FirstRunCoordinator from '@/components/FirstRunCoordinator';
 import NotificationModal from '@/components/NotificationModal';
 import DailyGoalsBento from '@/components/DailyGoalsBento';
 import EngagementQuest from '@/components/EngagementQuest';
@@ -88,7 +88,7 @@ export default function Home() {
 
  return (
   <LayoutWrapper hideHeaderControls>
-    <DailyCheckinModal />
+    <FirstRunCoordinator />
     <NotificationModal isOpen={showNotifications} onClose={() => setShowNotifications(false)} />
     <main className="app-page">
       <PageHeader align="start" eyebrow={t('welcome_greeting')} title={displayName} actions={<>

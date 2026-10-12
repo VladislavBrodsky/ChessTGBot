@@ -42,11 +42,12 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const completed = localStorage.getItem("onboarding_completed");
-            if (completed !== "true") {
+            const isHomePage = (pathname || '').split('?')[0].replace(/\/$/, '').endsWith('/home');
+            if (completed !== "true" && !isHomePage) {
                 setShowOnboarding(true);
             }
         }
-    }, []);
+    }, [pathname]);
 
     const cleanPathname = (pathname || '').split('?')[0].replace(/\/$/, '');
     const isMainNavbarPage = 

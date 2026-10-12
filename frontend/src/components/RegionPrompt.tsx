@@ -28,7 +28,11 @@ const REGIONS: { id: string; icon: React.ReactNode }[] = [
   { id: 'apac', icon: <FaGlobeAsia /> },
 ];
 
-export default function RegionPrompt() {
+interface RegionPromptProps {
+  onClose?: () => void;
+}
+
+export default function RegionPrompt({ onClose }: RegionPromptProps = {}) {
   const t = useTranslations('RegionPrompt');
   const { stats, syncStats } = useUser();
   const [open, setOpen] = useState(false);
@@ -45,6 +49,7 @@ export default function RegionPrompt() {
   const dismiss = () => {
     if (typeof window !== 'undefined') sessionStorage.setItem(SESSION_KEY, '1');
     setOpen(false);
+    onClose?.();
   };
   const dialogRef = useDialogAccessibility(open, dismiss);
 
@@ -68,6 +73,7 @@ export default function RegionPrompt() {
       if (typeof window !== 'undefined') sessionStorage.setItem(SESSION_KEY, '1');
       syncStats();
       setOpen(false);
+      onClose?.();
     } catch {
       setSaving(null); // let them retry
     }

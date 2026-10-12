@@ -80,6 +80,7 @@ jest.mock('@/components/LayoutWrapper', () => ({ children }: any) => <div>{child
 // Mocked because they fetch remote state on mount, which otherwise
 // resolves outside act() after synchronous tests finish rendering.
 jest.mock('@/components/DailyCheckinModal', () => () => null);
+jest.mock('@/components/FirstRunCoordinator', () => () => null);
 jest.mock('@/components/game/ArenaBanner', () => () => null);
 jest.mock('@/components/EngagementQuest', () => () => null);
 

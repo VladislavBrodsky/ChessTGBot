@@ -133,29 +133,33 @@ export default function HomePage() {
 
         {/* ── MAGIC UI MARQUEE: Live Crypto Match Wins & Vault Drops ── */}
         <section className="shell-wide my-4" aria-label="Live PvP match activity">
-          <div className="rounded-2xl border border-line bg-surface/75 py-2.5 px-3">
+          <div className="relative rounded-2xl border border-line bg-surface/75 py-2.5 px-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_48px,black_calc(100%-48px),transparent)]">
+            {/* Fallback gradient fade overlays for browsers without mask-image */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-surface to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-surface to-transparent z-10" />
+
             <Marquee duration={35} pauseOnHover>
-              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line shrink-0">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <strong className="text-emerald-600">+$47.50 USDT</strong> GM_Morphy won 3+2 Blitz duel
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line shrink-0">
                 <span className="size-1.5 rounded-full bg-amber-500" />
                 <strong>1,000 TON</strong> King’s Dominion Mystery Jackpot unlocked
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line shrink-0">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <strong className="text-emerald-600">+$95.00 USDT</strong> Magnus_99 won 5+3 Rapid table
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line shrink-0">
                 <span className="size-1.5 rounded-full bg-blue-500" />
                 <strong>6-Level Affiliate</strong> Earn up to 2% lifetime match rake
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line shrink-0">
                 <span className="size-1.5 rounded-full bg-purple-500" />
                 <strong>Tactics Academy</strong> 100 free levels &amp; Stockfish AI
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line">
+              <span className="inline-flex items-center gap-2 rounded-full bg-inset px-3 py-1 font-mono text-caption text-fg-default border border-line shrink-0">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <strong className="text-emerald-600">+$190.00 USDT</strong> Kasparov_X won 10+0 Classical match
               </span>
@@ -374,18 +378,50 @@ export default function HomePage() {
                 No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your TON wallet, and settles match pots directly to your balance.
               </p>
 
-              <div className="grid gap-3 pt-2 text-body-sm text-fg-muted">
-                <div className="flex items-center gap-2.5">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
-                  <span><strong>USDT on TON:</strong> Instant deposits with sub-cent network fees.</span>
+              <div className="space-y-2.5 pt-2">
+                <div className="flex items-center gap-3 rounded-xl border border-line bg-surface/90 p-3 shadow-2xs transition-all hover:border-fg-muted/40">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                    <Icon name="lightning" size={17} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-[13px]">USDT on TON</span>
+                      <span className="font-mono text-[10px] font-bold text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        Sub-Cent Fees
+                      </span>
+                    </div>
+                    <p className="text-body-xs text-fg-muted mt-0.5">Instant deposits with sub-second on-chain finality.</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
-                  <span><strong>Telegram profile:</strong> Zero registration friction or passwords.</span>
+
+                <div className="flex items-center gap-3 rounded-xl border border-line bg-surface/90 p-3 shadow-2xs transition-all hover:border-fg-muted/40">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 border border-blue-500/20">
+                    <Icon name="telegram-logo" size={17} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-[13px]">Telegram Profile</span>
+                      <span className="font-mono text-[10px] font-bold text-blue-700 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
+                        Zero Passwords
+                      </span>
+                    </div>
+                    <p className="text-body-xs text-fg-muted mt-0.5">Zero registration friction or seed phrase exports.</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
-                  <span><strong>One-tap withdrawals:</strong> Confirmed securely via Telegram bot chat.</span>
+
+                <div className="flex items-center gap-3 rounded-xl border border-line bg-surface/90 p-3 shadow-2xs transition-all hover:border-fg-muted/40">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 border border-purple-500/20">
+                    <Icon name="shield-check" size={17} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-[13px]">One-Tap Withdrawals</span>
+                      <span className="font-mono text-[10px] font-bold text-purple-700 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                        HMAC Secured
+                      </span>
+                    </div>
+                    <p className="text-body-xs text-fg-muted mt-0.5">Confirmed securely in your native Telegram bot chat.</p>
+                  </div>
                 </div>
               </div>
 
@@ -418,28 +454,43 @@ export default function HomePage() {
                 Every piece follows identical rules. No pay-to-win cards, no unfair boosts. Only your preparation, your clock management, and your board vision determine who takes the pot.
               </p>
             </div>
-            <div className="mt-6 grid gap-6 border-t border-line pt-6 md:mt-10 md:pt-8 md:grid-cols-3">
+            <div className="mt-6 grid gap-4 border-t border-line/40 pt-6 md:mt-10 md:pt-8 md:grid-cols-3">
               {[
                 {
                   icon: "cpu" as const,
+                  tag: "Stockfish 16",
                   title: "Authoritative server moves",
                   body: "Stockfish 16 engine validates every move deterministically. No client-side manipulation or illegal board states.",
                 },
                 {
                   icon: "users-three" as const,
+                  tag: "ELO Matched",
                   title: "Fair ELO matchmaking",
                   body: "Compete exclusively against verified rivals of matching rating, time control, and stake tier.",
                 },
                 {
                   icon: "scales" as const,
+                  tag: "95% Pot Split",
                   title: "Instant 95% pot settlement",
                   body: "Transparent split: 95% to the victor, 3% platform fee, 2% referral pool. Zero hidden deductions.",
                 },
               ].map((item) => (
-                <div key={item.title} className="space-y-3">
-                  <Icon name={item.icon} size={24} className="text-fg-link" />
-                  <h3 className="text-title">{item.title}</h3>
-                  <p className="text-body-sm text-fg-muted">{item.body}</p>
+                <div
+                  key={item.title}
+                  className="rounded-xl border border-line/60 bg-surface/30 p-4.5 space-y-3 transition-all hover:border-emerald-500/40 hover:bg-surface/50 shadow-2xs backdrop-blur-xs flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                        <Icon name={item.icon} size={18} />
+                      </div>
+                      <span className="font-mono text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        {item.tag}
+                      </span>
+                    </div>
+                    <h3 className="text-title text-fg-default">{item.title}</h3>
+                    <p className="text-body-sm text-fg-muted leading-relaxed">{item.body}</p>
+                  </div>
                 </div>
               ))}
             </div>
