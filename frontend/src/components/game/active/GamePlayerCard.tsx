@@ -26,8 +26,8 @@ export function GamePlayerCard({
   isTurn,
   turnLabel,
   isWhite,
-  isBot = false,
-  botLabel,
+  isBot: _isBot = false,
+  botLabel: _botLabel,
   gameState,
   onClockWarning,
 }: GamePlayerCardProps) {

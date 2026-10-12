@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaWallet, FaAngleDown, FaCoins } from "react-icons/fa";
+import { SiTether } from "react-icons/si";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -85,7 +86,6 @@ function DepositModalContent({
   const [successMessage, setSuccessMessage] = useState<string>(" ");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState<boolean>(false);
-  const [showManualFallback, setShowManualFallback] = useState<boolean>(false);
   const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
   const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
   const [memoConfirmed, setMemoConfirmed] = useState<boolean>(false);
@@ -697,8 +697,8 @@ function DepositModalContent({
                 className={`ui-tap-target w-full bg-brand-void border border-brand-border-opacity-20 rounded-lg py-2.5 px-3 text-sm text-brand-primary font-semibold flex items-center justify-between transition-all ${currenciesList.length > 1 ? 'cursor-pointer hover:border-brand-primary' : 'cursor-default'}`}
               >
                 <div className="flex items-center space-x-2">
-                  <div className="w-3.5 h-3.5 rounded-full flex items-center justify-center text-caption font-bold" style={{ backgroundColor: selectedCurrencyObj?.color + '20', color: selectedCurrencyObj?.color }}>
-                    <FaCoins />
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-caption font-bold bg-[#26A17B]/20">
+                    <SiTether size={13} className="text-[#26A17B]" />
                   </div>
                   <span>{selectedCurrencyObj?.name} ({currency})</span>
                 </div>

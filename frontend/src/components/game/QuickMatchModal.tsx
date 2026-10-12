@@ -318,7 +318,8 @@ export default function QuickMatchModal({
               <button
                 type="button"
                 onClick={handleStartSearch}
-                className="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-black font-bold text-base shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-black font-bold text-base shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FaChessKnight size={18} />
                 {hasInsufficientBalance ? 'Top Up Balance to Play' : 'Find Opponent Now'}

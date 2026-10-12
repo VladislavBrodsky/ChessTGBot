@@ -21,6 +21,7 @@ import { SkeletonList } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getXPProgress } from '@/lib/xpProgress';
 import { FiTarget } from 'react-icons/fi';
+import EngagementQuest from '@/components/EngagementQuest';
 
 export default function ChallengesPage() {
   const t = useTranslations('Gamification');
@@ -201,6 +202,11 @@ export default function ChallengesPage() {
             </div>
           </motion.div>
         </section>
+
+        {/* Grand Mystery Box Engagement Quest */}
+        <div className="w-full my-3">
+          <EngagementQuest />
+        </div>
 
         {/* Stats Row — Ultra Premium */}
         <section aria-labelledby="stats-heading" className="w-full">

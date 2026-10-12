@@ -90,18 +90,22 @@ export function LiveHomeTicker({ onOpenQuickMatch }: { onOpenQuickMatch?: () => 
 
   const current = EVENTS[index];
 
-  const handleNext = () => {
+  const handleTap = () => {
     telegramHaptic('light');
-    setIndex((prev) => (prev + 1) % EVENTS.length);
+    if (onOpenQuickMatch) {
+      onOpenQuickMatch();
+    } else {
+      setIndex((prev) => (prev + 1) % EVENTS.length);
+    }
   };
 
   return (
     <div
-      onClick={handleNext}
+      onClick={handleTap}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') handleNext();
+        if (e.key === 'Enter' || e.key === ' ') handleTap();
       }}
       className="group relative flex w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-brand-border bg-brand-surface p-3 transition-colors hover:border-brand-border-opacity-30 active:scale-[0.99]"
       aria-label="Live platform activity"

@@ -10,7 +10,7 @@ export interface PlayerAvatarProps {
   textClassName?: string;
 }
 
-export function PlayerAvatar({ userId, fallbackText, isBot, textClassName }: PlayerAvatarProps) {
+export function PlayerAvatar({ userId, fallbackText, isBot: _isBot, textClassName }: PlayerAvatarProps) {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {

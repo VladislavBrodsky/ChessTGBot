@@ -34,7 +34,7 @@ export default function MatchOverModal({
   newElo,
   copied = false,
   xpGained,
-  isBotGame = false,
+  isBotGame: _isBotGame = false,
 }: MatchOverModalProps) {
   const locale = useLocale();
   const tg = useTranslations('Game');
@@ -191,6 +191,17 @@ export default function MatchOverModal({
               </div>
             </>
           )}
+        </div>
+
+        {/* Mystery Box 1,000 TON Drop Callout */}
+        <div className="w-full rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-brand-elevated to-amber-500/10 p-2.5 text-center shadow-[0_0_15px_rgba(245,158,11,0.08)]">
+          <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-amber-300">
+            <span>🎁</span>
+            <span>{tg('jackpot_ton_1000')}</span>
+          </div>
+          <p className="mt-0.5 text-[10px] font-medium text-brand-muted">
+            {tg('engagement_desc')}
+          </p>
         </div>
 
         {/* Buttons / Actions */}

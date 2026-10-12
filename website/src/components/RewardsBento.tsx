@@ -446,7 +446,7 @@ export function RewardsBento() {
           <div className="flex items-center gap-2 rounded-lg bg-emerald-500/5 p-2 border border-emerald-500/20 text-[11px]">
             <span className="size-4 shrink-0 rounded-full bg-emerald-500/20 text-emerald-700 flex items-center justify-center font-bold text-[10px]">✓</span>
             <div className="min-w-0">
-              <span className="font-bold text-emerald-900 block truncate">Web3Chess Arena</span>
+              <span className="font-bold text-fg-default block truncate">Web3Chess Arena</span>
               <span className="text-emerald-700 block text-[10px] truncate">95% Winner pot · 1-tap Telegram</span>
             </div>
           </div>
