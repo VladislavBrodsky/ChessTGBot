@@ -73,6 +73,83 @@ const STAKE_PILLS = [
   { stake: "$500",format: "Classic 60+0", win: "$950",   tier: "Whale 🐋" },
 ];
 
+// ── Modern 2D/3D Tokens for Vault Drop Sphere ──────────────────────────────
+function TonToken() {
+  return (
+    <div
+      className="flex size-7.5 items-center justify-center rounded-full bg-gradient-to-br from-[#0098EA] via-[#0088d6] to-[#0066aa] text-white shadow-[0_3px_10px_rgba(0,152,234,0.45),inset_0_1px_1px_rgba(255,255,255,0.7)] border border-white/40 transition-transform hover:scale-110"
+      title="TON"
+    >
+      <svg viewBox="0 0 32 32" fill="none" className="size-4" aria-label="TON">
+        <path
+          d="M16 6.5L7.5 11.5L16 25.5L24.5 11.5L16 6.5ZM14.8 8.8L16 8.1L17.2 8.8L21.5 11.3L16 12.7L10.5 11.3L14.8 8.8ZM9.8 12.8L15.3 14.2V22.4L9.8 12.8ZM16.7 22.4V14.2L22.2 12.8L16.7 22.4Z"
+          fill="white"
+        />
+      </svg>
+    </div>
+  );
+}
+
+function BtcToken() {
+  return (
+    <div
+      className="flex size-7.5 items-center justify-center rounded-full bg-gradient-to-br from-[#F7931A] via-[#f59e0b] to-[#d97706] text-white shadow-[0_3px_10px_rgba(247,147,26,0.45),inset_0_1px_1px_rgba(255,255,255,0.7)] border border-white/40 transition-transform hover:scale-110"
+      title="Bitcoin"
+    >
+      <svg viewBox="0 0 32 32" fill="none" className="size-4" aria-label="BTC">
+        <path
+          d="M22.5 13.6c.3-2.1-1.3-3.2-3.5-4l.7-2.9-1.8-.4-.7 2.8c-.5-.1-1-.2-1.5-.3l.7-2.9-1.8-.4-.7 2.9c-.4-.1-.8-.2-1.2-.3l-2.4-.6-.5 1.9s1.3.3 1.3.3c.7.2.8.7.8 1.1l-.8 3.2c.1 0 .1 0 .2.1l-.2-.1-1.1 4.5c-.1.2-.3.6-.8.4 0 0-1.3-.3-1.3-.3l-.9 2.1 2.3.6c.4.1.9.2 1.3.3l-.7 2.9 1.8.4.7-2.8c.5.1 1 .2 1.5.3l-.7 2.9 1.8.4.7-2.9c3.1.6 5.4.3 6.4-2.4.8-2.2 0-3.5-1.6-4.3 1.1-.3 2-1 2.2-2.4zm-4 5.3c-.6 2.3-4.4 1.1-5.6.8l1-4c1.2.3 5.2.9 4.6 3.2zm.5-5.4c-.5 2.1-3.7 1-4.7.8l.9-3.7c1 .2 4.3.7 3.8 2.9z"
+          fill="white"
+        />
+      </svg>
+    </div>
+  );
+}
+
+function UsdtToken() {
+  return (
+    <div
+      className="flex size-7.5 items-center justify-center rounded-full bg-gradient-to-br from-[#26A17B] via-[#10b981] to-[#059669] text-white shadow-[0_3px_10px_rgba(38,161,123,0.45),inset_0_1px_1px_rgba(255,255,255,0.7)] border border-white/40 transition-transform hover:scale-110"
+      title="Tether USDT"
+    >
+      <svg viewBox="0 0 32 32" fill="none" className="size-4" aria-label="USDT">
+        <path
+          d="M17.9 12.3v-2h6.1V7H8v3.3h6.1v2C7.9 12.6 3 13.9 3 15.5c0 1.6 4.9 2.9 11.1 3.2v7.3h3.8v-7.3c6.2-.3 11.1-1.6 11.1-3.2 0-1.6-4.9-2.9-11.1-3.2zm-1.9 4.6c-5 0-9.2-.8-10-1.9.8-1.1 5-1.9 10-1.9s9.2.8 10 1.9c-.8 1.1-5 1.9-10 1.9z"
+          fill="white"
+        />
+      </svg>
+    </div>
+  );
+}
+
+function KingChessToken() {
+  return (
+    <div
+      className="flex size-7.5 items-center justify-center rounded-full bg-gradient-to-br from-[#7c3aed] via-[#6366f1] to-[#4338ca] text-amber-300 shadow-[0_3px_10px_rgba(124,58,237,0.45),inset_0_1px_1px_rgba(255,255,255,0.7)] border border-amber-300/40 transition-transform hover:scale-110"
+      title="Chess King"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="size-4 text-amber-300"
+        aria-label="King Chess"
+      >
+        <path d="M12 2v4M10 4h4" />
+        <path
+          d="M6.5 8.5C8 9.5 9 10 12 10s4-.5 5.5-1.5c.8 3.5-1 6.5-1.5 8.5h-8C7.5 15 5.7 12 6.5 8.5z"
+          fill="currentColor"
+          fillOpacity="0.25"
+        />
+        <path d="M6 17h12M5 20h14" />
+      </svg>
+    </div>
+  );
+}
+
 export function RewardsBento() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -135,21 +212,89 @@ export function RewardsBento() {
         </div>
       </div>
 
-      {/* ── CARD 2 (1 col): Mystery Vault Drops with Orbiting Circles ── */}
+      {/* ── CARD 2 (1 col): Mystery Vault Drops with 3D Spheric Orbits ── */}
       <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-xs flex flex-col justify-between transition-all hover:border-fg-muted/40 hover:shadow-sm">
-        {/* Dedicated top visual container */}
-        <div className="relative h-44 w-full overflow-hidden bg-inset/30 border-b border-line/40 flex items-center justify-center">
-          <div className="z-10 flex size-10 items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-600 shadow-xs">
-            <Icon name="gift" size={20} />
+        {/* Dedicated top visual container — 3D Spheric Armillary Vault */}
+        <div className="relative h-44 w-full overflow-hidden bg-gradient-to-b from-amber-500/[0.04] via-inset/20 to-inset/40 border-b border-line/40 flex items-center justify-center select-none">
+          {/* Ambient lighting glow */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="size-28 rounded-full bg-amber-400/15 blur-2xl animate-pulse" />
           </div>
-          <OrbitingCircles radius={36} duration={12} iconSize={20} path>
-            <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-xs">💎</span>
-            <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-xs">⚡</span>
-          </OrbitingCircles>
-          <OrbitingCircles radius={58} reverse duration={18} iconSize={20} path>
-            <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-xs">👑</span>
-            <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-xs">🏆</span>
-          </OrbitingCircles>
+
+          {/* 3D Spherical Coordinate Wireframe Arcs (latitude/longitude sphere cues) */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {/* Equatorial ellipse */}
+            <div
+              className="absolute size-36 rounded-full border border-amber-400/20"
+              style={{ transform: "rotateX(70deg)" }}
+            />
+            {/* Meridian dashed ring */}
+            <div
+              className="absolute size-32 rounded-full border border-dashed border-amber-500/25"
+              style={{ transform: "rotateY(75deg)" }}
+            />
+            {/* Tilted longitudinal circle */}
+            <div
+              className="absolute size-28 rounded-full border border-dashed border-line/60"
+              style={{ transform: "rotateX(45deg) rotateY(-35deg)" }}
+            />
+          </div>
+
+          {/* Central 3D Spheric Core with specular highlight, inner shadow & metallic rim */}
+          <div className="relative z-10 flex size-12 items-center justify-center rounded-full shadow-[inset_-4px_-4px_10px_rgba(0,0,0,0.5),inset_2px_2px_6px_rgba(255,255,255,0.8),0_8px_20px_rgba(245,158,11,0.35)] bg-[radial-gradient(circle_at_30%_28%,#ffffff_0%,#fef08a_22%,#f59e0b_58%,#b45309_85%,#78350f_100%)] border border-amber-200/50">
+            <Icon name="gift" size={20} className="text-amber-950 drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]" />
+          </div>
+
+          {/* Outer 3D orbital plane tilted at 64deg — TON and BTC */}
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ perspective: "420px" }}
+          >
+            <div
+              className="pointer-events-auto"
+              style={{ transform: "rotateX(64deg)", transformStyle: "preserve-3d" }}
+            >
+              <OrbitingCircles radius={56} duration={16} iconSize={30} path={false}>
+                <div style={{ transform: "rotateX(-64deg)" }}>
+                  <TonToken />
+                </div>
+                <div style={{ transform: "rotateX(-64deg)" }}>
+                  <BtcToken />
+                </div>
+              </OrbitingCircles>
+            </div>
+          </div>
+
+          {/* Inner 3D orbital plane tilted at opposite -64deg — USDT and KING CHESS */}
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ perspective: "420px" }}
+          >
+            <div
+              className="pointer-events-auto"
+              style={{ transform: "rotateX(-64deg)", transformStyle: "preserve-3d" }}
+            >
+              <OrbitingCircles radius={38} reverse duration={11} iconSize={30} path={false}>
+                <div style={{ transform: "rotateX(64deg)" }}>
+                  <UsdtToken />
+                </div>
+                <div style={{ transform: "rotateX(64deg)" }}>
+                  <KingChessToken />
+                </div>
+              </OrbitingCircles>
+            </div>
+          </div>
+
+          {/* Bottom asset indicators */}
+          <div className="absolute bottom-2 flex items-center gap-1.5 font-mono text-[10px] font-bold text-fg-muted/70 bg-surface/75 px-2.5 py-0.5 rounded-full border border-line/60 backdrop-blur-xs">
+            <span className="text-[#0098EA] flex items-center gap-1"><span className="size-1.5 rounded-full bg-[#0098EA]" />TON</span>
+            <span className="text-line">·</span>
+            <span className="text-[#F7931A] flex items-center gap-1"><span className="size-1.5 rounded-full bg-[#F7931A]" />BTC</span>
+            <span className="text-line">·</span>
+            <span className="text-[#26A17B] flex items-center gap-1"><span className="size-1.5 rounded-full bg-[#26A17B]" />USDT</span>
+            <span className="text-line">·</span>
+            <span className="text-[#7c3aed] flex items-center gap-1"><span className="size-1.5 rounded-full bg-[#7c3aed]" />KING</span>
+          </div>
         </div>
 
         {/* Dedicated bottom content container */}
