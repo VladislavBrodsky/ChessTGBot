@@ -51,6 +51,11 @@ def main():
     parser.add_argument("--post-id", default=None, help="Specific post ID to publish (e.g. 2026-10-12-tg-1)")
     parser.add_argument("--date", default=None, help="Filter date (e.g. 2026-10-12)")
     parser.add_argument("--domain", default="web3chess.online", help="Target landing page domain (default: web3chess.online)")
+    parser.add_argument("--x-batch", action="store_true", help="Generate, QA-validate, and queue today's 3 daily X (Twitter) posts")
+    parser.add_argument("--x-thread", action="store_true", help="Generate, QA-validate, and queue the flagship 5-tweet viral X manifesto thread")
+    parser.add_argument("--x-sniper", action="store_true", help="Generate targeted high-leverage Reply Sniper scripts for top chess & TON accounts")
+    parser.add_argument("--x-status", action="store_true", help="Display status of queued X (Twitter) posts and threads")
+    parser.add_argument("--x-publish", action="store_true", help="Dispatch or dry-run export approved X (Twitter) posts and threads")
 
     args = parser.parse_args()
     orchestrator = ContentEngineOrchestrator(primary_domain=args.domain)
@@ -65,6 +70,41 @@ def main():
             sched = e.get("scheduled_at", "")[11:16] + "Z"
             print(f"{e['id']:<24} {sched:<8} {e.get('kind', ''):<10} {e.get('category', ''):<14} {e.get('status', ''):<12} {issues_count}")
         print()
+
+    elif args.x_status:
+        entries = [
+            e for e in queue.all_entries(day=queue.utcnow().date().isoformat())
+            if e.get("kind") in ("x_post", "x_thread")
+        ]
+        print(f"\n=== X (Twitter) Queue Status ({queue.utcnow().date().isoformat()}) ===")
+        print(f"{'ID':<28} {'Kind':<10} {'Category':<14} {'Status':<10} {'Hook/Topic'}")
+        print("-" * 80)
+        for e in entries:
+            kind = e.get("kind", "")
+            cat = e.get("category", "")
+            status = e.get("status", "")
+            hook = e.get("hook", "") or e.get("topic", "")
+            if len(hook) > 40:
+                hook = hook[:37] + "..."
+            print(f"{e['id']:<28} {kind:<10} {cat:<14} {status:<10} {hook}")
+        print()
+
+    elif args.x_batch:
+        print("\n🚀 Generating X (Twitter) Daily Batch (3 slots: Tactics, Culture, Arena)...")
+        res = orchestrator.generate_x_daily_batch()
+        print("\n✅ Successfully generated and queued X posts:")
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+
+    elif args.x_thread:
+        print("\n🧵 Generating Flagship 5-Tweet Viral Manifesto Thread for X...")
+        res = orchestrator.create_flagship_x_thread()
+        print("\n✅ Successfully generated, QA-validated, and queued X Thread:")
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+
+    elif args.x_sniper:
+        print("\n🎯 Generating High-Leverage Reply Sniper Kit for Top Accounts...")
+        res = orchestrator.generate_x_reply_sniper_kit()
+        print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.run_strategy:
         result = orchestrator.run_strategy_and_audit()
@@ -92,6 +132,15 @@ def main():
         print("\n📰 Staging approved articles to website/src/content/articles/...")
         reports = orchestrator.publisher.stage_all_approved_articles()
         print(json.dumps(reports, indent=2))
+
+    elif args.x_publish:
+        target_day = args.date or queue.utcnow().date().isoformat()
+        mode_str = "LIVE" if not args.dry_run else "DRY-RUN (READY TO POST)"
+        print(f"\n📡 Exporting/Dispatching X content ({mode_str}, date={target_day}, post_id={args.post_id})...")
+        dispatch = orchestrator.publisher.dispatch_x_posts(
+            day=target_day, post_id=args.post_id, dry_run=args.dry_run
+        )
+        print(json.dumps(dispatch, indent=2, ensure_ascii=False))
 
     elif args.publish:
         target_day = args.date or queue.utcnow().date().isoformat()

@@ -1,0 +1,78 @@
+{
+  "slug": "evans-gambit-masterclass-attacking-chess",
+  "title": "Evans Gambit Masterclass: Romantic Attacking Chess",
+  "subtitle": "The immortal gambit that Kasparov used to dismantle grandmasters in under twenty-five moves.",
+  "excerpt": "Sacrifice the b-pawn to rip open lines against the enemy king. The immortal Evans Gambit weapon used by Morphy and Kasparov.",
+  "metaDescription": "Master the Evans Gambit (4.b4 in the Italian Game). Discover romantic attacking principles, piece activity sacrifices, and world championship miniatures.",
+  "category": "Openings",
+  "author": {
+    "name": "Elena Rostova",
+    "role": "Opening Theorist",
+    "avatar": "/avatars/avatar-02.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "5 min read",
+  "takeaways": [
+    "4.b4 deflects Black c5 bishop to gain critical tempos with c3 and d4.",
+    "Rapid piece development and open center files offset the single pawn sacrifice.",
+    "Garry Kasparov famously revived the Evans Gambit against Viswanathan Anand in 1995.",
+    "Black king remains under relentless tactical crossfire throughout the opening phase."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Invented by Captain William Davies Evans in the 1820s, the Evans Gambit (1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4!) represents the pinnacle of romantic attacking chess. By giving up an outer flank pawn, White gains full dominance over the center."
+    },
+    {
+      "type": "heading",
+      "text": "The Anatomical Strategy Behind 4.b4"
+    },
+    {
+      "type": "paragraph",
+      "text": "When Black accepts with 4...Bxb4, White responds with 5.c3, kicking the bishop back while preparing the immediate center break 6.d4. White bishops on c4 and a3 slice across the board, completely paralyzing Black ability to castle smoothly."
+    },
+    {
+      "type": "subheading",
+      "text": "Kasparov Weapon of Choice"
+    },
+    {
+      "type": "paragraph",
+      "text": "Critics claimed modern defensive technique refuted the gambit—until Garry Kasparov crushed world champion Viswanathan Anand with it in 1995 in just 25 moves. When the greatest attacking mind in history trusted the gambit, the chess world took notice."
+    },
+    {
+      "type": "quote",
+      "text": "In the Evans Gambit, White trades a b-pawn for time. And in competitive chess, time is the ultimate currency."
+    },
+    {
+      "type": "heading",
+      "text": "Key Mating Motifs to Master"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ba3 cuts off the f8 square, stranding the black king in the open center indefinitely.",
+        "Qb3 creates an immediate queen-and-bishop battery targeting the sensitive f7 square.",
+        "Re1 pins any defensive black knights on e7 or e4 against the king."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "opening-mastery-tactics",
+    "survive-the-blackburne-shilling-gambit-trap"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Academy Opening Puzzles",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Explore the Academy",
+    "href": "/academy"
+  }
+}

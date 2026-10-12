@@ -26,6 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/academy`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITE.url}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE.url}/fair-play`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${SITE.url}/rules`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
     { url: `${SITE.url}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${SITE.url}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     ...posts,

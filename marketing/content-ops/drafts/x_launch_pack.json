@@ -1,0 +1,124 @@
+{
+  "profile_funnel": {
+    "display_name": "Web3Chess | Cerebral Speed Chess",
+    "handle": "@web3chess",
+    "bio": "Speed chess for minds. Anti-brainrot PvP with sub-100ms sync on Telegram & Web. Daily $500 USDT Arena drops (18+). Solve, play & master ♟️👇",
+    "location": "Global / Telegram & Web",
+    "website_link": "https://web3chess.online",
+    "bot_link": "https://t.me/chess_matbot/Web3Chess",
+    "banner_specs": {
+      "dimensions": "1500x500",
+      "background": "#000000",
+      "headline": "TAP-TO-EARN WAS FOR BOTS. REAL PVP IS FOR MINDS.",
+      "subhead": "Synchronous Speed Chess on Telegram & Web • Sub-100ms Sync",
+      "visual_anchor": "3D Violet Rook sculpture with tactile Obsidian grid"
+    }
+  },
+  "weekly_posts": [
+    {
+      "day": "Day 1 (Monday)",
+      "pillar": "Tactics / Bookmark Magnet",
+      "hook": "White to move. One knight move ends the game on the spot.",
+      "body": "Black's king is boxed in on h8 by its own rook and pawns.\n\nWhat is White's only winning move? ♟️",
+      "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+      "solution": ["Nf7#"],
+      "claim": "smothered_mate",
+      "docked_reply": "Solution: 1. Nf7# (Smothered Mate).\nThe knight delivers check, and the king cannot escape because g8, g7, and h7 are blocked.\n\nPractise 50+ master patterns in our free Academy:\nhttps://web3chess.online/academy"
+    },
+    {
+      "day": "Day 2 (Tuesday)",
+      "pillar": "Chess Culture / Scramble Drama",
+      "hook": "1,200 USDT on the board. 4 seconds on the clock.",
+      "body": "Black has a +9 advantage and premoves into a back-rank mate.\n\nThe clock does not care about your theoretical rating. Under 5 seconds, calculation collapses into survival.",
+      "docked_reply": "Speed chess is 20% opening theory, 80% nervous system control.\n\nChallenge a friend to a 3-minute blitz duel in Telegram:\nhttps://t.me/chess_matbot/Web3Chess"
+    },
+    {
+      "day": "Day 3 (Wednesday)",
+      "pillar": "Tactics / Endgame Precision",
+      "hook": "White to move. Most players trade rooks on d8.",
+      "body": "A grandmaster sees the deflection in 2 seconds.\n\nDrop your move below before reading the solution. 👇",
+      "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+      "solution": ["Ra8#"],
+      "claim": "back_rank_mate",
+      "docked_reply": "Solution: 1. Ra8#.\nSimple, brutal, and missed thousands of times every day in speed blitz. Always check your luft before entering an endgame.\n\nSharpen your vision on https://web3chess.online"
+    },
+    {
+      "day": "Day 4 (Thursday)",
+      "pillar": "Openings / Blitz Trap Punishment",
+      "hook": "Stop fearing the Stafford Gambit (1.e4 e5 2.Nf3 Nf6 3.Nxe5 Nc6).",
+      "body": "Amateur players hope you fall for cheap traps on f2.\nAccept the knight, play 5.d3, and Black has zero compensation for the pawn.\n\nPunish trick openings with basic fundamentals.",
+      "docked_reply": "Read the complete opening refutation guide:\nhttps://web3chess.online/blog"
+    },
+    {
+      "day": "Day 5 (Friday)",
+      "pillar": "Product / Arena Vault FOMO",
+      "hook": "The 20:00 UTC Arena Vault opens in 15 minutes.",
+      "body": "$500 Prize Vault. Once the round timer starts, brackets lock.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
+      "docked_reply": "Enter the arena lobby inside Telegram:\nhttps://t.me/chess_matbot/Web3Chess?startapp=arena"
+    },
+    {
+      "day": "Day 6 (Saturday)",
+      "pillar": "Tactics / Pin & Royal Fork",
+      "hook": "White to move. The Black queen and king are aligned on the same diagonal.",
+      "body": "One move wins decisive material.\n\nCan you spot it in under 10 seconds?",
+      "docked_reply": "Play free AI practice matches to build tactical instincts:\nhttps://web3chess.online"
+    },
+    {
+      "day": "Day 7 (Sunday)",
+      "pillar": "Product Vision / Telegram Architecture",
+      "hook": "Why did we build speed chess as a Telegram Mini App?",
+      "body": "Because opening a desktop tab, logging into an email, and setting up a match takes 3 minutes.\nIn Telegram, challenging your group chat takes 1 tap.\n\nNo app store downloads. No friction. Pure speed.",
+      "docked_reply": "Experience instant Telegram speed chess:\nhttps://t.me/chess_matbot/Web3Chess"
+    }
+  ],
+  "viral_threads": [
+    {
+      "id": "thread-1-death-of-tap-to-earn",
+      "title": "The Death of Tap-to-Earn: Why Intellectual Speed Chess is Taking Over Telegram",
+      "tweets": [
+        "1/5 Tap-to-earn was an illusion.\n\nMillions clicked digital coins for months, only to receive dust tokens and inflation.\n\nThe next phase of Web3 gaming is not clicking — it is intellectual mastery and skill-based PvP. Here is why speed chess is taking over: 🧵",
+        "2/5 In classical crypto games, token emissions dilute value.\n\nIn pure speed chess, value is zero-sum and skill-gated:\n• No bots running scripts\n• No fake grinding loops\n• Every victory is calculated under a 3-minute clock\n\nRating cannot be bought.",
+        "3/5 The real bottleneck on Telegram wasn't interest — it was latency.\n\nClassical Web3 chess forced on-chain transactions per move, destroying blitz flow.\n\nWe solved this with hybrid architecture:\n• Sub-100ms state updates via WebSockets\n• Instant matchmaking in Telegram Bot API 8.0",
+        "4/5 For adult players, synchronized liquidity beats random queues.\n\nWe run 4 daily global Arena Windows (02:00, 08:00, 14:00, 20:00 UTC).\nTransparent pot settlement: 95% winner payout, 3% platform fee, 2% referral pool.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
+        "5/5 Whether you want free daily grandmaster tactical drills or high-stakes blitz arenas, the board is waiting.\n\nPlay free on web or launch inside Telegram in one tap:\n\nhttps://web3chess.online"
+      ]
+    },
+    {
+      "id": "thread-2-psychology-of-speed-chess",
+      "title": "3 Psychological Traps That Destroy 90% of Blitz Players",
+      "tweets": [
+        "1/5 You don't lose blitz games because your opponent calculated further than you.\n\nYou lose because your nervous system hijacked your decision-making under 15 seconds.\n\nHere are 3 psychological traps that destroy 90% of speed chess players (and how to fix them): 🧵",
+        "2/5 Trap 1: The Premove Panic.\n\nWhen the clock drops below 5 seconds, players premove hope checks instead of solid defensive moves.\n\nRule: Never premove when your king has no luft. One discovered check ends the game instantly.",
+        "3/5 Trap 2: Playing the Material, Not the Clock.\n\nBeing up a rook in blitz is meaningless if you have 3 seconds and your opponent has 20.\n\nSimplify the position. Every capture and trade bleeds clock. When ahead on time, create complications; when ahead on material, trade pieces immediately.",
+        "4/5 Trap 3: Ghost Threats.\n\nAmateur players spend 10 precious seconds reacting to moves that do not threaten anything.\n\nAsk one question: 'What is their check, capture, or threat?' If none exists, advance your own plan without flinching.",
+        "5/5 Master these habits by reviewing your games move by move in our free Academy.\n\nStart your next blitz match now on web or Telegram:\n\nhttps://web3chess.online"
+      ]
+    }
+  ],
+  "reply_sniper_kit": [
+    {
+      "account": "Hikaru Nakamura",
+      "handle": "@Hikaru",
+      "context": "Post-match blitz review or stream recap",
+      "comment": "When calculation drops below 5 seconds, positional advantage stops existing. In bullet, the player who creates dynamic tactical complications wins 80% of scramble games."
+    },
+    {
+      "account": "GothamChess (Levy Rozman)",
+      "handle": "@GothamChess",
+      "context": "Blunder recap or 'guess the elo' post",
+      "comment": "The most dangerous illusion in amateur blitz is thinking you are attacking when your king has no luft. Back-rank checkmates never happen because of bad luck; they happen because players forget air."
+    },
+    {
+      "account": "TON Blockchain",
+      "handle": "@ton_blockchain",
+      "context": "Telegram Mini Apps or Web3 gaming announcement",
+      "comment": "Tap-to-earn proved Telegram's distribution power, but skill-based synchronous PvP is what proves long-term user retention. Sub-100ms chess sync inside a Bot API 8.0 Mini App is a game changer for real gaming."
+    },
+    {
+      "account": "Magnus Carlsen",
+      "handle": "@MagnusCarlsen",
+      "context": "Speed chess or freestyle chess discussion",
+      "comment": "Intuition in time scrambles is just pattern recognition compressed into subconscious reflex. The clock tests instinct more than raw calculation."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "slug": "why-blitz-is-more-addictive-than-classical-chess",
+  "title": "Why Blitz Chess Is More Addictive Than Classical",
+  "subtitle": "The neuroscience of fast chess: 3-minute dopamine loops, intuitive pattern recognition, and the decline of 4-hour games.",
+  "excerpt": "The neuroscience of speed chess: 3-minute dopamine loops, intuitive pattern recognition, and why classical 4-hour games are fading among modern players.",
+  "metaDescription": "Explore the neuroscience of blitz chess. Learn why 3-minute speed chess triggers dopamine loops, intuitive System 1 thinking, and rapid learning.",
+  "category": "Chess Culture",
+  "author": {
+    "name": "Viktor Vance",
+    "role": "Speed Chess Strategist",
+    "avatar": "/avatars/avatar-03.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "3-minute blitz matches match the high-frequency feedback loops of modern digital media.",
+    "Speed chess stimulates intuitive System 1 pattern matching rather than slow analytical calculation.",
+    "Instant rematch mechanics feed competitive drive and rapid iterative tactical learning.",
+    "Telegram Mini Apps allow grandmaster-grade competition to take place anywhere within seconds."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Classical chess is a test of deep calculation and philosophical stamina, often lasting four to six hours. But for the vast majority of players in 2026, classical chess has been completely overtaken by 3-minute blitz and 1-minute bullet. Why?"
+    },
+    {
+      "type": "heading",
+      "text": "The 180-Second Dopamine Loop"
+    },
+    {
+      "type": "paragraph",
+      "text": "A blitz game delivers a full narrative arc—opening tension, middlegame complications, and endgame scrambles—in three minutes. A win delivers an immediate burst of dopamine, and a loss produces instant urge to click rematch and fix the error."
+    },
+    {
+      "type": "subheading",
+      "text": "Intuition (System 1) vs Calculation (System 2)"
+    },
+    {
+      "type": "paragraph",
+      "text": "Psychologist Daniel Kahneman demonstrated that human brains use two systems of thought. Classical chess uses slow, grueling System 2 analysis. Blitz forces players into intuitive System 1 pattern recognition, where thousands of hours of puzzle practice flash across the board automatically."
+    },
+    {
+      "type": "quote",
+      "text": "Blitz is jazz; classical is classical symphony. Both are art, but blitz is the pulse of the digital era."
+    },
+    {
+      "type": "heading",
+      "text": "Why Blitz Accelerates Improvement"
+    },
+    {
+      "type": "list",
+      "items": [
+        "High Volume: Play twenty games in one hour to experience twenty distinct tactical middlegame positions.",
+        "Opening Experimentation: Test new gambits (like the Evans or Smith-Morra) without risking four hours of play.",
+        "Stress Inoculation: Develop supreme emotional composure under high-pressure clock countdowns."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "the-3-minute-blitz-blueprint-tactics-time-management",
+    "digital-clock-psychology-flagging-vs-increment-in-online-blitz"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Fast Arena",
+      "url": "https://web3chess.online/how-it-works"
+    }
+  ],
+  "cta": {
+    "label": "Play Live Blitz Now",
+    "href": "/play"
+  }
+}

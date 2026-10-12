@@ -43,3 +43,26 @@ class QaComplianceAgent:
             "issues": result["issues"],
             "gate_summary": "Passed all deterministic Article gates" if result["passed"] else f"Failed with {len(result['issues'])} issues",
         }
+
+    def inspect_x_post(
+        self, post: Dict[str, Any], published_corpus: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """Runs deterministic gates for single X (Twitter) posts."""
+        result = qa.check_x_post(post, corpus=published_corpus)
+        return {
+            "passed": result["passed"],
+            "issues": result["issues"],
+            "gate_summary": "Passed all deterministic X post gates" if result["passed"] else f"Failed with {len(result['issues'])} issues",
+        }
+
+    def inspect_x_thread(
+        self, thread: Dict[str, Any], published_corpus: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """Runs deterministic gates for multi-tweet X (Twitter) threads."""
+        result = qa.check_x_thread(thread, corpus=published_corpus)
+        return {
+            "passed": result["passed"],
+            "issues": result["issues"],
+            "gate_summary": "Passed all deterministic X thread gates" if result["passed"] else f"Failed with {len(result['issues'])} issues",
+        }
+

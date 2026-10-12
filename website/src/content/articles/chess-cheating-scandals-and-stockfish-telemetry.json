@@ -1,0 +1,78 @@
+{
+  "slug": "chess-cheating-scandals-and-stockfish-telemetry",
+  "title": "Chess Anti-Cheat Exposed: How Stockfish Catches Bots",
+  "subtitle": "A technical look at centipawn loss curves, move latency variance, and deterministic server validation.",
+  "excerpt": "Behind the scenes of modern chess cheat detection: centipawn loss, move latency clustering, neural engine correlation, and tamper-proof servers.",
+  "metaDescription": "Discover how modern chess anti-cheat systems detect engine assistance. Learn about centipawn loss, move latency variance, Stockfish telemetry, and fair play.",
+  "category": "Chess News",
+  "author": {
+    "name": "Web3Chess Research",
+    "role": "Game Integrity & Telemetry",
+    "avatar": "/avatars/avatar-04.jpg",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "5 min read",
+  "takeaways": [
+    "Cheat detection evaluates statistical centipawn loss (ACPL) across complex tactical branches.",
+    "Latency variance analysis spots unnatural delays indicative of second-screen engine entry.",
+    "Server-side deterministic validation guarantees no client-side move modification or clock hacks.",
+    "Automated pot escrow guarantees refunds to players if opponent engine assistance is verified."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "From over-the-board scandals to online tournament controversies, chess cheating is the single biggest threat to competitive integrity. How do modern platforms separate brilliant human intuition from unauthorized Stockfish 16 engine assistance?"
+    },
+    {
+      "type": "heading",
+      "text": "The Mathematics of Centipawn Loss"
+    },
+    {
+      "type": "paragraph",
+      "text": "Anti-cheat engines audit every match using Average Centipawn Loss (ACPL). A grandmaster might play an incredible game with an ACPL of 15 to 20 in complex tactical positions. A player playing at 2 or 3 ACPL over 40 complex moves exhibits statistical correlation that human calculation cannot reproduce."
+    },
+    {
+      "type": "subheading",
+      "text": "Move Latency Clustering"
+    },
+    {
+      "type": "paragraph",
+      "text": "Humans move fast in obvious recaptures and slow down when calculating deep complications. Engine cheaters often display flat latency distributions—taking 3.5 seconds on every single ply, whether it is an automatic pawn recapture or a 7-ply queen sacrifice."
+    },
+    {
+      "type": "quote",
+      "text": "Fair play in competitive chess is not about subjective accusations; it is about rigorous mathematical telemetry verified by server-side engines."
+    },
+    {
+      "type": "heading",
+      "text": "Web3Chess Integrity Architecture"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Deterministic Validation: Every ply is validated on authoritative backend servers before execution.",
+        "Tamper-Proof Clocks: Server-side monotonic timestamps prevent client-side time manipulation.",
+        "Smart Escrow Security: Suspected foul play triggers instant stake freezes and administrative review."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "fair-play-in-web3-chess",
+    "synchronous-arena-matchmaking-vs-stale-queues"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Fair Play Charter",
+      "url": "https://web3chess.online/fair-play"
+    }
+  ],
+  "cta": {
+    "label": "Read Fair Play Rules",
+    "href": "/fair-play"
+  }
+}

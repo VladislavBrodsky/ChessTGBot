@@ -1,0 +1,78 @@
+{
+  "slug": "flagging-psychology-how-to-win-with-3-seconds-left",
+  "title": "Flagging Psychology: How to Win with 3 Seconds Left",
+  "subtitle": "The dark art of the time scramble: mouse mechanics, king activity, checking cascades, and emotional endurance.",
+  "excerpt": "Master the adrenaline-fueled art of the time scramble. Mouse speed, checking tactics, piece tossing, and psychological composure in bullet duels.",
+  "metaDescription": "Master blitz and bullet time scrambles. Learn flagging techniques, king activation, premove tactics, and psychological composure when clocks hit 3 seconds.",
+  "category": "Tactics",
+  "author": {
+    "name": "Grandmaster Morphy",
+    "role": "Tactical Analyst",
+    "avatar": "/avatars/avatar-01.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "In a zero-increment blitz scramble, clock seconds are more valuable than queens.",
+    "Checking moves are king: a player under check cannot execute their pre-planned moves.",
+    "Keep your pieces clustered near the opponent side to minimize digital cursor drag.",
+    "Never resign with time remaining—scrambles produce legendary unexpected turnarounds."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "The digital clock hits 0:05. Your opponent has three seconds. Your hands sweat, your heart hammers, and chess stops being about strategy—it becomes a high-speed duel of reflexes and psychological composure."
+    },
+    {
+      "type": "heading",
+      "text": "The Geometry of Cursor Drag"
+    },
+    {
+      "type": "paragraph",
+      "text": "Top speed chess grandmasters know that dragging a piece across 8 ranks takes twice as long as moving one square. In a time scramble, shuffle pieces within short 1-square increments or position your pieces on the opponent side of the board."
+    },
+    {
+      "type": "subheading",
+      "text": "The Checking Cascade"
+    },
+    {
+      "type": "paragraph",
+      "text": "If your opponent has 2 seconds left, giving non-stop checks—even if the checking piece is eventually captured—forces them to process the threat, locate their king, and execute an emergency escape move, burning their remaining milliseconds."
+    },
+    {
+      "type": "quote",
+      "text": "Time is a piece on the board. When your opponent runs out of time, their extra queen ceases to exist."
+    },
+    {
+      "type": "heading",
+      "text": "Rules for Surviving Time Scrambles"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Pre-defend key squares so enemy checks do not force your king across the board.",
+        "Never premove recaptures blindly; an intermediate check will invalidate your queue.",
+        "Trust your intuition—calculating three plies ahead when you have two seconds is suicidal."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "digital-clock-psychology-flagging-vs-increment-in-online-blitz",
+    "the-3-minute-blitz-blueprint-tactics-time-management"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Fast Arena",
+      "url": "https://web3chess.online/how-it-works"
+    }
+  ],
+  "cta": {
+    "label": "Enter Live Arena",
+    "href": "/play"
+  }
+}

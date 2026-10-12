@@ -1,0 +1,78 @@
+{
+  "slug": "the-5-second-pawn-endgame-rules-every-player-needs",
+  "title": "5-Second Pawn Endgame Rules: Never Throw a Win Again",
+  "subtitle": "The Rule of the Square, key squares, and opposition: convert winning pawn endgames in under five seconds without calculating.",
+  "excerpt": "Master the Rule of the Square, key squares, and the opposition. How to convert winning pawn endgames in under five seconds without calculating.",
+  "metaDescription": "Master critical pawn endgame rules in chess. Learn the Rule of the Square, key squares, and opposition to convert winning endgames instantly in blitz duels.",
+  "category": "Academy",
+  "author": {
+    "name": "Grandmaster Morphy",
+    "role": "Tactical Analyst",
+    "avatar": "/avatars/avatar-01.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "5 min read",
+  "takeaways": [
+    "The Rule of the Square determines whether a king can catch an advancing pawn instantly.",
+    "Holding the direct opposition forces the enemy king to surrender vital penetration squares.",
+    "Key squares in front of passed pawns guarantee promotion regardless of whose turn it is.",
+    "Pattern recognition in endgames prevents tragic blunders during mutual blitz time pressure."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Nothing hurts more than outplaying an opponent for forty moves, reaching a winning king-and-pawn endgame, and accidentally stalemating or blundering a draw because your clock had five seconds left. Endgame rules save points."
+    },
+    {
+      "type": "heading",
+      "text": "The Rule of the Square"
+    },
+    {
+      "type": "paragraph",
+      "text": "Do not count squares one by one under time pressure. Visualize a square whose corners are the pawn, the promotion square, and an equal distance diagonally. If the enemy king can step inside this square on their move, they catch the pawn. If not, the pawn promotes uncontested."
+    },
+    {
+      "type": "subheading",
+      "text": "Seizing the Direct Opposition"
+    },
+    {
+      "type": "paragraph",
+      "text": "When two kings face each other on the same rank or file separated by a single square, the player who does not have to move holds the opposition. The player forced to move must step aside, allowing the opponent king to shoulder past."
+    },
+    {
+      "type": "quote",
+      "text": "Endgames are not about calculation; they are about geometry. Know the geometry, and the endgame converts itself."
+    },
+    {
+      "type": "heading",
+      "text": "The 3 Golden Endgame Rules"
+    },
+    {
+      "type": "list",
+      "items": [
+        "King in Front of the Pawn: Always place your king ahead of your passed pawn, never behind it.",
+        "Pawn on 6th Rank: If your king reaches the 6th rank in front of your pawn, promotion is 100% forced.",
+        "Watch for Stalemate Corners: In rook-pawn endgames, never trap the enemy king if they have zero moves."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "the-3-minute-blitz-blueprint-tactics-time-management",
+    "elo-xp-progression-guide"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Tactics Academy",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Train Endgame Tactics",
+    "href": "/academy"
+  }
+}

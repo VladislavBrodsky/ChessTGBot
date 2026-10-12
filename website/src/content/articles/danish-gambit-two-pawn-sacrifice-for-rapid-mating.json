@@ -1,0 +1,78 @@
+{
+  "slug": "danish-gambit-two-pawn-sacrifice-for-rapid-mating",
+  "title": "Danish Gambit: Two-Pawn Sacrifice for Fast Checkmate",
+  "subtitle": "Sacrifice two central pawns on move 3 to create blistering bishop diagonals aimed directly at Black castled king.",
+  "excerpt": "Give up two central pawns to activate dual laser bishops pointing straight at Black kingside. How to execute the deadly Danish Gambit.",
+  "metaDescription": "Master the Danish Gambit (1.e4 e5 2.d4 exd4 3.c3 dxc3 4.Bc4 cxb2 5.Bxb2). Learn two-pawn sacrifices for rapid kingside mating attacks in blitz.",
+  "category": "Openings",
+  "author": {
+    "name": "Elena Rostova",
+    "role": "Opening Theorist",
+    "avatar": "/avatars/avatar-02.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "Sacrificing both the d4 and c3 pawns allows bishops to settle on c4 and b2 by move 5.",
+    "Dual bishop batteries slice across g7 and f7 with overwhelming kingside pressure.",
+    "Black must walk a razor-thin defensive path to survive past move fifteen.",
+    "An ideal high-octane attacking weapon for blitz and bullet speed chess formats."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "What is more dangerous than sacrificing one pawn in the opening? Sacrificing two. The Danish Gambit (1.e4 e5 2.d4 exd4 3.c3 dxc3 4.Bc4 cxb2 5.Bxb2!) offers Black two full pawns in exchange for dual laser bishops that terrorize Black king."
+    },
+    {
+      "type": "heading",
+      "text": "The Power of the Dual Bishop Battery"
+    },
+    {
+      "type": "paragraph",
+      "text": "By move 5, White has two active bishops trained directly at Black kingside, while Black has moved only pawns. If Black attempts casual development like 5...Nf6, White immediately strikes with 6.e5!, kicking the knight and opening lines for a rapid checkmate."
+    },
+    {
+      "type": "subheading",
+      "text": "The Schlechter Defense and Modern Responses"
+    },
+    {
+      "type": "paragraph",
+      "text": "The most reputable antidote for Black is Carl Schlechter defense: giving back material with 5...d5! To neutralize White bishop pair. However, in rapid online blitz duels, very few players know this counter-intuitive defensive response."
+    },
+    {
+      "type": "quote",
+      "text": "The Danish Gambit is pure romantic chess: pieces over pawns, time over material, and checkmate over everything else."
+    },
+    {
+      "type": "heading",
+      "text": "Attacking Rules of Thumb"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Develop Nf3 and Nc3 quickly to support central e5 breaks against Black king.",
+        "Never trade pieces unless it leads directly to an unstoppable checkmating attack.",
+        "Look for sacrifices on f7 and g7 to completely strip Black king of pawn shelter."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "opening-mastery-tactics",
+    "survive-the-blackburne-shilling-gambit-trap"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Opening Guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Solve Tactics Puzzles",
+    "href": "/academy"
+  }
+}

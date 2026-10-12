@@ -98,6 +98,10 @@ export const home = {
             label: "Chess Strategy Guides",
             href: "/blog",
           },
+          {
+            label: "Chess Rules Guide",
+            href: "/rules",
+          },
         ],
       },
       {

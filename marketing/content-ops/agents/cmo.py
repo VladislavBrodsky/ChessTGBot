@@ -25,6 +25,10 @@ class StrategicDirective:
         "first_game_conversion": ">= 18.0%",
         "daily_active_streakers": ">= 25.0%",
         "wager_rules_completion": "100% compliant",
+        "x_bookmark_rate": ">= 2.5%",
+        "x_reply_rate": ">= 1.5%",
+        "x_profile_click_rate": ">= 2.0%",
+        "x_docked_link_compliance": "100%",
     })
     viral_hooks: List[Dict[str, str]] = field(default_factory=lambda: [
         {
@@ -51,6 +55,16 @@ class StrategicDirective:
             "id": "VH5_STREAK_LOSS_AVERSION",
             "formula": "Loss Aversion: 'Your 7-day Tactician streak expires at midnight UTC. Protect your status.'",
             "pillar": "Product"
+        },
+        {
+            "id": "VH6_X_BOOKMARK_MAGNET",
+            "formula": "Tactical Calculation: 'White to move. Every natural check loses. Find the only winning move.'",
+            "pillar": "Tactics"
+        },
+        {
+            "id": "VH7_X_TECH_MANIFESTO",
+            "formula": "Sub-100ms Tech Architecture: 'Why tap-to-earn died and how real-time WebSockets powered skill gaming.'",
+            "pillar": "Product"
         }
     ])
 
@@ -76,6 +90,8 @@ class CmoAgent:
                 "1-Tap frictionless CTA: Direct deep link to Telegram Mini App or Blog on web3chess.online.",
                 "Zero deceptive hype: Authentic FOMO comes from real arena clocks, tournament cutoffs, and streak limits.",
                 "Compliance non-negotiable: 18+ wager disclosures whenever stakes are mentioned.",
+                "X Docked Link Law: Zero outbound links in root tweets; links belong in Reply #1 or final thread CTA to preserve 2x algorithmic reach.",
+                "X Format Hygiene: Max 1 hashtag, max 2 emojis, clean double-spacing between thoughts.",
             ],
         }
 

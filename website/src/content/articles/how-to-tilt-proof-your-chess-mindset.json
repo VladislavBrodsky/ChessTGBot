@@ -1,0 +1,78 @@
+{
+  "slug": "how-to-tilt-proof-your-chess-mindset",
+  "title": "How to Stop Tilting in Chess: Grandmaster Psychology",
+  "subtitle": "Understand the neurochemistry of rating loss, revenge queuing, and the psychological habits of elite competitors.",
+  "excerpt": "Discover why chess tilt causes 100+ point rating drops, the biological triggers of revenge gaming, and proven routines to stay calm under pressure.",
+  "metaDescription": "Stop losing rating points to chess tilt. Discover psychological triggers, the Rule of Two stop-loss, and emotional reset routines for online blitz.",
+  "category": "Chess Culture",
+  "author": {
+    "name": "Viktor Vance",
+    "role": "Speed Chess Strategist",
+    "avatar": "/avatars/avatar-03.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "5 min read",
+  "takeaways": [
+    "Tilt is triggered by an amygdala hijack that impairs executive calculation in the prefrontal cortex.",
+    "Revenge matchmaking after a bitter flag loss is the number one cause of 100-point rating crashes.",
+    "The Rule of Two: pausing immediately after two consecutive losses preserves both rating and bankroll.",
+    "Detaching personal ego from digital ratings transforms losses into high-yield learning data."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "You are completely winning. You are up a queen and a rook with ten seconds on the clock. Suddenly, you hang back-rank mate or get flagged with 0.1 seconds remaining. Your heart spikes, your vision narrows, and you aggressively hit rematch to win your points back. Welcome to tilt."
+    },
+    {
+      "type": "heading",
+      "text": "The Science of the Chess Brain Under Threat"
+    },
+    {
+      "type": "paragraph",
+      "text": "When you suffer an agonizing blunder, your brain interprets the emotional shock as a threat. The amygdala activates, flooding your system with cortisol and adrenaline. While useful for escaping predators, adrenaline ruins slow, patient tactical calculation."
+    },
+    {
+      "type": "subheading",
+      "text": "The Cost of Revenge Matchmaking"
+    },
+    {
+      "type": "paragraph",
+      "text": "In a tilted state, players move within fractions of a second, play unsound gambits without preparation, and blame connection lag or opponent luck. Within sixty minutes, a 1900-rated blitz player can plummet to 1750."
+    },
+    {
+      "type": "quote",
+      "text": "The difference between a candidate master and a casual enthusiast is not how they play when inspired, but how quickly they stop playing when tilted."
+    },
+    {
+      "type": "heading",
+      "text": "3 Golden Rules to Tilt-Proof Your Game"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Enforce the 2-Loss Stop Rule: Walk away from the board after two consecutive frustrating defeats.",
+        "The 60-Second Physical Reset: Stand up, take five deep diaphragmatic breaths, and drink water before re-queuing.",
+        "Review Before Playing: Force yourself to review the critical blunder in the engine analysis before starting a new duel."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "digital-clock-psychology-flagging-vs-increment-in-online-blitz",
+    "bankroll-management-for-competitive-chess-wagers"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Academy",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Reset with Free Puzzles",
+    "href": "/academy"
+  }
+}

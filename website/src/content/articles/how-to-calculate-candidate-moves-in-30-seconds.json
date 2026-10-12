@@ -1,0 +1,78 @@
+{
+  "slug": "how-to-calculate-candidate-moves-in-30-seconds",
+  "title": "Calculate Candidate Moves in 30s: Kotov Method Guide",
+  "subtitle": "Stop aimlessly scanning the board. Master Alexander Kotov structured calculation tree for lightning-fast tactical vision.",
+  "excerpt": "Stop wandering from move to move. Learn Alexander Kotov's structured calculation tree to spot checks, captures, and threats in under 30 seconds.",
+  "metaDescription": "Learn how grandmasters calculate candidate moves fast using Alexander Kotov calculation tree method. Spot checks, captures, and threats in 30 seconds.",
+  "category": "Tactics",
+  "author": {
+    "name": "Grandmaster Morphy",
+    "role": "Tactical Analyst",
+    "avatar": "/avatars/avatar-01.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "5 min read",
+  "takeaways": [
+    "Scanning C-C-T (Checks, Captures, Threats) filters candidate moves in under five seconds.",
+    "Kotov Tree Method: calculate each candidate branch deeply once rather than jumping erratically.",
+    "Look for loose, undefended pieces—every tactical combination begins with an unprotected target.",
+    "Disciplined calculation prevents time scrambles and eliminates careless blunder spirals."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "In his landmark 1971 classic \"Think Like a Grandmaster\", Soviet grandmaster Alexander Kotov revealed the greatest weakness of amateur chess players: calculation wandering. A player looks at move A, jumps to move B, worries about move C, and plays move A with zero seconds left on the clock."
+    },
+    {
+      "type": "heading",
+      "text": "Step 1: Identify All Candidate Moves First"
+    },
+    {
+      "type": "paragraph",
+      "text": "Before calculating a single variation, pause for five seconds and list 2 to 4 candidate moves. Look exclusively for forcing moves: Checks, Captures, and direct Threats (C-C-T). Forcing moves limit the opponent replies."
+    },
+    {
+      "type": "subheading",
+      "text": "Step 2: The Kotov Tree of Analysis"
+    },
+    {
+      "type": "paragraph",
+      "text": "Treat your calculation like a tree trunk with branches. Pick candidate move 1 and calculate to the end of the forcing sequence. Evaluate the resulting position. Then move to candidate move 2. Never return to move 1 unless you uncover an unexpected tactical flaw."
+    },
+    {
+      "type": "quote",
+      "text": "Tactics flow from a superior position. But spotting the tactic requires looking at the moves your intuition initially rejected."
+    },
+    {
+      "type": "heading",
+      "text": "Practical 30-Second Routine for Blitz"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Scan for LPDO: Loose Pieces Drop Off. Spot any undefended enemy piece on the board.",
+        "Check the King Geometry: Are enemy king and queen on the same diagonal (pin) or rank (skewer)?",
+        "Commit Decisively: Once you calculate a sound variation, play it with confidence—hesitation drains clocks."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "the-art-of-the-in-between-move-zwischenzug",
+    "the-3-minute-blitz-blueprint-tactics-time-management"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Academy Tactics",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Sharpen Your Calculation",
+    "href": "/academy"
+  }
+}

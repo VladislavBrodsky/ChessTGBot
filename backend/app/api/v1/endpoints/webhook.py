@@ -45,3 +45,61 @@ async def telegram_webhook(request: Request):
     except Exception as e:
         logger.error(f"Error processing webhook: {e}")
         raise HTTPException(status_code=500, detail="Failed to process update")
+
+
+@router.get("/x")
+async def x_activity_crc(crc_token: str):
+    """
+    Handle X Activity API Challenge-Response Checks (CRC).
+    X sends a GET request with ?crc_token=... to verify webhook ownership.
+    Must return HTTP 200 with JSON { "response_token": "sha256=" + base64(hmac_sha256(crc_token, secret)) }
+    """
+    import base64
+    import hashlib
+    import hmac
+    import os
+
+    consumer_secret = os.environ.get("X_CONSUMER_SECRET", "") or getattr(settings, "X_CONSUMER_SECRET", "")
+    if not consumer_secret:
+        logger.warning("X_CONSUMER_SECRET not set, returning empty response_token")
+        return {"response_token": ""}
+
+    mac = hmac.new(
+        consumer_secret.encode("utf-8"),
+        crc_token.encode("utf-8"),
+        hashlib.sha256,
+    )
+    token = f"sha256={base64.b64encode(mac.digest()).decode('utf-8')}"
+    return {"response_token": token}
+
+
+@router.post("/x")
+async def x_activity_webhook(request: Request):
+    """
+    Handle real-time incoming X Activity events (post.reply.create, post.mention.create, dm.received, etc.).
+    Verifies x-twitter-webhooks-signature header against raw body.
+    """
+    import base64
+    import hashlib
+    import hmac
+    import os
+
+    consumer_secret = os.environ.get("X_CONSUMER_SECRET", "") or getattr(settings, "X_CONSUMER_SECRET", "")
+    signature = request.headers.get("x-twitter-webhooks-signature", "")
+    body_bytes = await request.body()
+
+    if consumer_secret and signature:
+        mac = hmac.new(consumer_secret.encode("utf-8"), body_bytes, hashlib.sha256)
+        expected = f"sha256={base64.b64encode(mac.digest()).decode('utf-8')}"
+        if not secrets.compare_digest(signature, expected):
+            logger.warning("Rejected X webhook with invalid HMAC signature")
+            raise HTTPException(status_code=403, detail="Invalid webhook signature")
+
+    try:
+        data = await request.json()
+        logger.info(f"Received X Activity event keys: {list(data.keys())}")
+        return {"status": "ok"}
+    except Exception as e:
+        logger.error(f"Error processing X Activity webhook: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process event")
+

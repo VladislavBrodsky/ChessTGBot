@@ -1,0 +1,78 @@
+{
+  "slug": "the-fried-liver-attack-punish-weak-f7-pawns",
+  "title": "Fried Liver Attack: Punish Weak f7 Pawns in Blitz",
+  "subtitle": "The legendary knight sacrifice on f7 that tears the black king from safety and creates immediate 15-move mating nets.",
+  "excerpt": "Master the aggressive Fried Liver Attack. Learn the knight sacrifice on f7, king dragging techniques, and how to punish unprepared opponents in blitz.",
+  "metaDescription": "Master the Fried Liver Attack in chess. Learn the 4.Ng5 and 5.Nxf7 knight sacrifice to dismantle the Two Knights Defense in online blitz duels.",
+  "category": "Openings",
+  "author": {
+    "name": "Elena Rostova",
+    "role": "Opening Theorist",
+    "avatar": "/avatars/avatar-02.jpg",
+    "kind": "Person"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "The move 4.Ng5 targets the chronic weakness on f7 before Black has castled.",
+    "The sacrifice 6.Nxf7 forces the black king into the center of the board.",
+    "Following up with 7.Qf3+ pins the d5 knight and builds relentless mating threats.",
+    "In short time controls, defending Black position requires inhuman computer accuracy."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Few openings evoke as much pure terror for beginner and intermediate players as the Fried Liver Attack (1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5 d5 5.exd5 Nxd5?! 6.Nxf7!). By sacrificing a knight on move 6, White drags the black king into an open firing range."
+    },
+    {
+      "type": "heading",
+      "text": "Why 5...Nxd5 is a Fatal Mistake"
+    },
+    {
+      "type": "paragraph",
+      "text": "After White plays 5.exd5, Black must play 5...Na5 (the main line) or 5...b5 (Ulvestad Variation). Recapturing automatically with 5...Nxd5 falls directly into the trap. White immediately unleashes 6.Nxf7!, sacrificing the knight to force 6...Kxf7."
+    },
+    {
+      "type": "subheading",
+      "text": "The Decisive Queen Check: 7.Qf3+"
+    },
+    {
+      "type": "paragraph",
+      "text": "White follows with 7.Qf3+, hitting both the king on f7 and the pinned knight on d5. Black only move to keep material parity is 7...Ke6. Now Black king is awkwardly stranded in the center of the board, blocking its own bishops."
+    },
+    {
+      "type": "quote",
+      "text": "In the Fried Liver Attack, Black is theoretically alive with perfect computer play, but in a 3-minute blitz game on Telegram, the king will almost certainly be mated."
+    },
+    {
+      "type": "heading",
+      "text": "Executing the Finishing Blow"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Develop with 8.Nc3 to add a third attacker against the pinned knight on d5.",
+        "Play 9.d4 to blow open the center files directly toward the black king.",
+        "Castle quickly to bring rooks into the e-file and f-file attacking corridors."
+      ]
+    }
+  ],
+  "relatedSlugs": [
+    "survive-the-blackburne-shilling-gambit-trap",
+    "opening-mastery-tactics"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com/chapter/E01"
+    },
+    {
+      "title": "Web3Chess Opening Guide",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Train Against Stockfish",
+    "href": "/academy"
+  }
+}

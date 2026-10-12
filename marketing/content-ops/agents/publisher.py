@@ -60,3 +60,44 @@ class PublisherAgent:
             "posts_dispatched": posts,
             "reveals_dispatched": reveals,
         }
+
+    def dispatch_x_posts(self, day: Optional[str] = None, post_id: Optional[str] = None, dry_run: bool = True) -> Dict[str, Any]:
+        """Dispatches or dry-run previews approved X (Twitter) posts and threads."""
+        entries = []
+        for entry in queue.all_entries(day=day):
+            if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") in {"approved", "published"}:
+                if post_id and entry.get("id") != post_id:
+                    continue
+                entries.append(entry)
+
+        dispatched = []
+        for e in entries:
+            kind = e.get("kind")
+            eid = e.get("id")
+            if kind == "x_post":
+                item = {
+                    "id": eid,
+                    "kind": "x_post",
+                    "tweet_text": e.get("text"),
+                    "char_count": len(e.get("text", "")),
+                    "docked_reply": (e.get("docked_reply") or {}).get("text"),
+                    "creative_template": (e.get("creative") or {}).get("template"),
+                    "status": "ready_to_publish" if dry_run else "published",
+                }
+            else:
+                item = {
+                    "id": eid,
+                    "kind": "x_thread",
+                    "topic": e.get("topic"),
+                    "tweets_count": len(e.get("tweets", [])),
+                    "tweets": [t.get("text") for t in e.get("tweets", [])],
+                    "status": "ready_to_publish" if dry_run else "published",
+                }
+            dispatched.append(item)
+
+        return {
+            "dry_run": dry_run,
+            "count": len(dispatched),
+            "entries": dispatched,
+        }
+

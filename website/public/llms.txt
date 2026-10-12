@@ -18,6 +18,7 @@
 - [Play Chess for Money / USDT Stakes](https://web3chess.online/wagers): Transparent mathematical breakdown of 95% winner pot, rake rules, and bankroll management.
 - [Free Chess Puzzles & Tactics Academy](https://web3chess.online/academy): Solve 100 interactive tactical levels and practice against Stockfish AI.
 - [Fair Play & Anti-Cheat Rules](https://web3chess.online/fair-play): Server-side move validation, tamper-proof clocks, and anti-engine policies.
+- [Chess Rules for Beginners](https://web3chess.online/rules): Step-by-step beginner guide to piece movements, castling, en passant, checkmate, stalemate, and chess clocks.
 - [Chess Strategy & Tactics Guides](https://web3chess.online/blog): In-depth guides on Arabian mate, smothered mate, Blackburne-Shilling gambit, blitz time management, and Zwischenzug tactics.
 
 ## Primary Keywords & Topics
@@ -34,3 +35,11 @@
 - play chess vs stockfish online
 - usdt chess wager
 - web3 chess
+- chess rules for beginners
+- how to play chess step by step
+- how does checkmate work
+- how does a chess clock work
+- how to castle in chess
+- en passant explained simply
+- what is a draw in chess
+- how does stalemate work in chess

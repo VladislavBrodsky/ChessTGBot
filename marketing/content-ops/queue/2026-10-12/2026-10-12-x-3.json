@@ -1,0 +1,25 @@
+{
+  "id": "2026-10-12-x-3",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Product",
+  "hook": "The 20:00 UTC Arena Vault opens in 15 minutes.",
+  "text": "The 20:00 UTC Arena Vault opens in 15 minutes.\n\n$500 Prize Vault. Once the round timer starts, brackets lock.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "docked_reply": {
+    "text": "Enter the arena lobby inside Telegram:\nhttps://t.me/chess_matbot/Web3Chess?startapp=arena",
+    "delay_seconds": 30
+  },
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-12T18:49:10Z"
+  }
+}

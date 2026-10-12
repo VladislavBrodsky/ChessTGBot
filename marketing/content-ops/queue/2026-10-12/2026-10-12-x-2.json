@@ -1,0 +1,25 @@
+{
+  "id": "2026-10-12-x-2",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Chess Culture",
+  "hook": "4 seconds left on the clock. Up a full queen.",
+  "text": "4 seconds left on the clock. Up a full queen.\n\nBlack premoves into a back-rank mate.\n\nThe clock does not care about your theoretical rating. Under 5 seconds, calculation collapses into survival.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "docked_reply": {
+    "text": "Speed chess is 20% opening theory, 80% nervous system control.\n\nChallenge a friend to a 3-minute blitz duel in Telegram:\nhttps://t.me/chess_matbot/Web3Chess",
+    "delay_seconds": 30
+  },
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-12T18:49:10Z"
+  }
+}

@@ -172,3 +172,80 @@ def check_article(article: dict, corpus: list[str] | None = None, references: li
         a, b = shingles(words(text), 4), shingles(words(other), 4)
         if a and b and len(a & b) / len(a | b) > 0.3: issues.append("near-duplicate of an existing article"); break
     return {"passed": not issues, "issues": issues}
+
+
+def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
+    """Validates single X (Twitter) post against 2026 algorithmic and compliance standards."""
+    issues: list[str] = []
+    text = post.get("text", "")
+    if not text.strip():
+        issues.append("empty text")
+    body = plain(text)
+    if len(body) > 280:
+        issues.append(f"tweet text is {len(body)} chars; limit 280")
+    if re.search(r"https?://", text):
+        issues.append("root tweet must not contain outbound links to avoid algorithmic reach penalties; use docked_reply instead")
+    hook = plain(post.get("hook", "") or text.split("\n")[0])
+    if hook and len(hook) > 100:
+        issues.append("hook over 100 chars")
+    hashtags = re.findall(r"#\w+", text)
+    if len(hashtags) > 1:
+        issues.append("more than 1 hashtag; X algorithm penalizes multi-hashtag clutter")
+    issues += tone(text, max_emoji=2)
+
+    docked = post.get("docked_reply")
+    if docked:
+        docked_text = docked.get("text", "") if isinstance(docked, dict) else str(docked)
+        docked_body = plain(docked_text)
+        if len(docked_body) > 280:
+            issues.append(f"docked reply text is {len(docked_body)} chars; limit 280")
+        links = re.findall(r"https?://[^\s]+", docked_text)
+        for url in links:
+            issues += check_link(url)
+        issues += tone(docked_text, max_emoji=2)
+        issues += compliance(text + " " + docked_text)
+    else:
+        issues += compliance(text)
+
+    chess_spec = post.get("chess")
+    if chess_spec:
+        issues += chesscheck.verify_puzzle(chess_spec["fen"], chess_spec.get("solution", []), chess_spec.get("claim"))
+
+    return {"passed": not issues, "issues": issues}
+
+
+def check_x_thread(thread: dict, corpus: list[str] | None = None) -> dict:
+    """Validates multi-tweet X thread against structure, compliance, and length bounds."""
+    issues: list[str] = []
+    tweets = thread.get("tweets", [])
+    if len(tweets) < 3:
+        issues.append("thread must have at least 3 tweets")
+    elif len(tweets) > 10:
+        issues.append("thread must have at most 10 tweets")
+
+    if tweets and re.search(r"https?://", tweets[0].get("text", "")):
+        issues.append("root tweet of thread must not contain outbound links")
+
+    has_allowed_link = False
+    for idx, t in enumerate(tweets, start=1):
+        t_text = t.get("text", "")
+        t_body = plain(t_text)
+        if len(t_body) > 280:
+            issues.append(f"tweet #{idx} is {len(t_body)} chars; limit 280")
+        hashtags = re.findall(r"#\w+", t_text)
+        if len(hashtags) > 1:
+            issues.append(f"tweet #{idx} has more than 1 hashtag")
+        issues += tone(t_text, max_emoji=2)
+        issues += compliance(t_text)
+        links = re.findall(r"https?://[^\s]+", t_text)
+        for url in links:
+            link_issues = check_link(url)
+            issues += [f"tweet #{idx}: {e}" for e in link_issues]
+            if not link_issues:
+                has_allowed_link = True
+
+    if tweets and not has_allowed_link:
+        issues.append("final CTA tweet of thread should include an allowed destination link")
+
+    return {"passed": not issues, "issues": issues}
+

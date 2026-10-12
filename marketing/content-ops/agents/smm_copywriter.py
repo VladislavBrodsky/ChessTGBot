@@ -183,3 +183,123 @@ class SmmCopywriterAgent:
                 "opening-mastery-tactics",
             ],
         }
+
+    def draft_x_single_post(
+        self,
+        slot_id: str,
+        category: str,
+        hook: str,
+        body: str,
+        docked_reply_text: Optional[str] = None,
+        docked_link_url: Optional[str] = None,
+        fen: Optional[str] = None,
+        solution: Optional[List[str]] = None,
+        claim: Optional[str] = None,
+        size: str = "wide",
+    ) -> Dict[str, Any]:
+        """Crafts a verified single X (Twitter) post adhering to the 280-char limit and docked link rule."""
+        canvas_size = size if size in ("square", "wide") else "wide"
+        post_text = f"{hook.strip()}\n\n{body.strip()}".strip()
+        post: Dict[str, Any] = {
+            "id": slot_id,
+            "kind": "x_post",
+            "date": slot_id[:10] if len(slot_id) >= 10 else queue.utcnow().date().isoformat(),
+            "category": category,
+            "hook": hook.strip(),
+            "text": post_text,
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}"}],
+        }
+
+        if fen:
+            post["chess"] = {
+                "fen": fen,
+                "solution": solution or [],
+                "claim": claim,
+            }
+            post["creative"] = {
+                "template": "puzzle",
+                "size": canvas_size,
+                "fen": fen,
+                "tag": claim.replace("_", " ").title() if claim else "Tactics Challenge",
+            }
+
+        reply_content = docked_reply_text
+        if not reply_content and docked_link_url:
+            reply_content = f"Play and practice on {docked_link_url}"
+
+        if reply_content:
+            post["docked_reply"] = {
+                "text": reply_content.strip(),
+                "delay_seconds": 30,
+            }
+
+        return post
+
+    def draft_x_thread(
+        self,
+        thread_id: str,
+        topic: str,
+        category: str,
+        hook_tweet_text: str,
+        body_tweets: List[str],
+        cta_tweet_text: str,
+        cta_link_url: str,
+    ) -> Dict[str, Any]:
+        """Crafts a 4-7 tweet educational/manifesto X thread with clean numbering and docked link CTA."""
+        total_tweets = len(body_tweets) + 2
+        tweets: List[Dict[str, Any]] = []
+
+        # 1. Hook Tweet (Root) - strictly NO external links
+        tweets.append({
+            "number": 1,
+            "text": f"1/{total_tweets} {hook_tweet_text.strip()}",
+        })
+
+        # 2. Body Tweets
+        for idx, body in enumerate(body_tweets, start=2):
+            tweets.append({
+                "number": idx,
+                "text": f"{idx}/{total_tweets} {body.strip()}",
+            })
+
+        # 3. Final CTA Tweet - carries the link
+        final_num = total_tweets
+        cta_full = f"{final_num}/{final_num} {cta_tweet_text.strip()}\n\n{cta_link_url.strip()}"
+        tweets.append({
+            "number": final_num,
+            "text": cta_full,
+        })
+
+        return {
+            "id": thread_id,
+            "kind": "x_thread",
+            "date": thread_id[:10] if len(thread_id) >= 10 else queue.utcnow().date().isoformat(),
+            "category": category,
+            "topic": topic,
+            "tweets": tweets,
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}"}],
+        }
+
+    def draft_x_reply_sniper(
+        self,
+        target_account: str,
+        target_handle: str,
+        trigger_context: str,
+        sniper_comment: str,
+    ) -> Dict[str, Any]:
+        """Crafts a high-IQ value comment for top chess or TON accounts (zero promo links)."""
+        return {
+            "target_account": target_account,
+            "target_handle": target_handle,
+            "trigger_context": trigger_context,
+            "reply_text": sniper_comment.strip(),
+            "char_count": len(sniper_comment.strip()),
+            "rules": [
+                "Post within 5-10 minutes of target tweet",
+                "Do NOT include promotional links in sniper comment",
+                "Let the profile bio funnel interested readers",
+            ],
+        }
+

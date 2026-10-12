@@ -875,3 +875,217 @@ class ContentEngineOrchestrator:
             "blog_articles": art_results,
         }
 
+    def generate_x_daily_batch(self, target_date: Optional[date] = None) -> Dict[str, Any]:
+        """Generates, QA-gates, approves, and queues 3 high-impact daily posts for X (Twitter).
+        
+        - X-1 (Morning): Tactics & Calculation Bookmark Magnet
+        - X-2 (Afternoon): Blitz Scramble & Spectator Drama
+        - X-3 (Evening): Synchronized Arena Vault Alert (18+ compliant)
+        """
+        d = target_date or self.plan_date
+        d_str = d.isoformat()
+        results: List[Dict[str, Any]] = []
+
+        # Slot X-1: Tactics
+        x1_id = f"{d_str}-x-1"
+        x1_tactics = self.chess_editor.get_stock_viral_position("smothered_mate")
+        x1_post = self.copywriter.draft_x_single_post(
+            slot_id=x1_id,
+            category="Tactics",
+            hook="White to move. One knight move ends the game on the spot.",
+            body=(
+                "Black's king is boxed in on h8 by its own rook and pawns.\n\n"
+                "What is White's only winning move? ♟️"
+            ),
+            docked_reply_text=(
+                "Solution: 1. Nf7# (Smothered Mate).\n"
+                "The knight delivers check, and the king cannot escape because g8, g7, and h7 are blocked.\n\n"
+                f"Practise 50+ master patterns in our free Academy:\nhttps://{self.primary_domain}/academy"
+            ),
+            fen=x1_tactics["fen"],
+            solution=x1_tactics["solution"],
+            claim=x1_tactics["claim"],
+            size="square",
+        )
+        x1_qa = self.qa.inspect_x_post(x1_post)
+        if not x1_qa["passed"]:
+            raise RuntimeError(f"X-1 QA failed: {x1_qa['issues']}")
+        x1_post["qa"] = {**x1_qa, "checked_at": queue.iso(queue.utcnow())}
+        x1_post["status"] = "approved"
+        queue.save(x1_post)
+        results.append({"id": x1_id, "pillar": "Tactics", "qa_passed": True})
+
+        # Slot X-2: Culture / Blitz Scramble
+        x2_id = f"{d_str}-x-2"
+        x2_post = self.copywriter.draft_x_single_post(
+            slot_id=x2_id,
+            category="Chess Culture",
+            hook="4 seconds left on the clock. Up a full queen.",
+            body=(
+                "Black premoves into a back-rank mate.\n\n"
+                "The clock does not care about your theoretical rating. Under 5 seconds, calculation collapses into survival."
+            ),
+            docked_reply_text=(
+                "Speed chess is 20% opening theory, 80% nervous system control.\n\n"
+                f"Challenge a friend to a 3-minute blitz duel in Telegram:\n{brand.TG_APP}"
+            ),
+            size="wide",
+        )
+        x2_qa = self.qa.inspect_x_post(x2_post)
+        if not x2_qa["passed"]:
+            raise RuntimeError(f"X-2 QA failed: {x2_qa['issues']}")
+        x2_post["qa"] = {**x2_qa, "checked_at": queue.iso(queue.utcnow())}
+        x2_post["status"] = "approved"
+        queue.save(x2_post)
+        results.append({"id": x2_id, "pillar": "Chess Culture", "qa_passed": True})
+
+        # Slot X-3: Arena Drop FOMO
+        x3_id = f"{d_str}-x-3"
+        x3_post = self.copywriter.draft_x_single_post(
+            slot_id=x3_id,
+            category="Product",
+            hook="The 20:00 UTC Arena Vault opens in 15 minutes.",
+            body=(
+                "$500 Prize Vault. Once the round timer starts, brackets lock.\n\n"
+                "USDT matches are for adults (18+) where permitted. You can lose your stake."
+            ),
+            docked_reply_text=(
+                "Enter the arena lobby inside Telegram:\n"
+                f"{brand.TG_ARENA}"
+            ),
+            size="wide",
+        )
+        x3_qa = self.qa.inspect_x_post(x3_post)
+        if not x3_qa["passed"]:
+            raise RuntimeError(f"X-3 QA failed: {x3_qa['issues']}")
+        x3_post["qa"] = {**x3_qa, "checked_at": queue.iso(queue.utcnow())}
+        x3_post["status"] = "approved"
+        queue.save(x3_post)
+        results.append({"id": x3_id, "pillar": "Product", "qa_passed": True})
+
+        return {
+            "status": "success",
+            "date": d_str,
+            "posts_created": len(results),
+            "posts": results,
+        }
+
+    def create_flagship_x_thread(self, target_date: Optional[date] = None) -> Dict[str, Any]:
+        """Creates, validates, and queues the flagship 5-tweet viral manifesto thread on X."""
+        d = target_date or self.plan_date
+        d_str = d.isoformat()
+        thread_id = f"{d_str}-x-thread-flagship"
+
+        thread = self.copywriter.draft_x_thread(
+            thread_id=thread_id,
+            topic="The Death of Tap-to-Earn: Why Intellectual Speed Chess is Taking Over Telegram",
+            category="Product",
+            hook_tweet_text=(
+                "Tap-to-earn was an illusion.\n\n"
+                "Millions clicked digital coins for months, only to receive dust tokens and inflation.\n\n"
+                "The next phase of Web3 gaming is not clicking — it is intellectual mastery and skill-based PvP. Here is why speed chess is taking over: 🧵"
+            ),
+            body_tweets=[
+                (
+                    "In classical crypto games, token emissions dilute value.\n\n"
+                    "In pure speed chess, value is zero-sum and skill-gated:\n"
+                    "• No bots running scripts\n"
+                    "• No fake grinding loops\n"
+                    "• Every victory is calculated under a 3-minute clock\n\n"
+                    "Rating cannot be bought."
+                ),
+                (
+                    "The real bottleneck on Telegram wasn't interest — it was latency.\n\n"
+                    "Classical Web3 chess forced on-chain transactions per move, destroying blitz flow.\n\n"
+                    "We solved this with hybrid architecture:\n"
+                    "• Sub-100ms state updates via WebSockets\n"
+                    "• Instant matchmaking in Telegram Bot API 8.0"
+                ),
+                (
+                    "Synchronized liquidity beats random queues.\n\n"
+                    "4 daily global Arena Windows (02:00, 08:00, 14:00, 20:00 UTC).\n"
+                    "Transparent settlement: 95% winner payout, 3% fee, 2% referral pool.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
+                ),
+            ],
+            cta_tweet_text=(
+                "Whether you want free daily grandmaster tactical drills or competitive blitz matches, the board is waiting.\n\n"
+                "Play free on web or launch inside Telegram in one tap:"
+            ),
+            cta_link_url=f"https://{self.primary_domain}",
+        )
+
+        qa_res = self.qa.inspect_x_thread(thread)
+        if not qa_res["passed"]:
+            raise RuntimeError(f"X Thread QA failed: {qa_res['issues']}")
+
+        thread["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
+        thread["status"] = "approved"
+        queue.save(thread)
+
+        return {
+            "status": "success",
+            "thread_id": thread_id,
+            "tweets_count": len(thread["tweets"]),
+            "qa_passed": True,
+            "thread": thread,
+        }
+
+    def generate_x_reply_sniper_kit(self) -> Dict[str, Any]:
+        """Generates high-leverage comment scripts for top chess & TON ecosystem accounts."""
+        targets = [
+            {
+                "account": "Hikaru Nakamura",
+                "handle": "@Hikaru",
+                "context": "Post-match blitz review or stream recap",
+                "comment": (
+                    "When calculation drops below 5 seconds, positional advantage stops existing. "
+                    "In bullet, the player who creates dynamic tactical complications wins 80% of scramble games."
+                ),
+            },
+            {
+                "account": "GothamChess (Levy Rozman)",
+                "handle": "@GothamChess",
+                "context": "Blunder recap or 'guess the elo' post",
+                "comment": (
+                    "The most dangerous illusion in amateur blitz is thinking you are attacking when your king has no luft. "
+                    "Back-rank checkmates never happen because of bad luck; they happen because players forget air."
+                ),
+            },
+            {
+                "account": "TON Blockchain",
+                "handle": "@ton_blockchain",
+                "context": "Telegram Mini Apps or Web3 gaming announcement",
+                "comment": (
+                    "Tap-to-earn proved Telegram's distribution power, but skill-based synchronous PvP is what proves long-term user retention. "
+                    "Sub-100ms chess sync inside a Bot API 8.0 Mini App is a game changer for real gaming."
+                ),
+            },
+            {
+                "account": "Magnus Carlsen",
+                "handle": "@MagnusCarlsen",
+                "context": "Speed chess or freestyle chess discussion",
+                "comment": (
+                    "Intuition in time scrambles is just pattern recognition compressed into subconscious reflex. "
+                    "The clock tests instinct more than raw calculation."
+                ),
+            },
+        ]
+
+        kit = []
+        for t in targets:
+            item = self.copywriter.draft_x_reply_sniper(
+                target_account=t["account"],
+                target_handle=t["handle"],
+                trigger_context=t["context"],
+                sniper_comment=t["comment"],
+            )
+            kit.append(item)
+
+        return {
+            "status": "success",
+            "sniper_targets_count": len(kit),
+            "targets": kit,
+        }
+
+
