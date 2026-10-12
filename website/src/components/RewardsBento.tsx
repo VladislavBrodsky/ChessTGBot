@@ -141,8 +141,36 @@ export function RewardsBento() {
 
       {/* ── CARD 1 (2 cols on lg): Live Real-Time Arena Settlements ── */}
       <div className="md:col-span-2 rounded-2xl border border-line bg-surface overflow-hidden shadow-xs flex flex-col justify-between transition-all hover:border-fg-muted/40 hover:shadow-sm">
-        {/* Dedicated top visual container — Live Settlement Terminal */}
-        <div className="relative h-48 w-full overflow-hidden bg-inset/30 border-b border-line/50 p-3.5 flex flex-col justify-between">
+        {/* Dedicated top content container */}
+        <div className="p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <Badge tone="accent" icon="lightning">Live Settlements</Badge>
+            <span className="font-mono text-caption text-emerald-700 font-semibold flex items-center gap-1.5">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              Real-time on-chain
+            </span>
+          </div>
+          <div>
+            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
+              Instant 95% Winner Payouts
+            </h3>
+            <p className="text-body-sm text-fg-muted mt-1 max-w-[55ch]">
+              Both players lock equal USDT before move 1. The moment checkmate or resignation lands, 95% of the pot credits instantly to the winner’s balance.
+            </p>
+          </div>
+          <div className="pt-1">
+            <Link
+              href="/how-it-works"
+              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
+            >
+              <span>Explore payout architecture</span>
+              <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Dedicated bottom visual container — Live Settlement Terminal (UNDER TEXT) */}
+        <div className="relative h-48 w-full overflow-hidden bg-inset/30 border-t border-line/50 p-3.5 flex flex-col justify-between">
           {/* Terminal status bar */}
           <div className="flex items-center justify-between pb-2 border-b border-line/60 font-mono text-[11px]">
             <span className="flex items-center gap-1.5 text-fg-default font-semibold">
@@ -179,22 +207,24 @@ export function RewardsBento() {
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Dedicated bottom content container */}
+      {/* ── CARD 2 (1 col): Mystery Vault Drops with 3D Spheric Orbits ── */}
+      <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-xs flex flex-col justify-between transition-all hover:border-fg-muted/40 hover:shadow-sm">
+        {/* Dedicated top content container */}
         <div className="p-6 space-y-3">
           <div className="flex items-center justify-between">
-            <Badge tone="accent" icon="lightning">Live Settlements</Badge>
-            <span className="font-mono text-caption text-emerald-700 font-semibold flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              Real-time on-chain
+            <Badge tone="accent" icon="gift">Mystery Vaults</Badge>
+            <span className="font-mono text-[11px] font-semibold text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+              Daily Drops
             </span>
           </div>
           <div>
             <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
-              Instant 95% Winner Payouts
+              Win up to 1,000 TON
             </h3>
-            <p className="text-body-sm text-fg-muted mt-1 max-w-[55ch]">
-              Both players lock equal USDT before move 1. The moment checkmate or resignation lands, 95% of the pot credits instantly to the winner’s balance.
+            <p className="text-body-sm text-fg-muted mt-1">
+              Every match earns XP. Unbox King, Queen, and Knight chests with chances to win TON prizes, 2× XP boosts, and rare 3D pieces.
             </p>
           </div>
           <div className="pt-1">
@@ -202,17 +232,14 @@ export function RewardsBento() {
               href="/how-it-works"
               className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
             >
-              <span>Explore payout architecture</span>
+              <span>Explore Mystery Boxes</span>
               <Icon name="arrow-right" size={14} />
             </Link>
           </div>
         </div>
-      </div>
 
-      {/* ── CARD 2 (1 col): Mystery Vault Drops with 3D Spheric Orbits ── */}
-      <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-xs flex flex-col justify-between transition-all hover:border-fg-muted/40 hover:shadow-sm">
-        {/* Dedicated top visual container — 3D Spheric Crypto Vault */}
-        <div className="relative h-48 w-full overflow-hidden bg-gradient-to-b from-amber-500/[0.05] via-surface/40 to-inset/30 border-b border-line/50 flex items-center justify-center select-none">
+        {/* Dedicated bottom visual container — 3D Spheric Crypto Vault (UNDER TEXT) */}
+        <div className="relative h-48 w-full overflow-hidden bg-gradient-to-b from-inset/30 via-surface/40 to-amber-500/[0.05] border-t border-line/50 flex items-center justify-center select-none">
           {/* Ambient lighting glow */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="size-32 rounded-full bg-amber-400/15 blur-2xl animate-pulse" />
@@ -281,39 +308,39 @@ export function RewardsBento() {
             <span className="text-[#8b5cf6] flex items-center gap-1 font-bold"><span className="size-1.5 rounded-full bg-[#8b5cf6]" />KING</span>
           </div>
         </div>
-
-        {/* Dedicated bottom content container */}
-        <div className="p-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <Badge tone="accent" icon="gift">Mystery Vaults</Badge>
-            <span className="font-mono text-[11px] font-semibold text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-              Daily Drops
-            </span>
-          </div>
-          <div>
-            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
-              Win up to 1,000 TON
-            </h3>
-            <p className="text-body-sm text-fg-muted mt-1">
-              Every match earns XP. Unbox King, Queen, and Knight chests with chances to win TON prizes, 2× XP boosts, and rare 3D pieces.
-            </p>
-          </div>
-          <div className="pt-1">
-            <Link
-              href="/how-it-works"
-              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
-            >
-              <span>Explore Mystery Boxes</span>
-              <Icon name="arrow-right" size={14} />
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* ── CARD 3 (1 col): Stakes Flexibility ── */}
       <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-xs flex flex-col justify-between transition-all hover:border-fg-muted/40 hover:shadow-sm">
-        {/* Dedicated top visual container — 3-Tier Arena Lobby Showcase */}
-        <div className="relative h-48 w-full overflow-hidden bg-inset/30 border-b border-line/50 p-3.5 flex flex-col justify-between">
+        {/* Dedicated top content container */}
+        <div className="p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <Badge tone="accent" icon="lightning">Stake Flexibility</Badge>
+            <span className="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+              From $1
+            </span>
+          </div>
+          <div>
+            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
+              Play at Any Stake Level
+            </h3>
+            <p className="text-body-sm text-fg-muted mt-1">
+              From $1 micro-duels up to $500 high-roller classics. Choose your format, deposit equal USDT, and take 95% of the pot.
+            </p>
+          </div>
+          <div className="pt-1">
+            <Link
+              href="/wagers"
+              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
+            >
+              <span>View all stake tiers</span>
+              <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Dedicated bottom visual container — 3-Tier Arena Lobby Showcase (UNDER TEXT) */}
+        <div className="relative h-48 w-full overflow-hidden bg-inset/30 border-t border-line/50 p-3.5 flex flex-col justify-between">
           <div className="flex items-center justify-between pb-1 text-[11px] font-mono text-fg-muted">
             <span className="text-fg-default font-semibold">Arena Stake Ladder</span>
             <span className="text-emerald-700 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full text-[10px]">Min $1 · Max $500</span>
@@ -350,39 +377,39 @@ export function RewardsBento() {
             <span>$500 Whale</span>
           </div>
         </div>
-
-        {/* Dedicated bottom content container */}
-        <div className="p-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <Badge tone="accent" icon="lightning">Stake Flexibility</Badge>
-            <span className="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-              From $1
-            </span>
-          </div>
-          <div>
-            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
-              Play at Any Stake Level
-            </h3>
-            <p className="text-body-sm text-fg-muted mt-1">
-              From $1 micro-duels up to $500 high-roller classics. Choose your format, deposit equal USDT, and take 95% of the pot.
-            </p>
-          </div>
-          <div className="pt-1">
-            <Link
-              href="/wagers"
-              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
-            >
-              <span>View all stake tiers</span>
-              <Icon name="arrow-right" size={14} />
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* ── CARD 4 (1 col): Affiliate Growth Engine ── */}
       <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-xs flex flex-col justify-between transition-all hover:border-fg-muted/40 hover:shadow-sm">
-        {/* Dedicated top visual container — Multi-Tier Affiliate Breakdown */}
-        <div className="relative h-48 w-full bg-inset/30 border-b border-line/50 p-3.5 flex flex-col justify-between font-mono text-[11px]">
+        {/* Dedicated top content container */}
+        <div className="p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <Badge tone="accent" icon="users-three">Affiliate Engine</Badge>
+            <span className="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+              2.0% Total
+            </span>
+          </div>
+          <div>
+            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
+              Earn 2% Lifetime Match Rake
+            </h3>
+            <p className="text-body-sm text-fg-muted mt-1">
+              Invite friends once with your Telegram link. Collect passive USDT commissions across 6 referral tiers every time your network competes.
+            </p>
+          </div>
+          <div className="pt-1">
+            <Link
+              href="/how-it-works"
+              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
+            >
+              <span>How referrals work</span>
+              <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Dedicated bottom visual container — Multi-Tier Affiliate Breakdown (UNDER TEXT) */}
+        <div className="relative h-48 w-full bg-inset/30 border-t border-line/50 p-3.5 flex flex-col justify-between font-mono text-[11px]">
           <div className="flex items-center justify-between pb-1.5 border-b border-line/60">
             <span className="text-fg-default font-semibold">Referral Commission</span>
             <span className="text-emerald-700 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 text-[10px]">2.0% Total</span>
@@ -418,39 +445,39 @@ export function RewardsBento() {
             Instant on-chain credit whenever referrals compete
           </div>
         </div>
-
-        {/* Dedicated bottom content container */}
-        <div className="p-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <Badge tone="accent" icon="users-three">Affiliate Engine</Badge>
-            <span className="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-              2.0% Total
-            </span>
-          </div>
-          <div>
-            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
-              Earn 2% Lifetime Match Rake
-            </h3>
-            <p className="text-body-sm text-fg-muted mt-1">
-              Invite friends once with your Telegram link. Collect passive USDT commissions across 6 referral tiers every time your network competes.
-            </p>
-          </div>
-          <div className="pt-1">
-            <Link
-              href="/how-it-works"
-              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
-            >
-              <span>How referrals work</span>
-              <Icon name="arrow-right" size={14} />
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* ── CARD 5 (1 col): The Modern Edge (Web3 vs Web2) ── */}
       <div className="rounded-2xl border border-line bg-surface overflow-hidden shadow-xs flex flex-col justify-between transition-all hover:border-fg-muted/40 hover:shadow-sm">
-        {/* Dedicated top visual container — Comparative Edge */}
-        <div className="relative h-48 w-full bg-inset/30 border-b border-line/50 p-3.5 flex flex-col justify-between">
+        {/* Dedicated top content container */}
+        <div className="p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <Badge tone="neutral" icon="lightning">The Modern Edge</Badge>
+            <span className="font-mono text-[11px] text-fg-muted bg-inset border border-line px-2 py-0.5 rounded-full">
+              Web3 vs Web2
+            </span>
+          </div>
+          <div>
+            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
+              Chess That Actually Pays
+            </h3>
+            <p className="text-body-sm text-fg-muted mt-1">
+              Traditional chess platforms monetize your attention. Web3Chess rewards your skill with instant on-chain pots and daily TON drops.
+            </p>
+          </div>
+          <div className="pt-1">
+            <Link
+              href="/fair-play"
+              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
+            >
+              <span>Our fair-play promise</span>
+              <Icon name="arrow-right" size={14} />
+            </Link>
+          </div>
+        </div>
+
+        {/* Dedicated bottom visual container — Comparative Edge (UNDER TEXT) */}
+        <div className="relative h-48 w-full bg-inset/30 border-t border-line/50 p-3.5 flex flex-col justify-between">
           <div className="flex items-center justify-between pb-1.5 border-b border-line/60 font-mono text-[11px]">
             <span className="text-fg-default font-semibold">Platform Economics</span>
             <span className="text-emerald-700 font-semibold text-[10px]">95% vs 0%</span>
@@ -476,33 +503,6 @@ export function RewardsBento() {
           <div className="pt-1 border-t border-line/50 font-mono text-[9px] text-fg-muted flex items-center justify-between">
             <span>Winner Payout:</span>
             <span className="font-bold text-emerald-700">95% Guaranteed Pot</span>
-          </div>
-        </div>
-
-        {/* Dedicated bottom content container */}
-        <div className="p-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <Badge tone="neutral" icon="lightning">The Modern Edge</Badge>
-            <span className="font-mono text-[11px] text-fg-muted bg-inset border border-line px-2 py-0.5 rounded-full">
-              Web3 vs Web2
-            </span>
-          </div>
-          <div>
-            <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
-              Chess That Actually Pays
-            </h3>
-            <p className="text-body-sm text-fg-muted mt-1">
-              Traditional chess platforms monetize your attention. Web3Chess rewards your skill with instant on-chain pots and daily TON drops.
-            </p>
-          </div>
-          <div className="pt-1">
-            <Link
-              href="/fair-play"
-              className="inline-flex items-center gap-1.5 font-mono text-caption font-semibold text-emerald-700 hover:text-emerald-800 transition-colors"
-            >
-              <span>Our fair-play promise</span>
-              <Icon name="arrow-right" size={14} />
-            </Link>
           </div>
         </div>
       </div>
