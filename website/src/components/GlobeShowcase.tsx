@@ -328,101 +328,56 @@ export function GlobeShowcase() {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-between overflow-hidden rounded-3xl border border-line bg-surface/80 p-5 sm:p-7 shadow-xs backdrop-blur-md">
+    <div className="relative flex flex-col items-center justify-center select-none w-full py-2">
 
-      {/* ── TOP HUD BAR: Clean status & volume ── */}
-      <div className="relative z-10 flex w-full items-center justify-between border-b border-line/70 pb-4">
-        <div className="flex items-center gap-2">
-          <span className="relative flex size-2.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
-          </span>
-          <span className="font-mono text-[11px] font-bold tracking-wider uppercase text-emerald-700">
-            Live Global Arena
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 font-mono text-[11px] text-fg-muted">
-          <span className="font-semibold text-fg-default">{LIVE_MATCHES.length}+</span>
-          <span>active pairings</span>
-        </div>
-      </div>
+      {/* ── Ambient Radial Atmosphere Halo (Frameless, NO white box) ── */}
+      <div
+        className="pointer-events-none absolute -inset-10 rounded-full bg-radial from-emerald-500/10 via-blue-500/5 to-transparent blur-3xl opacity-80"
+        aria-hidden="true"
+      />
 
-      {/* ── CENTERPIECE DUEL CARD (Integrated, self-contained HUD) ── */}
-      <div className="relative z-20 my-4 w-full">
+      {/* ── Floating Live Match Pill (Compact, modern glass pill) ── */}
+      <div className="relative z-20 mb-3 w-full max-w-[460px] px-2" aria-live="polite">
         <div
-          className={`mx-auto w-full max-w-[440px] rounded-2xl border border-line/80 bg-surface-card p-3.5 shadow-sm transition-all duration-200 ${
+          className={`flex items-center justify-between gap-3 rounded-full border border-line bg-surface/90 px-4 py-2 shadow-sm backdrop-blur-md transition-all duration-200 ${
             isCrossfading ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
           }`}
         >
-          {/* Top row: Format & Stake tier */}
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-line/50 text-[11px] font-mono">
-            <span className="flex items-center gap-1.5 text-fg-muted">
-              <Icon name="lightning" size={13} className="text-emerald-600" />
-              {current.format}
+          {/* Left: Players */}
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="relative flex size-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            <span className={`px-2 py-0.5 rounded-full font-semibold border ${tierConfig.badge}`}>
-              {current.label} · {current.stake}
+            <span className="font-semibold text-fg-default text-[13px] truncate">
+              {current.flag1} {current.p1}
+            </span>
+            <span className="text-fg-muted text-[12px] font-mono shrink-0">⚔</span>
+            <span className="font-semibold text-fg-default text-[13px] truncate">
+              {current.flag2} {current.p2}
             </span>
           </div>
 
-          {/* Center Duel Display: City 1 ⚔️ City 2 */}
-          <div className="flex items-center justify-between px-1 py-1">
-            {/* Player 1 */}
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-xl shrink-0" role="img" aria-label={current.p1}>
-                {current.flag1}
-              </span>
-              <div className="truncate">
-                <span className="block font-semibold text-fg-default text-[13px] leading-tight truncate">
-                  {current.p1}
-                </span>
-                <span className="block text-[10px] text-fg-muted font-mono leading-tight">
-                  White
-                </span>
-              </div>
-            </div>
-
-            {/* VS Badge */}
-            <div className="flex flex-col items-center justify-center px-3 shrink-0">
-              <span className="font-mono text-[11px] font-extrabold text-stone-400 tracking-wider">
-                VS
-              </span>
-            </div>
-
-            {/* Player 2 */}
-            <div className="flex items-center justify-end gap-2 min-w-0 text-right">
-              <div className="truncate">
-                <span className="block font-semibold text-fg-default text-[13px] leading-tight truncate">
-                  {current.p2}
-                </span>
-                <span className="block text-[10px] text-fg-muted font-mono leading-tight">
-                  Black
-                </span>
-              </div>
-              <span className="text-xl shrink-0" role="img" aria-label={current.p2}>
-                {current.flag2}
-              </span>
-            </div>
-          </div>
-
-          {/* Bottom pot split guarantee */}
-          <div className="mt-2.5 pt-2 border-t border-line/50 flex items-center justify-between text-[11px] font-mono text-fg-muted">
-            <span className="flex items-center gap-1 text-emerald-700 font-semibold">
-              <Icon name="lock" size={12} />
-              Pot: {current.pot}
+          {/* Right: Stake & Format */}
+          <div className="flex items-center gap-2 font-mono text-caption shrink-0">
+            <span className={`font-bold tabular-nums ${tierConfig.text}`}>
+              {current.stake}
             </span>
-            <span className="text-fg-muted text-[10px]">
-              95% instant escrow settlement
+            <span className="hidden sm:inline text-fg-muted text-[11px]">
+              ({current.format})
+            </span>
+            <span className={`hidden md:inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full border ${tierConfig.badge}`}>
+              {current.label}
             </span>
           </div>
         </div>
       </div>
 
-      {/* ── 3D GLOBE CANVAS ── */}
-      <div className="relative mx-auto my-2 aspect-square w-full max-w-[420px] flex items-center justify-center">
-        {/* Soft atmospheric backlight halo */}
+      {/* ── 3D Interactive WebGL Globe (Frameless, Natural Atmosphere) ── */}
+      <div className="relative mx-auto aspect-square w-full max-w-[460px] flex items-center justify-center">
+        {/* Soft contact shadow beneath globe */}
         <div
-          className="pointer-events-none absolute inset-6 rounded-full bg-radial from-emerald-500/10 via-transparent to-transparent blur-2xl"
+          className="pointer-events-none absolute -bottom-2 w-[280px] h-6 rounded-[100%] bg-black/10 blur-xl"
           aria-hidden="true"
         />
 
@@ -448,22 +403,19 @@ export function GlobeShowcase() {
         />
       </div>
 
-      {/* ── BOTTOM CONNECTED NODES TICKER ── */}
-      <div className="relative z-10 w-full border-t border-line/70 pt-3.5 overflow-hidden">
-        <div className="mb-1.5 flex items-center justify-between text-[10px] font-mono uppercase text-fg-muted">
-          <span>Global Latency Nodes</span>
-          <span className="text-emerald-600 font-semibold">Deterministic &lt; 25ms</span>
-        </div>
+      {/* ── Live Nodes Ticker (Frameless, borderless ticker) ── */}
+      <div className="relative z-10 w-full max-w-[460px] mt-3 overflow-hidden" aria-hidden="true">
         <div className="whitespace-nowrap overflow-hidden">
           <div ref={tickerRef} className="inline-flex items-center gap-4 will-change-transform">
             {[...NODES, ...NODES].map((n, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-line/60 bg-surface px-2.5 py-1 text-[11px] font-mono text-fg-muted shadow-2xs"
+                className="inline-flex items-center gap-1.5 font-mono text-[11px] text-fg-muted"
               >
+                <span className="size-1 rounded-full bg-emerald-500 opacity-80" />
                 <span>{n.flag}</span>
                 <span className="font-semibold text-fg-default">{n.city}</span>
-                <span className="text-emerald-600 text-[10px] font-medium">{n.ping}</span>
+                <span className="text-emerald-700 text-[10px]">{n.ping}</span>
               </span>
             ))}
           </div>
