@@ -3,8 +3,25 @@
   "kind": "telegram",
   "date": "2026-10-12",
   "slot": 3,
-  "category": "Academy",
+  "category": "Openings",
   "scheduled_at": "2026-10-12T14:30:00Z",
-  "status": "planned",
-  "qa": null
+  "status": "approved",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-12T13:55:11Z"
+  },
+  "format": "news",
+  "hook": "White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3.",
+  "cta": "academy",
+  "text": "<b>White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3.</b>\n\nThe Blackburne-Shilling Gambit looks like a beginner blunder when Black plays 3...Nd4.\nWhite thought: \"A free pawn on e5 with an attack on f7!\"\nThen came 4.Nxe5? Qg5! and White's king never saw move 8.\n\nGreedy play in the opening gets punished fast.\nThe refutation is simple: 4.Nxd4! exd4 5.O-O, leaving White with superior development and complete center control.\n\nReview the full refutation and trap defense inside the Academy.",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "approved_by": "cmo_orchestrator",
+  "updated_at": "2026-10-12T13:55:11Z"
 }

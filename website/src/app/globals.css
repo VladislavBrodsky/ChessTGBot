@@ -250,6 +250,8 @@ textarea::selection {
   .wager-result-unit { font-family: var(--font-sans); font-size: var(--text-title); font-weight: 500; }
   .home-main > .home-section {
     padding-block: clamp(1.5rem, 2.7vw, 2.25rem);
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 650px;
   }
   .statement-panel {
     min-width: 0;

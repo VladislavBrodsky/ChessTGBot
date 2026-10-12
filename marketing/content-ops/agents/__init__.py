@@ -1,4 +1,4 @@
-"""Multi-Agent Content & Marketing Engine for Web3Chess and aumera.top.
+"""Multi-Agent Content & Marketing Engine for Web3Chess (web3chess.online).
 
 Connecting CMO, Scraper, Audit, Planner, Chess Editor, SMM Copywriter, QA Compliance, and Publisher agents.
 """

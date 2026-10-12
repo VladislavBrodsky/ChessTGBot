@@ -5,6 +5,23 @@
   "slot": 4,
   "category": "Chess Culture",
   "scheduled_at": "2026-10-12T17:30:00Z",
-  "status": "planned",
-  "qa": null
+  "status": "approved",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-12T13:55:11Z"
+  },
+  "format": "news",
+  "hook": "You premoved a recapture. Your opponent played an in-between check. Familiar pain?",
+  "cta": "play",
+  "text": "<b>You premoved a recapture. Your opponent played an in-between check. Familiar pain?</b>\n\nThe German masters named it a century ago: <i>Zwischenzug</i> (the in-between move).\nIn 3-minute blitz, 80% of lost pieces come from assuming the opponent will play the expected move.\n\nBefore you snatch a bishop back, ask:\nDoes my opponent have a forcing check first?\n\nIf they do, your premove just gave away a rook.\nTrain your eye to spot intermediate moves before your opponent spots them for you.",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "approved_by": "cmo_orchestrator",
+  "updated_at": "2026-10-12T13:55:11Z"
 }

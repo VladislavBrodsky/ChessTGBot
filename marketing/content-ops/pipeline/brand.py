@@ -4,8 +4,8 @@ from urllib.parse import urlencode, urlsplit, urlunsplit, parse_qsl
 
 import os
 
-SITE = os.environ.get("W3_SITE_URL", "https://aumera.top")
-APP = os.environ.get("W3_APP_URL", "https://app.aumera.top")
+SITE = os.environ.get("W3_SITE_URL", "https://web3chess.online")
+APP = os.environ.get("W3_APP_URL", "https://app.web3chess.online")
 BOT = "chess_matbot"
 # Facts mirrored from website/src/lib/config.ts and marketing/templates/campaigns.js.
 # startapp accepts only: omitted, "arena", "ref_<code>", or a reserved "mk_..." id. Never invent values.
@@ -29,7 +29,6 @@ CTAS = {
 }
 
 ALLOWED_LINK_HOSTS = {
-    "aumera.top", "www.aumera.top", "app.aumera.top",
     "web3chess.online", "www.web3chess.online", "app.web3chess.online",
     "t.me"
 }

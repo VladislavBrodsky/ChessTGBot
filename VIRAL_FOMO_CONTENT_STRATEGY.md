@@ -1,9 +1,9 @@
 # Master Viral & FOMO Marketing Content Strategy (Q4 2026)
-## Web3Chess & aumera.top Ecosystem
+## Web3Chess (web3chess.online) Ecosystem
 
 > **Executive Thesis**: The era of mindless "tap-to-earn" Telegram bots is over. In Q4 2026, user acquisition, retention, and virality are driven by **intellectual mastery, synchronous speed chess, high-stakes spectator drama, and frictionless Telegram Bot API 8.0 Mini App mechanics**.
 > 
-> This document details the end-to-end Viral & FOMO Content Engine connecting our multi-agent marketing architecture (CMO, Scraper, Audit, Planner, Chess Editor, SMM Copywriter, QA Compliance, and Publisher) across the **Official Telegram Channel** and the **Landing Page Blog (`aumera.top`)**.
+> This document details the end-to-end Viral & FOMO Content Engine connecting our multi-agent marketing architecture (CMO, Scraper, Audit, Planner, Chess Editor, SMM Copywriter, QA Compliance, and Publisher) across the **Official Telegram Channel** and the **Landing Page Blog (`web3chess.online`)**.
 
 ---
 
@@ -68,7 +68,7 @@ The Content Engine operates as an interconnected multi-agent team located in `ma
                         ┌─────────────────────────────┐
                         │    CONTENT PLANNER AGENT    │
                         │ 5 Daily Telegram Slots S1-S5│
-                        │ 5 Daily Blog Slots on aumera│
+                        │ 5 Daily Blog Slots on Site  │
                         └──────────────┬──────────────┘
                                        │
                ┌───────────────────────┴───────────────────────┐
@@ -90,19 +90,19 @@ The Content Engine operates as an interconnected multi-agent team located in `ma
                                        ▼
                         ┌─────────────────────────────┐
                         │ PUBLISHER & STAGING AGENT   │
-                        │ aumera.top Blog Staging,    │
+                        │ web3chess.online Staging,   │
                         │ Telegram Broadcast Dispatch │
                         └─────────────────────────────┘
 ```
 
 ### Agent Roles & Responsibilities:
-1. **CMO Agent (`cmo.py`)**: Governs editorial goals, sets weekly KPI quotas (CTR > 8.5%, forward rate > 4%, first-game conversion > 18%), and maintains the brand identity across `aumera.top` and `@chess_hub`.
+1. **CMO Agent (`cmo.py`)**: Governs editorial goals, sets weekly KPI quotas (CTR > 8.5%, forward rate > 4%, first-game conversion > 18%), and maintains the brand identity across `web3chess.online` and `@chess_hub`.
 2. **Scraper & Trend Scout Agent (`scraper.py`)**: Continuously monitors chess culture, breaking tournament results, opening disputes, and competitor channel metrics (`chesscom_ru`, `edchessss`).
 3. **Audit & Research Agent (`audit.py`)**: Scores content drafts on psychological hook strength, enforces guardrails (bans generic clickbait, walls of text, and empty results tables).
 4. **Planner Agent (`planner.py`)**: Schedules daily slots with optimal UTC timing and matches Telegram broadcasts to in-depth blog guides.
 5. **Chess Editor Agent (`chess_editor.py`)**: Uses `python-chess` to guarantee 100% tactical accuracy; no hallucinatory checkmates or illegal move notation.
 6. **SMM & Copywriter Agent (`smm_copywriter.py`)**: Crafts sharp, high-converting posts using Bot API 8.0 formatting, reactions, and 1-tap deep links.
-7. **QA & Compliance Agent (`qa_compliance.py`)**: Strict gatekeeper enforcing character limits, balanced tags, whitelisted domains (`aumera.top`, `web3chess.online`, `t.me`), 18+ disclosures, and anti-plagiarism checks.
+7. **QA & Compliance Agent (`qa_compliance.py`)**: Strict gatekeeper enforcing character limits, balanced tags, whitelisted domains (`web3chess.online`, `t.me`), 18+ disclosures, and anti-plagiarism checks.
 8. **Publisher Agent (`publisher.py`)**: Stages articles into `website/src/content/articles/` (validated by `check-content.mjs`) and dispatches Telegram broadcasts with persistent receipt tracking.
 
 ---
@@ -119,7 +119,7 @@ All broadcasts sync with global player traffic patterns and the 4 Daily Arena wi
 | **S4** | **17:30** | **Chess Culture** | `culture` (meme / quote)<br>Board graphic | **Spectator Thrill & Relatability**: Brutal 3-second scramble blunder breakdowns and relatable time-trouble humor. |
 | **S5** | **20:30** | **Product / Arena** | `product` / `rules`<br>Arena countdown card | **Peak FOMO & Conversion**: Synchronized Arena alert ($500 prize vault). Clear 18+ wager rules and 1-tap Mini App button. |
 
-### Landing Page Blog Sync (`aumera.top/blog`)
+### Landing Page Blog Sync (`web3chess.online/blog`)
 For every major tactical debate or opening guide, the Blog hosts the **authoritative long-form breakdown**:
 - Minimum 450 words of high-density chess analysis.
 - Interactive chess board diagrams (`chess_position` blocks) with move sequences.
@@ -138,7 +138,7 @@ For every major tactical debate or opening guide, the Blog hosts the **authorita
    - Always state the SAN move and square (e.g., `1.Nf7#`).
 3. **Emoji Restraint**: Maximum 3 emojis per post; never use emojis as bullet points.
 4. **Single-Action Conversion Funnel**:
-   - Every Telegram post has **at most one primary CTA button** (e.g., `[Play Free in Mini App]`, `[Enter Arena]`, or `[Read Guide on aumera.top]`).
+   - Every Telegram post has **at most one primary CTA button** (e.g., `[Play Free in Mini App]`, `[Enter Arena]`, or `[Read Guide on web3chess.online]`).
    - Deep links MUST use supported `startapp` values (`startapp=arena` or `startapp=ref_...`).
 5. **Absolute Compliance on Real-Money Matches**:
    - Any mention of USDT, wagers, pots, or stakes **must** contain:
@@ -186,7 +186,7 @@ The entire multi-agent engine is safeguarded by 71 automated unit tests:
 python3 -m pytest marketing/content-ops
 ```
 Gates enforced:
-- **Telegram Gate**: Bot API 8.0 HTML balance, hook length <= 110, text <= 1024, max 3 emoji, allowed link domains (`aumera.top`, `web3chess.online`, `t.me`).
+- **Telegram Gate**: Bot API 8.0 HTML balance, hook length <= 110, text <= 1024, max 3 emoji, allowed link domains (`web3chess.online`, `t.me`).
 - **Chess Gate**: Legality of FEN strings, solution move SAN replays, mate assertions proven with `python-chess`.
 - **Article Gate**: Word count >= 450, takeaways >= 3, valid sources with https, verified chess diagram blocks, valid internal routing.
 - **Originality Gate**: Anti-plagiarism 3-gram and 6-word run overlap checks against competitor excerpts.

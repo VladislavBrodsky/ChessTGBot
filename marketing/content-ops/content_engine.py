@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unified Multi-Agent Content & Marketing Engine CLI for Web3Chess & aumera.top.
+"""Unified Multi-Agent Content & Marketing Engine CLI for Web3Chess (web3chess.online).
 
 Usage:
   python3 marketing/content-ops/content_engine.py --status
@@ -37,7 +37,7 @@ from pipeline import queue
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Unified Multi-Agent Marketing & Content Engine for Web3Chess and aumera.top"
+        description="Unified Multi-Agent Marketing & Content Engine for Web3Chess (web3chess.online)"
     )
     parser.add_argument("--status", action="store_true", help="Display status of today's queued content slots")
     parser.add_argument("--run-strategy", action="store_true", help="Run CMO strategy brief and competitive research audit")
@@ -48,7 +48,7 @@ def main():
     parser.add_argument("--stage", action="store_true", help="Stage all approved articles into website/src/content/articles/")
     parser.add_argument("--publish", action="store_true", help="Publish due Telegram broadcasts")
     parser.add_argument("--dry-run", action="store_true", default=True, help="Run Telegram publishing in dry-run mode (default: True)")
-    parser.add_argument("--domain", default="aumera.top", help="Target landing page domain (default: aumera.top)")
+    parser.add_argument("--domain", default="web3chess.online", help="Target landing page domain (default: web3chess.online)")
 
     args = parser.parse_args()
     orchestrator = ContentEngineOrchestrator(primary_domain=args.domain)
@@ -88,7 +88,7 @@ def main():
 
     elif args.stage:
         print("\n📰 Staging approved articles to website/src/content/articles/...")
-        reports = orchestrator.publisher.stage_article_to_blog()
+        reports = orchestrator.publisher.stage_all_approved_articles()
         print(json.dumps(reports, indent=2))
 
     elif args.publish:

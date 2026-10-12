@@ -2,7 +2,7 @@
 
 Zero-compromise deterministic safety inspector. Enforces:
 - Telegram Bot API 8.0 HTML validity & length bounds
-- Whitelisted domain verification (aumera.top, web3chess.online, t.me)
+- Whitelisted domain verification (web3chess.online, t.me)
 - Strict wager compliance (18+ disclosure, zero earnings/income guarantees)
 - Absolute originality and anti-plagiarism n-gram scoring
 - Python-chess tactical verification

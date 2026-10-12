@@ -12,12 +12,12 @@ from . import queue
 SITE_DIR = queue.ROOT / "website"
 ARTICLES = SITE_DIR / "src/content/articles"
 
-def stage(entry: dict, reviewed_by: str) -> Path:
+def stage(entry: dict, reviewed_by: str, overwrite: bool = False) -> Path:
     article = dict(entry["article"])
     article["publishedAt"] = entry["scheduled_at"][:10]
     article["publishAt"] = entry["scheduled_at"]
     target = ARTICLES / f"{article['slug']}.json"
-    if target.exists():
+    if target.exists() and not overwrite:
         existing = json.loads(target.read_text())
         if existing != article:
             raise ValueError(f"slug {article['slug']} already exists with different content")

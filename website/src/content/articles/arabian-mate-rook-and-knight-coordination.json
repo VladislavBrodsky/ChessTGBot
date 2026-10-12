@@ -1,0 +1,93 @@
+{
+  "slug": "arabian-mate-rook-and-knight-coordination",
+  "title": "The Arabian Mate: Ancient Geometry and Modern Speed Chess Finish",
+  "subtitle": "The knight covers the flight squares while defending the rook on the edge.",
+  "excerpt": "Master the Arabian mate with verified positions. Discover how the rook and knight coordinate to deliver inescapable checkmate against a cornered king.",
+  "metaDescription": "Master the Arabian mate with verified positions. Discover how the rook and knight coordinate to deliver inescapable checkmate against a cornered king.",
+  "category": "Tactics",
+  "author": {
+    "name": "Web3Chess Editorial & Tactical Review",
+    "role": "Speed Chess Grandmaster & Product Strategy",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-10-12",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "The knight and rook coordinate to form a complete mating net against a corner king.",
+    "A knight on the sixth rank (f6 or c6) covers both escape squares in the corner.",
+    "Because the knight directly protects the rook, the defender cannot capture the checking piece.",
+    "The pattern originated over 1,200 years ago in Shatranj and remains one of the most common blitz endings today."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Few tactical geometries possess the longevity and lethal simplicity of the Arabian mate. Dating back over a millennium to Arabic Shatranj manuscripts from the 8th century, this two-piece combination remains one of the most decisive finishing weapons in modern 3-minute blitz. When a king is cornered, the board contracts into a tiny box where escaping squares are scarce and every tempo counts double."
+    },
+    {
+      "type": "chess_position",
+      "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+      "caption": "White to move. The knight on f6 seals the escape squares while defending the h7 outpost. Find the finishing strike."
+    },
+    {
+      "type": "heading",
+      "text": "The Geometry of the Escape Denial"
+    },
+    {
+      "type": "paragraph",
+      "text": "To execute the Arabian mate, an attacking knight establishes a dominant post on f6. From f6, the knight attacks g8 and h7. This dual-square coverage accomplishes two simultaneous tactical objectives: it deprives the Black king on h8 of its only legal diagonal escape square (g8), and it creates a protected landing strip for the white rook on h7. Because the knight directly guards h7, the Black king cannot capture the checking piece."
+    },
+    {
+      "type": "paragraph",
+      "text": "When White plays 1.Rh7#, the check is terminal. The rook attacks the king along the h-file. The king cannot step to g8 because the knight controls that square. The king cannot capture the rook on h7 because the knight directly defends it. And because a rook check is linear and delivered from point-blank range, no black piece can interpose. The game concludes in a textbook mating net."
+    },
+    {
+      "type": "heading",
+      "text": "Creating the Setup with Forcing Moves"
+    },
+    {
+      "type": "paragraph",
+      "text": "In practical play, the enemy king rarely walks into the corner voluntarily. Attackers must use forcing checks and piece sacrifices to herd the king toward the rim. A common tactical theme involves checking on the eighth rank to force the king into the corner, followed by transferring a rook along the seventh rank. Because the seventh rank is a natural highway for rooks, combining a seventh-rank rook with an advanced knight creates constant tactical threats that defenders struggle to neutralize."
+    },
+    {
+      "type": "paragraph",
+      "text": "In fast speed chess inside the Web3Chess Mini App, players often miss the setup because they search for complex queen combinations. The Arabian mate requires only two minor pieces operating in harmony. When you notice an enemy king isolated in a corner, immediately calculate whether your knight can reach the f6 or f3 outpost with tempo."
+    },
+    {
+      "type": "heading",
+      "text": "Step-by-Step Calculation Protocol"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Step 1: Identify whether the opponent king is restricted to the corner h8 square or adjacent edge squares.",
+        "Step 2: Maneuver your knight to f6 to control both the escape square (g8) and the mate square (h7).",
+        "Step 3: Transfer your rook to the open seventh rank and deliver Rh7# with zero defensive interposition.",
+        "Step 4: Check for defensive resources such as back-rank checks before launching the final rook leap."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "Core Rule: A cornered king cannot survive against a coordinated rook and knight once the knight controls the escape flight squares."
+    }
+  ],
+  "sources": [
+    {
+      "title": "FIDE Official Laws of Chess",
+      "url": "https://handbook.fide.com"
+    },
+    {
+      "title": "Web3Chess Academy on web3chess.online",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Practice in Free A.I. Arena",
+    "href": "/play"
+  },
+  "relatedSlugs": [
+    "the-3-minute-blitz-blueprint-tactics-time-management",
+    "opening-mastery-tactics"
+  ],
+  "publishAt": "2026-10-12T05:00:00Z"
+}

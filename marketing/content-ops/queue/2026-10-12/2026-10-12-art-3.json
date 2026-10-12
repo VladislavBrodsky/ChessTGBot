@@ -5,6 +5,118 @@
   "slot": 3,
   "category": "Academy",
   "scheduled_at": "2026-10-12T11:00:00Z",
-  "status": "planned",
-  "qa": null
+  "status": "published",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Article gates",
+    "checked_at": "2026-10-12T13:55:11Z"
+  },
+  "article": {
+    "slug": "the-art-of-the-in-between-move-zwischenzug",
+    "title": "The Art of the In-Between Move: How Zwischenzug Wins Blitz Games",
+    "subtitle": "Recapturing automatically is the fastest way to lose rating. Find the intermediate check first.",
+    "excerpt": "Break the autopilot recapture habit. Learn how intermediate moves and forcing in-between checks turn lost positions into tactical brilliancies.",
+    "metaDescription": "Break the autopilot recapture habit. Learn how intermediate moves and forcing in-between checks turn lost positions into tactical brilliancies.",
+    "category": "Academy",
+    "author": {
+      "name": "Web3Chess Editorial & Tactical Review",
+      "role": "Speed Chess Grandmaster & Product Strategy",
+      "avatar": "",
+      "kind": "Organization"
+    },
+    "publishedAt": "2026-10-12",
+    "readingTime": "5 min read",
+    "takeaways": [
+      "Automatic recapturing is the most common tactical failure mode in 3-minute blitz.",
+      "A Zwischenzug (in-between move) disrupts the opponent expected exchange sequence.",
+      "Checks and captures take absolute priority over passive recaptures.",
+      "Pausing for two seconds before an obvious recapture can discover game-winning tactical intermediate moves."
+    ],
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "In competitive speed chess, human intuition operates on momentum. When your opponent captures your bishop, your brain automatically fires a reflex: capture them back immediately. This autopilot instinct is responsible for thousands of lost games every single day across all skill ratings. Breaking this cognitive habit is one of the quickest paths to gaining tactical rating points."
+      },
+      {
+        "type": "chess_position",
+        "fen": "r1bqkb1r/pppp1ppp/2n5/4P3/4n3/5N2/PPP2PPP/RNBQKB1R w KQkq - 1 5",
+        "caption": "White to move. Look for forcing intermediate ideas rather than routine passive defensive moves."
+      },
+      {
+        "type": "heading",
+        "text": "What is an In-Between Move?"
+      },
+      {
+        "type": "paragraph",
+        "text": "In German chess literature, this concept is called a Zwischenzug—an in-between move. Instead of playing the anticipated continuation, a player inserts a forcing check, threat, or capture that alters the evaluation of the board before resolving the original exchange. Because the intermediate move is forcing, the opponent cannot proceed with their original plan and is forced onto the defensive."
+      },
+      {
+        "type": "paragraph",
+        "text": "Consider a standard piece trade. If White takes Black knight on c6, Black natural reply is bxc6. But what if Black first plays ...Qh4+, forcing White king into the center or ruining their pawn structure, before recapturing on c6? That intermediate check completely changes the outcome of the game, turning a quiet exchange into a dynamic winning advantage for Black."
+      },
+      {
+        "type": "heading",
+        "text": "The Hierarchy of Forcing Moves"
+      },
+      {
+        "type": "paragraph",
+        "text": "Finding a Zwischenzug under clock pressure requires an established calculation filter. When looking at candidate moves during an opponent offensive, evaluate choices in strict order: checks come first, followed by direct captures of undefended pieces, followed by threats against high-value queens or rooks. Only after exhausting these forcing options should you settle for an automatic recapture."
+      },
+      {
+        "type": "heading",
+        "text": "Intermediate Moves in the Endgame"
+      },
+      {
+        "type": "paragraph",
+        "text": "Zwischenzugs are not restricted to complex middlegames; they decide simplified king and pawn endings with ruthless finality. An in-between check can deflect an enemy king away from defending a key pawn, or an intermediate pawn advance can cut off an opposing rook file before a promotion square is claimed. In fast endgames, inserting one single checking move often determines whether a pawn promotes with tempo or falls one square short of a queen."
+      },
+      {
+        "type": "paragraph",
+        "text": "When calculating forcing lines in blitz, remember that every threat limits the opponent choices. A quiet move allows them complete freedom of action, but an intermediate check forces their king to move, often stepping into a pin or blocking their own rooks. Practice recognizing intermediate checks during your daily puzzle training sessions."
+      },
+      {
+        "type": "heading",
+        "text": "The 3-Second Calculation Protocol"
+      },
+      {
+        "type": "paragraph",
+        "text": "To integrate the in-between move into your blitz instincts, build a strict two-step habit whenever an opponent initiates an exchange:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Step 1: Do not touch the mouse or screen immediately after a capture occurs.",
+          "Step 2: Ask: Do I have a forcing check that the opponent cannot ignore?",
+          "Step 3: Ask: Can I attack a higher-value piece (such as the queen) before taking back?",
+          "Step 4: Execute the intermediate move with confidence when the calculation confirms safety."
+        ]
+      },
+      {
+        "type": "callout",
+        "text": "Grandmasters do not calculate deeper than club players; they calculate forcing in-between moves that club players assume do not exist."
+      }
+    ],
+    "sources": [
+      {
+        "title": "FIDE Official Laws of Chess",
+        "url": "https://handbook.fide.com"
+      },
+      {
+        "title": "Web3Chess Academy on web3chess.online",
+        "url": "https://web3chess.online/academy"
+      }
+    ],
+    "cta": {
+      "label": "Sharpen Your Tactics in Play",
+      "href": "/play"
+    },
+    "relatedSlugs": [
+      "the-3-minute-blitz-blueprint-tactics-time-management",
+      "opening-mastery-tactics"
+    ]
+  },
+  "approved_by": "cmo_orchestrator",
+  "updated_at": "2026-10-12T13:56:13Z",
+  "staged_path": "website/src/content/articles/the-art-of-the-in-between-move-zwischenzug.json"
 }

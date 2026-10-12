@@ -5,6 +5,23 @@
   "slot": 2,
   "category": "Chess News",
   "scheduled_at": "2026-10-12T11:00:00Z",
-  "status": "planned",
-  "qa": null
+  "status": "approved",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-12T13:55:11Z"
+  },
+  "format": "news",
+  "hook": "3 seconds on the digital clock. That was the margin between a win and a flag fall.",
+  "cta": "play",
+  "text": "<b>3 seconds on the digital clock. That was the margin between a win and a flag fall.</b>\n\nSpeed chess in 2026 is decided in the final five moves of the scramble.\nWhen clocks dip under 10 seconds, calculation gives way to muscle memory and premove discipline.\n\nThree golden rules for time trouble:\n• Stop looking for perfection; find the forcing check.\n• Never premove recaptures when your opponent has a check.\n• Keep pawns connected so you never lose on pre-click lag.\n\nThe Web3Chess Mini App uses sub-50ms synchronized server clocks so your speed is never stolen by lag.",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "approved_by": "cmo_orchestrator",
+  "updated_at": "2026-10-12T13:55:11Z"
 }

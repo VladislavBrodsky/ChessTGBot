@@ -10,7 +10,7 @@
     "passed": true,
     "issues": [],
     "gate_summary": "Passed all deterministic Telegram gates",
-    "checked_at": "2026-10-12T13:41:09Z"
+    "checked_at": "2026-10-12T13:55:11Z"
   },
   "format": "puzzle",
   "hook": "White to move. The knight guards the escape squares. Find the mate.",
@@ -19,7 +19,7 @@
   "sources": [
     {
       "kind": "own",
-      "url": "https://aumera.top"
+      "url": "https://web3chess.online"
     }
   ],
   "chess": {
@@ -56,6 +56,7 @@
       "cta_label": "Play Next Puzzle"
     }
   },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-1.png",
   "approved_by": "cmo_orchestrator",
-  "updated_at": "2026-10-12T13:41:09Z"
+  "updated_at": "2026-10-12T13:55:11Z"
 }

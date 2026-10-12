@@ -15,8 +15,8 @@ import { AcademyRoadmap } from "@/components/AcademyRoadmap";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Free Chess Practice & Tactics",
-  "Solve free chess puzzles, study opening principles and tactical patterns, then practise against A.I. in the Web3Chess Telegram Mini App.",
+  "Free Chess Puzzles Online: 100 Tactics & Stockfish",
+  "Solve free interactive chess puzzles with zero paywalls. Master 100 tactical levels, opening traps, and play unlimited practice vs Stockfish 16 in Telegram.",
   "/academy",
 );
 

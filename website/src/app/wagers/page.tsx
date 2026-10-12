@@ -15,8 +15,8 @@ import { SettlementBreakdown } from "@/components/SettlementBreakdown";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "USDT Chess Matches — Stakes, Fees & Withdrawals",
-  "Understand Web3Chess wager matches: equal USDT stakes, the 95% winner share, platform balances, and withdrawal confirmation in Telegram.",
+  "Play Chess For Money: USDT Stakes & Instant Cashouts",
+  "Challenge rivals worldwide in real-money chess matches. Stake $1 to $250 USDT, win 95% of the pot upon checkmate, and withdraw on-chain in seconds inside Telegram.",
   "/wagers",
 );
 export default function WagersPage() {

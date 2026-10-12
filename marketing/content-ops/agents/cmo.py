@@ -17,7 +17,7 @@ from pipeline import brand, queue
 class StrategicDirective:
     quarter: str = "Q4 2026"
     positioning: str = "The definitive cerebral speed chess arena inside Telegram. Anti-brainrot, skill-based, high-stakes."
-    primary_domain: str = "aumera.top"
+    primary_domain: str = "web3chess.online"
     bot_app: str = "https://t.me/chess_matbot/Web3Chess"
     target_kpis: Dict[str, Any] = field(default_factory=lambda: {
         "telegram_ctr": ">= 8.5%",
@@ -73,7 +73,7 @@ class CmoAgent:
             "golden_rules": [
                 "Hook in the first 90 characters: No fluff, immediate tension or mystery.",
                 "Anti-brainrot high-status framing: Chess players are cerebral tacticians.",
-                "1-Tap frictionless CTA: Direct deep link to Telegram Mini App or Blog on aumera.top.",
+                "1-Tap frictionless CTA: Direct deep link to Telegram Mini App or Blog on web3chess.online.",
                 "Zero deceptive hype: Authentic FOMO comes from real arena clocks, tournament cutoffs, and streak limits.",
                 "Compliance non-negotiable: 18+ wager disclosures whenever stakes are mentioned.",
             ],
@@ -87,8 +87,8 @@ class CmoAgent:
         hook = entry.get("hook", "") or ""
 
         # Check domain routing
-        if "aumera.top" not in brand.ALLOWED_LINK_HOSTS:
-            issues.append("Primary domain aumera.top missing from whitelist")
+        if self.directive.primary_domain not in brand.ALLOWED_LINK_HOSTS:
+            issues.append(f"Primary domain {self.directive.primary_domain} missing from whitelist")
 
         # Check hook impact
         if len(hook) > 110:
@@ -111,7 +111,7 @@ class CmoAgent:
     def generate_executive_report(self, planned_entries: List[Dict[str, Any]]) -> str:
         """Generates markdown summary of the marketing pipeline state."""
         report = [
-            f"# Web3Chess & aumera.top CMO Executive Brief ({self.directive.quarter})",
+            f"# Web3Chess CMO Executive Brief ({self.directive.quarter})",
             f"**Strategic Mission:** {self.directive.positioning}\n",
             "## Target KPI Benchmarks",
         ]

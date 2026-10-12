@@ -22,13 +22,13 @@ class TestAgents(unittest.TestCase):
     def setUp(self):
         self.orchestrator = ContentEngineOrchestrator(
             plan_date=date(2026, 10, 11),
-            primary_domain="aumera.top"
+            primary_domain="web3chess.online"
         )
 
     def test_cmo_strategy_brief(self):
         brief = self.orchestrator.cmo.get_strategy_brief()
         self.assertEqual(brief["quarter"], "Q4 2026")
-        self.assertEqual(brief["primary_domain"], "aumera.top")
+        self.assertEqual(brief["primary_domain"], "web3chess.online")
         self.assertIn("golden_rules", brief)
         self.assertTrue(len(brief["viral_hook_formulas"]) >= 4)
 

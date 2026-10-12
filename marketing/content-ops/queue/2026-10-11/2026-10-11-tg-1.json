@@ -10,7 +10,7 @@
     "passed": true,
     "issues": [],
     "gate_summary": "Passed all deterministic Telegram gates",
-    "checked_at": "2026-10-11T17:59:04Z"
+    "checked_at": "2026-10-12T13:57:20Z"
   },
   "brief": {
     "slot": {
@@ -155,10 +155,10 @@
   "sources": [
     {
       "kind": "own",
-      "url": "https://aumera.top"
+      "url": "https://web3chess.online"
     }
   ],
-  "updated_at": "2026-10-11T17:59:04Z",
+  "updated_at": "2026-10-12T13:57:20Z",
   "image": "marketing/content-ops/queue/2026-10-11/2026-10-11-tg-1.png",
   "render": {
     "ok": true,

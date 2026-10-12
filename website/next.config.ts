@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   devIndicators: false,
+  compress: true,
+  experimental: {
+    optimizePackageImports: ["framer-motion", "cobe"],
+  },
 };
 
 export default nextConfig;

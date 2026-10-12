@@ -1,7 +1,7 @@
 """Content Planner & Calendar Agent.
 
 Architects the multi-slot daily distribution schedule, balancing educational authority,
-viral debate, and high-urgency FOMO tournament drops. Synchronizes Telegram with the Blog on aumera.top.
+viral debate, and high-urgency FOMO tournament drops. Synchronizes Telegram with the Blog on web3chess.online.
 """
 from __future__ import annotations
 

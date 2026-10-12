@@ -1,7 +1,7 @@
 """SMM & Copywriter Agent.
 
 Produces high-converting Telegram channel broadcasts and comprehensive SEO blog articles
-tailored for aumera.top and Web3Chess. Adheres to strict character limits, Bot API 8.0 HTML,
+tailored for web3chess.online. Adheres to strict character limits, Bot API 8.0 HTML,
 anti-brainrot tone, and deterministic conversion architecture.
 """
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pipeline import brand, queue
 class SmmCopywriterAgent:
     """Specialist writer for viral speed chess copy, tactical hooks, and SEO articles."""
 
-    def __init__(self, primary_domain: str = "aumera.top"):
+    def __init__(self, primary_domain: str = "web3chess.online"):
         self.primary_domain = primary_domain
 
     def draft_viral_telegram_post(
@@ -117,7 +117,7 @@ class SmmCopywriterAgent:
                 "headline": "BLITZ ARENA.\n*VAULT CLOSES SOON.*",
                 "subhead": f"{start_time_utc} • Instant PvP Matchmaking",
                 "cta_label": "Enter Arena",
-                "footer": "18+ only · You can lose your stake · Rules at aumera.top/wagers",
+                "footer": f"18+ only · You can lose your stake · Rules at {self.primary_domain}/wagers",
             },
         }
 
@@ -134,7 +134,7 @@ class SmmCopywriterAgent:
         cta_href: str = "/play",
         cta_label: str = "Play Free Against A.I.",
     ) -> Dict[str, Any]:
-        """Drafts a comprehensive Blog article JSON for aumera.top with structured data support."""
+        """Drafts a comprehensive Blog article JSON for web3chess.online with structured data support."""
         return {
             "slug": slug,
             "title": title[:100],
