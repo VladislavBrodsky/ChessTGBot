@@ -197,7 +197,7 @@ export default function MatchOverModal({
         <div className="w-full flex flex-col gap-2.5 relative z-10">
           {rematchStatus === 'waiting' ? (
             <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-caption normal-case font-semibold tracking-normal border border-brand-border text-brand-muted animate-pulse select-none">
-              <span>{isBotGame ? tg('creating_match') : tg('pending_opponent')}</span>
+              <span>{tg('pending_opponent')}</span>
             </div>
           ) : (
             <motion.button type="button"

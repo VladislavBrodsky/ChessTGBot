@@ -438,19 +438,38 @@ export default function PlayLobby() {
     <LayoutWrapper className="justify-start ">
       <div className="w-full app-page flex flex-col items-center mx-auto ">
 
-        <PageHeader title={t('play')} icon={<FaChessKnight />} />
+        <PageHeader
+          align="start"
+          title={t('play')}
+          icon={<FaChessKnight />}
+          actions={
+            <div className="lobby-balance">
+              <Link
+                href={`/${locale}/wallet`}
+                className="lobby-balance__amount"
+                aria-label={`${tg('cyber_balance')}: ${balanceLabel}`}
+                onClick={() => telegramHaptic('selection')}
+              >
+                <FaWallet size={12} className={balanceError ? 'text-amber-500' : 'text-brand-success'} aria-hidden="true" />
+                <span>{balanceLabel}</span>
+              </Link>
+              <div className="lobby-balance__add">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="arena-topup-button"
+                  leftIcon={<FaWallet aria-hidden="true" />}
+                  onClick={() => setShowDepositDrawer(true)}
+                >
+                  <span className="arena-topup-label">{tw('top_up')}</span>
+                </Button>
+              </div>
+            </div>
+          }
+        />
 
         <div className="lobby-stack">
-          <div className="lobby-topline">
-            {idle ? <LiveStrip searching={lobby.searching} games24h={lobby.games24h} t={tg} /> : <span />}
-            <div className="lobby-balance">
-                          <Link href={`/${locale}/wallet`} className="lobby-balance__amount" aria-label={`${tg('cyber_balance')}: ${balanceLabel}`} onClick={() => telegramHaptic('selection')}>
-                            <FaWallet size={12} className={balanceError ? 'text-amber-500' : 'text-brand-success'} aria-hidden="true" />
-                            <span>{balanceLabel}</span>
-                          </Link>
-                          <div className="lobby-balance__add"><Button variant="ghost" size="sm" leftIcon={<FaWallet aria-hidden="true" />} onClick={() => setShowDepositDrawer(true)}>{tw('top_up')}</Button></div>
-                        </div>
-          </div>
+          {idle && <LiveStrip searching={lobby.searching} games24h={lobby.games24h} t={tg} />}
 
           <AnimatePresence mode="wait" initial={false}>
           {matchmakingState === 'matched' ? (

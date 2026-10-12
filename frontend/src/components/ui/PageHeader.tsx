@@ -54,11 +54,14 @@ export function SectionHeader({ title, id, action }: { title: ReactNode; id?: st
 }
 
 /** Navigation is a link; mutations remain Button actions. */
-export function ActionLink({ href, children, icon, primary = false, className = '' }: {
-  href: string; children: ReactNode; icon?: ReactNode; primary?: boolean; className?: string;
+export function ActionLink({ href, children, icon, primary = false, className = '', onClick }: {
+  href: string; children: ReactNode; icon?: ReactNode; primary?: boolean; className?: string; onClick?: (e: React.MouseEvent) => void;
 }) {
   return (
-    <Link href={href} onClick={() => telegramHaptic(primary ? 'medium' : 'selection')}
+    <Link href={href} onClick={(e) => {
+      telegramHaptic(primary ? 'medium' : 'selection');
+      if (onClick) onClick(e);
+    }}
       className={`ui-action-link ${primary ? 'ui-action-link--primary' : ''} ${className}`}>
       {icon && <span className={primary ? 'ui-action-link__icon' : 'shrink-0 text-xl'} aria-hidden="true">{icon}</span>}
       <span className="min-w-0 flex-1">{children}</span>

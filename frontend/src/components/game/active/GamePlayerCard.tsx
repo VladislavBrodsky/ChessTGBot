@@ -78,8 +78,8 @@ export function GamePlayerCard({
         <span className="ui-icon-tile h-12 w-12 shrink-0 overflow-hidden rounded-2xl">
           <PlayerAvatar
             userId={userId}
-            fallbackText="?"
-            isBot={isBot}
+            fallbackText={username ? username.slice(0, 2).toUpperCase() : 'GM'}
+            isBot={false}
           />
         </span>
         <div className="flex min-w-0 flex-col">
@@ -93,7 +93,7 @@ export function GamePlayerCard({
             </span>
           ) : (
             <span className="text-caption font-medium text-brand-muted tabular-nums">
-              {isBot ? botLabel : eloText}
+              {eloText}
             </span>
           )}
         </div>

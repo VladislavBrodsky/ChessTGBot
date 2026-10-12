@@ -20,6 +20,7 @@ import { requestBotRevengeGame } from '@/lib/botRevenge';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
+import { getGameOpponent, getRandomOpponent } from '@/lib/opponents';
 
 import {
   GamePlayerCard,
@@ -633,6 +634,22 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const isBotGame = gameState?.black_player_id === -1;
   const isWaiting = gameState && !isBotGame && !gameState.black_player_id;
 
+  const storedOpponent = useMemo(() => {
+    return getGameOpponent(gameId) || getRandomOpponent(userStats?.elo);
+  }, [gameId, userStats?.elo]);
+
+  const opponentDisplayName = isBotGame
+    ? (gameState?.black_username && !gameState.black_username.startsWith("AI Engine")
+        ? gameState.black_username
+        : storedOpponent.name)
+    : (isWhite ? gameState?.black_username : gameState?.white_username) || storedOpponent.name;
+
+  const opponentEloValue = isBotGame
+    ? (gameState?.black_elo && gameState.black_elo !== 1000 && gameState.black_elo !== 800
+        ? gameState.black_elo
+        : storedOpponent.elo)
+    : (isWhite ? gameState?.black_elo : gameState?.white_elo) || storedOpponent.elo;
+
   // Toggle Navbar — hide completely for the entire active game match lifecycle
   const { hideNavbar, showNavbar } = useNavbarHide();
   useEffect(() => {
@@ -842,17 +859,13 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           {/* Opponent HUD Card */}
           <GamePlayerCard
             userId={opponentId}
-            username={
-              isBotGame
-                ? tg('ai_combatant')
-                : (isWhite ? gameState?.black_username : gameState?.white_username) || tg('opponent')
-            }
-            eloText={`ELO ${(isWhite ? gameState?.black_elo : gameState?.white_elo) || 1000}`}
+            username={opponentDisplayName}
+            eloText={`${storedOpponent.flag ? `${storedOpponent.flag} ` : ''}ELO ${opponentEloValue}`}
             isTurn={isOpponentTurn}
             turnLabel={tg('thinking')}
             isWhite={isWhite}
-            isBot={isBotGame}
-            botLabel={tg('ai_engine')}
+            isBot={false}
+            botLabel={`ELO ${opponentEloValue}`}
             gameState={gameState}
             onClockWarning={triggerClocksWarnings}
           />

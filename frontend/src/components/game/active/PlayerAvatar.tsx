@@ -18,12 +18,13 @@ export function PlayerAvatar({ userId, fallbackText, isBot, textClassName }: Pla
     setHasError(false);
   }, [userId]);
 
-  if (isBot) {
-    return <FaRobot className="text-xl text-brand-muted" />;
-  }
-
-  if (!userId || hasError) {
-    return <span className={textClassName || "text-xl font-bold text-brand-muted"}>{fallbackText}</span>;
+  if (!userId || userId === -1 || hasError) {
+    const cleanInitials = fallbackText && fallbackText !== '?' ? fallbackText.slice(0, 2).toUpperCase() : 'GM';
+    return (
+      <span className={textClassName || "text-sm font-bold tracking-tight text-brand-primary flex size-full items-center justify-center bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20"}>
+        {cleanInitials}
+      </span>
+    );
   }
 
   return (

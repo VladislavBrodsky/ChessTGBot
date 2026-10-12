@@ -54,12 +54,14 @@ export const useGameSocket = (gameId: string) => {
                     clearTimeout(botMoveTimeout);
                 }
                 
+                // Natural human thinking delay (1.6s - 3.1s) so it feels like a real human ponder
+                const humanThinkDelay = Math.floor(Math.random() * 1500) + 1600;
                 botMoveTimeout = setTimeout(async () => {
                     try {
-                        const botUci = await computeStockfishMove(data.fen, data.difficulty || "medium");
+                        const botUci = await computeStockfishMove(data.fen, data.difficulty || "hard");
                         if (botUci) {
-                            console.log("Client-side Bot computed move:", botUci);
-                            logClientMessage("INFO", `Client-side Bot computed move: ${botUci} for game ${gameId}`);
+                            console.log("Opponent computed move:", botUci);
+                            logClientMessage("INFO", `Opponent computed move: ${botUci} for game ${gameId}`);
                             
                             socket.emit("make_move", {
                                 game_id: gameId,
@@ -70,7 +72,7 @@ export const useGameSocket = (gameId: string) => {
                         console.error("Stockfish/Minimax execution failed entirely");
                         logClientMessage("WARNING", `Stockfish/Minimax failed entirely`);
                     }
-                }, 800); // 800ms natural delay
+                }, humanThinkDelay);
             }
         };
 

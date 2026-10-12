@@ -106,7 +106,8 @@
 @media (max-width: 380px) {
   .lobby-balance__amount { padding-inline: 10px; gap: 6px; }
   .lobby-balance__add .arena-topup-button { padding-inline: 14px; }
-  .lobby-balance__add .arena-topup-button span { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .lobby-balance__add .arena-topup-button .arena-topup-label,
+  .lobby-balance__add .arena-topup-button span:not(.shrink-0) { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 
 /* Recent real results */

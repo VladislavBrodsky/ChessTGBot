@@ -24,6 +24,7 @@ import DailyCheckinModal from '@/components/DailyCheckinModal';
 import NotificationModal from '@/components/NotificationModal';
 import DailyGoalsBento from '@/components/DailyGoalsBento';
 import EngagementQuest from '@/components/EngagementQuest';
+import QuickMatchModal from '@/components/game/QuickMatchModal';
 import { telegramHaptic } from '@/lib/telegram';
 
 // Telegram's `start_param` persists for the whole webview session, so the
@@ -41,6 +42,7 @@ export default function Home() {
  const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
  const [showNotifications, setShowNotifications] = useState(false);
+ const [showQuickMatch, setShowQuickMatch] = useState(false);
  const claimable = useClaimableTasks();
  const [mounted, setMounted] = useState(false);
  const { stats, walletBalance, loadingStats, loadingBalance, balanceError, statsError, syncStats } = useUser();
@@ -125,7 +127,15 @@ export default function Home() {
             </div>
           )}
           <div className="w-full">
-            <ActionLink href={`/${locale}/game`} primary icon={<FaChessKnight />}>
+            <ActionLink
+              href={`/${locale}/game`}
+              primary
+              icon={<FaChessKnight />}
+              onClick={(e) => {
+                e.preventDefault();
+                setShowQuickMatch(true);
+              }}
+            >
               <span className="t-title-2 block">{t('play')}</span>
               <span className="block text-sm font-semibold">{t('execute_matchmaking')}</span>
             </ActionLink>
@@ -144,6 +154,10 @@ export default function Home() {
         </div>
       </div>
     </main>
+    <QuickMatchModal
+      isOpen={showQuickMatch}
+      onClose={() => setShowQuickMatch(false)}
+    />
   </LayoutWrapper>
  );
 }
