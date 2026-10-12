@@ -382,15 +382,15 @@ export default function HomePage() {
             <span>Over 120 countries · Sub-second pairing</span>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div className="space-y-5">
               <div className="flex flex-wrap items-center gap-2.5">
-                <Badge tone="accent" icon="globe">
-                  Global Liquid Arena
+                <Badge tone="accent" icon="shield-check">
+                  Fair-Play Verified Arena
                 </Badge>
                 <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Live 24/7 Matchmaking
+                  Global Liquidity · Non-Custodial Escrow
                 </span>
               </div>
 
@@ -398,14 +398,65 @@ export default function HomePage() {
                 Challenge rivals worldwide. Matched in seconds
               </h2>
 
-              <p className="max-w-[44ch] section-lead text-fg-muted">
-                Active grandmasters, blitz tacticians, and rivals across 120+ countries compete around the clock. Pick your pace, choose your stake, and close Telegram — the bot pings you the second an opponent is paired.
+              <p className="max-w-[46ch] section-lead text-fg-muted">
+                Active grandmasters, blitz tacticians, and rivals across 120+ countries compete around the clock. Every duel is protected by non-custodial smart escrow, neural anti-cheat radar, and instant on-chain payouts.
               </p>
 
+              {/* ── Safe Space & Security Architecture ── */}
+              <div className="space-y-2.5">
+                {/* 1. Non-Custodial Match Escrow */}
+                <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:bg-surface-inset/50">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 mt-0.5">
+                    <Icon name="lock" size={17} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-[13px]">Non-Custodial Match Escrow</span>
+                      <span className="font-mono text-[10px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Audited Rails</span>
+                    </div>
+                    <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
+                      Both stakes lock in isolated smart contracts before move 1. Pot settles directly to the winner’s TON wallet upon checkmate or clock flag.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 2. Stockfish 16 Anti-Cheat Shield */}
+                <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:bg-surface-inset/50">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-600 mt-0.5">
+                    <Icon name="shield-check" size={17} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-[13px]">Stockfish 16 Anti-Cheat Shield</span>
+                      <span className="font-mono text-[10px] font-semibold text-blue-600 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">Real-Time</span>
+                    </div>
+                    <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
+                      Every move is audited for millisecond timing variance and engine correlation. Automatic stake refund if unfair play is detected.
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. Lag-Compensated Clocks */}
+                <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:bg-surface-inset/50">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-500/10 text-purple-600 mt-0.5">
+                    <Icon name="lightning" size={17} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-[13px]">Lag-Compensated Clocks</span>
+                      <span className="font-mono text-[10px] font-semibold text-purple-600 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">FIDE Timing</span>
+                    </div>
+                    <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
+                      Centralized authoritative timekeeping with network latency compensation. Zero advantage to artificial ping manipulation or disconnection stalls.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Real-time Global Proof Grid */}
-              <div className="grid grid-cols-3 gap-3 rounded-2xl border border-line bg-inset p-4 text-center font-mono">
+              <div className="grid grid-cols-3 gap-3 rounded-xl border border-line bg-inset p-3 text-center font-mono">
                 <div className="space-y-0.5">
-                  <span className="text-[11px] uppercase text-fg-muted block font-sans">Active Rivals</span>
+                  <span className="text-[10px] uppercase text-fg-muted block font-sans">Active Rivals</span>
                   <span className="poster text-heading-xs text-fg-default font-bold flex items-center justify-center gap-1">
                     <span className="size-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
                     <NumberTicker value={3840} />+
@@ -413,14 +464,14 @@ export default function HomePage() {
                   <span className="text-[10px] text-emerald-600 block font-medium">In live duels</span>
                 </div>
                 <div className="space-y-0.5 border-x border-line">
-                  <span className="text-[11px] uppercase text-fg-muted block font-sans">Average Queue</span>
+                  <span className="text-[10px] uppercase text-fg-muted block font-sans">Average Queue</span>
                   <span className="poster text-heading-xs text-fg-default font-bold">
                     &lt; 2.4s
                   </span>
                   <span className="text-[10px] text-fg-muted block font-medium">Auto-pairing</span>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-[11px] uppercase text-fg-muted block font-sans">Global Reach</span>
+                  <span className="text-[10px] uppercase text-fg-muted block font-sans">Global Reach</span>
                   <span className="poster text-heading-xs text-fg-default font-bold">
                     120+
                   </span>
@@ -428,52 +479,85 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <PlayButton size="md" pulsating />
                 <ButtonLink href="/how-it-works" variant="secondary">
-                  Explore time controls
+                  Explore game ecosystem
                   <Icon name="arrow-right" size={18} />
                 </ButtonLink>
               </div>
             </div>
 
             {/* ── 3D INTERACTIVE GLOBE SHOWCASE CARD ── */}
-            <Card className="flex flex-col items-center justify-between p-6 bg-surface border border-line relative overflow-hidden group min-h-[460px]">
-              <BorderBeam size={320} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
-
-              <div className="w-full flex items-center justify-between gap-2 mb-2 relative z-10">
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group min-h-[520px]">
+              {/* Radar Terminal Header */}
+              <div className="w-full flex items-center justify-between gap-2 mb-3 relative z-10">
                 <div className="flex items-center gap-2">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="font-mono text-caption text-fg-default font-semibold">
-                    Global PvP Nodes
+                    Global PvP Radar
+                  </span>
+                  <span className="font-mono text-[11px] text-fg-muted hidden sm:inline">
+                    120+ active nodes
                   </span>
                 </div>
-                <span className="font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                  60 FPS WebGL
+                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                  <Icon name="shield-check" size={13} />
+                  Escrow Protected
                 </span>
               </div>
 
-              {/* The Globe Canvas Container */}
-              <div className="relative flex items-center justify-center w-full my-auto overflow-hidden">
-                <Globe className="max-w-[420px]" />
-
-                {/* Floating Live Match Chips */}
-                <div className="pointer-events-none absolute top-2 left-2 z-10 hidden sm:flex items-center gap-2 rounded-full border border-line bg-surface/90 px-3 py-1 font-mono text-[11px] shadow-sm backdrop-blur-xs">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
-                  <span>New York ⚔️ London</span>
-                  <span className="font-bold text-emerald-600">$25 USDT</span>
+              {/* 3D Globe Visualizer with Radar Concentric Rings */}
+              <div className="relative flex items-center justify-center w-full my-auto py-2 overflow-hidden">
+                {/* Background Radar Rings */}
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <div className="size-[360px] rounded-full border border-line/50 opacity-60" />
+                  <div className="size-[260px] rounded-full border border-dashed border-line/40 opacity-50" />
+                  <div className="size-[160px] rounded-full border border-line/30 opacity-40" />
                 </div>
 
-                <div className="pointer-events-none absolute bottom-4 right-2 z-10 hidden sm:flex items-center gap-2 rounded-full border border-line bg-surface/90 px-3 py-1 font-mono text-[11px] shadow-sm backdrop-blur-xs">
+                <Globe className="max-w-[440px]" />
+
+                {/* Floating Live Match Chips (Glass HUD) */}
+                <div className="pointer-events-none absolute top-2 left-2 z-10 flex items-center gap-2 rounded-xl border border-line/80 bg-surface/90 px-3 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-semibold text-fg-default">Dubai ⚔️ London</span>
+                  <span className="text-fg-muted">·</span>
+                  <span className="font-bold text-emerald-600 font-sans">$50 USDT</span>
+                </div>
+
+                <div className="pointer-events-none absolute top-2 right-2 z-10 hidden sm:flex items-center gap-1.5 rounded-xl border border-line/80 bg-surface/90 px-2.5 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
                   <span className="size-1.5 rounded-full bg-blue-500" />
-                  <span>Dubai ⚔️ Tokyo</span>
-                  <span className="font-bold text-emerald-600">$50 USDT</span>
+                  <span className="text-fg-muted">Anti-Cheat:</span>
+                  <span className="font-semibold text-emerald-600">Stockfish 16</span>
+                </div>
+
+                <div className="pointer-events-none absolute bottom-3 right-2 z-10 flex items-center gap-2 rounded-xl border border-line/80 bg-surface/90 px-3 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
+                  <span className="size-2 rounded-full bg-emerald-500" />
+                  <span className="font-semibold text-fg-default">Tokyo ⚔️ New York</span>
+                  <span className="text-fg-muted">·</span>
+                  <span className="font-bold text-emerald-600 font-sans">$100 USDT</span>
+                </div>
+
+                <div className="pointer-events-none absolute bottom-3 left-2 z-10 hidden sm:flex items-center gap-1.5 rounded-xl border border-line/80 bg-surface/90 px-2.5 py-1.5 font-mono text-[11px] text-fg-muted shadow-sm backdrop-blur-md">
+                  <Icon name="lightning" size={13} className="text-amber-500" />
+                  <span>3m Blitz Match</span>
                 </div>
               </div>
 
-              <div className="w-full pt-3 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono relative z-10">
-                <span>Drag to spin globe</span>
-                <span className="text-fg-default font-semibold">Sub-50ms Global Mesh</span>
+              {/* Radar Terminal Footer */}
+              <div className="w-full pt-3.5 border-t border-line text-caption text-fg-muted flex flex-wrap items-center justify-between gap-2 font-mono relative z-10">
+                <span className="flex items-center gap-1.5">
+                  <Icon name="arrow-counter-clockwise" size={13} className="text-fg-muted" />
+                  Drag to rotate globe
+                </span>
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                    <span className="size-1.5 rounded-full bg-emerald-500" />
+                    0% Custody Risk
+                  </span>
+                  <span className="text-fg-default font-semibold">Sub-25ms WebSocket</span>
+                </div>
               </div>
             </Card>
           </div>
@@ -628,20 +712,85 @@ export default function HomePage() {
                 <Icon name="arrow-right" size={18} />
               </ButtonLink>
             </div>
-            <Card>
-              <ol className="academy-track-list">
-              {home.academy.tracks.map((track, index) => (
-                <li key={track.name}>
-                  <span className="font-mono text-caption text-fg-muted">
-                    0{index + 1}
+            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
+              <BorderBeam size={280} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
+              <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
+                <div className="flex items-center gap-2">
+                  <Badge tone="accent" icon="graduation-cap">
+                    100 Tactical Levels
+                  </Badge>
+                  <span className="font-mono text-caption text-emerald-600 font-semibold">
+                    100% Free
                   </span>
-                  <h3 className="text-title">{track.name}</h3>
-                  <span className="text-caption text-fg-muted">
-                    {track.level}
-                  </span>
-                </li>
-              ))}
-              </ol>
+                </div>
+                <span className="font-mono text-caption text-fg-muted">
+                  Stockfish 16 Engine
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
+                {[
+                  {
+                    num: "01",
+                    name: "Origins & Motivation",
+                    desc: "Board geometry · Core rules",
+                    tag: "Start here",
+                    icon: "graduation-cap" as const,
+                    color: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+                  },
+                  {
+                    num: "02",
+                    name: "Opening Principles",
+                    desc: "Center control · King safety",
+                    tag: "Develop",
+                    icon: "strategy" as const,
+                    color: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+                  },
+                  {
+                    num: "03",
+                    name: "Tactical Patterns",
+                    desc: "Forks · Pins · Skewers · Nets",
+                    tag: "Calculate",
+                    icon: "lightning" as const,
+                    color: "text-amber-600 bg-amber-500/10 border-amber-500/20",
+                  },
+                  {
+                    num: "04",
+                    name: "Endgame Magic",
+                    desc: "King activity · Passed pawns",
+                    tag: "Convert",
+                    icon: "crown-simple" as const,
+                    color: "text-purple-600 bg-purple-500/10 border-purple-500/20",
+                  },
+                ].map((track) => (
+                  <div
+                    key={track.name}
+                    className="flex items-center justify-between p-3 rounded-xl border border-line bg-inset/75 transition-colors hover:bg-surface"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg border ${track.color}`}>
+                        <Icon name={track.icon} size={16} />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-semibold text-fg-default text-[13px] truncate">
+                          {track.name}
+                        </span>
+                        <span className="text-[11px] text-fg-muted font-mono truncate">
+                          {track.desc}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="shrink-0 font-mono text-[11px] font-semibold text-fg-muted bg-surface border border-line px-2 py-0.5 rounded-full">
+                      {track.tag}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4 mt-4 border-t border-line flex items-center justify-between text-caption font-mono text-fg-muted">
+                <span>Stockfish A.I. Practice · Unlimited games</span>
+                <span className="text-emerald-600 font-semibold">Zero stake needed</span>
+              </div>
             </Card>
           </div>
         </section>

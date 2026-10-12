@@ -39,34 +39,37 @@ export function Globe({ className = "", config }: GlobeProps) {
       diffuse: 1.4,
       mapSamples: 16000,
       mapBrightness: 3.5,
-      baseColor: [0.88, 0.9, 0.94], // Crisp, modern Fog Board light gray/slate base
+      baseColor: [0.90, 0.92, 0.95], // Crisp Fog Board light slate landmasses
       markerColor: [16 / 255, 185 / 255, 129 / 255], // Tether Emerald Green #10b981
-      glowColor: [0.94, 0.96, 0.98],
+      glowColor: [0.97, 0.98, 1.0],
       offset: [0, 0],
       markers: [
-        { location: [40.7128, -74.006], size: 0.08 }, // New York
-        { location: [51.5074, -0.1278], size: 0.08 }, // London
-        { location: [25.2048, 55.2708], size: 0.09 }, // Dubai
-        { location: [35.6762, 139.6503], size: 0.08 }, // Tokyo
-        { location: [1.3521, 103.8198], size: 0.08 }, // Singapore
-        { location: [52.52, 13.405], size: 0.07 }, // Berlin
-        { location: [55.7558, 37.6173], size: 0.08 }, // Moscow
-        { location: [48.8566, 2.3522], size: 0.07 }, // Paris
-        { location: [19.076, 72.8777], size: 0.07 }, // Mumbai
-        { location: [-23.5505, -46.6333], size: 0.07 }, // São Paulo
-        { location: [-33.8688, 151.2093], size: 0.07 }, // Sydney
+        { location: [40.7128, -74.006], size: 0.05 }, // New York
+        { location: [51.5074, -0.1278], size: 0.05 }, // London
+        { location: [25.2048, 55.2708], size: 0.055 }, // Dubai
+        { location: [35.6762, 139.6503], size: 0.05 }, // Tokyo
+        { location: [1.3521, 103.8198], size: 0.05 }, // Singapore
+        { location: [52.52, 13.405], size: 0.045 }, // Berlin
+        { location: [47.3769, 8.5417], size: 0.045 }, // Zurich
+        { location: [48.8566, 2.3522], size: 0.045 }, // Paris
+        { location: [19.076, 72.8777], size: 0.045 }, // Mumbai
+        { location: [-23.5505, -46.6333], size: 0.045 }, // São Paulo
+        { location: [-33.8688, 151.2093], size: 0.045 }, // Sydney
+        { location: [37.7749, -122.4194], size: 0.05 }, // San Francisco
+        { location: [22.3193, 114.1694], size: 0.05 }, // Hong Kong
       ],
       arcs: [
         { from: [40.7128, -74.006], to: [51.5074, -0.1278], color: [16 / 255, 185 / 255, 129 / 255] }, // NY -> London
         { from: [51.5074, -0.1278], to: [25.2048, 55.2708], color: [59 / 255, 130 / 255, 246 / 255] }, // London -> Dubai
         { from: [25.2048, 55.2708], to: [1.3521, 103.8198], color: [16 / 255, 185 / 255, 129 / 255] }, // Dubai -> Singapore
-        { from: [1.3521, 103.8198], to: [35.6762, 139.6503], color: [245 / 255, 158 / 255, 11 / 255] }, // Singapore -> Tokyo
-        { from: [52.52, 13.405], to: [55.7558, 37.6173], color: [16 / 255, 185 / 255, 129 / 255] }, // Berlin -> Moscow
+        { from: [1.3521, 103.8198], to: [35.6762, 139.6503], color: [16 / 255, 185 / 255, 129 / 255] }, // Singapore -> Tokyo
+        { from: [35.6762, 139.6503], to: [-33.8688, 151.2093], color: [59 / 255, 130 / 255, 246 / 255] }, // Tokyo -> Sydney
+        { from: [47.3769, 8.5417], to: [40.7128, -74.006], color: [16 / 255, 185 / 255, 129 / 255] }, // Zurich -> NY
       ],
       arcColor: [16 / 255, 185 / 255, 129 / 255],
-      arcWidth: 0.45,
-      arcHeight: 0.25,
-      markerElevation: 0.03,
+      arcWidth: 0.28,
+      arcHeight: 0.22,
+      markerElevation: 0.02,
       ...config,
     });
 
