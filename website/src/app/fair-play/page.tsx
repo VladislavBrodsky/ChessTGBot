@@ -201,7 +201,7 @@ export default function FairPlayPage() {
               Academy.
             </p>
             <div className="mt-auto w-full pt-6">
-              <PlayButton size="lg" />
+              <PlayButton size="lg" trackingLocation="fair_play_cta" />
               <p className="mt-4 min-h-10 text-caption text-fg-muted">No stake for A.I. practice. Choose it in the Mini App.</p>
             </div>
           </Card>

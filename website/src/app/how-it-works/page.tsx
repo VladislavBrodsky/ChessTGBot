@@ -69,7 +69,7 @@ export default function HowItWorksPage() {
           visual={<ChessSculpture variant="howItWorks" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
-            <PlayButton size="lg" />
+            <PlayButton size="lg" trackingLocation="how_it_works_hero" />
             <ButtonLink href="/academy" variant="ghost">
               Practise first
               <Icon name="arrow-right" size={16} />

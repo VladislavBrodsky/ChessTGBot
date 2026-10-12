@@ -10,7 +10,11 @@ export function Faq() {
           name="faq"
           className="group border-b border-line py-2 last:border-0"
         >
-          <summary className="faq-question flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 text-fg marker:hidden">
+          <summary
+            data-analytics-category="faq"
+            data-analytics-label={item.q}
+            className="faq-question flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 text-fg marker:hidden"
+          >
             {item.q}
             <span
               aria-hidden="true"

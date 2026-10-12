@@ -50,7 +50,7 @@ export default function AcademyPage() {
           visual={<ChessSculpture variant="academy" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
-            <PlayButton size="lg" label="Train in Telegram" />
+            <PlayButton size="lg" label="Train in Telegram" trackingLocation="academy_hero" />
             <ButtonLink href="#challenge" variant="ghost">
               Solve a free puzzle
               <Icon name="arrow-right" size={16} />
@@ -170,6 +170,7 @@ export default function AcademyPage() {
                 size="lg"
                 variant="onDark"
                 label="Start A.I. practice"
+                trackingLocation="academy_ai_practice"
               />
               <p className="text-caption text-fg-muted">
                 Choose A.I. practice in the Mini App. Practice builds skills;

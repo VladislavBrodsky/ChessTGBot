@@ -49,7 +49,7 @@ export default function WagersPage() {
           visual={<ChessSculpture variant="wagers" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
-            <PlayButton size="lg" />
+            <PlayButton size="lg" trackingLocation="wagers_hero" />
             <ButtonLink href="/academy" variant="ghost">
               Practise free first
               <Icon name="arrow-right" size={16} />

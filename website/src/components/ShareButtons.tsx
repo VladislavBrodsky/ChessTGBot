@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Icon } from "@/icons";
+import { trackShareClick } from "@/lib/analytics";
 import { Button, buttonClass } from "./ui/Button";
 import { Input } from "./ui/Input";
 
@@ -34,6 +35,7 @@ export function ShareButtons({
   }, [url]);
   const shareText = title + " — Web3Chess";
   async function copy() {
+    trackShareClick("copy_link", compact ? "challenge" : "article", url);
     try {
       await navigator.clipboard.writeText(url);
       setStatus("Link copied. Your friend is up next.");
@@ -55,6 +57,9 @@ export function ShareButtons({
           href={`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() =>
+            trackShareClick("telegram", compact ? "challenge" : "article", url)
+          }
           className={buttonClass("secondary", "", "sm")}
         >
           <Icon name="paper-plane-tilt" size={16} />
@@ -73,6 +78,7 @@ export function ShareButtons({
             href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackShareClick("x", "article", url)}
             className={buttonClass("secondary", "", "sm")}
           >
             Share on X

@@ -54,7 +54,7 @@ const ALL_AVATARS = [
 const ACTIVITIES = [
   {
     flag: "🇳🇴",
-    user: "magnus_ton",
+    user: "magnus_gram",
     action: "won",
     amount: "+$190.00 USDT",
     tone: "emerald",

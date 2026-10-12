@@ -79,7 +79,7 @@ function TetherUsdtBadge({ className = "size-6" }: { className?: string }) {
   );
 }
 
-function TonBadge({ className = "size-6" }: { className?: string }) {
+function GramBadge({ className = "size-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" fill="none" className={className}>
       <rect width="32" height="32" rx="16" fill="#0098EA" />
@@ -135,7 +135,7 @@ const CHESS_PIECES: OrbitItem[] = [
 
 const CRYPTO_TOKENS: OrbitItem[] = [
   { id: "usdt", name: "USDT", tag: "Instant 1:1 Settlement", element: <TetherUsdtBadge className="size-7" /> },
-  { id: "gram", name: "GRAM", tag: "Sub-Cent Gas Rails", element: <TonBadge className="size-7" /> },
+  { id: "gram", name: "GRAM", tag: "Sub-Cent Gas Rails", element: <GramBadge className="size-7" /> },
   { id: "btc", name: "Bitcoin", tag: "Cross-Chain Liquidity", element: <BitcoinBadge className="size-7" /> },
   { id: "eth", name: "Ethereum", tag: "Multichain Bridge", element: <EthereumBadge className="size-7" /> },
   { id: "telegram", name: "Telegram", tag: "1-Tap Direct Launch", element: <TelegramBadge className="size-7" /> },

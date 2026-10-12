@@ -38,6 +38,9 @@ export function ChessChallenge() {
   );
 
   function reset(next = index) {
+    if (next !== index) {
+      trackPuzzleInteraction(CHALLENGES[next].id, "switch");
+    }
     setIndex(next);
     setPosition(CHALLENGES[next].fen);
     setOutcome("playing");
@@ -49,14 +52,23 @@ export function ChessChallenge() {
   }
   function tryMove(move: string | { from: string; to: string }) {
     if (outcome !== "playing") return false;
+    const moveNotation =
+      typeof move === "string" ? move : `${move.from}-${move.to}`;
     try {
       const game = new Chess(puzzle.fen);
       game.move(move);
       if (!game.isCheckmate()) {
+        trackPuzzleInteraction(puzzle.id, "move_try", {
+          move: moveNotation,
+          is_checkmate: false,
+        });
         setMoveError(true);
         setFeedback("Legal move, but not checkmate. Try another move.");
         return false;
       }
+      trackPuzzleInteraction(puzzle.id, "solve", {
+        winning_move: moveNotation,
+      });
       setPosition(game.fen());
       setMoveError(false);
       setOutcome("solved");
@@ -65,6 +77,10 @@ export function ChessChallenge() {
       setFeedback("You found checkmate. Nicely calculated.");
       return true;
     } catch {
+      trackPuzzleInteraction(puzzle.id, "move_try", {
+        move: moveNotation,
+        is_legal: false,
+      });
       setMoveError(true);
       setFeedback(
         "That move isn’t legal here. Use standard notation, such as a piece letter and destination square.",
@@ -73,6 +89,7 @@ export function ChessChallenge() {
     }
   }
   function reveal() {
+    trackPuzzleInteraction(puzzle.id, "reveal");
     const game = new Chess(puzzle.fen);
     game.move(puzzle.answer);
     setPosition(game.fen());
@@ -227,7 +244,7 @@ export function ChessChallenge() {
                 Next position
                 <Icon name="arrow-right" size={16} />
               </Button>
-              <PlayButton variant="ghost" />
+              <PlayButton variant="ghost" trackingLocation="puzzle_solved_banner" />
             </>
           )}
         </div>

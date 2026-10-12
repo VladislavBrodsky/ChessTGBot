@@ -75,7 +75,7 @@ export default async function PlayPage() {
               </div>
 
               <div className="mt-auto w-full">
-                <PlayButton size="lg" startapp="arena" label="Open in Telegram" className="w-full" pulsating />
+                <PlayButton size="lg" startapp="arena" label="Open in Telegram" className="w-full" pulsating trackingLocation="play_arena_card" />
               </div>
             </div>
           </Card>
