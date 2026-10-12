@@ -12,7 +12,9 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "icons": "node scripts/build-icons.mjs",
-    "brand:build": "node scripts/build-brand.mjs"
+    "brand:build": "node scripts/build-brand.mjs",
+    "audit:lighthouse": "lhci autorun --config=./lighthouserc.json",
+    "audit:lighthouse:desktop": "lhci autorun --config=./lighthouserc.desktop.json"
   },
   "dependencies": {
     "chess.js": "1.4.0",
