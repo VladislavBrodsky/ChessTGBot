@@ -1098,7 +1098,15 @@ class TelegramService:
                 # broadcast targeting stops reselecting them. Any other
                 # BadRequest is a real request-shape bug and stays alertable.
                 msg = str(e).lower()
-                if (
+                if "can't parse entities" in msg:
+                    try:
+                        # Fallback: deliver as plain text so critical notifications are not lost
+                        await bot.send_message(chat_id=telegram_id, text=text, parse_mode=None)
+                        logger.info(f"✉️ Telegram Notification delivered via plain-text fallback to user {telegram_id}")
+                        return
+                    except Exception as fallback_err:
+                        bot_errors_logger.error(f"❌ Failed plain text fallback to {telegram_id}: {fallback_err}")
+                elif (
                     "chat not found" in msg
                     or "user is deactivated" in msg
                     or "bot can't initiate conversation" in msg

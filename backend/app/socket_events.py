@@ -2,6 +2,7 @@ import asyncio
 import random
 import time
 import logging
+import html
 
 logger = logging.getLogger(__name__)
 
@@ -457,10 +458,12 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
     # Send automated matchmaking Telegram notifications
     try:
         from app.services.telegram_bot import TelegramService
+        white_display = html.escape(str(state.white_username or 'Opponent'))
+        black_display = html.escape(str(state.black_username or 'Opponent'))
         # White Player Notification
         msg_w = (
             f"<b>🎮 Wager Chess Battle Connected! (White)</b>\n\n"
-            f"• <b>Opponent:</b> @{state.black_username or 'Opponent'} (ELO {state.black_elo})\n"
+            f"• <b>Opponent:</b> {black_display} (ELO {state.black_elo})\n"
             f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
             f"<i>Your wager has been locked. The board is ready in the Chess Mini App. Make your first move! ♟️⚡️</i>"
         )
@@ -469,13 +472,13 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
         # Black Player Notification
         msg_b = (
             f"<b>🎮 Wager Chess Battle Connected! (Black)</b>\n\n"
-            f"• <b>Opponent:</b> @{state.white_username or 'Opponent'} (ELO {state.white_elo})\n"
+            f"• <b>Opponent:</b> {white_display} (ELO {state.white_elo})\n"
             f"• <b>Match Wager Bid:</b> -${bid_amount / 100:.2f} USDT\n\n"
             f"<i>Your wager has been locked. White is setting up the first move. Keep your eyes on the board! ♟️🛡️</i>"
         )
         await TelegramService.send_notification(state.black_player_id, msg_b)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Failed to send matchmaking notification for game {game_id}: {e}")
 
     # Players matched while away from the app get an urgent Telegram call-back
     # with a deep link into the game — this is what makes the persistent free
@@ -486,11 +489,12 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
             deep_link = await TelegramService.create_invite_link(game_id)
             grace_minutes = int(OFFLINE_FIRST_MOVE_GRACE_SECONDS // 60)
             for pid in offline_player_ids:
-                opp_name = state.white_username if pid == state.black_player_id else state.black_username
+                opp_name_raw = state.white_username if pid == state.black_player_id else state.black_username
+                opp_name = html.escape(str(opp_name_raw or 'Opponent'))
                 opp_elo = state.white_elo if pid == state.black_player_id else state.black_elo
                 msg = (
                     f"⚔️ <b>Opponent Found — You're Up!</b>\n\n"
-                    f"👤 <b>{opp_name or 'Opponent'}</b> (ELO {opp_elo or 1000}) is at the board waiting for you.\n\n"
+                    f"👤 <b>{opp_name}</b> (ELO {opp_elo or 1000}) is at the board waiting for you.\n\n"
                     f"⏳ You have <b>{grace_minutes} minutes</b> to return and make your move, "
                     f"or the game will be cancelled.\n\n"
                     f"<a href=\"{deep_link}\">▶️ Open the board now</a>"

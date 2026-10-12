@@ -26,6 +26,10 @@ async def start_deposit_crawler():
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
         
     master_wallet = settings.MASTER_WALLET_ADDRESS
+    if not master_wallet:
+        logger.warning("DepositCrawler: MASTER_WALLET_ADDRESS not configured. Background crawler idle.")
+        return
+
     url = f"https://tonapi.io/v2/accounts/{master_wallet}/events?limit=25"
 
     while True:
@@ -245,6 +249,10 @@ async def start_deposit_crawler():
                                             logger.warning(f"Failed to send admin deposit alert: {e}")
                                             
                                         logger.info(f"DepositCrawler: Successfully processed synced deposit for user {telegram_id}.")
+                elif res.status_code == 429:
+                    logger.warning("DepositCrawler: TonAPI rate limited (429). Backing off for 120s.")
+                    await asyncio.sleep(120)
+                    continue
                 else:
                     logger.warning(f"DepositCrawler: TonAPI returned status {res.status_code}")
         except Exception as loop_err:
