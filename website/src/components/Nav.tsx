@@ -103,7 +103,7 @@ export function Nav() {
         </div>
       </header>
       <div
-        inert={!stuck || open}
+        inert={(!stuck || open) ? true : undefined}
         aria-hidden={!stuck || open}
         className={`fixed inset-x-0 top-4 z-40 hidden justify-center transition-[opacity,transform] duration-200 lg:flex ${stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"}`}
       >

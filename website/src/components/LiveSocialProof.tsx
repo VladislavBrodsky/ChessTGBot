@@ -1,7 +1,7 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Marketing Online Users Range [1374, 3278] ──────────────────────────────
@@ -212,13 +212,15 @@ export function LiveSocialProof() {
       {/* 2. 4 Real Photography Avatars (Changes every 60 minutes) */}
       <div className="flex items-center -space-x-2 shrink-0">
         {activeAvatars.map((avatar) => (
-          <img
+          <Image
             key={avatar.id}
             src={avatar.src}
             alt={avatar.name}
             title={avatar.name}
             width={28}
             height={28}
+            sizes="28px"
+            quality={75}
             className="size-6 sm:size-7 rounded-full border-2 border-[#0C0D0F] bg-[#1A1B1E] object-cover shadow-sm transition-transform duration-200 hover:scale-125 hover:z-30 cursor-pointer"
           />
         ))}
