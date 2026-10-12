@@ -18,6 +18,7 @@ import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { ChessEcosystemOrbit } from "@/components/ChessEcosystemOrbit";
 import { GlobeShowcase } from "@/components/GlobeShowcase";
+import { RewardsBento } from "@/components/RewardsBento";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
 import { home } from "@/content/home";
@@ -198,143 +199,9 @@ export default function HomePage() {
             </ButtonLink>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* ── CARD 1: 1,000 TON Mystery Jackpots & Vaults ── */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group hover:border-fg-muted/40 transition-colors shadow-xs">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <Badge tone="accent" icon="gift">
-                    Mystery Vaults
-                  </Badge>
-                  <span className="font-mono text-[11px] text-amber-600 font-semibold bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-                    Daily Drops
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Win up to 1,000 TON in Mystery Boxes
-                </h3>
-                <p className="text-body-sm text-fg-muted mb-4">
-                  Every match earns XP. Open Knight, Queen, and King mystery chests with chances to unbox massive TON prizes, 2× XP boosters, and rare 3D pieces.
-                </p>
-              </div>
-
-              <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption font-mono">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-fg-default font-sans font-medium">
-                    <span className="size-2 rounded-full bg-amber-400" />
-                    King’s Dominion
-                  </span>
-                  <span className="font-bold text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full text-[11px]">
-                    <NumberTicker value={1000} suffix=" TON" />
-                  </span>
-                </div>
-                <div className="flex items-center justify-between border-t border-line/60 pt-2">
-                  <span className="flex items-center gap-2 text-fg-default font-sans font-medium">
-                    <span className="size-2 rounded-full bg-purple-400" />
-                    Queen’s Treasury
-                  </span>
-                  <span className="font-semibold text-purple-600 text-[11px]">
-                    Rare 3D Pieces
-                  </span>
-                </div>
-                <div className="flex items-center justify-between border-t border-line/60 pt-2">
-                  <span className="flex items-center gap-2 text-fg-default font-sans font-medium">
-                    <span className="size-2 rounded-full bg-blue-400" />
-                    Knight’s Gambit
-                  </span>
-                  <span className="font-semibold text-blue-600 text-[11px]">
-                    2× XP Boosters
-                  </span>
-                </div>
-              </div>
-            </Card>
-
-            {/* ── CARD 2: 6-Tier Viral Affiliate Growth Engine ── */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group hover:border-fg-muted/40 transition-colors shadow-xs">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <Badge tone="accent" icon="users-three">
-                    Affiliate Engine
-                  </Badge>
-                  <span className="font-mono text-[11px] text-emerald-600 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-                    Passive Rake
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Earn up to 2% lifetime match rake
-                </h3>
-                <p className="text-body-sm text-fg-muted mb-4">
-                  Invite friends to Telegram matches once. Receive lifetime USDT commissions across 6 referral tiers every single time your network competes.
-                </p>
-              </div>
-
-              <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
-                <div className="flex items-center justify-between font-mono">
-                  <span className="text-fg-muted">Tier 1 Direct</span>
-                  <span className="font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[11px]">
-                    1.0% Rake
-                  </span>
-                </div>
-                <div className="flex items-center justify-between font-mono border-t border-line/60 pt-2">
-                  <span className="text-fg-muted">Tier 2 Network</span>
-                  <span className="font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[11px]">
-                    0.4% Rake
-                  </span>
-                </div>
-                <div className="flex items-center justify-between font-mono border-t border-line/60 pt-2">
-                  <span className="text-fg-muted">Tiers 3–6 Pool</span>
-                  <span className="font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded text-[11px]">
-                    0.6% Rake
-                  </span>
-                </div>
-                <div className="border-t border-line pt-2 flex items-center justify-between font-semibold text-fg-default">
-                  <span className="font-sans text-[12px]">Total Referral Pool</span>
-                  <span className="font-mono text-[11px] font-bold text-emerald-600 bg-emerald-500/15 border border-emerald-500/25 px-2 py-0.5 rounded-full">
-                    2.0% of every pot
-                  </span>
-                </div>
-              </div>
-            </Card>
-
-            {/* ── CARD 3: Web2 vs Web3Chess (Conversion Hook) ── */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group md:col-span-2 lg:col-span-1 hover:border-fg-muted/40 transition-colors shadow-xs">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <Badge tone="neutral" icon="lightning">
-                    The Modern Edge
-                  </Badge>
-                  <span className="font-mono text-[11px] text-fg-muted bg-surface border border-line px-2 py-0.5 rounded-full">
-                    Web3 vs Web2
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Play chess for real crypto rewards
-                </h3>
-                <p className="text-body-sm text-fg-muted mb-4">
-                  Compare how Web3Chess transforms standard online chess into a high-reward competitive arena:
-                </p>
-              </div>
-
-              <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption">
-                <div className="flex items-start gap-2.5 rounded-lg bg-surface/80 p-2.5 border border-line/60">
-                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 font-bold text-[11px] mt-0.5">✕</span>
-                  <div className="min-w-0">
-                    <span className="font-medium text-fg-default text-[12px] block">Legacy Chess</span>
-                    <span className="text-[11px] text-fg-muted leading-tight block mt-0.5">Zero prizes for casual wins · Paywalls &amp; ads</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2.5 rounded-lg bg-emerald-500/5 p-2.5 border border-emerald-500/20">
-                  <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 font-bold text-[11px] mt-0.5">✓</span>
-                  <div className="min-w-0">
-                    <span className="font-semibold text-emerald-700 text-[12px] block">Web3Chess Arena</span>
-                    <span className="text-[11px] text-emerald-800/80 leading-tight block mt-0.5">95% Winner pot · Daily TON vaults · 1-tap Telegram</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
+          <RewardsBento />
         </section>
+
 
         <section
           className="shell-wide facts-section"
@@ -395,110 +262,102 @@ export default function HomePage() {
         <section id="play" className="shell-wide home-section" aria-labelledby="play-heading">
           <div className="section-index">
             <span>02 / Worldwide live matchmaking</span>
-            <span>Over 120 countries · Sub-second pairing</span>
+            <span>120+ countries · Sub-second pairing</span>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center gap-2.5">
+          <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
+            <div className="space-y-6">
+              {/* Badge row */}
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge tone="accent" icon="shield-check">
                   Fair-Play Verified Arena
                 </Badge>
                 <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Global Liquidity · Automated Match Escrow
+                  Global liquidity · Automated escrow
                 </span>
               </div>
 
+              {/* Headline */}
               <h2 id="play-heading" className="editorial-title">
-                Challenge rivals worldwide. Matched in seconds
+                Challenge rivals worldwide.<br />
+                Matched in seconds
               </h2>
 
-              <p className="max-w-[46ch] section-lead text-fg-muted">
-                Active grandmasters, blitz tacticians, and rivals across 120+ countries compete around the clock. Every duel is protected by automated match escrow, deterministic move validation, and instant pot settlement.
+              {/* Short lead — one sentence, not a paragraph */}
+              <p className="max-w-[42ch] text-body text-fg-muted">
+                120+ countries, around the clock. Every duel is escrow-protected — no trust required.
               </p>
 
-              {/* ── Safe Space & Security Architecture ── */}
-              <div className="space-y-2.5">
-                {/* 1. Automated Match Escrow */}
-                <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:bg-surface-inset/50">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 mt-0.5">
-                    <Icon name="lock" size={17} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-[13px]">Automated Match Escrow</span>
-                      <span className="font-mono text-[10px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Locked at Start</span>
+              {/* ── Compact feature chips (icon + title + one-line hint) ── */}
+              <div className="grid gap-2">
+                {[
+                  {
+                    icon: "lock"         as const,
+                    title: "Automated Match Escrow",
+                    hint: "Stakes lock before move 1. 95% releases instantly on win",
+                    tag: "Locked at Start",
+                    tagColor: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+                    iconColor: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+                  },
+                  {
+                    icon: "shield-check" as const,
+                    title: "Stockfish 16 Anti-Cheat Shield",
+                    hint: "Every move audited in real-time. Auto-refund on detection",
+                    tag: "Real-Time",
+                    tagColor: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+                    iconColor: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+                  },
+                  {
+                    icon: "lightning"    as const,
+                    title: "Lag-Compensated Clocks",
+                    hint: "Authoritative server timing. Zero ping abuse",
+                    tag: "FIDE Timing",
+                    tagColor: "text-purple-600 bg-purple-500/10 border-purple-500/20",
+                    iconColor: "text-purple-600 bg-purple-500/10 border-purple-500/20",
+                  },
+                ].map((f) => (
+                  <div
+                    key={f.title}
+                    className="flex items-center gap-3 rounded-xl border border-line bg-surface px-3.5 py-2.5 transition-colors hover:bg-inset/50"
+                  >
+                    <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg border ${f.iconColor}`}>
+                      <Icon name={f.icon} size={16} />
                     </div>
-                    <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
-                      Both stakes lock into match escrow before move 1. 95% of the pot credits instantly to the winner’s balance upon checkmate or clock flag.
-                    </p>
-                  </div>
-                </div>
-
-                {/* 2. Stockfish 16 Anti-Cheat Shield */}
-                <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:bg-surface-inset/50">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-600 mt-0.5">
-                    <Icon name="shield-check" size={17} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-[13px]">Stockfish 16 Anti-Cheat Shield</span>
-                      <span className="font-mono text-[10px] font-semibold text-blue-600 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">Real-Time</span>
+                    <div className="min-w-0 flex-1">
+                      <span className="block font-semibold text-fg-default text-[13px] leading-snug">{f.title}</span>
+                      <span className="block text-[11px] text-fg-muted leading-snug mt-0.5">{f.hint}</span>
                     </div>
-                    <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
-                      Every move is audited for millisecond timing variance and engine correlation. Automatic stake refund if unfair play is detected.
-                    </p>
+                    <span className={`shrink-0 hidden sm:inline-flex font-mono text-[10px] font-semibold border px-2 py-0.5 rounded-full ${f.tagColor}`}>
+                      {f.tag}
+                    </span>
                   </div>
-                </div>
-
-                {/* 3. Lag-Compensated Clocks */}
-                <div className="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 transition-colors hover:bg-surface-inset/50">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-500/10 text-purple-600 mt-0.5">
-                    <Icon name="lightning" size={17} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-[13px]">Lag-Compensated Clocks</span>
-                      <span className="font-mono text-[10px] font-semibold text-purple-600 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">FIDE Timing</span>
-                    </div>
-                    <p className="text-[12px] text-fg-muted leading-relaxed mt-0.5">
-                      Centralized authoritative timekeeping with network latency compensation. Zero advantage to artificial ping manipulation or disconnection stalls.
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
 
-              {/* Real-time Global Proof Grid */}
-              <div className="grid grid-cols-3 gap-3 rounded-xl border border-line bg-inset p-3 text-center font-mono">
-                <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase text-fg-muted block font-sans">Active Rivals</span>
-                  <span className="poster text-heading-xs text-fg-default font-bold flex items-center justify-center gap-1">
-                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
-                    <NumberTicker value={3840} />+
-                  </span>
-                  <span className="text-[10px] text-emerald-600 block font-medium">In live duels</span>
-                </div>
-                <div className="space-y-0.5 border-x border-line">
-                  <span className="text-[10px] uppercase text-fg-muted block font-sans">Average Queue</span>
-                  <span className="poster text-heading-xs text-fg-default font-bold">
-                    &lt; 2.4s
-                  </span>
-                  <span className="text-[10px] text-fg-muted block font-medium">Auto-pairing</span>
-                </div>
-                <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase text-fg-muted block font-sans">Global Reach</span>
-                  <span className="poster text-heading-xs text-fg-default font-bold">
-                    120+
-                  </span>
-                  <span className="text-[10px] text-fg-muted block font-medium">Countries</span>
-                </div>
+              {/* ── Stat strip (inline, not a full card) ── */}
+              <div className="flex items-center divide-x divide-line rounded-xl border border-line bg-inset overflow-hidden text-center">
+                {[
+                  { label: "Active rivals", value: "3,840+", sub: "live duels", dot: true },
+                  { label: "Avg queue",     value: "< 2.4s", sub: "auto-pairing" },
+                  { label: "Global reach",  value: "120+",   sub: "countries" },
+                ].map((s) => (
+                  <div key={s.label} className="flex-1 py-3 space-y-0.5">
+                    <span className="text-[10px] uppercase tracking-wide text-fg-muted block font-sans">{s.label}</span>
+                    <span className="poster text-heading-xs font-bold text-fg-default flex items-center justify-center gap-1">
+                      {s.dot && <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                      {s.value}
+                    </span>
+                    <span className="text-[10px] text-fg-muted block">{s.sub}</span>
+                  </div>
+                ))}
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 pt-1">
+              {/* CTAs */}
+              <div className="flex flex-wrap items-center gap-3">
                 <PlayButton size="md" pulsating />
                 <ButtonLink href="/how-it-works" variant="secondary">
-                  Explore game ecosystem
+                  How it works
                   <Icon name="arrow-right" size={18} />
                 </ButtonLink>
               </div>
@@ -508,6 +367,7 @@ export default function HomePage() {
             <GlobeShowcase />
           </div>
         </section>
+
 
         {/* ── 3D WEB3 & TON ECOSYSTEM CLOUD ── */}
         <section id="infrastructure" className="shell-wide home-section" aria-labelledby="infrastructure-heading">
