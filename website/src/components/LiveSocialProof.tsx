@@ -4,8 +4,24 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+// ── Marketing Online Users Range [1374, 3278] ──────────────────────────────
+const MIN_ONLINE = 1374;
+const MAX_ONLINE = 3278;
+
+function getInitialOnlineUsers(): number {
+  const now = new Date();
+  const hour = now.getUTCHours();
+  const minute = now.getUTCMinutes();
+  // Realistic diurnal wave (peaks around 18:00 UTC, trough around 05:00 UTC)
+  const timeVal = (hour * 60 + minute) / (24 * 60);
+  const wave = (Math.sin((timeVal - 0.28) * 2 * Math.PI) + 1) / 2; // 0 to 1
+  const span = MAX_ONLINE - MIN_ONLINE; // 1904
+  const base = MIN_ONLINE + Math.floor(wave * (span - 140));
+  const jitter = ((now.getDate() * 19 + minute * 13) % 71) - 35;
+  return Math.min(MAX_ONLINE, Math.max(MIN_ONLINE, base + jitter));
+}
+
 // ── 24 Real, Modern, Diverse Photography Avatars ────────────────────────────
-// High-resolution portraits of competitive players worldwide.
 // Rotates in 4-player cohorts every 60 minutes based on real-time clock.
 const ALL_AVATARS = [
   { id: "1", src: "/avatars/avatar-01.jpg", name: "Anna S. · GM (2540)", flag: "🇳🇴" },
@@ -35,7 +51,6 @@ const ALL_AVATARS = [
 ];
 
 // ── Real Live PvP Win & Payout Activities (Zero Game Type Badges) ───────────
-// Verified winnings and settlements without distracting game type labels.
 const ACTIVITIES = [
   {
     flag: "🇳🇴",
@@ -116,19 +131,8 @@ export function LiveSocialProof() {
   // Hourly slot determines the active 4-avatar cohort (changes every 60 minutes)
   const [hourSlot, setHourSlot] = useState(() => Math.floor(Date.now() / (1000 * 60 * 60)));
 
-  // Realistic dynamic active players count that fluctuates naturally
-  const [liveCount] = useState(() => {
-    const now = new Date();
-    const dayOfYear = Math.floor(
-      (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) /
-        1000 /
-        60 /
-        60 /
-        24
-    );
-    const hour = now.getUTCHours();
-    return 3840 + ((dayOfYear * 7 + hour * 13) % 180);
-  });
+  // Online active players count strictly kept in range [1374, 3278]
+  const [liveCount, setLiveCount] = useState<number>(getInitialOnlineUsers);
 
   // Check every 60 seconds if the hour slot changed to refresh avatars
   useEffect(() => {
@@ -137,6 +141,18 @@ export function LiveSocialProof() {
       setHourSlot((prev) => (prev !== currentHour ? currentHour : prev));
     };
     const timer = setInterval(checkHour, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Subtle organic fluctuation every 12 seconds, clamped strictly to [1374, 3278]
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveCount((prev) => {
+        const delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
+        const next = prev + delta;
+        return Math.min(MAX_ONLINE, Math.max(MIN_ONLINE, next));
+      });
+    }, 12000);
     return () => clearInterval(timer);
   }, []);
 
@@ -163,7 +179,7 @@ export function LiveSocialProof() {
     <div
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      className="group/proof relative inline-flex items-center gap-2.5 sm:gap-3 rounded-full bg-[#0C0D0F]/95 text-white border border-white/[0.12] py-1.5 px-2.5 sm:px-3.5 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_35px_-5px_rgba(16,185,129,0.2)] max-w-full overflow-hidden"
+      className="group/proof relative inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-[#0C0D0F]/95 text-white border border-white/[0.12] py-1.5 px-2.5 sm:px-3.5 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_35px_-5px_rgba(16,185,129,0.2)] max-w-full overflow-hidden"
     >
       {/* 4 Real Photography Avatars (Changes every 60 minutes) */}
       <div className="flex items-center -space-x-2 shrink-0">
@@ -180,11 +196,23 @@ export function LiveSocialProof() {
         ))}
       </div>
 
-      {/* Live Players Online Counter with Emerald Ping Dot */}
-      <div className="flex items-center gap-1.5 shrink-0">
+      {/* Eye-Catching Crimson Red LIVE Badge with Pulsing Ping Dot */}
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-mono font-extrabold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/35 shadow-[0_0_12px_rgba(244,63,94,0.3)] shrink-0">
+        <span className="relative flex size-1.5 sm:size-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-90" />
+          <span className="relative inline-flex size-1.5 sm:size-2 rounded-full bg-rose-500" />
+        </span>
+        LIVE
+      </span>
+
+      {/* Acid Green Pulsing Dot + Online Counter (In range 1,374 to 3,278) */}
+      <div
+        className="flex items-center gap-1.5 shrink-0"
+        title="Live active players (1,374 – 3,278 rivals)"
+      >
         <span className="relative flex size-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00FF66] opacity-75" />
+          <span className="relative inline-flex size-2 rounded-full bg-[#00FF66]" />
         </span>
         <span className="text-[12px] sm:text-[13px] font-semibold text-white tabular-nums">
           {liveCount.toLocaleString()}
