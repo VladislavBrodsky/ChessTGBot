@@ -504,23 +504,43 @@ export default function HomePage() {
               ].map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 space-y-4 transition-all hover:border-emerald-500/40 hover:bg-white/[0.07] shadow-xs backdrop-blur-xs flex flex-col justify-between"
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-5.5 space-y-4 transition-all duration-300 hover:border-emerald-500/40 hover:bg-white/[0.07] hover:shadow-[0_12px_35px_-10px_rgba(16,185,129,0.18)] shadow-xs backdrop-blur-xs flex flex-col justify-between"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
-                        <Icon name={item.icon} size={19} />
-                      </div>
-                      <span className="font-mono text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  <div className="space-y-3.5">
+                    {/* Top Eyebrow Badge with Glowing Live Dot */}
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-mono font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
+                        <span className="relative flex size-1.5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
+                        </span>
                         {item.tag}
                       </span>
                     </div>
-                    <h3 className="text-title text-fg-default">{item.title}</h3>
-                    <p className="text-body-sm text-fg-muted leading-relaxed">{item.body}</p>
+
+                    {/* Icon + Title on the SAME LINE */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.12)]">
+                        <Icon name={item.icon} size={20} />
+                      </div>
+                      <h3 className="text-[17px] font-semibold text-white tracking-tight leading-snug">
+                        {item.title}
+                      </h3>
+                    </div>
+
+                    {/* Body explanation */}
+                    <p className="text-body-sm text-stone-300/85 leading-relaxed">
+                      {item.body}
+                    </p>
                   </div>
-                  <div className="pt-2 border-t border-white/10 font-mono text-[10px] text-fg-muted flex items-center justify-between">
-                    <span>Guarantee:</span>
-                    <span className="text-emerald-400 font-medium">{item.metric}</span>
+
+                  {/* Footer Guarantee */}
+                  <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-stone-400 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-stone-400">
+                      <Icon name="shield-check" size={13} className="text-emerald-400 shrink-0" />
+                      Guarantee:
+                    </span>
+                    <span className="text-emerald-400 font-semibold">{item.metric}</span>
                   </div>
                 </div>
               ))}
