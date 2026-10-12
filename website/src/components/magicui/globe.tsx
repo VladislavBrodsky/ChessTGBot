@@ -39,9 +39,9 @@ export function Globe({ className = "", config }: GlobeProps) {
       diffuse: 1.4,
       mapSamples: 16000,
       mapBrightness: 3.5,
-      baseColor: [0.90, 0.92, 0.95], // Crisp Fog Board light slate landmasses
+      baseColor: [0.88, 0.90, 0.93], // Crisp Fog Board light slate landmasses
       markerColor: [16 / 255, 185 / 255, 129 / 255], // Tether Emerald Green #10b981
-      glowColor: [0.97, 0.98, 1.0],
+      glowColor: [0.89, 0.91, 0.94], // Seamless canvas atmosphere blend
       offset: [0, 0],
       markers: [
         { location: [40.7128, -74.006], size: 0.05 }, // New York

@@ -504,11 +504,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* ── 3D INTERACTIVE GLOBE SHOWCASE CARD ── */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group min-h-[520px]">
-              {/* Radar Terminal Header */}
+            {/* ── 3D INTERACTIVE GLOBE SHOWCASE (FRAMELESS WITH SHADOW & AMBIENT GLOW) ── */}
+            <div className="flex flex-col justify-between p-4 sm:p-6 relative select-none min-h-[520px] group">
+              {/* Ethereal Ambient Glow & Multi-layer Lighting Behind Globe (No ugly white container) */}
+              <div
+                className="pointer-events-none absolute -inset-4 sm:-inset-8 rounded-full bg-radial from-emerald-500/12 via-blue-500/6 to-transparent blur-3xl opacity-80"
+                aria-hidden="true"
+              />
+
+              {/* Radar Terminal Header (Glass Floating Pills) */}
               <div className="w-full flex items-center justify-between gap-2 mb-3 relative z-10">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 rounded-full border border-line/70 bg-surface/75 px-3 py-1 shadow-xs backdrop-blur-md">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="font-mono text-caption text-fg-default font-semibold">
                     Global PvP Radar
@@ -517,65 +523,73 @@ export default function HomePage() {
                     120+ active nodes
                   </span>
                 </div>
-                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-emerald-600 bg-surface/75 border border-emerald-500/25 px-2.5 py-1 rounded-full shadow-xs backdrop-blur-md">
                   <Icon name="shield-check" size={13} />
                   Escrow Protected
                 </span>
               </div>
 
-              {/* 3D Globe Visualizer with Radar Concentric Rings */}
-              <div className="relative flex items-center justify-center w-full my-auto py-2 overflow-hidden">
+              {/* 3D Globe Visualizer with Radar Rings & Realistic Floating Contact Shadow */}
+              <div className="relative flex items-center justify-center w-full my-auto py-2">
                 {/* Background Radar Rings */}
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="size-[360px] rounded-full border border-line/50 opacity-60" />
-                  <div className="size-[260px] rounded-full border border-dashed border-line/40 opacity-50" />
-                  <div className="size-[160px] rounded-full border border-line/30 opacity-40" />
+                  <div className="size-[380px] rounded-full border border-line/50 opacity-60" />
+                  <div className="size-[280px] rounded-full border border-dashed border-line/40 opacity-50" />
+                  <div className="size-[170px] rounded-full border border-line/30 opacity-40" />
                 </div>
+
+                {/* Soft Elliptical Contact Shadow Beneath 3D Globe */}
+                <div
+                  className="pointer-events-none absolute bottom-4 sm:bottom-6 w-[260px] sm:w-[300px] h-7 rounded-[100%] bg-black/15 blur-xl"
+                  aria-hidden="true"
+                />
 
                 <Globe className="max-w-[440px]" />
 
                 {/* Floating Live Match Chips (Glass HUD) */}
-                <div className="pointer-events-none absolute top-2 left-2 z-10 flex items-center gap-2 rounded-xl border border-line/80 bg-surface/90 px-3 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
+                <div className="pointer-events-none absolute top-3 left-2 z-10 flex items-center gap-2 rounded-xl border border-line/80 bg-surface/85 px-3 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="font-semibold text-fg-default">Dubai ⚔️ London</span>
                   <span className="text-fg-muted">·</span>
                   <span className="font-bold text-emerald-600 font-sans">$50 USDT</span>
                 </div>
 
-                <div className="pointer-events-none absolute top-2 right-2 z-10 hidden sm:flex items-center gap-1.5 rounded-xl border border-line/80 bg-surface/90 px-2.5 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
+                <div className="pointer-events-none absolute top-3 right-2 z-10 hidden sm:flex items-center gap-1.5 rounded-xl border border-line/80 bg-surface/85 px-2.5 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
                   <span className="size-1.5 rounded-full bg-blue-500" />
                   <span className="text-fg-muted">Anti-Cheat:</span>
                   <span className="font-semibold text-emerald-600">Stockfish 16</span>
                 </div>
 
-                <div className="pointer-events-none absolute bottom-3 right-2 z-10 flex items-center gap-2 rounded-xl border border-line/80 bg-surface/90 px-3 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
+                <div className="pointer-events-none absolute bottom-5 right-2 z-10 flex items-center gap-2 rounded-xl border border-line/80 bg-surface/85 px-3 py-1.5 font-mono text-[11px] shadow-sm backdrop-blur-md">
                   <span className="size-2 rounded-full bg-emerald-500" />
                   <span className="font-semibold text-fg-default">Tokyo ⚔️ New York</span>
                   <span className="text-fg-muted">·</span>
                   <span className="font-bold text-emerald-600 font-sans">$100 USDT</span>
                 </div>
 
-                <div className="pointer-events-none absolute bottom-3 left-2 z-10 hidden sm:flex items-center gap-1.5 rounded-xl border border-line/80 bg-surface/90 px-2.5 py-1.5 font-mono text-[11px] text-fg-muted shadow-sm backdrop-blur-md">
+                <div className="pointer-events-none absolute bottom-5 left-2 z-10 hidden sm:flex items-center gap-1.5 rounded-xl border border-line/80 bg-surface/85 px-2.5 py-1.5 font-mono text-[11px] text-fg-muted shadow-sm backdrop-blur-md">
                   <Icon name="lightning" size={13} className="text-amber-500" />
                   <span>3m Blitz Match</span>
                 </div>
               </div>
 
-              {/* Radar Terminal Footer */}
-              <div className="w-full pt-3.5 border-t border-line text-caption text-fg-muted flex flex-wrap items-center justify-between gap-2 font-mono relative z-10">
-                <span className="flex items-center gap-1.5">
+              {/* Radar Terminal Footer (Glass Floating Pills) */}
+              <div className="w-full pt-3 flex flex-wrap items-center justify-between gap-2 font-mono text-caption text-fg-muted relative z-10">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-surface/65 border border-line/70 px-3 py-1 backdrop-blur-xs shadow-xs">
                   <Icon name="arrow-counter-clockwise" size={13} className="text-fg-muted" />
                   Drag to rotate globe
                 </span>
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-surface/65 border border-line/70 px-3 py-1 text-emerald-600 font-semibold backdrop-blur-xs shadow-xs">
                     <span className="size-1.5 rounded-full bg-emerald-500" />
                     Automated Escrow
                   </span>
-                  <span className="text-fg-default font-semibold">Sub-25ms WebSocket</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-surface/65 border border-line/70 px-3 py-1 text-fg-default font-semibold backdrop-blur-xs shadow-xs">
+                    Sub-25ms WebSocket
+                  </span>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </section>
 
