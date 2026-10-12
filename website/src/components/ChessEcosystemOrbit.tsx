@@ -125,24 +125,24 @@ interface OrbitItem {
 }
 
 const CHESS_PIECES: OrbitItem[] = [
-  { id: "king", name: "King", tag: "Sovereign 95% Pot", element: <KingIcon className="size-6 text-amber-600 dark:text-amber-400" /> },
-  { id: "queen", name: "Queen", tag: "Tactical Dominance", element: <QueenIcon className="size-6 text-purple-600 dark:text-purple-400" /> },
-  { id: "knight", name: "Knight", tag: "Speed & Mobility", element: <KnightIcon className="size-6 text-blue-600 dark:text-blue-400" /> },
-  { id: "rook", name: "Rook", tag: "Escrow Fortress", element: <RookIcon className="size-6 text-emerald-600 dark:text-emerald-400" /> },
-  { id: "bishop", name: "Bishop", tag: "Long-Range Vision", element: <BishopIcon className="size-6 text-rose-600 dark:text-rose-400" /> },
-  { id: "pawn", name: "Pawn", tag: "Grandmaster Path", element: <PawnIcon className="size-6 text-slate-700 dark:text-slate-300" /> },
+  { id: "king", name: "King", tag: "Sovereign 95% Pot", element: <KingIcon className="size-5 text-amber-600" /> },
+  { id: "queen", name: "Queen", tag: "Tactical Dominance", element: <QueenIcon className="size-5 text-purple-600" /> },
+  { id: "knight", name: "Knight", tag: "Speed & Mobility", element: <KnightIcon className="size-5 text-blue-600" /> },
+  { id: "rook", name: "Rook", tag: "Escrow Fortress", element: <RookIcon className="size-5 text-emerald-600" /> },
+  { id: "bishop", name: "Bishop", tag: "Long-Range Vision", element: <BishopIcon className="size-5 text-rose-600" /> },
+  { id: "pawn", name: "Pawn", tag: "Grandmaster Path", element: <PawnIcon className="size-5 text-slate-700" /> },
 ];
 
 const CRYPTO_TOKENS: OrbitItem[] = [
-  { id: "usdt", name: "USDT", tag: "Instant 1:1 Settlement", element: <TetherUsdtBadge className="size-8 drop-shadow-sm" /> },
-  { id: "ton", name: "TON", tag: "Sub-Cent Gas Rails", element: <TonBadge className="size-8 drop-shadow-sm" /> },
-  { id: "btc", name: "Bitcoin", tag: "Cross-Chain Liquidity", element: <BitcoinBadge className="size-8 drop-shadow-sm" /> },
-  { id: "eth", name: "Ethereum", tag: "Multichain Bridge", element: <EthereumBadge className="size-8 drop-shadow-sm" /> },
-  { id: "telegram", name: "Telegram", tag: "1-Tap Direct Launch", element: <TelegramBadge className="size-8 drop-shadow-sm" /> },
+  { id: "usdt", name: "USDT", tag: "Instant 1:1 Settlement", element: <TetherUsdtBadge className="size-7" /> },
+  { id: "ton", name: "TON", tag: "Sub-Cent Gas Rails", element: <TonBadge className="size-7" /> },
+  { id: "btc", name: "Bitcoin", tag: "Cross-Chain Liquidity", element: <BitcoinBadge className="size-7" /> },
+  { id: "eth", name: "Ethereum", tag: "Multichain Bridge", element: <EthereumBadge className="size-7" /> },
+  { id: "telegram", name: "Telegram", tag: "1-Tap Direct Launch", element: <TelegramBadge className="size-7" /> },
 ];
 
 export function ChessEcosystemOrbit() {
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+  const [activeItem, setActiveItem] = useState<OrbitItem | null>(null);
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full select-none py-2 group/orbit">
@@ -152,32 +152,36 @@ export function ChessEcosystemOrbit() {
         aria-hidden="true"
       />
 
+      {/* ── Active Inspection HUD Header (Safe from Orbit Paths, Zero Collisions) ── */}
+      <div className="flex items-center justify-center mb-3 z-20 min-h-[38px] w-full">
+        <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/90 px-4 py-1.5 shadow-xs backdrop-blur-md transition-all duration-200">
+          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+          {activeItem ? (
+            <span className="font-mono text-caption text-fg-default font-semibold flex items-center gap-1.5">
+              <span>{activeItem.name}</span>
+              <span className="text-fg-muted font-normal">·</span>
+              <span className="text-emerald-600 font-medium">{activeItem.tag}</span>
+            </span>
+          ) : (
+            <span className="font-mono text-caption text-fg-muted">
+              Hover any piece or token to inspect live rails
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* ── Concentric Orbit Stage ── */}
-      <div className="relative flex h-[380px] sm:h-[430px] w-full items-center justify-center overflow-hidden">
+      <div className="relative flex h-[380px] sm:h-[420px] w-full items-center justify-center overflow-hidden">
         {/* ── Center Stage Core Hub ── */}
         <div className="relative z-10 flex flex-col items-center justify-center">
           {/* Subtle breathing pulse ring */}
-          <div className="absolute -inset-2.5 rounded-full bg-emerald-500/15 animate-pulse pointer-events-none" />
+          <div className="absolute -inset-3 rounded-full bg-emerald-500/12 animate-pulse pointer-events-none" />
 
-          <div className="flex size-18 sm:size-20 flex-col items-center justify-center rounded-3xl bg-surface/90 border border-line shadow-sm backdrop-blur-md transition-transform duration-300 hover:scale-105">
-            <span className="text-2xl sm:text-3xl filter drop-shadow-xs">♚</span>
-            <span className="mt-1 font-mono text-[9px] font-bold tracking-wider text-emerald-600">
+          <div className="flex size-20 flex-col items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-transform duration-300 hover:scale-105">
+            <KingIcon className="size-7 text-fg-default" />
+            <span className="mt-1 font-mono text-[10px] font-bold tracking-widest text-emerald-600">
               ARENA
             </span>
-          </div>
-
-          {/* Active Hover Badge Pill */}
-          <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none transition-all duration-200">
-            {activeTooltip ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-fg-default px-2.5 py-0.5 text-[11px] font-medium font-mono text-bg shadow-sm animate-in fade-in zoom-in-95">
-                {activeTooltip}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 font-mono text-[10px] text-fg-muted font-medium tracking-tight">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-ping" />
-                USDT Escrow · Live
-              </span>
-            )}
           </div>
         </div>
 
@@ -193,9 +197,9 @@ export function ChessEcosystemOrbit() {
           {CHESS_PIECES.map((piece) => (
             <div
               key={piece.id}
-              onMouseEnter={() => setActiveTooltip(`${piece.name} · ${piece.tag}`)}
-              onMouseLeave={() => setActiveTooltip(null)}
-              className="group/item relative flex size-10 items-center justify-center rounded-2xl bg-surface/95 border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-fg-muted/40 cursor-pointer"
+              onMouseEnter={() => setActiveItem(piece)}
+              onMouseLeave={() => setActiveItem(null)}
+              className="group/item relative flex size-10 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-emerald-500/40 cursor-pointer"
             >
               {piece.element}
             </div>
@@ -215,9 +219,9 @@ export function ChessEcosystemOrbit() {
           {CRYPTO_TOKENS.map((token) => (
             <div
               key={token.id}
-              onMouseEnter={() => setActiveTooltip(`${token.name} · ${token.tag}`)}
-              onMouseLeave={() => setActiveTooltip(null)}
-              className="group/item relative flex size-11 items-center justify-center rounded-2xl bg-surface/95 border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-fg-muted/40 cursor-pointer"
+              onMouseEnter={() => setActiveItem(token)}
+              onMouseLeave={() => setActiveItem(null)}
+              className="group/item relative flex size-11 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-125 hover:shadow-md hover:border-emerald-500/40 cursor-pointer"
             >
               {token.element}
             </div>
@@ -225,17 +229,17 @@ export function ChessEcosystemOrbit() {
         </OrbitingCircles>
       </div>
 
-      {/* ── High-Value Trust Anchors (No low-value dev noise) ── */}
-      <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-[11px] font-mono text-fg-muted">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface/60 border border-line/70 px-2.5 py-1 backdrop-blur-xs">
+      {/* ── High-Value Trust Anchors (High-Contrast, Crisp Typography) ── */}
+      <div className="flex flex-wrap items-center justify-center gap-2 pt-3 text-caption font-mono text-fg-muted">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
           <span className="size-1.5 rounded-full bg-emerald-500" />
           USDT Settlement
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface/60 border border-line/70 px-2.5 py-1 backdrop-blur-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
           <span className="size-1.5 rounded-full bg-blue-500" />
           TON Blockchain
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface/60 border border-line/70 px-2.5 py-1 backdrop-blur-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
           <span className="size-1.5 rounded-full bg-amber-500" />
           BTC &amp; ETH Bridge
         </span>
