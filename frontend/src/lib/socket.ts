@@ -125,7 +125,7 @@ export const getSocket = () => {
 
         socket = io(url, {
             transports: ["polling", "websocket"],
-            autoConnect: true,
+            autoConnect: Boolean(initData),
             path: "/socket.io/", // Standard Socket.IO path
             reconnection: true,
             reconnectionDelay: 1000,
@@ -167,6 +167,9 @@ export const getSocket = () => {
                 ...(socket as any).auth,
                 initData: freshInitData
             };
+            if (!socket.connected) {
+                socket.connect();
+            }
         }
     }
 

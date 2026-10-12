@@ -74,6 +74,23 @@ def is_sweepable(state, now: float, grace: float = STALE_GRACE_SECONDS) -> bool:
     return (now - created) >= grace
 
 
+def is_clock_expired(state, now: float) -> bool:
+    """
+    True if an ongoing game's active turn clock has run down to <= 0.
+    In production, if both players abandon the game or lose connection,
+    lazy evaluation would otherwise never run, leaving stakes in escrow.
+    """
+    if state is None or state.is_game_over:
+        return False
+    if state.last_move_at is None:
+        return False
+    elapsed = now - state.last_move_at
+    if state.turn == 'w':
+        return (state.white_time_left - elapsed) <= 0.0
+    else:
+        return (state.black_time_left - elapsed) <= 0.0
+
+
 async def _sweep_once(service: GameService) -> int:
     sm = service.session_manager
     now = time.time()
@@ -94,18 +111,33 @@ async def _sweep_once(service: GameService) -> int:
     for gid in game_ids:
         try:
             state = await sm.get_game(gid)
-            if not is_sweepable(state, now):
+            if state is None:
+                # Ghost key: game state deleted or expired from Redis; prune from active set
+                if not sm._use_memory and sm.redis:
+                    await sm.redis.srem("games:active", gid)
+                elif sm._use_memory and "games:active" in sm._memory_store:
+                    sm._memory_store["games:active"].discard(gid)
                 continue
-            logger.info(
-                f"[StaleSweeper] Aborting + refunding never-started wager game {gid} "
-                f"(age {int(now - state.created_at)}s, bid {state.bid_amount})"
-            )
-            state.is_game_over = True
-            state.winner = None
-            state.result_type = "aborted"
-            await sm.save_game(gid, state)
-            await service.end_game(gid, state)  # idempotent: unique GameHistory per game_id
-            swept += 1
+
+            if is_sweepable(state, now):
+                logger.info(
+                    f"[StaleSweeper] Aborting + refunding never-started wager game {gid} "
+                    f"(age {int(now - state.created_at)}s, bid {state.bid_amount})"
+                )
+                state.is_game_over = True
+                state.winner = None
+                state.result_type = "aborted"
+                await sm.save_game(gid, state)
+                await service.end_game(gid, state)  # idempotent: unique GameHistory per game_id
+                swept += 1
+            elif is_clock_expired(state, now):
+                logger.info(
+                    f"[StaleSweeper] Settling abandoned game {gid} with expired clock "
+                    f"(turn: {state.turn})"
+                )
+                # get_game_state dynamically detects timeout, sets winner, saves state, and calls end_game
+                await service.get_game_state(gid)
+                swept += 1
         except Exception as e:
             logger.warning(f"[StaleSweeper] Failed to sweep game {gid}: {e}")
     return swept

@@ -45,7 +45,7 @@ export function useSWRFetch<Data = any, Error = any>(key: string | null | any[],
     const fetcher = Array.isArray(key) ? swrPostFetcher : swrFetcher;
     
     return useSWR<Data, Error>(key, fetcher as any, {
-        revalidateOnFocus: true, // Fetch when the user switches tabs/focuses window
+        revalidateOnFocus: false, // In Telegram Mini App, focus events fire on keyboard/modal toggles
         errorRetryCount: 2,
         ...options
     });

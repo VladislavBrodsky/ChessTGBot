@@ -113,7 +113,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
             cancelled = true;
             clearInterval(interval);
         };
-    }, [pathname]);
+    }, [pathname, isPublicRoute]);
 
     if (!isPublicRoute && (authState === 'checking' || authState === 'redirecting')) {
         return (

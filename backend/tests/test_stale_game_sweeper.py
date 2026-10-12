@@ -196,3 +196,35 @@ async def test_sweep_aborts_and_refunds_never_started_wager(db_session):
     state2 = await svc.session_manager.get_game(gid)
     # (already game_over -> not sweepable) but even a forced re-run is a no-op refund-wise.
     assert is_sweepable(state2, time.time()) is False
+
+
+def test_is_clock_expired():
+    from app.services.stale_game_sweeper import is_clock_expired
+    now = time.time()
+    # Game not started (last_move_at is None) -> False
+    assert is_clock_expired(_state(last_move_at=None), now) is False
+    # Game already over -> False
+    assert is_clock_expired(_state(last_move_at=now - 50, is_game_over=True), now) is False
+    # White turn, 10s left, 5s elapsed -> False
+    assert is_clock_expired(_state(last_move_at=now - 5, turn='w', white_time_left=10), now) is False
+    # White turn, 10s left, 12s elapsed -> True
+    assert is_clock_expired(_state(last_move_at=now - 12, turn='w', white_time_left=10), now) is True
+    # Black turn, 10s left, 12s elapsed -> True
+    assert is_clock_expired(_state(last_move_at=now - 12, turn='b', black_time_left=10), now) is True
+
+
+@pytest.mark.asyncio
+async def test_sweep_prunes_ghost_keys_from_active_set(monkeypatch):
+    from app.services.game_service import GameService
+    svc = GameService()
+    sm = svc.session_manager
+    monkeypatch.setattr(sm, "_use_memory", True)
+    ghost_gid = "ghost-game-key-999"
+    sm._memory_store["games:active"] = sm._memory_store.get("games:active", set()) | {ghost_gid}
+    assert ghost_gid in sm._memory_store["games:active"]
+
+    # State is None (deleted from redis/store)
+    swept = await sweeper._sweep_once(svc)
+    assert swept == 0
+    assert ghost_gid not in sm._memory_store.get("games:active", set())
+

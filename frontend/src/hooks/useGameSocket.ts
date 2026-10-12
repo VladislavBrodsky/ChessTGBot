@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { getSocket } from "@/lib/socket";
 import { Chess } from "chess.js";
 import { logClientMessage } from "@/lib/logger";
@@ -10,6 +10,7 @@ export const useGameSocket = (gameId: string) => {
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [gameState, setGameState] = useState<any>(null);
+    const gameStateRef = useRef<any>(null);
 
     useEffect(() => {
         const socket = getSocket();
@@ -30,6 +31,7 @@ export const useGameSocket = (gameId: string) => {
                 `onGameState received: fen=${data.fen}, turn=${data.turn}, white_player_id=${data.white_player_id}, black_player_id=${data.black_player_id}`
             );
 
+            gameStateRef.current = data;
             setGameState(data);
             setFen(data.fen);
             try {
@@ -75,9 +77,17 @@ export const useGameSocket = (gameId: string) => {
         const onError = (data: { message: string }) => {
             setError(data.message);
             setTimeout(() => setError(null), 3000);
+            if (gameStateRef.current?.fen) {
+                try {
+                    chess.load(gameStateRef.current.fen, { skipValidation: true });
+                    setFen(gameStateRef.current.fen);
+                } catch (e) {
+                    console.error("Failed to revert FEN on socket error:", e);
+                }
+            }
             logClientMessage(
                 "WARNING",
-                `Game socket error event: ${data.message}`
+                `Game socket error event: ${data.message} (board reverted to ${gameStateRef.current?.fen})`
             );
         };
 

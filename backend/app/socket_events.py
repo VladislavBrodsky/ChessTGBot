@@ -185,7 +185,7 @@ async def connect(sid, environ, auth):
                 user_data = {'id': user_id, 'first_name': 'Protagonist', 'username': 'Protagonist'}
                 print(f"Dev fallback: Authorized socket {sid} as mock User {user_id}")
             else:
-                await register_auth_failure(ip_hash)
+                # Missing initData is NOT an active forgery attempt — do not count toward throttle.
                 raise Exception("Unauthorized: initData missing or invalid")
 
         # Save user_id to session
