@@ -1,0 +1,44 @@
+{
+  "id": "2026-10-12-x-8",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Engineering",
+  "hook": "Why did we build speed chess as a Telegram Mini App",
+  "text": "Why did we build speed chess as a Telegram Mini App\n\nOpening a desktop browser and typing logins takes 3 minutes.\nIn Telegram, challenging a friend takes 1 tap.\n\nSub-100ms WebSockets. Zero app store downloads. Pure blitz.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Architecture",
+    "headline": "SUB-100MS SYNC\n*TELEGRAM MINI APP*",
+    "subhead": "Real-time WebSockets vs on-chain latency",
+    "cta_label": "Read Stack",
+    "steps": [
+      "FastAPI + Socket.IO realtime engine",
+      "Telegram Bot API 8.0 seamless WebView",
+      "Sub-100ms board state synchronization"
+    ],
+    "footer": "Built for high-speed PvP · web3chess.online"
+  },
+  "docked_reply": {
+    "text": "Launch your first speed match directly inside Telegram in 1 tap:\nhttps://web3chess.online/?utm_source=x&utm_medium=docked_reply&utm_campaign=engineering_fomo&utm_content=2026-10-12-x-8",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-12T22:45:00Z",
+  "qa": {
+    "passed": true,
+    "issues": []
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-8.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

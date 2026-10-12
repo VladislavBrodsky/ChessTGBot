@@ -76,15 +76,22 @@ and are never paired with youth content. Name the move (SAN) and the square; giv
 Hook Rule: NEVER end a hook or headline with a period ('.'). Periods act as a psychological stop sign and destroy curiosity momentum."""
 
 def with_utm(url: str, campaign: str, content: str, medium: str = "social", source: str = "telegram") -> str:
-    """Add standard UTM tags to our own web URLs, or configure startapp attribution for t.me links."""
+    """Add standard UTM tags to our own web URLs. t.me links are left untouched (they ignore tags)."""
     p = urlsplit(url)
     if p.hostname == "t.me":
-        q = dict(parse_qsl(p.query))
-        if "startapp" not in q:
-            clean_tag = f"mk_{source}_{content.replace('-', '_')}"[:64]
-            q["startapp"] = clean_tag
-            return urlunsplit((p.scheme, p.netloc, p.path, urlencode(q), p.fragment))
         return url
     q = [(k, v) for k, v in parse_qsl(p.query, keep_blank_values=True) if not k.startswith("utm_")]
     q += [("utm_source", source), ("utm_medium", medium), ("utm_campaign", campaign), ("utm_content", content)]
     return urlunsplit((p.scheme, p.netloc, p.path, urlencode(q), p.fragment))
+
+def with_startapp(url: str, source: str, content: str) -> str:
+    """Configure startapp attribution for t.me Mini App links using reserved mk_ prefix."""
+    p = urlsplit(url)
+    if p.hostname != "t.me":
+        return url
+    q = dict(parse_qsl(p.query))
+    if "startapp" not in q:
+        clean_tag = f"mk_{source}_{content.replace('-', '_')}"[:64]
+        q["startapp"] = clean_tag
+        return urlunsplit((p.scheme, p.netloc, p.path, urlencode(q), p.fragment))
+    return url

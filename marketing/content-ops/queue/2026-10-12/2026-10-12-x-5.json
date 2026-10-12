@@ -1,0 +1,50 @@
+{
+  "id": "2026-10-12-x-5",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Tactical Matrix",
+  "hook": "The 4 tactical motifs that decide 85% of blitz games",
+  "text": "The 4 tactical motifs that decide 85% of blitz games\n\n1. Deflection (pull defender away)\n2. Pin (freeze critical piece)\n3. Fork (attack 2 targets)\n4. Decoy (fatal square)\n\nSave this matrix before your next session 🔖",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Pattern Matrix",
+    "headline": "4 MOTIFS MATRIX\n*85% OF BLITZ WINS*",
+    "subhead": "The core tactical patterns every 1500+ player must master",
+    "cta_label": "Save Pattern",
+    "panels": [
+      {
+        "label": "Deflection",
+        "text": "Remove defender",
+        "piece": "R"
+      },
+      {
+        "label": "Fork / Pin",
+        "text": "Double attack geometry",
+        "piece": "N"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Practise all 50+ master tactical motifs in our free interactive Academy:\nhttps://web3chess.online/academy?utm_source=x&utm_medium=docked_reply&utm_campaign=matrix&utm_content=2026-10-12-x-5",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-12T21:15:00Z",
+  "qa": {
+    "passed": true,
+    "issues": []
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-5.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

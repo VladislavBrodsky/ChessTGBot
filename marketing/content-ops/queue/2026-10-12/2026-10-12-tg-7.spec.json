@@ -1,0 +1,13 @@
+{
+  "template": "product",
+  "tag": "Fair Play",
+  "headline": "ZERO-CHEAT FAIRNESS\n*MICROSECOND CLOCKS*",
+  "subhead": "Server-side monotonic clocks guarantee fair speed play",
+  "cta_label": "Read Match Rules",
+  "steps": [
+    "Microsecond timestamps",
+    "Zero client trust",
+    "Instant move validation"
+  ],
+  "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+}

@@ -1,0 +1,20 @@
+{
+  "template": "culture",
+  "size": "square",
+  "tag": "Neuro Performance",
+  "headline": "THE 6-SECOND TILT\n*ADRENALINE OVERLOAD*",
+  "subhead": "How tunnel vision destroys calculation in speed chess",
+  "cta_label": "Test Instincts",
+  "panels": [
+    {
+      "label": "State 1",
+      "text": "Calculation collapses",
+      "piece": "N"
+    },
+    {
+      "label": "State 2",
+      "text": "Subconscious instinct takes over",
+      "piece": "R"
+    }
+  ]
+}

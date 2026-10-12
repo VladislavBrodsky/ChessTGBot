@@ -1,0 +1,50 @@
+{
+  "id": "2026-10-12-x-6",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Psychology",
+  "hook": "What happens to your brain when the clock drops below 6 seconds",
+  "text": "What happens to your brain when the clock drops below 6 seconds\n\nHeart rate spikes to 140+ BPM.\nPeripheral vision narrows into tunnel vision.\nConscious calculation shuts down.\n\nUnder extreme time trouble, only trained pattern recognition survives.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Neuro Performance",
+    "headline": "THE 6-SECOND TILT\n*ADRENALINE OVERLOAD*",
+    "subhead": "How tunnel vision destroys calculation in speed chess",
+    "cta_label": "Test Instincts",
+    "panels": [
+      {
+        "label": "State 1",
+        "text": "Calculation collapses",
+        "piece": "N"
+      },
+      {
+        "label": "State 2",
+        "text": "Subconscious instinct takes over",
+        "piece": "R"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Build instinctive tactical reflexes with 3-minute blitz duels:\nhttps://web3chess.online/?utm_source=x&utm_medium=docked_reply&utm_campaign=psychology&utm_content=2026-10-12-x-6",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-12T21:45:00Z",
+  "qa": {
+    "passed": true,
+    "issues": []
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-6.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

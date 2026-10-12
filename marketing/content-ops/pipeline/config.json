@@ -10,23 +10,62 @@
     "channel_env": "W3_TG_CHANNEL",
     "token_env": "W3_TG_BOT_TOKEN",
     "slots_utc": [
-      "00:00",
-      "03:00",
-      "06:00",
-      "09:00",
-      "12:00",
-      "15:00",
-      "18:00",
-      "21:00"
+      "07:30",
+      "11:00",
+      "14:30",
+      "17:30",
+      "20:30"
     ],
     "rotation": {
-      "mon": ["Tactics", "Chess Culture", "Academy", "Openings", "Chess News", "Tactics", "Match Rules", "Product"],
-      "tue": ["Tactics", "Chess Culture", "Academy", "Openings", "Chess News", "Tactics", "Chess Culture", "Product"],
-      "wed": ["Tactics", "Chess Culture", "Academy", "Openings", "Chess News", "Tactics", "Match Rules", "Product"],
-      "thu": ["Tactics", "Chess Culture", "Academy", "Openings", "Chess News", "Tactics", "Chess Culture", "Product"],
-      "fri": ["Tactics", "Chess Culture", "Academy", "Openings", "Chess News", "Tactics", "Match Rules", "Product"],
-      "sat": ["Tactics", "Chess Culture", "Academy", "Openings", "Chess News", "Tactics", "Chess Culture", "Product"],
-      "sun": ["Tactics", "Chess Culture", "Academy", "Openings", "Chess News", "Tactics", "Chess News", "Product"]
+      "mon": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Product"
+      ],
+      "tue": [
+        "Tactics",
+        "Chess News",
+        "Openings",
+        "Chess Culture",
+        "Chess Culture"
+      ],
+      "wed": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Match Rules"
+      ],
+      "thu": [
+        "Tactics",
+        "Chess News",
+        "Openings",
+        "Chess Culture",
+        "Product"
+      ],
+      "fri": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Chess Culture"
+      ],
+      "sat": [
+        "Tactics",
+        "Chess News",
+        "Openings",
+        "Chess Culture",
+        "Tactics"
+      ],
+      "sun": [
+        "Tactics",
+        "Chess News",
+        "Academy",
+        "Chess Culture",
+        "Chess News"
+      ]
     },
     "creative_defaults": {
       "Tactics": { "template": "puzzle", "format": "puzzle" },

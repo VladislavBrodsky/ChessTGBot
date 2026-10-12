@@ -1,0 +1,41 @@
+{
+  "id": "2026-10-12-tg-7",
+  "kind": "telegram",
+  "date": "2026-10-12",
+  "category": "Match Rules",
+  "format": "rules",
+  "hook": "How our sub-100ms WebSocket engine enforces zero-cheat fairness",
+  "cta": "rules",
+  "text": "<b>How our sub-100ms WebSocket engine enforces zero-cheat fairness</b>\n\nIn online speed chess, latency unfairness kills competition.\n\nEvery move in Web3Chess is timestamped on the server with microsecond monotonic clocks. Even if an opponent throttles their connection, the server validates move legality and clock elapsed time with zero client trust.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "scheduled_at": "2026-10-12T18:00:00Z",
+  "creative": {
+    "template": "product",
+    "tag": "Fair Play",
+    "headline": "ZERO-CHEAT FAIRNESS\n*MICROSECOND CLOCKS*",
+    "subhead": "Server-side monotonic clocks guarantee fair speed play",
+    "cta_label": "Read Match Rules",
+    "steps": [
+      "Microsecond timestamps",
+      "Zero client trust",
+      "Instant move validation"
+    ],
+    "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+  },
+  "qa": {
+    "passed": true,
+    "issues": []
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-7.png"
+}

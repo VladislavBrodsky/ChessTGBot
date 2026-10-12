@@ -1,0 +1,36 @@
+{
+  "id": "2026-10-12-tg-8",
+  "kind": "telegram",
+  "date": "2026-10-12",
+  "category": "Product",
+  "format": "product",
+  "hook": "The 21:00 UTC Global Arena locks in 15 minutes",
+  "cta": "arena",
+  "text": "<b>The 21:00 UTC Global Arena locks in 15 minutes</b>\n\n Prize Vault. 3-minute blitz. 5 rounds of pure calculation.\n\nBrackets lock once round 1 begins. 95% winner payout.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/wagers"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Daily Arena",
+    "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
+    "subhead": "21:00 UTC • Instant PvP Matchmaking",
+    "cta_label": "Enter Arena",
+    "steps": [
+      "Open Mini App",
+      "Choose stake tier",
+      "Win 95% of the pot"
+    ],
+    "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+  },
+  "scheduled_at": "2026-10-12T21:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": []
+  }
+}

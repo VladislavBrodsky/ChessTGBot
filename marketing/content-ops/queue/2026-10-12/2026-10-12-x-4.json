@@ -1,0 +1,50 @@
+{
+  "id": "2026-10-12-x-4",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Chess Debate",
+  "hook": "Rapid chess is dead. Intuition beats memory",
+  "text": "Rapid chess is dead. Intuition beats memory\n\nIf you cannot calculate under 180 seconds with 0 increment, your rating is artificial.\n\nAre you a pure calculation player or do you hide behind opening memorization? ♟️",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Hot Take",
+    "headline": "RAPID IS DEAD\n*INTUITION VS MEMORY*",
+    "subhead": "Can you calculate under 180 seconds or do you freeze?",
+    "cta_label": "Join Debate",
+    "panels": [
+      {
+        "label": "Classical",
+        "text": "Memorize opening lines",
+        "piece": "K"
+      },
+      {
+        "label": "Blitz PvP",
+        "text": "Pure real-time survival",
+        "piece": "Q"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Speed chess tests raw calculation speed under nervous pressure.\n\nTest your real rating in a 3-minute blitz duel:\nhttps://web3chess.online/?utm_source=x&utm_medium=docked_reply&utm_campaign=debate&utm_content=2026-10-12-x-4",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-12T20:45:00Z",
+  "qa": {
+    "passed": true,
+    "issues": []
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-4.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

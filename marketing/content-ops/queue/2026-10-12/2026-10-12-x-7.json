@@ -1,0 +1,47 @@
+{
+  "id": "2026-10-12-x-7",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Tactics",
+  "hook": "White to move. 94% of club players calculate for 30 seconds when the mate is in 1",
+  "text": "White to move. 94% of club players calculate for 30 seconds when the mate is in 1\n\nBlack forgot to create luft on the kingside.\n\nCan you spot the decisive back-rank finish in under 3 seconds? ♟️",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "solution": [
+      "Ra8#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "tag": "Mate In 1",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Can you spot the tactical finish?",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Ra8# (Back-Rank Mate).\nBlack forgot to create an escape square on h7.\n\nPractise 50+ calculation drills in our Academy:\nhttps://web3chess.online/academy?utm_source=x&utm_medium=docked_reply&utm_campaign=puzzle_ego&utm_content=2026-10-12-x-7",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-12T22:15:00Z",
+  "qa": {
+    "passed": true,
+    "issues": []
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-7.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}
