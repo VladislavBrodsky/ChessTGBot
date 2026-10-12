@@ -45,6 +45,9 @@ export const metadata: Metadata = {
   classification: "Web3 Chess Game, Telegram Mini App, Online Chess Platform",
   alternates: {
     canonical: SITE.url,
+    types: {
+      "application/rss+xml": `${SITE.url}/feed.xml`,
+    },
   },
   openGraph: {
     title: "Web3Chess — Play Chess Online in Telegram & Win Real Crypto",
