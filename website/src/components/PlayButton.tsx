@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { telegramLink } from "@/lib/config";
+import { trackPlayClick } from "@/lib/analytics";
 import { TelegramIcon } from "./icons";
 import { buttonClass } from "./ui/button-styles";
 
@@ -12,6 +13,7 @@ type Props = {
   label?: string;
   className?: string;
   pulsating?: boolean;
+  trackingLocation?: string;
 };
 
 interface Ripple {
@@ -28,10 +30,13 @@ export function PlayButton({
   label = "Play in Telegram",
   className = "",
   pulsating = false,
+  trackingLocation = "play_button",
 }: Props) {
   const [ripples, setRipples] = useState<Ripple[]>([]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    trackPlayClick(trackingLocation, startapp);
+
     const rect = e.currentTarget.getBoundingClientRect();
     const rippleSize = Math.max(rect.width, rect.height) * 2;
     const x = e.clientX - rect.left - rippleSize / 2;
@@ -61,6 +66,8 @@ export function PlayButton({
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}
+      data-analytics-label={trackingLocation}
+      data-track-cta="play_in_telegram"
       className={`relative overflow-hidden cursor-pointer ${buttonClass(variant === "ghost" ? "secondary" : "primary", className, size)}`}
     >
       <TelegramIcon className={size === "lg" ? "size-5" : "size-4"} />

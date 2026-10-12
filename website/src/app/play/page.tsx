@@ -39,7 +39,7 @@ export default async function PlayPage() {
           </div>
           <h1 className="poster play-heading">Open the board</h1>
           <p className="max-w-[50ch] hero-lead text-fg-muted">
-            Launch directly in Telegram or play in your desktop browser. Start with free A.I. practice, solve puzzles, or enter live USDT matches on TON rails.
+            Launch directly in Telegram or play in your desktop browser. Start with free A.I. practice, solve puzzles, or enter live USDT matches on GRAM rails.
           </p>
         </div>
 
@@ -66,7 +66,7 @@ export default async function PlayPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 rounded-full bg-emerald-500" />
-                  <span>TON wallet deposit and withdrawal rails</span>
+                  <span>GRAM wallet deposit and withdrawal rails</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 rounded-full bg-emerald-500" />
@@ -169,7 +169,7 @@ export default async function PlayPage() {
         </div>
 
         <p className="mt-4 max-w-[65ch] text-caption text-fg-muted">
-          A.I. practice and tactics puzzles are 100% free with unlimited games. Real-money matches use optional USDT stakes on TON rails. Wager matches are 18+ where available; play responsibly.
+          A.I. practice and tactics puzzles are 100% free with unlimited games. Real-money matches use optional USDT stakes on GRAM rails. Wager matches are 18+ where available; play responsibly.
         </p>
       </main>
     </div>

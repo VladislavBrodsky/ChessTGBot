@@ -11,6 +11,7 @@ import { PlayButton } from "./PlayButton";
 import { ShareButtons } from "./ShareButtons";
 import { CHALLENGES } from "@/content/challenges";
 import { SITE } from "@/lib/config";
+import { trackPuzzleInteraction } from "@/lib/analytics";
 import { board } from "../../../design-system/website/tokens";
 import { Icon } from "@/icons";
 

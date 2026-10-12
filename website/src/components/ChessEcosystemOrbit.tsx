@@ -135,7 +135,7 @@ const CHESS_PIECES: OrbitItem[] = [
 
 const CRYPTO_TOKENS: OrbitItem[] = [
   { id: "usdt", name: "USDT", tag: "Instant 1:1 Settlement", element: <TetherUsdtBadge className="size-7" /> },
-  { id: "ton", name: "TON", tag: "Sub-Cent Gas Rails", element: <TonBadge className="size-7" /> },
+  { id: "gram", name: "GRAM", tag: "Sub-Cent Gas Rails", element: <TonBadge className="size-7" /> },
   { id: "btc", name: "Bitcoin", tag: "Cross-Chain Liquidity", element: <BitcoinBadge className="size-7" /> },
   { id: "eth", name: "Ethereum", tag: "Multichain Bridge", element: <EthereumBadge className="size-7" /> },
   { id: "telegram", name: "Telegram", tag: "1-Tap Direct Launch", element: <TelegramBadge className="size-7" /> },
@@ -237,7 +237,7 @@ export function ChessEcosystemOrbit() {
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
           <span className="size-1.5 rounded-full bg-blue-500" />
-          TON Blockchain
+          GRAM Blockchain
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
           <span className="size-1.5 rounded-full bg-amber-500" />

@@ -19,7 +19,7 @@ const liveFeed = [
   },
   {
     id: "live-2",
-    player: "@Magnus_TON",
+    player: "@Magnus_GRAM",
     action: "Won 5+3 Rapid match",
     payout: "+$95.00 USDT",
     time: "3m ago",
@@ -28,9 +28,9 @@ const liveFeed = [
   },
   {
     id: "live-3",
-    player: "@ton_tactician",
+    player: "@gram_tactician",
     action: "Unboxed King’s Vault",
-    payout: "+50 TON",
+    payout: "+50 GRAM",
     time: "5m ago",
     badge: "Jackpot Drop",
     icon: "gift" as const,
@@ -122,7 +122,7 @@ export function ArenaBento() {
         </div>
       </Card>
 
-      {/* ── BENTO 2: Mystery Boxes with 1,000 TON Jackpots & Orbiting Circles ── */}
+      {/* ── BENTO 2: Mystery Boxes with 1,000 GRAM Jackpots & Orbiting Circles ── */}
       <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
         <BorderBeam size={240} duration={10} colorFrom="#f59e0b" colorTo="#d97706" />
         <div className="relative z-10">
@@ -133,10 +133,10 @@ export function ArenaBento() {
             <span className="font-mono text-caption text-fg-muted">Daily Drops</span>
           </div>
           <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-            Win up to 1,000 TON in Mystery Boxes
+            Win up to 1,000 GRAM in Mystery Boxes
           </h3>
           <p className="text-body-sm text-fg-muted mb-3">
-            Turn your earned XP into real rewards. Unlock mystery chests with chances to unbox TON prizes, 2× XP boosts, and exclusive 3D board pieces.
+            Turn your earned XP into real rewards. Unlock mystery chests with chances to unbox GRAM prizes, 2× XP boosts, and exclusive 3D board pieces.
           </p>
 
           {/* Orbiting Vault Reward Visualization */}
@@ -173,7 +173,7 @@ export function ArenaBento() {
               King’s Dominion Chest
             </span>
             <span className="font-bold text-fg-default">
-              <NumberTicker value={1000} suffix=" TON" /> Jackpot
+              <NumberTicker value={1000} suffix=" GRAM" /> Jackpot
             </span>
           </div>
           <div className="flex items-center justify-between font-medium">

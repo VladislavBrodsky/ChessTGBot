@@ -69,7 +69,7 @@ export function MobileCta() {
       }`}
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
-      <PlayButton size="md" className="w-full" />
+      <PlayButton trackingLocation="sticky_mobile_dock" size="md" className="w-full" />
     </div>
   );
 }

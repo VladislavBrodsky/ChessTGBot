@@ -80,8 +80,8 @@ export const wagersContent = {
     },
     {
       icon: "check-circle",
-      title: "Verifiable on TON Blockchain",
-      body: "When you withdraw your winnings, you receive a transaction hash verifiable on Tonviewer or any open TON block explorer.",
+      title: "Verifiable on GRAM Blockchain",
+      body: "When you withdraw your winnings, you receive a transaction hash verifiable on Tonviewer or any open GRAM block explorer.",
     },
     {
       icon: "scales",

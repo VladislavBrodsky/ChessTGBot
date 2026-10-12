@@ -18,7 +18,7 @@ const LIVE_SETTLEMENTS = [
   },
   {
     id: "s2",
-    player: "Magnus_TON",
+    player: "Magnus_GRAM",
     flag: "🇳🇴",
     action: "Won Rapid 15+10",
     payout: "+$190.00",
@@ -28,10 +28,10 @@ const LIVE_SETTLEMENTS = [
   },
   {
     id: "s3",
-    player: "ton_tactician",
+    player: "gram_tactician",
     flag: "🇯🇵",
     action: "Unboxed King's Vault",
-    payout: "+50 TON",
+    payout: "+50 GRAM",
     time: "1m ago",
     icon: "gift" as const,
     color: "text-amber-600 bg-amber-500/15 border-amber-500/30",
@@ -59,13 +59,13 @@ const LIVE_SETTLEMENTS = [
 ];
 
 // ── Modern 2D/3D Tokens for Vault Drop Sphere ──────────────────────────────
-function TonToken() {
+function GramToken() {
   return (
     <div
       className="flex size-8.5 items-center justify-center rounded-full bg-gradient-to-br from-[#0098EA] via-[#0088d6] to-[#005fa8] text-white shadow-[0_4px_14px_rgba(0,152,234,0.5),inset_0_1px_1.5px_rgba(255,255,255,0.8)] border border-white/60 transition-transform hover:scale-115"
-      title="TON"
+      title="GRAM"
     >
-      <svg viewBox="0 0 32 32" fill="none" className="size-4.5" aria-label="TON">
+      <svg viewBox="0 0 32 32" fill="none" className="size-4.5" aria-label="GRAM">
         <path
           d="M16 6.5L7.5 11.5L16 25.5L24.5 11.5L16 6.5ZM14.8 8.8L16 8.1L17.2 8.8L21.5 11.3L16 12.7L10.5 11.3L14.8 8.8ZM9.8 12.8L15.3 14.2V22.4L9.8 12.8ZM16.7 22.4V14.2L22.2 12.8L16.7 22.4Z"
           fill="white"
@@ -221,10 +221,10 @@ export function RewardsBento() {
           </div>
           <div>
             <h3 className="text-heading-sm font-medium tracking-tight text-fg-default">
-              Win up to 1,000 TON
+              Win up to 1,000 GRAM
             </h3>
             <p className="text-body-sm text-fg-muted mt-1">
-              Every match earns XP. Unbox King, Queen, and Knight chests with chances to win TON prizes, 2× XP boosts, and rare 3D pieces.
+              Every match earns XP. Unbox King, Queen, and Knight chests with chances to win GRAM prizes, 2× XP boosts, and rare 3D pieces.
             </p>
           </div>
           <div className="pt-1">
@@ -264,15 +264,15 @@ export function RewardsBento() {
 
           {/* 4 Orbiting 3D Tokens (Trigonometric smooth 3D paths, zero distortion) */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            {/* TON — Orbit 1, angle 0 */}
+            {/* GRAM — Orbit 1, angle 0 */}
             <div
               className="absolute pointer-events-auto"
               style={{ animation: 'vault-orbit-cw 12s linear infinite' }}
             >
-              <TonToken />
+              <GramToken />
             </div>
 
-            {/* BTC — Orbit 1, angle 180 (opposite TON) */}
+            {/* BTC — Orbit 1, angle 180 (opposite GRAM) */}
             <div
               className="absolute pointer-events-auto"
               style={{ animation: 'vault-orbit-cw 12s linear infinite -6s' }}
@@ -299,7 +299,7 @@ export function RewardsBento() {
 
           {/* Integrated Asset Legend Pill */}
           <div className="absolute bottom-2 flex items-center gap-1.5 font-mono text-[10px] font-semibold text-fg-muted bg-surface/90 px-3 py-0.5 rounded-full border border-line shadow-2xs backdrop-blur-xs">
-            <span className="text-[#0098EA] flex items-center gap-1 font-bold"><span className="size-1.5 rounded-full bg-[#0098EA]" />TON</span>
+            <span className="text-[#0098EA] flex items-center gap-1 font-bold"><span className="size-1.5 rounded-full bg-[#0098EA]" />GRAM</span>
             <span className="text-line">·</span>
             <span className="text-[#F7931A] flex items-center gap-1 font-bold"><span className="size-1.5 rounded-full bg-[#F7931A]" />BTC</span>
             <span className="text-line">·</span>
@@ -462,7 +462,7 @@ export function RewardsBento() {
               Chess That Actually Pays
             </h3>
             <p className="text-body-sm text-fg-muted mt-1">
-              Traditional chess platforms monetize your attention. Web3Chess rewards your skill with instant on-chain pots and daily TON drops.
+              Traditional chess platforms monetize your attention. Web3Chess rewards your skill with instant on-chain pots and daily GRAM drops.
             </p>
           </div>
           <div className="pt-1">

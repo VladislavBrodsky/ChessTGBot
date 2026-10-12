@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE.url}/privacy` },
   title: "Privacy Policy",
   description:
-    "How Web3Chess handles data privacy, Telegram WebApp authentication, and TON wallet routing.",
+    "How Web3Chess handles data privacy, Telegram WebApp authentication, and GRAM wallet routing.",
   openGraph: {
     title: "Privacy Policy · Web3Chess",
     description:

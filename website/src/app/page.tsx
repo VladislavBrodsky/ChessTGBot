@@ -102,12 +102,12 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="hero-lead max-w-[42ch] text-fg-muted">
-                Challenge rivals worldwide inside Telegram. Stake USDT, outplay your opponent, and take 95% of the pot. Free A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 TON in prizes.
+                Challenge rivals worldwide inside Telegram. Stake USDT, outplay your opponent, and take 95% of the pot. Free A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 GRAM in prizes.
               </p>
             </div>
             <div className="hero-details space-y-4">
               <div className="hero-actions flex flex-wrap gap-2.5">
-                <PlayButton size="lg" pulsating />
+                <PlayButton size="lg" pulsating trackingLocation="hero" />
                 <ButtonLink
                   href="/how-it-works"
                   variant="ghost"
@@ -125,7 +125,7 @@ export default function HomePage() {
                   <Icon name="lightning" size={15} className="shrink-0 text-amber-500" />
                   <span>Instant on-chain</span>
                   <span className="inline-flex items-center gap-1.5 font-semibold">
-                    {/* Eye-catching TON Currency Badge */}
+                    {/* Eye-catching GRAM Currency Badge */}
                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#0098EA]/10 border border-[#0098EA]/30 text-[#0098EA] text-[11px] font-mono font-bold shadow-2xs">
                       <span className="flex size-3.5 items-center justify-center rounded-full bg-[#0098EA] text-white shadow-xs">
                         <svg viewBox="0 0 32 32" fill="none" className="size-2.5" aria-hidden="true">
@@ -135,7 +135,7 @@ export default function HomePage() {
                           />
                         </svg>
                       </span>
-                      TON
+                      GRAM
                     </span>
                     <span className="text-fg-muted">&amp;</span>
                     {/* Eye-catching USDT Currency Badge */}
@@ -179,7 +179,7 @@ export default function HomePage() {
               </span>
               <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
                 <span className="size-1.5 rounded-full bg-amber-500" />
-                <strong className="text-amber-600 font-bold">1,000 TON</strong>
+                <strong className="text-amber-600 font-bold">1,000 GRAM</strong>
                 <span className="text-fg-muted">·</span>
                 <span>King’s Dominion Mystery Jackpot unlocked</span>
               </span>
@@ -223,7 +223,7 @@ export default function HomePage() {
                 Turn your chess rating into real crypto
               </h2>
               <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
-                Traditional chess pays you in pixels and points. Web3Chess rewards every tactical win with instant USDT payouts, 1,000 TON mystery jackpots, and 6-tier passive match rake.
+                Traditional chess pays you in pixels and points. Web3Chess rewards every tactical win with instant USDT payouts, 1,000 GRAM mystery jackpots, and 6-tier passive match rake.
               </p>
             </div>
             <ButtonLink href="/how-it-works" variant="secondary">
@@ -265,7 +265,7 @@ export default function HomePage() {
                   <span className="poster text-stat tabular-nums">
                     <NumberTicker value={1000} />
                   </span>
-                  <span className="text-label font-semibold">TON</span>
+                  <span className="text-label font-semibold">GRAM</span>
                 </dd>
               </div>
               <div className="fact-item">
@@ -382,7 +382,7 @@ export default function HomePage() {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pt-1">
-                <PlayButton size="md" pulsating />
+                <PlayButton size="md" pulsating trackingLocation="facts_banner" />
                 <ButtonLink href="/how-it-works" variant="secondary">
                   How matchmaking works
                   <Icon name="arrow-right" size={18} />
@@ -396,10 +396,10 @@ export default function HomePage() {
         </section>
 
 
-        {/* ── 3D WEB3 & TON ECOSYSTEM CLOUD ── */}
+        {/* ── 3D WEB3 & GRAM ECOSYSTEM CLOUD ── */}
         <section id="infrastructure" className="shell-wide home-section" aria-labelledby="infrastructure-heading">
           <div className="section-index">
-            <span>03 / Web3 &amp; TON infrastructure</span>
+            <span>03 / Web3 &amp; GRAM infrastructure</span>
             <span>Zero friction · Instant on-chain rails</span>
           </div>
 
@@ -415,11 +415,11 @@ export default function HomePage() {
               </div>
 
               <h2 id="infrastructure-heading" className="editorial-title">
-                Play seamlessly with TON and USDT
+                Play seamlessly with GRAM and USDT
               </h2>
 
               <p className="max-w-[44ch] section-lead text-fg-muted">
-                No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your TON wallet, and settles match pots directly to your balance.
+                No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your GRAM wallet, and settles match pots directly to your balance.
               </p>
 
               <div className="space-y-3 pt-2">
@@ -429,13 +429,13 @@ export default function HomePage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-[13px]">USDT on TON Rail</span>
+                      <span className="font-semibold text-fg-default text-[13px]">USDT on GRAM Rail</span>
                       <span className="font-mono text-[10px] font-bold text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                         &lt; 3.2s · $0.005 Gas
                       </span>
                     </div>
                     <p className="text-body-xs text-fg-muted mt-1 leading-relaxed">
-                      Instant non-custodial deposits and automated match pot escrow with sub-cent network fees on TON blockchain.
+                      Instant non-custodial deposits and automated match pot escrow with sub-cent network fees on GRAM blockchain.
                     </p>
                   </div>
                 </div>
@@ -476,7 +476,7 @@ export default function HomePage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3 pt-3">
-                <PlayButton size="md" pulsating />
+                <PlayButton size="md" pulsating trackingLocation="infrastructure" />
                 <ButtonLink href="/how-it-works" variant="secondary">
                   See how it works
                   <Icon name="arrow-right" size={18} />
@@ -932,7 +932,7 @@ export default function HomePage() {
               Join thousands of players competing for real crypto daily. Practice for free or enter real-stakes PvP matches in seconds.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3 relative z-10">
-              <PlayButton size="lg" pulsating />
+              <PlayButton size="lg" pulsating trackingLocation="final_banner" />
               <ButtonLink href="/how-it-works" variant="secondary">
                 See how it works
                 <Icon name="arrow-right" size={18} />

@@ -57,7 +57,7 @@ export const home = {
     },
     {
       q: "How do I deposit funds to play?",
-      a: "Open Wallet in the Mini App and follow the current deposit instructions. Platform deposits use USDT on TON with your unique reference comment. Check the token, network, reference, and any displayed fee before sending. Buying or swapping assets into your personal wallet does not automatically credit your Web3Chess balance.",
+      a: "Open Wallet in the Mini App and follow the current deposit instructions. Platform deposits use USDT on GRAM with your unique reference comment. Check the token, network, reference, and any displayed fee before sending. Buying or swapping assets into your personal wallet does not automatically credit your Web3Chess balance.",
     },
     {
       q: "How fast are withdrawals processed?",

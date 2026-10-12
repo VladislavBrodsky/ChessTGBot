@@ -103,7 +103,7 @@ export default function TermsPage() {
               Eligible USDT deposits are credited to your in-app platform
               balance when the required token, network, and account reference
               are verified. Web3Chess is not a bank or self-custody wallet. To
-              send funds to your personal TON wallet, request a withdrawal and
+              send funds to your personal GRAM wallet, request a withdrawal and
               complete the bot-chat confirmation. Some requests require review;
               processing and network timing can vary.
             </p>

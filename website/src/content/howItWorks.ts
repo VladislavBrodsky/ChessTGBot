@@ -14,7 +14,7 @@ export const howItWorksContent = {
       body: "No seed phrase friction, no 200MB app store downloads, and no clunky browser wallet extensions. Tap start, and your Web3Chess profile launches seamlessly inside Telegram with your handle and rating profile ready.",
       bullets: [
         "Native Telegram Mini App architecture",
-        "Direct TON Connect & CryptoBot deposit support",
+        "Direct GRAM Connect & CryptoBot deposit support",
         "Zero battery drain background matchmaking",
       ],
     },
@@ -44,11 +44,11 @@ export const howItWorksContent = {
       step: "04",
       tag: "Instant Settlement",
       title: "95% Pot Directly to Your Ledger",
-      body: "The moment checkmate is delivered, your opponent resigns, or their clock flags zero, the pot is settled immediately. 95% goes directly into your in-app platform balance, ready for immediate withdrawal to your TON wallet or your next match.",
+      body: "The moment checkmate is delivered, your opponent resigns, or their clock flags zero, the pot is settled immediately. 95% goes directly into your in-app platform balance, ready for immediate withdrawal to your GRAM wallet or your next match.",
       bullets: [
         "Deterministic math: 95% winner, 3% platform fee, 2% referral pool",
         "Visible on your live personal ledger in real time",
-        "Fast, verifiable withdrawal transfers via the TON blockchain",
+        "Fast, verifiable withdrawal transfers via the GRAM blockchain",
       ],
     },
   ],

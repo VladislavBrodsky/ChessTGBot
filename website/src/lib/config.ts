@@ -43,11 +43,15 @@ export function winnerReceives(stake: number): number {
   return (stake * 2 * SETTLEMENT.winnerPercent) / 100;
 }
 
+export const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-JXR1D3D5E3";
+
 export const SITE = {
   name: "Web3Chess",
   /** Set NEXT_PUBLIC_SITE_URL once the final domain is decided. */
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://web3chess.online",
   appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://app.web3chess.online",
+  gaMeasurementId: GA_MEASUREMENT_ID,
   description:
     "Play chess in Telegram. Practice free against A.I., explore the Academy, and challenge opponents in USDT matches with clear stakes and rules.",
   telegramChannel:

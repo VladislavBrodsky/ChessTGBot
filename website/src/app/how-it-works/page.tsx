@@ -144,12 +144,12 @@ export default function HowItWorksPage() {
                   Pick your pace
                 </h3>
                 <p className="text-body-sm text-fg-muted mb-4">
-                  Choose your time control and match stake. Practise against Stockfish A.I. for free, or join a real-money player match with a USDT stake on TON rails.
+                  Choose your time control and match stake. Practise against Stockfish A.I. for free, or join a real-money player match with a USDT stake on GRAM rails.
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
                 <span className="size-2 rounded-full bg-blue-500" />
-                <span>Free A.I. or USDT on TON</span>
+                <span>Free A.I. or USDT on GRAM</span>
               </div>
             </Card>
 
@@ -214,7 +214,7 @@ export default function HowItWorksPage() {
                 Built for competitive chess and real crypto rewards
               </h2>
               <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
-                From micro-stakes PvP to high-roller tables, seasonal leaderboards, and 1,000 TON mystery jackpots — every move counts.
+                From micro-stakes PvP to high-roller tables, seasonal leaderboards, and 1,000 GRAM mystery jackpots — every move counts.
               </p>
             </div>
             <ButtonLink href="/wagers" variant="secondary">

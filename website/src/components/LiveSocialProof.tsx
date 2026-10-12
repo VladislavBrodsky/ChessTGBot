@@ -70,7 +70,7 @@ const ACTIVITIES = [
     flag: "🇯🇵",
     user: "kenji_chess",
     action: "unboxed",
-    amount: "50 TON Vault",
+    amount: "50 GRAM Vault",
     tone: "amber",
   },
   {
@@ -105,7 +105,7 @@ const ACTIVITIES = [
     flag: "🇸🇪",
     user: "marcus_v",
     action: "unlocked",
-    amount: "100 TON Jackpot",
+    amount: "100 GRAM Jackpot",
     tone: "amber",
   },
   {

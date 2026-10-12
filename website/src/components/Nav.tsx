@@ -89,7 +89,7 @@ export function Nav() {
           {links()}
         </nav>
         <div className="flex items-center gap-3">
-          <PlayButton className="hidden! sm:inline-flex!" />
+          <PlayButton trackingLocation="nav_header" className="hidden! sm:inline-flex!" />
           <button
             type="button"
             onClick={() => setOpen(true)}
@@ -119,7 +119,7 @@ export function Nav() {
             <Logo compact />
           </Link>
           {links()}
-          <PlayButton size="sm" className="ms-2" />
+          <PlayButton trackingLocation="nav_sticky" size="sm" className="ms-2" />
         </nav>
       </div>
       <dialog
@@ -168,7 +168,7 @@ export function Nav() {
           <nav aria-label="Mobile" className="my-6 grid gap-2">
             {links(true)}
           </nav>
-          <PlayButton size="lg" className="w-full" />
+          <PlayButton trackingLocation="nav_mobile_drawer" size="lg" className="w-full" />
           <p className="mt-4 text-caption text-fg-muted">
             No download · Free A.I. practice
           </p>

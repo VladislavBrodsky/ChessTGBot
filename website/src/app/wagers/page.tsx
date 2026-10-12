@@ -93,7 +93,7 @@ export default function WagersPage() {
         <section aria-labelledby="balance-heading">
           <div className="section-index">
             <span>02 / How your balance moves</span>
-            <span>From TON transfer to wallet payout</span>
+            <span>From GRAM transfer to wallet payout</span>
           </div>
           <h2 id="balance-heading" className="editorial-title mb-6">
             From deposit to your own wallet
@@ -113,7 +113,7 @@ export default function WagersPage() {
                   </span>
                 </div>
                 <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Deposit USDT on TON
+                  Deposit USDT on GRAM
                 </h3>
                 <p className="text-body text-fg-muted max-w-[50ch] mb-4">
                   Use the deposit instructions in the Wallet tab, including your unique reference comment. Check the network, token, address, and displayed fee before sending. Fast finality credits in seconds.
@@ -121,7 +121,7 @@ export default function WagersPage() {
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
                 <span className="size-2 rounded-full bg-emerald-500" />
-                <span>USDT on TON · Instant credit with ref comment</span>
+                <span>USDT on GRAM · Instant credit with ref comment</span>
               </div>
             </Card>
 
