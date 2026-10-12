@@ -32,7 +32,7 @@ def _published_corpus(kind: str) -> list[str]:
 def cmd_plan(args):
     start = _day(args)
     for offset in range(args.days):
-        for kind in ("telegram", "article"):
+        for kind in ("telegram", "x_post", "article"):
             queue.plan_day(start + timedelta(days=offset), kind)
     print(f"Planned {args.days} day(s) from {start}.")
 
@@ -48,8 +48,8 @@ def cmd_write(args):
         _attach(entry, draft)
 
 def _attach(entry: dict, draft: dict):
-    if entry["kind"] == "telegram":
-        entry.update({k: v for k, v in draft.items() if k in {"hook", "text", "cta", "extra_buttons", "creative", "chess", "sources", "format", "hashtags", "reveal"}})
+    if entry["kind"] in ("telegram", "x_post"):
+        entry.update({k: v for k, v in draft.items() if k in {"hook", "text", "cta", "extra_buttons", "creative", "chess", "sources", "format", "hashtags", "reveal", "docked_reply"}})
     else:
         entry["article"] = draft.get("article", draft)
     queue.set_status(entry, "draft")
@@ -121,6 +121,13 @@ def cmd_publish_x(args):
     res = agent.dispatch_x_posts(day=day, post_id=getattr(args, "id", None), dry_run=args.dry_run)
     print(json.dumps(res, indent=2))
 
+def cmd_cmo_report(args):
+    from agents.cmo import CmoAgent
+    cmo = CmoAgent()
+    day = _day(args).isoformat()
+    entries = queue.all_entries(day=day)
+    print(cmo.generate_executive_report(entries))
+
 def cmd_status(args):
     for entry in queue.all_entries(day=_day(args).isoformat()):
         issues = len((entry.get("qa") or {}).get("issues", []))
@@ -129,7 +136,7 @@ def cmd_status(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
-    for name, fn in (("plan", cmd_plan), ("briefs", cmd_briefs), ("write", cmd_write), ("qa", cmd_qa), ("status", cmd_status), ("render", cmd_render), ("stage", cmd_stage), ("publish", cmd_publish)):
+    for name, fn in (("plan", cmd_plan), ("briefs", cmd_briefs), ("write", cmd_write), ("qa", cmd_qa), ("status", cmd_status), ("render", cmd_render), ("stage", cmd_stage), ("publish", cmd_publish), ("cmo-report", cmd_cmo_report)):
         p = sub.add_parser(name); p.add_argument("--date"); p.set_defaults(run=fn)
         if name == "plan": p.add_argument("--days", type=int, default=1)
         if name == "publish": p.add_argument("--dry-run", action="store_true")

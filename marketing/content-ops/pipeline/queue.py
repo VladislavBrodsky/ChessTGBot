@@ -45,16 +45,19 @@ def all_entries(kind: str | None = None, status: str | None = None, day: str | N
 
 def plan_day(day: date, kind: str) -> list[dict]:
     """Create empty `planned` entries for the day's slots (idempotent)."""
-    cfg = CONFIG["telegram" if kind == "telegram" else "site"]
+    norm_kind = "telegram" if kind == "telegram" else "x" if kind in ("x", "x_post") else "site"
+    cfg = CONFIG.get(norm_kind, CONFIG.get("telegram"))
     categories = cfg["rotation"][WEEKDAYS[day.weekday()]]
+    prefix = "tg" if norm_kind == "telegram" else "x" if norm_kind == "x" else "art"
+    entry_kind = "telegram" if norm_kind == "telegram" else "x_post" if norm_kind == "x" else "article"
     entries = []
     for slot, (hhmm, category) in enumerate(zip(cfg["slots_utc"], categories), start=1):
-        entry_id = f"{day.isoformat()}-{'tg' if kind == 'telegram' else 'art'}-{slot}"
+        entry_id = f"{day.isoformat()}-{prefix}-{slot}"
         if path_for(entry_id).exists():
             entries.append(load(entry_id)); continue
         hh, mm = map(int, hhmm.split(":"))
         when = datetime(day.year, day.month, day.day, hh, mm, tzinfo=timezone.utc)
-        entry = {"id": entry_id, "kind": kind, "date": day.isoformat(), "slot": slot, "category": category,
+        entry = {"id": entry_id, "kind": entry_kind, "date": day.isoformat(), "slot": slot, "category": category,
                  "scheduled_at": iso(when), "status": "planned", "qa": None}
         save(entry); entries.append(entry)
     return entries
