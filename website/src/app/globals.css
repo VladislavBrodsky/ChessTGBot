@@ -973,46 +973,46 @@ textarea,
 
   @keyframes vault-orbit-cw {
     0% {
-      transform: translate3d(70px, 0px, 0px) scale(1);
+      transform: translate3d(var(--vault-rx, 70px), 0px, 0px) scale(1);
       opacity: 1;
     }
     25% {
-      transform: translate3d(0px, 24px, 0px) scale(1.15);
+      transform: translate3d(0px, var(--vault-ry, 24px), 0px) scale(1.15);
       opacity: 1;
     }
     50% {
-      transform: translate3d(-70px, 0px, 0px) scale(1);
+      transform: translate3d(calc(-1 * var(--vault-rx, 70px)), 0px, 0px) scale(1);
       opacity: 1;
     }
     75% {
-      transform: translate3d(0px, -24px, 0px) scale(0.85);
+      transform: translate3d(0px, calc(-1 * var(--vault-ry, 24px)), 0px) scale(0.85);
       opacity: 0.85;
     }
     100% {
-      transform: translate3d(70px, 0px, 0px) scale(1);
+      transform: translate3d(var(--vault-rx, 70px), 0px, 0px) scale(1);
       opacity: 1;
     }
   }
 
   @keyframes vault-orbit-ccw {
     0% {
-      transform: translate3d(-56px, 0px, 0px) scale(1);
+      transform: translate3d(calc(-1 * var(--vault-rx2, 56px)), 0px, 0px) scale(1);
       opacity: 1;
     }
     25% {
-      transform: translate3d(0px, 18px, 0px) scale(1.12);
+      transform: translate3d(0px, var(--vault-ry2, 18px), 0px) scale(1.12);
       opacity: 1;
     }
     50% {
-      transform: translate3d(56px, 0px, 0px) scale(1);
+      transform: translate3d(var(--vault-rx2, 56px), 0px, 0px) scale(1);
       opacity: 1;
     }
     75% {
-      transform: translate3d(0px, -18px, 0px) scale(0.86);
+      transform: translate3d(0px, calc(-1 * var(--vault-ry2, 18px)), 0px) scale(0.86);
       opacity: 0.85;
     }
     100% {
-      transform: translate3d(-56px, 0px, 0px) scale(1);
+      transform: translate3d(calc(-1 * var(--vault-rx2, 56px)), 0px, 0px) scale(1);
       opacity: 1;
     }
   }

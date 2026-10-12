@@ -12,7 +12,30 @@ import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { AcademyRoadmap } from "@/components/AcademyRoadmap";
-import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
+import { pageMetadata, jsonLd, breadcrumbData, faqData } from "@/lib/seo";
+
+const ACADEMY_FAQS = [
+  {
+    question: "Are all 100 tactical puzzles completely free?",
+    answer:
+      "Yes. The entire 100-level Academy tactical curriculum is 100% free with zero paywalls, timers, or subscription requirements. You can solve puzzles at your own pace with instant move-validation feedback.",
+  },
+  {
+    question: "Can I practice unlimited games against Stockfish 16?",
+    answer:
+      "Yes. Web3Chess integrates an authoritative Stockfish 16 engine directly into both the Telegram Mini App and desktop web client. You can practice against multiple engine difficulties with zero stakes or deposit needed.",
+  },
+  {
+    question: "How do chess puzzles help improve blitz and speed chess?",
+    answer:
+      "Pattern recognition is the foundation of speed chess. Solving tactical puzzles ingrains common forks, pins, skewers, back-rank mates, and deflection patterns into intuition, allowing you to calculate winning tactics in seconds during time scrambles.",
+  },
+  {
+    question: "Do I need to download an app or register an account?",
+    answer:
+      "No. You can solve puzzles directly on this website, or launch the Telegram Mini App with one tap using your existing Telegram account—zero downloads, zero passwords, and zero friction.",
+  },
+] as const;
 
 export const metadata = pageMetadata(
   "Free Chess Puzzles Online & Tactics Trainer",
@@ -41,10 +64,16 @@ export default function AcademyPage() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: jsonLd(breadcrumbData([
-              { name: "Home", path: "" },
-              { name: "Free Chess Puzzles & Academy", path: "/academy" },
-            ])),
+            __html: jsonLd({
+              "@context": "https://schema.org",
+              "@graph": [
+                breadcrumbData([
+                  { name: "Home", path: "" },
+                  { name: "Free Chess Puzzles & Academy", path: "/academy" },
+                ]),
+                faqData(ACADEMY_FAQS),
+              ],
+            }),
           }}
         />
         <PageHero
@@ -157,6 +186,45 @@ export default function AcademyPage() {
                 Read the blitz guide
                 <Icon name="arrow-right" size={16} />
               </ButtonLink>
+              </div>
+            </Card>
+          </div>
+        </section>
+        <section aria-labelledby="academy-faq-heading" className="space-y-6">
+          <div className="section-index">
+            <span>04 / Practice questions</span>
+            <span>Puzzles, Stockfish &amp; progress</span>
+          </div>
+          <div className="grid gap-8 lg:grid-cols-[.65fr_1fr]">
+            <div className="space-y-4">
+              <span className="eyebrow">Clear training answers</span>
+              <h2 id="academy-faq-heading" className="editorial-title">
+                Frequently asked questions on chess practice
+              </h2>
+              <p className="text-body text-fg-muted">
+                How our 100 tactical levels, Stockfish 16 engine trainer, and mobile puzzle modes operate.
+              </p>
+            </div>
+            <Card>
+              <div>
+                {ACADEMY_FAQS.map((item) => (
+                  <details
+                    key={item.question}
+                    name="academy-faq"
+                    className="group border-b border-line py-2 last:border-0"
+                  >
+                    <summary className="faq-question flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 text-fg marker:hidden">
+                      {item.question}
+                      <span
+                        aria-hidden="true"
+                        className="shrink-0 text-fg-muted transition-transform duration-150 group-open:rotate-45"
+                      >
+                        <Icon name="plus" size={20} />
+                      </span>
+                    </summary>
+                    <p className="pb-5 pt-1 text-body text-fg-muted">{item.answer}</p>
+                  </details>
+                ))}
               </div>
             </Card>
           </div>

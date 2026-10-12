@@ -10,7 +10,30 @@ import { Icon } from "@/icons";
 import { qrSvg } from "@/lib/qr";
 import { telegramLink, SITE } from "@/lib/config";
 import { BRAND } from "@/lib/brand";
-import { pageMetadata, jsonLd, softwareApplicationData, breadcrumbData } from "@/lib/seo";
+import { pageMetadata, jsonLd, softwareApplicationData, breadcrumbData, faqData } from "@/lib/seo";
+
+const PLAY_FAQS = [
+  {
+    question: "How do I start playing chess inside Telegram?",
+    answer:
+      "Tap 'Play in Telegram' to open the Web3Chess Mini App inside Telegram. You are instantly authenticated with your Telegram handle—no passwords, no app store downloads, and no registration forms required.",
+  },
+  {
+    question: "Can I play on desktop web browsers without Telegram?",
+    answer:
+      "Yes. Tap 'Play in browser' to launch the full Web3Chess web arena in Chrome, Safari, Firefox, or Brave. You can log in via Telegram Web or practice against Stockfish AI anonymously.",
+  },
+  {
+    question: "Is Web3Chess free to play?",
+    answer:
+      "Yes. Unlimited practice matches against the Stockfish 16 engine, 100 tactical puzzle levels in the Academy, and casual games are 100% free with zero paywalls. Real-money USDT matches are completely optional.",
+  },
+  {
+    question: "How do I challenge a friend to a chess game on Telegram?",
+    answer:
+      "Inside the app, tap 'Play Friend' to generate a unique match challenge link. Share the link into any Telegram private chat or group. When your friend taps it, the board opens immediately.",
+  },
+] as const;
 
 export const metadata: Metadata = pageMetadata(
   "Play Chess Online: Telegram Bot & Web Arena",
@@ -43,6 +66,7 @@ export default async function PlayPage() {
                 { name: "Play Chess Online", path: "/play" },
               ]),
               softwareApplicationData(),
+              faqData(PLAY_FAQS),
             ],
           }),
         }}
@@ -70,7 +94,7 @@ export default async function PlayPage() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Card 1: Telegram Mini App (Recommended) */}
-          <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
+          <Card className="flex flex-col justify-between p-4 sm:p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
             <BorderBeam size={260} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
             <div className="relative z-10 w-full flex flex-col flex-1 items-start">
               <div className="flex w-full items-center justify-between gap-3">
@@ -106,7 +130,7 @@ export default async function PlayPage() {
           </Card>
 
           {/* Card 2: Desktop Browser */}
-          <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
+          <Card className="flex flex-col justify-between p-4 sm:p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
             <div className="relative z-10 w-full flex flex-col flex-1 items-start">
               <div className="flex w-full items-center justify-between gap-3">
                 <div className="flex size-11 items-center justify-center rounded-xl bg-inset text-fg-default border border-line">
@@ -193,7 +217,37 @@ export default async function PlayPage() {
           </div>
         </div>
 
-        <p className="mt-4 max-w-[65ch] text-caption text-fg-muted">
+        {/* Frequently Asked Questions */}
+        <div className="mt-8 space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="eyebrow">Instant Help</span>
+            <span className="text-caption font-mono text-fg-muted">Play &amp; Matchmaking FAQs</span>
+          </div>
+          <Card>
+            <div>
+              {PLAY_FAQS.map((item) => (
+                <details
+                  key={item.question}
+                  name="play-faq"
+                  className="group border-b border-line py-2 last:border-0"
+                >
+                  <summary className="faq-question flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 text-fg marker:hidden">
+                    <span className="text-body-sm font-medium">{item.question}</span>
+                    <span
+                      aria-hidden="true"
+                      className="shrink-0 text-fg-muted transition-transform duration-150 group-open:rotate-45"
+                    >
+                      <Icon name="plus" size={18} />
+                    </span>
+                  </summary>
+                  <p className="pb-4 pt-1 text-body-sm text-fg-muted">{item.answer}</p>
+                </details>
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        <p className="mt-6 max-w-[65ch] text-caption text-fg-muted">
           A.I. practice and tactics puzzles are 100% free with unlimited games. Real-money matches use optional USDT stakes on GRAM rails. Wager matches are 18+ where available; play responsibly.
         </p>
       </main>

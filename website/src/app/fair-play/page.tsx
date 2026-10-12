@@ -10,7 +10,30 @@ import { ChessSculpture } from "@/components/ChessSculpture";
 import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
-import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
+import { pageMetadata, jsonLd, breadcrumbData, faqData } from "@/lib/seo";
+
+const FAIR_PLAY_FAQS = [
+  {
+    question: "How does Web3Chess validate legal chess moves?",
+    answer:
+      "All moves are executed and verified on authoritative backend servers running Stockfish 16. Client WebViews only render display boards—no client code can modify pieces, execute illegal moves, or manipulate clock state.",
+  },
+  {
+    question: "How are chess bots and external engines detected?",
+    answer:
+      "Our integrity engine continuously analyzes move-time telemetry, accuracy percentiles across complex positions, engine correlation curves, and microsecond lag anomalies. Accounts exhibiting inhuman accuracy or anomalous timing distributions face immediate review and forfeiture.",
+  },
+  {
+    question: "What happens if a player disconnects during a match?",
+    answer:
+      "Our lag-compensated FIDE clock keeps authoritative server time. If a player disconnects, their clock continues ticking down. If they reconnect before time expires, the match resumes seamlessly. If their clock reaches 0:00, they forfeit on time.",
+  },
+  {
+    question: "How do I report suspected cheating or unfair play?",
+    answer:
+      "Note the match ID and contact platform support directly via the Telegram bot. Every move ply is permanently logged with timestamps and engine evaluation deltas, enabling thorough multi-engine auditing.",
+  },
+] as const;
 
 export const metadata = pageMetadata(
   "Fair Play & Anti-Cheat Engine: Stockfish 16 Validation",
@@ -36,10 +59,16 @@ export default function FairPlayPage() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: jsonLd(breadcrumbData([
-              { name: "Home", path: "" },
-              { name: "Fair Play & Anti-Cheat", path: "/fair-play" },
-            ])),
+            __html: jsonLd({
+              "@context": "https://schema.org",
+              "@graph": [
+                breadcrumbData([
+                  { name: "Home", path: "" },
+                  { name: "Fair Play & Anti-Cheat", path: "/fair-play" },
+                ]),
+                faqData(FAIR_PLAY_FAQS),
+              ],
+            }),
           }}
         />
         <PageHero
@@ -185,6 +214,45 @@ export default function FairPlayPage() {
             the match identifier and contact support via the Telegram bot chat. Our integrity team
             audits flagged games using deep multi-engine heuristics.
           </p>
+        </section>
+        <section aria-labelledby="fair-play-faq-heading" className="space-y-6">
+          <div className="section-index">
+            <span>04 / Integrity FAQs</span>
+            <span>Anti-cheat, Stockfish &amp; telemetries</span>
+          </div>
+          <div className="grid gap-8 lg:grid-cols-[.65fr_1fr]">
+            <div className="space-y-4">
+              <span className="eyebrow">Clear integrity answers</span>
+              <h2 id="fair-play-faq-heading" className="editorial-title">
+                Frequently asked questions on fair play
+              </h2>
+              <p className="text-body text-fg-muted">
+                How server-side move engines, anti-engine heuristic audits, and tamper-proof clocks protect players.
+              </p>
+            </div>
+            <Card>
+              <div>
+                {FAIR_PLAY_FAQS.map((item) => (
+                  <details
+                    key={item.question}
+                    name="fair-play-faq"
+                    className="group border-b border-line py-2 last:border-0"
+                  >
+                    <summary className="faq-question flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 text-fg marker:hidden">
+                      {item.question}
+                      <span
+                        aria-hidden="true"
+                        className="shrink-0 text-fg-muted transition-transform duration-150 group-open:rotate-45"
+                      >
+                        <Icon name="plus" size={20} />
+                      </span>
+                    </summary>
+                    <p className="pb-5 pt-1 text-body text-fg-muted">{item.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </Card>
+          </div>
         </section>
         <section className="grid gap-4 md:grid-cols-2">
           <Card className="flex flex-col items-start">
