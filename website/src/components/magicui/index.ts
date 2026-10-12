@@ -10,3 +10,4 @@ export * from "./orbiting-circles";
 export * from "./animated-list";
 export * from "./bento-grid";
 export * from "./dock";
+export * from "./progressive-blur";

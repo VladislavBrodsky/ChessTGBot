@@ -3,60 +3,7 @@
 import Link from "next/link";
 import { Icon } from "@/icons";
 import { Badge } from "@/components/ui/Badge";
-
-// ── Real Live Settlement Feed ─────────────────────────────────────────────
-const LIVE_SETTLEMENTS = [
-  {
-    id: "s1",
-    player: "CryptoMorphy",
-    flag: "🇦🇪",
-    action: "Won Blitz 3+2",
-    payout: "+$47.50",
-    time: "14s ago",
-    icon: "lightning" as const,
-    color: "text-emerald-600 bg-emerald-500/15 border-emerald-500/30",
-  },
-  {
-    id: "s2",
-    player: "Magnus_GRAM",
-    flag: "🇳🇴",
-    action: "Won Rapid 15+10",
-    payout: "+$190.00",
-    time: "38s ago",
-    icon: "trophy" as const,
-    color: "text-blue-600 bg-blue-500/15 border-blue-500/30",
-  },
-  {
-    id: "s3",
-    player: "gram_tactician",
-    flag: "🇯🇵",
-    action: "Unboxed King's Vault",
-    payout: "+50 GRAM",
-    time: "1m ago",
-    icon: "gift" as const,
-    color: "text-amber-600 bg-amber-500/15 border-amber-500/30",
-  },
-  {
-    id: "s4",
-    player: "pawn_storm",
-    flag: "🇩🇪",
-    action: "Won Bullet 1+0",
-    payout: "+$19.00",
-    time: "2m ago",
-    icon: "lightning" as const,
-    color: "text-emerald-600 bg-emerald-500/15 border-emerald-500/30",
-  },
-  {
-    id: "s5",
-    player: "gm_vlad",
-    flag: "🇺🇿",
-    action: "Withdrew USDT",
-    payout: "✓ On-Chain",
-    time: "3m ago",
-    icon: "arrow-up-right" as const,
-    color: "text-purple-600 bg-purple-500/15 border-purple-500/30",
-  },
-];
+import { LiveSettlementFeed } from "./LiveSettlementFeed";
 
 // ── Modern 2D/3D Tokens for Vault Drop Sphere ──────────────────────────────
 function GramToken() {
@@ -169,43 +116,9 @@ export function RewardsBento() {
           </div>
         </div>
 
-        {/* Dedicated bottom visual container — Live Settlement Terminal (UNDER TEXT) */}
+        {/* Dedicated bottom visual container — Live Animated Settlement Terminal (UNDER TEXT) */}
         <div className="relative h-48 w-full overflow-hidden bg-inset/30 border-t border-line/50 p-3.5 flex flex-col justify-between">
-          {/* Terminal status bar */}
-          <div className="flex items-center justify-between pb-2 border-b border-line/60 font-mono text-[11px]">
-            <span className="flex items-center gap-1.5 text-fg-default font-semibold">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              Live Arena Settlement Feed
-            </span>
-            <span className="text-emerald-700 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 text-[10px]">
-              95% Net Victor Share
-            </span>
-          </div>
-
-          {/* 3 Live Settlement Items filling height cleanly */}
-          <div className="space-y-1.5 my-auto">
-            {LIVE_SETTLEMENTS.slice(0, 3).map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-line bg-surface/90 px-3 py-2 shadow-2xs transition-all hover:border-fg-muted/40"
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className={`flex size-6.5 shrink-0 items-center justify-center rounded-lg border ${item.color}`}>
-                    <Icon name={item.icon} size={13} />
-                  </div>
-                  <div className="min-w-0">
-                    <span className="block font-semibold text-fg-default text-[12px] truncate">
-                      {item.flag} {item.player} · <span className="font-normal text-fg-muted">{item.action}</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right shrink-0 flex items-center gap-2 font-mono">
-                  <span className="text-[10px] text-fg-muted">{item.time}</span>
-                  <span className="font-bold text-emerald-600 text-[13px]">{item.payout}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <LiveSettlementFeed />
         </div>
       </div>
 

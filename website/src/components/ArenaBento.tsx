@@ -6,6 +6,7 @@ import { NumberTicker } from "@/components/magicui/number-ticker";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
 import { AnimatedList } from "@/components/magicui/animated-list";
+import { ProgressiveBlur } from "@/components/magicui/progressive-blur";
 
 const liveFeed = [
   {
@@ -336,8 +337,13 @@ export function ArenaBento() {
               </figure>
             ))}
           </AnimatedList>
-          {/* Bottom gradient fade for infinite stream illusion */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-surface to-transparent" />
+          {/* Progressive blur bottom edge for infinite stream depth */}
+          <ProgressiveBlur
+            position="bottom"
+            height="28%"
+            blurLevels={[0.5, 1, 2, 4, 8]}
+            className="pointer-events-none"
+          />
         </div>
 
         <div className="relative z-10 w-full pt-2.5 border-t border-line text-caption text-fg-muted flex items-center justify-between font-mono">

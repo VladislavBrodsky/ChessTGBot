@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, Suspense } from "react";
-import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useReportWebVitals } from "next/web-vitals";
 import {
@@ -179,43 +178,6 @@ export function GoogleAnalytics() {
 
   return (
     <>
-      {/* Google Tag Manager (gtag.js) */}
-      <Script
-        strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-      />
-
-      {/* Google Consent Mode v2 & GA4 Configuration */}
-      <Script
-        id="google-analytics-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-
-            // Google Consent Mode v2 (EEA compliance & privacy standards)
-            gtag('consent', 'default', {
-              'ad_storage': 'granted',
-              'ad_user_data': 'granted',
-              'ad_personalization': 'granted',
-              'analytics_storage': 'granted',
-              'wait_for_update': 500
-            });
-
-            gtag('js', new Date());
-
-            // GA4 initialization with privacy flags and beacon transport
-            gtag('config', '${GA_MEASUREMENT_ID}', {
-              page_path: window.location.pathname,
-              anonymize_ip: true,
-              cookie_flags: 'SameSite=None;Secure',
-              transport_type: 'beacon'
-            });
-          `,
-        }}
-      />
-
       {/* SPA route transition tracking wrapped in Suspense boundary */}
       <Suspense fallback={null}>
         <AnalyticsRouteTracker />

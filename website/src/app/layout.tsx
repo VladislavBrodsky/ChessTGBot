@@ -62,6 +62,38 @@ export default function RootLayout({
           href="https://www.google-analytics.com"
           crossOrigin="anonymous"
         />
+        {/* Google tag (gtag.js) - loaded immediately for crawler verification & telemetry */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaMeasurementId}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+
+              // Google Consent Mode v2 (EEA compliance & privacy standards)
+              gtag('consent', 'default', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+                'analytics_storage': 'granted',
+                'wait_for_update': 500
+              });
+
+              gtag('js', new Date());
+
+              // GA4 initialization
+              gtag('config', '${SITE.gaMeasurementId}', {
+                page_path: window.location.pathname,
+                anonymize_ip: true,
+                cookie_flags: 'SameSite=None;Secure',
+                transport_type: 'beacon'
+              });
+            `,
+          }}
+        />
       </head>
       <body>
         <GoogleAnalytics />
