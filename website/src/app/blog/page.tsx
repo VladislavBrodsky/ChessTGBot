@@ -7,7 +7,7 @@ import { Footer } from "@/components/Footer";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { Card } from "@/components/ui/Card";
-import { buttonClass } from "@/components/ui/Button";
+import { buttonClass } from "@/components/ui/button-styles";
 import { SITE } from "@/lib/config";
 import { pageMetadata, jsonLd, breadcrumbData } from "@/lib/seo";
 import { Icon } from "@/icons";

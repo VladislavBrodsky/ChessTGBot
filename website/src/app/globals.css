@@ -986,4 +986,19 @@
       z-index: 15;
     }
   }
+
+  @keyframes rippling {
+    0% {
+      opacity: 0.55;
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+
+  .animate-rippling {
+    animation: rippling var(--duration, 600ms) ease-out forwards;
+  }
 }

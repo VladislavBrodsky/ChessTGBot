@@ -1,22 +1,8 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
+import { buttonStyles, buttonSizes, buttonClass } from "./button-styles";
 
-export const buttonStyles = {
-  primary: "site-button-primary",
-  secondary: "site-button-secondary",
-  soft: "site-button-soft",
-  ghost: "site-button-ghost",
-} as const;
-
-export const buttonSizes = { sm: "site-button-sm", md: "site-button-md", lg: "site-button-lg" } as const;
-
-export function buttonClass(
-  variant: keyof typeof buttonStyles = "primary",
-  className = "",
-  size: keyof typeof buttonSizes = "md",
-) {
-  return `site-button ${buttonSizes[size]} ${buttonStyles[variant]} ${className}`;
-}
+export { buttonStyles, buttonSizes, buttonClass };
 
 type ButtonProps = ComponentProps<"button"> & {
   variant?: keyof typeof buttonStyles;
