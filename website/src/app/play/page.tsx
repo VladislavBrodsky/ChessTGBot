@@ -28,46 +28,149 @@ export default async function PlayPage() {
       </header>
       <main id="main" className="play-page mx-auto max-w-4xl">
         <div className="mb-8 space-y-4 sm:mb-10">
-          <Badge tone="accent">Your next move</Badge>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Badge tone="accent" icon="lightning">
+              Instant Launch
+            </Badge>
+            <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Arena · 3,840+ Active Rivals
+            </span>
+          </div>
           <h1 className="poster play-heading">Open the board</h1>
-          <p className="max-w-[48ch] hero-lead text-fg-muted">Choose your arena. Start with free A.I. practice, then decide how you want to play.</p>
+          <p className="max-w-[50ch] hero-lead text-fg-muted">
+            Launch directly in Telegram or play in your desktop browser. Start with free A.I. practice, solve puzzles, or enter live USDT matches on TON rails.
+          </p>
         </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="flex flex-col items-start relative overflow-hidden group">
+          {/* Card 1: Telegram Mini App (Recommended) */}
+          <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
             <BorderBeam size={260} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
             <div className="relative z-10 w-full flex flex-col flex-1 items-start">
               <div className="flex w-full items-center justify-between gap-3">
-                <Icon name="telegram-logo" size={28} />
+                <div className="flex size-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20">
+                  <Icon name="telegram-logo" size={24} />
+                </div>
                 <Badge tone="accent">Recommended</Badge>
               </div>
-              <h2 className="mt-5 text-heading-sm font-medium">Inside Telegram</h2>
-              <p className="mt-3 text-body text-fg-muted">Open the Mini App with your Telegram profile. No separate chess app to download.</p>
-              <div className="mt-auto w-full pt-6">
-                <PlayButton size="lg" startapp="arena" label="Open in Telegram" className="w-full" />
+              <h2 className="mt-5 text-heading-sm font-medium tracking-tight">Inside Telegram</h2>
+              <p className="mt-2 text-body-sm text-fg-muted">
+                Open the Mini App with your Telegram profile. Zero friction, zero passwords, and no separate app download.
+              </p>
+
+              <div className="my-5 w-full space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
+                <div className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span>One-tap launch with Telegram profile</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span>Non-custodial TON wallet connection</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span>Push notification when rival is paired</span>
+                </div>
+              </div>
+
+              <div className="mt-auto w-full">
+                <PlayButton size="lg" startapp="arena" label="Open in Telegram" className="w-full" pulsating />
               </div>
             </div>
           </Card>
-          <Card className="flex flex-col items-start">
-            <div className="flex min-h-7 items-center"><Icon name="globe" size={28} /></div>
-            <h2 className="mt-5 text-heading-sm font-medium">In your browser</h2>
-            <p className="mt-3 text-body text-fg-muted">A little more room for the board. Sign in with Telegram to continue on the web.</p>
-            <div className="mt-auto w-full pt-6">
-              <a href={`${SITE.appUrl}/en/login`} target="_blank" rel="noopener noreferrer" className={buttonClass("secondary", "w-full", "lg")}>
-                Play in browser<Icon name="arrow-up-right" size={18} />
-              </a>
+
+          {/* Card 2: Desktop Browser */}
+          <Card className="flex flex-col justify-between p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
+            <div className="relative z-10 w-full flex flex-col flex-1 items-start">
+              <div className="flex w-full items-center justify-between gap-3">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-inset text-fg-default border border-line">
+                  <Icon name="globe" size={24} />
+                </div>
+                <span className="font-mono text-caption text-fg-muted bg-inset px-2.5 py-0.5 rounded-full border border-line">
+                  Desktop Web
+                </span>
+              </div>
+              <h2 className="mt-5 text-heading-sm font-medium tracking-tight">In your browser</h2>
+              <p className="mt-2 text-body-sm text-fg-muted">
+                More room for the board on desktop screens. Sign in via Telegram to sync your rating, pieces, and match history.
+              </p>
+
+              <div className="my-5 w-full space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
+                <div className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-blue-500" />
+                  <span>Expanded widescreen board layout</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-blue-500" />
+                  <span>Stockfish 16 engine analysis</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-blue-500" />
+                  <span>Synchronized cloud profile state</span>
+                </div>
+              </div>
+
+              <div className="mt-auto w-full">
+                <a
+                  href={`${SITE.appUrl}/en/login`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonClass("secondary", "w-full", "lg")}
+                >
+                  Play in browser
+                  <Icon name="arrow-up-right" size={18} />
+                </a>
+              </div>
             </div>
           </Card>
         </div>
-        <div className="mt-6 hidden items-center gap-6 rounded-media border border-line p-5 md:flex">
-          <div className="shrink-0 rounded-control bg-white p-2">
-            <div className="size-28 [&>svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} role="img" aria-label="QR code that opens Web3Chess in Telegram" />
+
+        {/* Desktop Mobile Bridge / QR Dock */}
+        <div className="mt-6 hidden items-center justify-between gap-6 rounded-2xl border border-line bg-surface p-5 md:flex">
+          <div className="flex items-center gap-5">
+            <div className="shrink-0 rounded-xl bg-white p-2.5 border border-line shadow-xs">
+              <div className="size-24 [&>svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} role="img" aria-label="QR code that opens Web3Chess in Telegram" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-title">Take the board with you</h2>
+                <span className="font-mono text-[10px] text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-semibold">
+                  Instant mobile handoff
+                </span>
+              </div>
+              <p className="max-w-[44ch] text-body-sm text-fg-muted">
+                Scan with your phone camera to launch Web3Chess in Telegram. No login required.
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-title">Take the board with you</h2>
-            <p className="mt-2 max-w-[44ch] text-body text-fg-muted">Scan with your phone camera to open Web3Chess in Telegram.</p>
+          <div className="hidden lg:flex items-center gap-4 text-caption font-mono text-fg-muted pr-2">
+            <div className="text-right">
+              <span className="block font-semibold text-fg-default">iOS &amp; Android</span>
+              <span className="text-[11px]">Bot API 8.0+ Ready</span>
+            </div>
           </div>
         </div>
-        <p className="mt-6 max-w-[65ch] text-caption text-fg-muted">A.I. practice and puzzles are free. Player matches use USDT stakes. Wager matches are 18+ where available; you can lose your stake.</p>
+
+        {/* Trust & Safe Space Guarantees */}
+        <div className="mt-6 grid grid-cols-3 gap-3 rounded-xl border border-line bg-inset p-3.5 text-center font-mono text-caption">
+          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium">
+            <Icon name="shield-check" size={16} className="text-emerald-600 shrink-0" />
+            <span>Non-Custodial Escrow</span>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium border-x border-line">
+            <Icon name="lightning" size={16} className="text-amber-500 shrink-0" />
+            <span>Sub-Second Finality</span>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium">
+            <Icon name="cpu" size={16} className="text-blue-600 shrink-0" />
+            <span>Stockfish Anti-Cheat</span>
+          </div>
+        </div>
+
+        <p className="mt-4 max-w-[65ch] text-caption text-fg-muted">
+          A.I. practice and tactics puzzles are 100% free with unlimited games. Real-money matches use optional USDT stakes on TON rails. Wager matches are 18+ where available; play responsibly.
+        </p>
       </main>
     </div>
   );
