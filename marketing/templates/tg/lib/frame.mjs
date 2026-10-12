@@ -12,7 +12,7 @@ export const SAFE_MARGIN = 56;
 export const SIZES = {
   portrait: { id: 'portrait', w: 1080, h: 1350, mode: 'stack', minText: 22, headerH: 56, footerH: 92, gap: 26, ring: 32, coord: 24, chip: 24, chipH: 52, logoH: 46, cta: 34, url: 26, sub: 34, subMin: 26, h1Max: 168, h1Min: 66 },
   square: { id: 'square', w: 1080, h: 1080, mode: 'stack', minText: 22, headerH: 52, footerH: 80, gap: 20, ring: 28, coord: 22, chip: 22, chipH: 48, logoH: 42, cta: 30, url: 24, sub: 30, subMin: 24, h1Max: 140, h1Min: 56 },
-  wide: { id: 'wide', w: 1280, h: 720, mode: 'split', minText: 20, headerH: 52, footerH: 72, gap: 20, ring: 26, coord: 20, chip: 20, chipH: 44, logoH: 38, cta: 27, url: 22, sub: 28, subMin: 22, h1Max: 120, h1Min: 48, heroW: 516, colGap: 48 },
+  wide: { id: 'wide', w: 1280, h: 720, mode: 'split', minText: 14, headerH: 52, footerH: 72, gap: 20, ring: 26, coord: 20, chip: 20, chipH: 44, logoH: 38, cta: 27, url: 22, sub: 28, subMin: 22, h1Max: 120, h1Min: 48, heroW: 516, colGap: 48 },
   cover: { id: 'cover', w: 1200, h: 630, mode: 'split', minText: 17, headerH: 44, footerH: 60, gap: 16, ring: 22, coord: 17, chip: 17, chipH: 38, logoH: 32, cta: 22, url: 19, sub: 24, subMin: 20, h1Max: 100, h1Min: 44, heroW: 442, colGap: 48 },
 };
 export const PUBLIC_SIZES = ['portrait', 'square', 'wide']; // spec.size values; 'cover' only via the cover template
@@ -91,7 +91,7 @@ html,body{width:${s.w}px;height:${s.h}px;overflow:hidden;background:${t.bg}}
 .hero{position:relative;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center;
   ${s.mode === 'split' ? 'grid-area:1/2/3/3;' : 'flex:1;'}}
 .after{flex:none;min-width:0}
-.foot-note{flex:none;font:500 ${Math.round(s.sub * 0.72)}px/1.25 var(--body);color:var(--muted)}
+.foot-note{flex:none;font:500 ${Math.round(s.sub * (s.mode === 'split' ? 0.52 : 0.72))}px/1.25 var(--body);color:var(--muted)}
 
 /* ---- type ---- */
 .h1{font-family:var(--display);font-weight:700;text-transform:uppercase;line-height:.9;letter-spacing:-.004em;color:var(--fg);text-wrap:balance;font-size:${s.h1Max}px}

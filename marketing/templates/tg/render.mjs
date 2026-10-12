@@ -54,7 +54,7 @@ export function prepare(input) {
   if (typeof spec.headline !== 'string') throw new Error('"headline" must be a string');
   spec.tag = spec.tag ?? template.defaults.tag;
 
-  const sizeName = spec.size ?? template.defaultSize ?? 'portrait';
+  const sizeName = spec.size ?? template.defaultSize ?? 'square';
   const allowedSizes = template.sizes || PUBLIC_SIZES;
   if (!allowedSizes.includes(sizeName)) throw new Error(`size "${sizeName}" is not valid for "${spec.template}". Use one of: ${allowedSizes.join(', ')}`);
   const size = SIZES[sizeName];

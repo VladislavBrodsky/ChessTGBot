@@ -31,8 +31,13 @@ class SmmCopywriterAgent:
         claim: Optional[str] = None,
         reveal_text: Optional[str] = None,
         options: Optional[List[str]] = None,
+        size: str = "square",
     ) -> Dict[str, Any]:
-        """Crafts a verified Telegram broadcast dictionary ready for QA gates."""
+        """Crafts a verified Telegram broadcast dictionary ready for QA gates.
+        
+        Canvas format is strictly 1:1 ('square': 1080x1080) or 16:9 ('wide': 1280x720).
+        """
+        canvas_size = size if size in ("square", "wide") else "square"
         post: Dict[str, Any] = {
             "id": slot_id,
             "kind": "telegram",
@@ -54,7 +59,7 @@ class SmmCopywriterAgent:
             }
             post["creative"] = {
                 "template": "puzzle",
-                "size": "portrait",
+                "size": canvas_size,
                 "tag": claim.replace("_", " ").title() if claim else "Tactics Challenge",
                 "headline": "White to play.\n*One decisive move.*",
                 "subhead": "Can you spot the tactical finish?",
@@ -69,7 +74,7 @@ class SmmCopywriterAgent:
                 "text": reveal_text.strip(),
                 "creative": {
                     "template": "puzzle",
-                    "size": "portrait",
+                    "size": canvas_size,
                     "reveal": True,
                     "moves": solution or [],
                     "tag": "Solved",
@@ -89,8 +94,10 @@ class SmmCopywriterAgent:
         start_time_utc: str = "20:00 UTC",
         minutes_remaining: int = 15,
         wager_entry: int = 5,
+        size: str = "square",
     ) -> Dict[str, Any]:
         """Crafts a high-urgency arena countdown alert adhering to 18+ wager disclosures."""
+        canvas_size = size if size in ("square", "wide") else "square"
         hook = f"Arena Alert: {tournament_name} locks in {minutes_remaining} minutes."
         body = (
             f"⚡ <b>The {start_time_utc} Arena countdown is live.</b>\n\n"
@@ -112,7 +119,7 @@ class SmmCopywriterAgent:
             "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/wagers"}],
             "creative": {
                 "template": "product",
-                "size": "portrait",
+                "size": canvas_size,
                 "tag": "Daily Arena",
                 "headline": "BLITZ ARENA.\n*VAULT CLOSES SOON.*",
                 "subhead": f"{start_time_utc} • Instant PvP Matchmaking",

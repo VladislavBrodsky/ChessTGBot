@@ -31,7 +31,7 @@
   },
   "creative": {
     "template": "puzzle",
-    "size": "portrait",
+    "size": "square",
     "tag": "Mate In 1",
     "headline": "White to play.\n*One decisive move.*",
     "subhead": "Can you spot the tactical finish?",
@@ -44,7 +44,7 @@
     "text": "<b>Solved: Rh7#. The Arabian Mate.</b>\n\nThe knight on f6 covers g8 and h7, preventing the king from stepping away while simultaneously defending the rook on h7.\nBecause the rook is defended, the king cannot capture it.\nRa8+ fails to allow escape or lacks protection. In the corner, a rook and knight form an inescapable net.",
     "creative": {
       "template": "puzzle",
-      "size": "portrait",
+      "size": "square",
       "reveal": true,
       "moves": [
         "Rh7#"

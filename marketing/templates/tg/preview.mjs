@@ -99,7 +99,7 @@ async function contactSheet(items, name = 'contact-sheet.png', { cell = 360, col
   const gap = 24;
   const tiles = items
     .map(({ n, spec, file }) => {
-      const sz = SIZES[spec.size || TEMPLATES[spec.template].defaultSize || 'portrait'];
+      const sz = SIZES[spec.size || TEMPLATES[spec.template].defaultSize || 'square'];
       const w = cell;
       const h = Math.round((cell * sz.h) / sz.w);
       const b64 = readFileSync(file || path.join(OUT, `${n}.png`)).toString('base64');
