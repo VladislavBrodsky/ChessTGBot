@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../../../design-system/website/theme.css";
+@import "../styles/marketing-showcase.css";
 
 /* Tailwind scans this app's source for utility usage. */
 @source "../";
@@ -1161,25 +1162,10 @@ textarea,
     .first-three-intro h3 { text-align: center; text-wrap: balance; }
     .first-three-intro > .site-button { width: 100%; }
   }
-  .marketing-bento > * { min-width: 0; }
   .home-section .grid > * { min-width: 0; }
   .home-section > .grid { grid-template-columns: minmax(0, 1fr); }
   .wager-ledger > div:not(.rounded-xl) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; }
   .wager-ledger > div > dt { min-width: 0; }
-  .reward-panel.site-card { padding: 0; }
-  .reward-panel { display: flex; flex-direction: column; justify-content: space-between; }
-  .reward-copy { margin: 0; }
-  .reward-copy > * { width: 100%; margin: 0; min-width: 0; }
-  .reward-copy h3 { text-wrap: balance; }
-  .reward-copy p { line-height: 1.6; }
-  .reward-copy a { min-height: 44px; align-items: center; font-family: var(--font-sans); }
-  .reward-demo { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.25rem; }
-  .vault-demo { display: flex; min-height: 18rem; padding: 1rem 1.25rem 3.5rem; }
-  .reward-demo > div { min-width: 0; }
-  .settlement-status { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
-  .settlement-row { display: grid; gap: 0.75rem; padding: 0.875rem; }
-  .settlement-player > div { overflow-wrap: anywhere; }
-  .settlement-amount { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
   .live-proof { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 0.625rem; width: 100%; min-width: 0; padding-block: 0.5rem; }
   .proof-activity { flex-basis: 100%; min-height: 3rem; }
   .proof-activity-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.5rem; font-size: var(--text-caption); }
@@ -1190,37 +1176,14 @@ textarea,
   .home-payout-stream .text-right { margin-inline-start: auto; }
   .home-payout-stream .min-w-0 { flex-wrap: wrap; }
   .arena-event-stream figure { min-height: 5.75rem; }
-  .vault-cloud-frame { position: relative; width: 100%; max-width: 17.5rem; height: 14rem; margin: auto; }
-  .vault-cloud-frame { container-type: inline-size; --cloud-radius: clamp(64px, calc(50cqw - 30px), 94px); }
-  .vault-cloud { position: relative; width: 100%; height: 100%; }
-  .vault-cloud-center, .vault-cloud-token { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; }
-  .vault-cloud-center { z-index: 2; width: 4rem; height: 4rem; margin: -2rem; }
-  .vault-cloud-token { width: 2.5rem; height: 2.5rem; margin: -1.25rem; }
-  .vault-cloud-token svg { width: 1.375rem; height: 1.375rem; }
-  .vault-cloud-guide { position: absolute; width: calc(100% - 3.75rem); max-width: 11.75rem; aspect-ratio: 1; top: 50%; left: 50%; border: 1px dashed var(--line-hairline); border-radius: 50%; transform: translate(-50%, -50%) scaleY(0.86); }
-  .vault-core { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; color: #251800; border: 1px solid #9a7226; background: radial-gradient(circle at 30% 22%, #fffbe7, #f7d36c 36%, #ce932b 72%, #a16c20); box-shadow: inset 0 1px 4px #ffffffb3, inset 0 -2px 4px #00000024, 0 6px 12px #00000012; }
-  .vault-motion-control { position: absolute; right: -0.5rem; top: -0.5rem; display: grid; place-items: center; width: 44px; height: 44px; color: var(--fg-muted); border-radius: 50%; }
-  .vault-motion-control:hover { background: var(--surface-card); }
-  .vault-asset-legend { white-space: nowrap; max-width: calc(100% - 2rem); }
-  .ecosystem-orbit-stage { height: clamp(280px, 75vw, 420px); }
-  .ecosystem-orbit[data-active='false'] .orbit-item { animation-play-state: paused; }
-  .globe-marketing-stage { max-width: min(100%, 460px); }
   .home-main > .home-section { content-visibility: visible; contain-intrinsic-size: none; }
   @media (max-width: 767px) {
     .home-hero-context { order: -1; }
     .hero-section > .hero-visual, .page-hero > .hero-visual { order: 0; }
     .hero-section .hero-intro, .page-hero .hero-intro { order: 1; }
     .hero-section .hero-details, .page-hero .hero-details { order: 2; }
-    .globe-marketing-stage { max-width: 320px; }
   }
   @media (min-width: 640px) {
-    .settlement-row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; min-height: 5rem; }
-    .settlement-amount { flex-direction: column-reverse; align-items: flex-end; gap: 0.25rem; }
-  }
-  @supports (grid-template-rows: subgrid) {
-    @media (min-width: 640px) {
-      .marketing-bento > .reward-panel { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: subgrid; grid-row: span 2; row-gap: 0; justify-content: stretch; }
-    }
   }
   @media (min-width: 1024px) {
     .live-proof { gap: 0.75rem; }
@@ -1230,9 +1193,6 @@ textarea,
     .live-proof { justify-content: center; }
     .site-dock { gap: 0.125rem; padding: 0.125rem; }
     .proof-activity-row { justify-content: center; }
-    .reward-copy > div:first-child { justify-content: center; }
-    .reward-copy h3 { text-align: center; }
-    .reward-copy > div:last-child > a { display: flex; justify-content: center; }
     .section-index { align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
     .section-index > span:last-child:not(:first-child) { display: inline; }
     .section-split .editorial-title, .home-section > div > .editorial-title { text-align: center; margin-inline: auto; }

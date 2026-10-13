@@ -1,6 +1,7 @@
 "use client";
 
 import { Children, useEffect, useRef, useState, type ReactNode } from "react";
+import { ShowcaseMotionControl } from "../ui/ShowcaseMotionControl";
 import { useShowcaseActivity } from "../home/useShowcaseActivity";
 
 /** A small, SVG-native 3D cloud with a clear central safe zone for the vault. */
@@ -61,12 +62,7 @@ export function IconCloud({ children, center }: { children: ReactNode; center: R
           </div>
         ))}
       </div>
-      <button type="button" className="vault-motion-control" aria-label={paused ? "Resume vault animation" : "Pause vault animation"}
-        aria-pressed={paused} onClick={() => setPaused((value) => !value)}>
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-          {paused ? <path d="m9 5 11 7-11 7z" /> : <path d="M7 5h3v14H7zm7 0h3v14h-3z" />}
-        </svg>
-      </button>
+      <div className="vault-motion-dock"><ShowcaseMotionControl name="vault" paused={paused} onToggle={() => setPaused((value) => !value)} /></div>
     </div>
   );
 }

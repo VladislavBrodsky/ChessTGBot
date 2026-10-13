@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useShowcaseActivity } from "./home/useShowcaseActivity";
 import createGlobe from "cobe";
+import { Card } from "./ui/Card";
+import { ShowcaseMotionControl } from "./ui/ShowcaseMotionControl";
 
 // ── Complete Verified Global City Coordinates ───────────────────────────
 const CITIES: Record<string, [number, number]> = {
@@ -188,6 +190,8 @@ const NODES = [
 ];
 
 export function GlobeShowcase() {
+  const globeId = useId();
+  const fallbackRef = useRef<SVGSVGElement>(null);
   const { ref: containerRef, visible: isVisible, foreground, reduced, active } = useShowcaseActivity();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerInteracting = useRef<number | null>(null);
@@ -196,6 +200,8 @@ export function GlobeShowcase() {
   const animationRef = useRef<number>(0);
 
   const [matchIndex, setMatchIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [width, setWidth] = useState(280);
   const [isCrossfading, setIsCrossfading] = useState(false);
 
   const current = LIVE_MATCHES[matchIndex];
@@ -232,7 +238,7 @@ export function GlobeShowcase() {
     if (!canvas) return;
 
     let width = canvas.offsetWidth;
-    const onResize = () => { width = canvas.offsetWidth; };
+    const onResize = () => { width = canvas.offsetWidth; setWidth(width); };
     const sizeObserver = new ResizeObserver(onResize);
     sizeObserver.observe(canvas);
 
@@ -240,7 +246,8 @@ export function GlobeShowcase() {
     const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, isMobile ? 1.4 : 1.8);
     const mapSamples = isMobile ? 3600 : 8000;
 
-    const globe = createGlobe(canvas, {
+    let globe: ReturnType<typeof createGlobe>;
+    try { globe = createGlobe(canvas, {
       devicePixelRatio: dpr,
       width: (width || 320) * dpr,
       height: (width || 320) * dpr,
@@ -260,7 +267,12 @@ export function GlobeShowcase() {
       arcWidth: 0.32,
       arcHeight: 0.30,
       markerElevation: 0.02,
-    });
+    }); } catch {
+      canvas.style.opacity = "0";
+      if (fallbackRef.current) fallbackRef.current.style.opacity = "1";
+      sizeObserver.disconnect();
+      return;
+    }
 
     const animate = () => {
       if (document.hidden) {
@@ -268,7 +280,7 @@ export function GlobeShowcase() {
         return;
       }
 
-      if (pointerInteracting.current === null) {
+      if (pointerInteracting.current === null && !paused) {
         phiRef.current += isMobile ? 0.0012 : 0.0016;
       }
 
@@ -290,22 +302,24 @@ export function GlobeShowcase() {
       });
 
       pointerInteractionMovement.current *= 0.94;
-      if (!reduced) animationRef.current = requestAnimationFrame(animate);
+      if (!reduced && !paused) animationRef.current = requestAnimationFrame(animate);
     };
 
     animate();
-    canvas.style.opacity = "1";
+    const supported = !!(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+    if (fallbackRef.current) fallbackRef.current.style.opacity = supported ? "0" : "1";
+    canvas.style.opacity = supported ? "1" : "0";
 
     return () => {
       cancelAnimationFrame(animationRef.current);
       globe.destroy();
       sizeObserver.disconnect();
     };
-  }, [isVisible, foreground, reduced]);
+  }, [isVisible, foreground, reduced, paused]);
 
   // Smooth match flip every 3.5s only when visible
   useEffect(() => {
-    if (!active) return;
+    if (!active || paused) return;
     let flip: ReturnType<typeof setTimeout>;
     const timer = setInterval(() => {
       setIsCrossfading(true);
@@ -315,106 +329,34 @@ export function GlobeShowcase() {
       }, 200);
     }, 3500);
     return () => { clearInterval(timer); clearTimeout(flip); };
-  }, [active]);
+  }, [active, paused]);
 
+  const nodeCount = width < 340 ? 2 : 3;
+  const nodes = Array.from({ length: nodeCount }, (_, i) => NODES[(matchIndex * nodeCount + i) % NODES.length]);
   return (
-    <div
-      ref={containerRef}
-      className="globe-marketing relative flex flex-col items-center justify-center select-none w-full py-2"
-    >
-
-      {/* ── Ambient Radial Atmosphere Halo (Frameless, NO white box) ── */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-full bg-radial from-emerald-500/10 via-blue-500/5 to-transparent blur-3xl opacity-80"
-        aria-hidden="true"
-      />
-
-      {/* ── Floating Live Match Pill (Compact, modern glass pill) ── */}
-      <div className="relative z-20 mb-3 w-full max-w-[520px] px-2" >
-        <div
-          className={`flex flex-wrap items-center justify-center gap-2 sm:gap-3 rounded-2xl border border-line bg-surface/95 px-3.5 sm:px-4 py-2 shadow-xs backdrop-blur-md transition-all duration-200 ${
-            isCrossfading ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"
-          }`}
-        >
-          {/* Left: Players */}
-          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
-            <span className="relative flex size-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-            </span>
-            <span className="font-semibold text-fg-default text-caption">
-              {current.flag1} {current.p1}
-            </span>
-            <span className="text-fg-muted text-caption font-mono shrink-0 px-0.5 select-none">⚔</span>
-            <span className="font-semibold text-fg-default text-caption">
-              {current.flag2} {current.p2}
-            </span>
-          </div>
-
-          {/* Right: Stake & Format */}
-          <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-caption shrink-0">
-            <span className={`font-bold tabular-nums text-caption text-caption ${tierConfig.text}`}>
-              {current.stake}
-            </span>
-            <span className="hidden sm:inline text-fg-muted text-caption">
-              ({current.format.replace("Classical ", "").replace("Rapid ", "").replace("Blitz ", "").replace("Bullet ", "")})
-            </span>
-            <span className={`hidden md:inline-flex items-center text-caption font-semibold px-2 py-0.5 rounded-full border ${tierConfig.badge}`}>
-              {current.label}
-            </span>
-          </div>
+    <Card className="globe-showcase showcase-panel" data-interactive-workspace>
+      <div ref={containerRef} className="globe-marketing" data-active={active && !paused}>
+        <div className="showcase-panel-heading"><span>Global Arena</span><ShowcaseMotionControl name="globe" paused={paused} onToggle={() => setPaused((value) => !value)} /></div>
+        <div className="globe-match" data-changing={isCrossfading || undefined}>
+          <div className="globe-match-cities"><span>{current.flag1} {current.p1}</span><span aria-hidden="true">↔</span><span>{current.flag2} {current.p2}</span></div>
+          <div className="globe-match-details"><strong>{current.stake}</strong><span>{current.format}</span><span>{current.label}</span></div>
         </div>
-      </div>
-
-      {/* ── 3D Interactive WebGL Globe (Frameless, Natural Atmosphere) ── */}
-      <div className="globe-marketing-stage relative mx-auto aspect-square w-full max-w-[460px] flex items-center justify-center">
-        {/* Soft contact shadow beneath globe */}
-        <div
-          className="pointer-events-none absolute -bottom-2 w-[280px] h-6 rounded-[100%] bg-black/10 blur-xl"
-          aria-hidden="true"
-        />
-
-        {/* COBE WebGL Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="size-full opacity-0 transition-opacity duration-700 cursor-grab active:cursor-grabbing [contain:layout_paint_size] touch-pan-y" role="img" aria-label="Global chess matches connected across the world"
-          onPointerDown={(e) => {
-            pointerInteracting.current = e.clientX - pointerInteractionMovement.current;
-          }}
-          onPointerUp={() => { pointerInteracting.current = null; }}
-          onPointerOut={() => { pointerInteracting.current = null; }}
-          onMouseMove={(e) => {
-            if (pointerInteracting.current !== null) {
-              pointerInteractionMovement.current = (e.clientX - pointerInteracting.current) * 0.005;
-            }
-          }}
-          onTouchMove={(e) => {
-            if (pointerInteracting.current !== null && e.touches[0]) {
-              pointerInteractionMovement.current = (e.touches[0].clientX - pointerInteracting.current) * 0.005;
-            }
-          }}
-        />
-      </div>
-
-      {/* ── Live Nodes Ticker (Frameless, GPU-accelerated CSS animation) ── */}
-      <div className="relative z-10 w-full max-w-[460px] mt-3 overflow-hidden select-none" aria-hidden="true">
-        <div className="whitespace-nowrap overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_32px,black_calc(100%-32px),transparent)]">
-          <div className="inline-flex items-center gap-4 animate-[node-marquee_24s_linear_infinite] will-change-transform">
-            {[...NODES, ...NODES].map((n, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center gap-1.5 font-mono text-caption text-fg-muted shrink-0"
-              >
-                <span className="size-1 rounded-full bg-emerald-500 opacity-80" />
-                <span>{n.flag}</span>
-                <span className="font-semibold text-fg-default">{n.city}</span>
-                <span className="text-emerald-700 text-caption">{n.ping}</span>
-              </span>
-            ))}
-          </div>
+        <div className="globe-marketing-stage">
+          <svg ref={fallbackRef} className="globe-fallback" viewBox="0 0 320 320" aria-hidden="true">
+            <defs><radialGradient id={globeId} cx="35%" cy="28%"><stop offset="0" stopColor="var(--surface-card)" /><stop offset="1" stopColor="var(--surface-canvas)" /></radialGradient></defs>
+            <circle cx="160" cy="160" r="137" fill={`url(#${globeId})`} stroke="var(--line-hairline)" />
+            <g fill="none" stroke="var(--line-hairline)"><ellipse cx="160" cy="160" rx="70" ry="137" /><ellipse cx="160" cy="160" rx="136" ry="46" /><path d="M40 92c70 34 170 34 240 0M40 228c70-34 170-34 240 0M160 23v274" /></g>
+            <path d="M83 103Q160 27 239 186" fill="none" stroke="var(--color-win)" strokeWidth="1.5" />
+            <g fill="var(--color-win)"><circle cx="83" cy="103" r="5" /><circle cx="239" cy="186" r="5" /><circle cx="130" cy="179" r="3" /><circle cx="213" cy="126" r="3" /></g>
+          </svg>
+          <canvas ref={canvasRef} className="globe-canvas" role="img" aria-label="Global chess matches connected across the world"
+            onPointerDown={(e) => { pointerInteracting.current = e.clientX - pointerInteractionMovement.current; }}
+            onPointerUp={() => { pointerInteracting.current = null; }} onPointerOut={() => { pointerInteracting.current = null; }}
+            onMouseMove={(e) => { if (pointerInteracting.current !== null) pointerInteractionMovement.current = (e.clientX - pointerInteracting.current) * 0.005; }}
+            onTouchMove={(e) => { if (pointerInteracting.current !== null && e.touches[0]) pointerInteractionMovement.current = (e.touches[0].clientX - pointerInteracting.current) * 0.005; }} />
         </div>
+        <ul className="globe-node-list" style={{ gridTemplateColumns: `repeat(${nodeCount}, minmax(0, 1fr))` }}>{nodes.map((node) => <li key={node.city}><span>{node.flag} {node.city}</span><span>{node.ping}</span></li>)}</ul>
       </div>
-
-    </div>
+    </Card>
   );
 }

@@ -69,37 +69,18 @@ export function LiveSettlementFeed() {
   }, [isVisible]);
 
   return (
-    <div ref={containerRef} className="settlement-feed relative w-full">
-      <div className="settlement-status font-mono text-caption border-b border-line pb-3">
-        <span className="flex items-center gap-2 font-semibold">
-          <span className="size-2 shrink-0 rounded-full bg-win-fill" aria-hidden="true" />
-          Live Arena Settlement Feed
-        </span>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-fg-muted">200+ Live Matches</span>
-          <span className="rounded-full border border-line px-2 py-1 font-semibold">95% Net Victor Share</span>
-        </div>
+    <div ref={containerRef} className="settlement-feed">
+      <div className="settlement-status">
+        <span className="settlement-status-title"><i aria-hidden="true" />Live Arena Settlement Feed</span>
+        <div className="settlement-status-details"><span>200+ Live Matches</span><span>95% Net Victor Share</span></div>
       </div>
-      <div className="relative mt-3 space-y-2">
+      <div className="settlement-list">
         <AnimatePresence initial={false} mode="popLayout">
           {items.map((item, idx) => (
-            <motion.div key={item.id} layout="position"
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
-              className={`settlement-row rounded-xl border bg-surface ${idx === 0 ? "border-fg" : "border-line"}`}>
-              <div className="settlement-player flex items-start gap-2.5 min-w-0">
-                <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg border ${item.color}`}>
-                  <Icon name={item.icon} size={16} />
-                </span>
-                <div className="min-w-0 text-caption">
-                  <span className="block font-semibold">{item.flag} {item.player}</span>
-                  <span className="block text-fg-muted">{item.action}</span>
-                </div>
-              </div>
-              <div className="settlement-amount font-mono">
-                <span className="text-caption text-fg-muted">{item.time}</span>
-                <strong className="text-body tabular-nums whitespace-nowrap">{item.payout}</strong>
-              </div>
+            <motion.div key={item.id} layout="position" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="settlement-row" data-latest={idx === 0 || undefined}>
+              <span className="settlement-icon"><Icon name={item.icon} size={16} /></span>
+              <div className="settlement-player"><span>{item.flag} {item.player}</span><span>{item.action}</span></div>
+              <div className="settlement-amount"><strong>{item.payout}</strong><span>{item.time}</span></div>
             </motion.div>
           ))}
         </AnimatePresence>

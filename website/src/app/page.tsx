@@ -21,46 +21,18 @@ import { BorderBeam } from "@/components/magicui/border-beam";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
 
+import { ShowcaseSkeleton } from "@/components/ShowcaseSkeleton";
 import { RewardsBento } from "@/components/RewardsBento";
+import { ArenaSection, InfrastructureSection } from "@/components/MarketingSections";
 import { FirstThreeChallenge } from "@/components/FirstThreeChallenge";
 
 const ChessEcosystemOrbit = dynamic(
-  () =>
-    import("@/components/ChessEcosystemOrbit").then(
-      (m) => m.ChessEcosystemOrbit,
-    ),
-  {
-    loading: () => (
-      <div className="relative flex flex-col items-center justify-center w-full py-2 min-h-[410px] sm:min-h-[490px]">
-        <div className="h-8 w-60 max-w-[75vw] rounded-full bg-surface/70 border border-line/40 mb-3 opacity-60 animate-pulse" />
-        <div className="relative flex h-[350px] sm:h-[420px] w-full items-center justify-center">
-          <div className="size-16 sm:size-20 rounded-2xl bg-surface border border-line/40 opacity-60 animate-pulse" />
-          <div className="absolute size-44 sm:size-52 rounded-full border border-dashed border-line/30 opacity-40 animate-pulse pointer-events-none" />
-          <div className="absolute size-64 sm:size-80 rounded-full border border-dashed border-line/20 opacity-30 animate-pulse pointer-events-none" />
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
-          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
-          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
-          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
-        </div>
-      </div>
-    ),
-  },
+  () => import("@/components/ChessEcosystemOrbit").then((m) => m.ChessEcosystemOrbit),
+  { loading: () => <ShowcaseSkeleton kind="ecosystem" /> },
 );
-
 const GlobeShowcase = dynamic(
   () => import("@/components/GlobeShowcase").then((m) => m.GlobeShowcase),
-  {
-    loading: () => (
-      <div className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[430px] sm:min-h-[470px]">
-        <div className="h-11 w-full max-w-[460px] rounded-2xl bg-surface/70 border border-line/40 mb-3 opacity-60 animate-pulse" />
-        <div className="relative mx-auto aspect-square w-full max-w-[460px] flex items-center justify-center">
-          <div className="size-56 sm:size-72 rounded-full bg-surface/50 border border-line/40 opacity-40 animate-pulse" />
-        </div>
-        <div className="h-5 w-48 rounded-full bg-surface/40 mt-3 opacity-50 animate-pulse" />
-      </div>
-    ),
-  },
+  { loading: () => <ShowcaseSkeleton kind="globe" /> },
 );
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
@@ -320,208 +292,8 @@ export default function HomePage() {
           </Card>
         </section>
 
-        <section id="play" className="shell-wide home-section" aria-labelledby="play-heading">
-          <div className="section-index">
-            <span>02 / Worldwide live matchmaking</span>
-            <span>120+ countries · Sub-second pairing</span>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-[1.05fr_1.1fr] lg:items-center">
-            <div className="space-y-6">
-              {/* Refined Eyebrow */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                <Badge tone="accent" icon="lightning">
-                  Global Arena
-                </Badge>
-                <span className="font-mono text-caption text-emerald-700 font-semibold flex items-center gap-1.5">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Sub-second pairing across 120+ nations
-                </span>
-              </div>
-
-              {/* Headline */}
-              <h2 id="play-heading" className="editorial-title">
-                Challenge rivals worldwide<br />
-                <span className="text-fg-muted font-normal">Matched in seconds</span>
-              </h2>
-
-              {/* Punchy Value Prop Lead */}
-              <p className="max-w-[48ch] text-body text-fg-muted">
-                Stake USDT with confidence. Automated escrow locks both deposits until checkmate, with Stockfish 16 move telemetry and millisecond FIDE clock sync.
-              </p>
-
-              {/* ── 3 Sleek Compact Security Pillars ── */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
-                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
-                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 sm:mb-2.5">
-                    <Icon name="lock" size={15} />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-fg-default text-caption leading-snug">
-                      Instant Escrow
-                    </h3>
-                    <p className="text-caption text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
-                      Stakes lock at move 1. 95% pot released automatically upon checkmate.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
-                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 sm:mb-2.5">
-                    <Icon name="shield-check" size={15} />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-fg-default text-caption leading-snug">
-                      Anti-Cheat Engine
-                    </h3>
-                    <p className="text-caption text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
-                      Stockfish 16 audits move timing and correlation. Instant refund on foul play.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
-                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 sm:mb-2.5">
-                    <Icon name="lightning" size={15} />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-fg-default text-caption leading-snug">
-                      FIDE Server Clocks
-                    </h3>
-                    <p className="text-caption text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
-                      Authoritative server timestamps with lag compensation. Zero ping abuse.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* ── Airy Proof Metrics Bar (Inline, borderless) ── */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6 pt-2 font-mono text-caption text-fg-muted border-t border-line/60">
-                <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="poster text-heading-xs text-fg-default font-bold">3,840+</span>
-                  <span className="text-caption text-fg-muted">in duels</span>
-                </div>
-                <div className="hidden sm:block h-4 w-px bg-line" aria-hidden="true" />
-                <div className="flex items-center gap-1.5">
-                  <span className="poster text-heading-xs text-fg-default font-bold">&lt; 2.4s</span>
-                  <span className="text-caption text-fg-muted">avg queue</span>
-                </div>
-                <div className="hidden sm:block h-4 w-px bg-line" aria-hidden="true" />
-                <div className="flex items-center gap-1.5">
-                  <span className="poster text-heading-xs text-fg-default font-bold">120+</span>
-                  <span className="text-caption text-fg-muted">countries</span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <PlayButton size="md" pulsating trackingLocation="facts_banner" />
-                <ButtonLink href="/how-it-works" variant="secondary">
-                  How matchmaking works
-                  <Icon name="arrow-right" size={18} />
-                </ButtonLink>
-              </div>
-            </div>
-
-            {/* ── 3D INTERACTIVE GLOBE & LIVE DUEL ARENA HUD ── */}
-            <GlobeShowcase />
-          </div>
-        </section>
-
-
-        {/* ── 3D WEB3 & GRAM ECOSYSTEM CLOUD ── */}
-        <section id="infrastructure" className="shell-wide home-section" aria-labelledby="infrastructure-heading">
-          <div className="section-index">
-            <span>03 / Web3 &amp; GRAM infrastructure</span>
-            <span>Zero friction · Instant on-chain rails</span>
-          </div>
-
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <Badge tone="accent" icon="cpu">
-                  Direct Telegram Rails
-                </Badge>
-                <span className="font-mono text-caption text-fg-muted font-medium">
-                  Sub-second finality
-                </span>
-              </div>
-
-              <h2 id="infrastructure-heading" className="editorial-title">
-                Play seamlessly with GRAM and USDT
-              </h2>
-
-              <p className="max-w-[44ch] section-lead text-fg-muted">
-                No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your GRAM wallet, and settles match pots directly to your balance.
-              </p>
-
-              <div className="space-y-3 pt-2">
-                <div className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface/90 p-3.5 shadow-2xs transition-all hover:border-emerald-500/40 hover:shadow-xs">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                    <Icon name="lightning" size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-caption">USDT on GRAM Rail</span>
-                      <span className="font-mono text-caption font-bold text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                        &lt; 3.2s · $0.005 Gas
-                      </span>
-                    </div>
-                    <p className="text-body-xs text-fg-muted mt-1 leading-relaxed">
-                      Instant non-custodial deposits and automated match pot escrow with sub-cent network fees on GRAM blockchain.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface/90 p-3.5 shadow-2xs transition-all hover:border-blue-500/40 hover:shadow-xs">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20">
-                    <Icon name="telegram-logo" size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-caption">Native Telegram App</span>
-                      <span className="font-mono text-caption font-bold text-blue-700 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
-                        Zero Passwords
-                      </span>
-                    </div>
-                    <p className="text-body-xs text-fg-muted mt-1 leading-relaxed">
-                      Launch in 1 tap from any Telegram chat. Zero registration friction, no seed phrase backups, no browser extensions.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface/90 p-3.5 shadow-2xs transition-all hover:border-purple-500/40 hover:shadow-xs">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 border border-purple-500/20">
-                    <Icon name="shield-check" size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-fg-default text-caption">HMAC-Secured Payouts</span>
-                      <span className="font-mono text-caption font-bold text-purple-700 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
-                        Instant On-Chain
-                      </span>
-                    </div>
-                    <p className="text-body-xs text-fg-muted mt-1 leading-relaxed">
-                      Withdraw directly to your personal wallet in seconds, authenticated with 1-tap HMAC nonces inside Telegram bot chat.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 pt-3">
-                <PlayButton size="md" pulsating trackingLocation="infrastructure" />
-                <ButtonLink href="/how-it-works" variant="secondary">
-                  See how it works
-                  <Icon name="arrow-right" size={18} />
-                </ButtonLink>
-              </div>
-            </div>
-
-            {/* Frameless Chess & Crypto Ecosystem Orbit Showcase */}
-            <ChessEcosystemOrbit />
-          </div>
-        </section>
+        <ArenaSection visual={<GlobeShowcase />} />
+        <InfrastructureSection visual={<ChessEcosystemOrbit />} />
 
         <section className="shell-wide home-section" aria-labelledby="fair-heading">
           <div data-surface="ink" className="statement-panel relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">

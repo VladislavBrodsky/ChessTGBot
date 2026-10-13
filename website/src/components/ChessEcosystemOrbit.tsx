@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { Card } from "./ui/Card";
+import { ShowcaseMotionControl } from "./ui/ShowcaseMotionControl";
 import { useShowcaseActivity } from "./home/useShowcaseActivity";
 import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
 
@@ -143,131 +145,35 @@ const CRYPTO_TOKENS: OrbitItem[] = [
 ];
 
 export function ChessEcosystemOrbit() {
-  const [activeItem, setActiveItem] = useState<OrbitItem | null>(null);
+  const [selected, setSelected] = useState<OrbitItem | null>(null);
+  const [hovered, setHovered] = useState<OrbitItem | null>(null);
+  const [paused, setPaused] = useState(false);
   const { ref, active } = useShowcaseActivity();
-  const [width, setWidth] = useState(280);
-  React.useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [ref]);
-  const outerRadius = Math.min(168, Math.max(86, width / 2 - 32));
-  const innerRadius = Math.min(105, outerRadius * 0.6);
-
+  const outerRadius = "calc(50cqw - 28px)";
+  const innerRadius = "calc((50cqw - 28px) * 0.60)";
+  const activeItem = hovered ?? selected;
+  const inspectButton = (item: OrbitItem, labelled = false) => (
+    <button type="button" key={item.id} className={labelled ? "ecosystem-piece-button" : "ecosystem-node"}
+      aria-label={item.name + " · " + item.tag} aria-pressed={selected?.id === item.id}
+      onClick={() => setSelected((value) => value?.id === item.id ? null : item)}
+      onFocus={() => setHovered(item)} onBlur={() => setHovered(null)}
+      onMouseEnter={() => setHovered(item)} onMouseLeave={() => setHovered(null)}>
+      {item.element}{labelled && <span>{item.name}</span>}
+    </button>
+  );
   return (
-    <div ref={ref} data-active={active} className="ecosystem-orbit relative flex flex-col items-center justify-center w-full select-none py-2 group/orbit">
-      {/* ── Soft Ethereal Glow (No heavy white box, melts seamlessly into page) ── */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-full bg-radial from-emerald-500/12 via-blue-500/6 to-transparent blur-3xl"
-        aria-hidden="true"
-      />
-
-      {/* ── Active Inspection HUD Header (Safe from Orbit Paths, Zero Collisions) ── */}
-      <div className="flex items-center justify-center mb-3 z-20 min-h-16 w-full">
-        <div className="inline-flex flex-wrap justify-center text-center items-center gap-2 rounded-2xl border border-line bg-surface/90 px-4 py-1.5 shadow-xs backdrop-blur-md transition-all duration-200">
-          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-          {activeItem ? (
-            <span className="font-mono text-caption text-fg-default font-semibold flex flex-wrap justify-center items-center gap-1.5">
-              <span>{activeItem.name}</span>
-              <span className="text-fg-muted font-normal">·</span>
-              <span className="text-emerald-600 font-medium">{activeItem.tag}</span>
-            </span>
-          ) : (
-            <span className="font-mono text-caption text-fg-muted">
-              Hover or tap any piece or token to inspect live rails
-            </span>
-          )}
+    <Card className="ecosystem-showcase showcase-panel" data-interactive-workspace>
+      <div className="showcase-panel-heading"><span>USDT Settlement · GRAM Blockchain</span><ShowcaseMotionControl name="ecosystem" paused={paused} onToggle={() => setPaused((value) => !value)} /></div>
+      <div ref={ref} className="ecosystem-orbit" data-active={active && !paused && !hovered}>
+        <div className="ecosystem-orbit-stage">
+          <div className="ecosystem-core"><KingIcon className="size-7" /><span>ARENA</span></div>
+          <div className="ecosystem-chess-ring"><OrbitingCircles radius={innerRadius} duration={32} delay={0} iconSize={44}>{CHESS_PIECES.map((item) => inspectButton(item))}</OrbitingCircles></div>
+          <OrbitingCircles radius={outerRadius} duration={44} delay={0} reverse iconSize={44}>{CRYPTO_TOKENS.map((item) => inspectButton(item))}</OrbitingCircles>
         </div>
+        <div className="ecosystem-piece-grid">{CHESS_PIECES.map((item) => inspectButton(item, true))}</div>
       </div>
-
-      {/* ── Concentric Orbit Stage ── */}
-      <div className="ecosystem-orbit-stage relative flex w-full items-center justify-center overflow-hidden">
-        {/* ── Center Stage Core Hub ── */}
-        <div className="relative z-10 flex flex-col items-center justify-center">
-          {/* Subtle breathing pulse ring */}
-          <div className="absolute -inset-3 rounded-full bg-emerald-500/12 animate-pulse pointer-events-none" />
-
-          <div className="flex size-16 sm:size-20 flex-col items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-transform duration-300 hover:scale-105">
-            <KingIcon className="size-6 sm:size-7 text-fg-default" />
-            <span className="mt-1 font-mono text-caption font-bold tracking-widest text-emerald-600">
-              ARENA
-            </span>
-          </div>
-        </div>
-
-        {/* ── Inner Orbit: 6 Chess Figures (Responsive Radius) ── */}
-        <OrbitingCircles
-          radius={innerRadius}
-          duration={24}
-          delay={0}
-          iconSize={44}
-          path={true}
-          className="group-hover/orbit:[animation-play-state:paused] group-focus-within/orbit:[animation-play-state:paused]"
-        >
-          {CHESS_PIECES.map((piece) => (
-            <button
-              type="button"
-              aria-label={piece.name + " · " + piece.tag}
-              aria-pressed={activeItem?.id === piece.id}
-              onFocus={() => setActiveItem(piece)}
-              onBlur={() => setActiveItem(null)}
-              key={piece.id}
-              onClick={() => setActiveItem(piece)}
-              onMouseEnter={() => setActiveItem(piece)}
-              onMouseLeave={() => setActiveItem(null)}
-              className="group/item relative flex size-11 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-105 hover:shadow-md hover:border-emerald-500/40 cursor-pointer active:scale-110"
-            >
-              {piece.element}
-            </button>
-          ))}
-        </OrbitingCircles>
-
-        {/* ── Outer Orbit: 5 Crypto Assets (Responsive Radius, Reverse Direction) ── */}
-        <OrbitingCircles
-          radius={outerRadius}
-          duration={32}
-          delay={0}
-          reverse={true}
-          iconSize={44}
-          path={true}
-          className="group-hover/orbit:[animation-play-state:paused] group-focus-within/orbit:[animation-play-state:paused]"
-        >
-          {CRYPTO_TOKENS.map((token) => (
-            <button
-              type="button"
-              aria-label={token.name + " · " + token.tag}
-              aria-pressed={activeItem?.id === token.id}
-              onFocus={() => setActiveItem(token)}
-              onBlur={() => setActiveItem(null)}
-              key={token.id}
-              onClick={() => setActiveItem(token)}
-              onMouseEnter={() => setActiveItem(token)}
-              onMouseLeave={() => setActiveItem(null)}
-              className="group/item relative flex size-11 items-center justify-center rounded-2xl bg-surface border border-line shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-105 hover:shadow-md hover:border-emerald-500/40 cursor-pointer active:scale-110"
-            >
-              {token.element}
-            </button>
-          ))}
-        </OrbitingCircles>
-      </div>
-
-      {/* ── High-Value Trust Anchors (High-Contrast, Crisp Typography) ── */}
-      <div className="flex flex-wrap items-center justify-center gap-2 pt-3 text-caption font-mono text-fg-muted">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
-          <span className="size-1.5 rounded-full bg-emerald-500" />
-          USDT Settlement
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
-          <span className="size-1.5 rounded-full bg-blue-500" />
-          GRAM Blockchain
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-surface border border-line px-3 py-1 shadow-xs">
-          <span className="size-1.5 rounded-full bg-amber-500" />
-          BTC &amp; ETH Bridge
-        </span>
-      </div>
-    </div>
+      <div className="ecosystem-inspector" aria-live="polite" aria-atomic="true">{activeItem ? <><strong>{activeItem.name}</strong><span>{activeItem.tag}</span></> : <span>Hover or tap any piece or token to inspect live rails</span>}</div>
+      <div className="showcase-panel-footer">USDT Settlement · GRAM Blockchain · BTC &amp; ETH Bridge</div>
+    </Card>
   );
 }

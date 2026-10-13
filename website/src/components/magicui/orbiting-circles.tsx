@@ -8,7 +8,7 @@ interface OrbitingCirclesProps {
   reverse?: boolean;
   duration?: number;
   delay?: number;
-  radius?: number;
+  radius?: number | string;
   path?: boolean;
   iconSize?: number;
 }
@@ -38,7 +38,8 @@ export function OrbitingCircles({
             className="stroke-line stroke-1"
             cx="50%"
             cy="50%"
-            r={radius}
+            r={typeof radius === "number" ? radius : undefined}
+            style={typeof radius === "string" ? { r: radius } : undefined}
             fill="none"
             strokeDasharray="4 4"
           />
@@ -50,10 +51,11 @@ export function OrbitingCircles({
         return (
           <div
             key={index}
-            data-ring={radius >= 100 ? "outer" : "inner"}
+            data-ring={typeof radius === "number" ? (radius >= 100 ? "outer" : "inner") : "responsive"}
             style={
               {
-                "--radius": radius,
+                "--radius": typeof radius === "number" ? radius : undefined,
+                "--orbit-distance": typeof radius === "number" ? `${radius}px` : radius,
                 "--duration": `${duration}s`,
                 "--angle": angle,
                 "--icon-size": `${iconSize}px`,
