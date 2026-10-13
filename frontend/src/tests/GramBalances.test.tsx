@@ -9,11 +9,11 @@ jest.mock('@/context/UserContext', () => ({ useUser: () => ({ walletBalance: 125
 jest.mock('@/hooks/useGramQuote', () => ({ useGramQuote: () => ({ quote: mockQuote, loading: false }) }));
 jest.mock('@/context/ReducedMotionContext', () => ({ useReducedMotionPreference: () => ({ reducedMotion: true }) }));
 beforeEach(() => { mockBalanceError = false; mockQuote = { gram_per_usdt: '0.5', fetched_at: new Date().toISOString(), provider: 'TonAPI', stale: false, display_only: true }; });
-test('USDT estimate is separate from exact native reward credits', () => {
+test('USDT estimate and exact native reward credits render cleanly without disclaimer', () => {
   render(<GramBalances />);
   expect(screen.getByText('≈ 6.25 GRAM')).toBeVisible();
   expect(screen.getByText('0.5 GRAM')).toBeVisible();
-  expect(screen.getByText(messages.Gram.separate)).toBeVisible();
+  expect(screen.queryByText(messages.Gram.separate)).not.toBeInTheDocument();
 });
 test('an unavailable quote never hides or changes earned rewards', () => {
   mockQuote = null;

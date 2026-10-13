@@ -21,7 +21,7 @@ export function GramBalances() {
           <GramAmount estimate={(walletBalance / 100) * Number(quote.gram_per_usdt)} className="t-label font-semibold text-white" />
         )}
       </div>
-      <div className="ui-stat ui-stat--accent space-y-2 p-3.5 rounded-2xl">
+      <div className="ui-stat ui-stat--accent p-3.5 rounded-2xl">
         <div className="flex items-center justify-between gap-3">
           <span className="t-caption font-semibold text-brand-primary">{t('earned')}</span>
           {loadingBalance ? (
@@ -30,7 +30,6 @@ export function GramBalances() {
             <GramAmount nano={balanceError ? null : gramRewardsNano} className="t-title-3 font-bold text-brand-action" />
           )}
         </div>
-        <p className="t-caption text-brand-muted leading-relaxed">{t('separate')}</p>
       </div>
     </div>
   );
