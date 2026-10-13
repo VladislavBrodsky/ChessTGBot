@@ -27,7 +27,7 @@ jest.mock('framer-motion', () => ({
     div: ({ children, layout: _layout, layoutId: _layoutId, initial: _initial, animate: _animate, transition: _transition, ...props }: any) => <div {...props}>{children}</div> },
 }));
 
-const rows = () => [...document.querySelectorAll('[data-preview-profile]')].map(row => ({ id: row.getAttribute('data-preview-profile'), text: row.textContent }));
+const rows = () => Array.from(document.querySelectorAll('[data-preview-profile]')).map(row => ({ id: row.getAttribute('data-preview-profile'), text: row.textContent }));
 
 describe('LeaderboardPreview controls', () => {
   beforeEach(() => {
