@@ -21,20 +21,39 @@ class TestAutopilot(unittest.TestCase):
         self.assertEqual(reloaded.get("test_key"), "test_val")
 
     def test_run_tick_dry_run(self):
-        res = autopilot.run_tick(dry_run=True, min_spacing_minutes=0, force_next=True)
+        res = autopilot.run_tick(
+            dry_run=True,
+            min_spacing_minutes=0,
+            min_tg_spacing_minutes=0,
+            force_next=True,
+            force_next_tg=True,
+        )
         self.assertTrue(res["dry_run"])
         self.assertIn("timestamp", res)
-        self.assertTrue("next_up_x" in res or "next_up" in res)
+        self.assertIn("next_up_x", res)
+        self.assertIn("next_up_tg", res)
 
     def test_get_last_published_x_time(self):
         last_dt = autopilot.get_last_published_x_time()
         self.assertIsInstance(last_dt, datetime)
         self.assertEqual(last_dt.tzinfo, timezone.utc)
 
+    def test_get_last_published_tg_time(self):
+        last_dt = autopilot.get_last_published_tg_time()
+        self.assertIsInstance(last_dt, datetime)
+        self.assertEqual(last_dt.tzinfo, timezone.utc)
+
     def test_cadence_cooldown_enforcement(self):
         # When cooldown is very high (e.g. 9999 minutes), no post should dispatch without force
-        res = autopilot.run_tick(dry_run=True, min_spacing_minutes=9999, force_next=False)
+        res = autopilot.run_tick(
+            dry_run=True,
+            min_spacing_minutes=9999,
+            min_tg_spacing_minutes=9999,
+            force_next=False,
+            force_next_tg=False,
+        )
         self.assertEqual(len(res["x_dispatched"]), 0)
+        self.assertEqual(len(res["tg_dispatched"]), 0)
 
 
 if __name__ == "__main__":
