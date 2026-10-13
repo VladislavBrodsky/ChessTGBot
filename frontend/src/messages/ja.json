@@ -1168,11 +1168,11 @@
   },
   "LeaderboardPreview": {
     "open": "ランキングの動くプレビューを見る",
-    "badge": "シミュレーション",
+    "badge": "デモ",
     "sample": "架空",
     "rank_change": "{count}順位",
     "title": "ランキングプレビュー",
-    "disclosure": "架空のプロフィールと生成された肖像です。GRAMとXPはすべてシミュレーションで、実際の利益や残高ではありません。",
+    "disclosure": "生成されたプロフィールとGRAM/XPの数値。",
     "day": "シミュレーション{day}日目",
     "ladder_label": "プレビューのランキング",
     "arena": "アリーナ · GRAM",

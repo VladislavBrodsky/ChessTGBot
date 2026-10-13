@@ -1,7 +1,7 @@
 /** Fictional preview data only. Never used by account, wallet or ranking APIs. */
 export type PreviewLadder = 'arena' | 'academy';
-export const PREVIEW_FRAMES_PER_DAY = 12;
-export const PREVIEW_FRAME_INTERVAL_MS = 5_000;
+export const PREVIEW_FRAMES_PER_DAY = 48;
+export const PREVIEW_FRAME_INTERVAL_MS = 30 * 60 * 1_000;
 
 export const PREVIEW_PROFILES = [
   { id: 'leila', name: 'ليلى منصور', country: 'egypt', gram: 751, xp: 5_180 },

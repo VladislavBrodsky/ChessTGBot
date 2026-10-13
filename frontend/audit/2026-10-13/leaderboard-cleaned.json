@@ -1,0 +1,23 @@
+{
+  "mode": "local development",
+  "profiles": 10,
+  "gramLogos": 10,
+  "playbackControls": 0,
+  "repeatedNotices": false,
+  "compactDisclosureRetained": true,
+  "updatesEveryMinutes": 30,
+  "stepsPerDay": 48,
+  "slowCadenceVerifiedWithFakeTimers": true,
+  "arabicReflow": {
+    "width": 320,
+    "scrollWidth": 316
+  },
+  "productionUsesAPIOnly": true,
+  "checks": {
+    "tests": 142,
+    "coldTypecheck": "passed",
+    "lint": "zero warnings",
+    "staticPages": 213,
+    "locales": 10
+  }
+}

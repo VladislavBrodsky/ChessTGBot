@@ -1168,11 +1168,11 @@
   },
   "LeaderboardPreview": {
     "open": "عرض معاينة ترتيب متحركة",
-    "badge": "محاكاة",
+    "badge": "عرض تجريبي",
     "sample": "خيالي",
     "rank_change": "{count, plural, zero {# مراكز} one {مركز واحد} two {مركزان} few {# مراكز} many {# مركزاً} other {# مركز}}",
     "title": "معاينة الترتيب",
-    "disclosure": "ملفات خيالية وصور مولدة. جميع قيم GRAM وXP محاكاة وليست أرباحاً أو أرصدة حسابات حقيقية.",
+    "disclosure": "ملفات وقيم GRAM/XP مولدة.",
     "day": "اليوم المحاكى {day}",
     "ladder_label": "ترتيب المعاينة",
     "arena": "الساحة · GRAM",

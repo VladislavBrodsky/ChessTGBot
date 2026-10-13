@@ -1168,11 +1168,11 @@
   },
   "LeaderboardPreview": {
     "open": "查看动态排行榜预览",
-    "badge": "模拟",
+    "badge": "演示",
     "sample": "虚构",
     "rank_change": "{count}个名次",
     "title": "排行榜预览",
-    "disclosure": "虚构资料与生成的人像。所有GRAM和XP数值均为模拟，不代表真实收益或账户余额。",
+    "disclosure": "生成的个人资料和 GRAM/XP 数值。",
     "day": "模拟第{day}天",
     "ladder_label": "预览排名",
     "arena": "竞技场 · GRAM",

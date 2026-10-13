@@ -1168,11 +1168,11 @@
   },
   "LeaderboardPreview": {
     "open": "View animated leaderboard preview",
-    "badge": "Simulation",
+    "badge": "Demo",
     "sample": "Fictional",
     "rank_change": "{count, plural, one {# position} other {# positions}}",
     "title": "Leaderboard preview",
-    "disclosure": "Fictional profiles and generated portraits. All GRAM and XP values are simulated, with no real earnings or account balances.",
+    "disclosure": "Generated profiles and GRAM/XP figures.",
     "day": "Simulated day {day}",
     "ladder_label": "Preview rankings",
     "arena": "Arena · GRAM",

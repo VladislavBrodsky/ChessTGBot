@@ -29,7 +29,7 @@ jest.mock('framer-motion', () => ({
 
 const rows = () => Array.from(document.querySelectorAll('[data-preview-profile]')).map(row => ({ id: row.getAttribute('data-preview-profile'), text: row.textContent }));
 
-describe('LeaderboardPreview controls', () => {
+describe('LeaderboardPreview presentation and timing', () => {
   beforeEach(() => {
     jest.useFakeTimers(); mockReducedMotion = false; mockOSReducedMotion = false;
     Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
@@ -38,8 +38,10 @@ describe('LeaderboardPreview controls', () => {
 
   it('discloses the simulation, shows ten profiles and switches from GRAM to XP', () => {
     render(<LeaderboardPreview />);
-    expect(screen.getByText(/Fictional profiles and generated portraits/)).toBeVisible();
-    expect(screen.getByText(/No accounts, transactions or rewards are created/)).toBeVisible();
+    expect(screen.getByText('Demo')).toBeVisible();
+    expect(screen.getByText('Generated profiles and GRAM/XP figures.')).toBeVisible();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByText(/one minute simulates one day|Simulated day|starting at/)).not.toBeInTheDocument();
     expect(rows()).toHaveLength(10);
     expect(new Set(rows().map(row => row.id)).size).toBe(10);
     expect(rows().every(row => row.text?.includes('GRAM'))).toBe(true);
@@ -52,28 +54,21 @@ describe('LeaderboardPreview controls', () => {
     expect(document.querySelector('img[src$="gram.svg"]')).not.toBeInTheDocument();
   });
 
-  it('pauses rankings, supports a manual day and resets without creating account data', () => {
+  it('keeps totals stable for twenty minutes and updates within the requested thirty-minute window', () => {
     render(<LeaderboardPreview />);
-    fireEvent.click(screen.getByRole('button', { name: 'Pause' }));
     const before = rows();
-    act(() => { jest.advanceTimersByTime(PREVIEW_FRAME_INTERVAL_MS * 3); });
+    act(() => { jest.advanceTimersByTime(20 * 60 * 1_000); });
     expect(rows()).toEqual(before);
-    fireEvent.click(screen.getByRole('button', { name: 'Advance one day' }));
-    expect(screen.getByText('Simulated day 2')).toBeVisible();
+    act(() => { jest.advanceTimersByTime(10 * 60 * 1_000); });
     expect(rows()).not.toEqual(before);
-    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
-    expect(rows()).toEqual(before);
   });
 
   it.each(['app', 'OS'])('stops automatic updates for the %s reduced-motion preference', preference => {
     mockReducedMotion = preference === 'app'; mockOSReducedMotion = preference === 'OS';
     render(<LeaderboardPreview />);
     const before = rows();
-    expect(screen.getByRole('button', { name: 'Play simulation' })).toBeDisabled();
     act(() => { jest.advanceTimersByTime(PREVIEW_FRAME_INTERVAL_MS * 3); });
     expect(rows()).toEqual(before);
-    fireEvent.click(screen.getByRole('button', { name: 'Advance one day' }));
-    expect(rows()).not.toEqual(before);
     document.querySelectorAll('[data-preview-daily-gain]').forEach(gain => expect(gain).toHaveAttribute('data-motion-duration', '0'));
   });
 

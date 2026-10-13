@@ -3,17 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiArrowDown, FiArrowUp, FiFastForward, FiInfo, FiPause, FiPlay, FiRotateCcw } from 'react-icons/fi';
+import { FiArrowDown, FiArrowUp } from 'react-icons/fi';
 import { FaCrown, FaBookOpen, FaChessKnight } from 'react-icons/fa';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge, BadgeRow } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { CountUp } from '@/components/ui/CountUp';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { useReducedMotionPreference } from '@/context/ReducedMotionContext';
 import {
-  PREVIEW_FRAME_INTERVAL_MS, PREVIEW_FRAMES_PER_DAY, previewDay, previewStandings, type PreviewLadder, type PreviewStanding,
+  PREVIEW_FRAME_INTERVAL_MS, previewStandings, type PreviewLadder, type PreviewStanding,
 } from '@/lib/leaderboardPreview';
 
 function PreviewScore({ entry, unit, locale, reduceMotion, gainLabel, podium = false }: {
@@ -47,11 +46,10 @@ export default function LeaderboardPreview() {
   const reduceMotion = reducedMotion || !!osReducedMotion;
   const [ladder, setLadder] = useState<PreviewLadder>('arena');
   const [frame, setFrame] = useState(0);
-  const [playing, setPlaying] = useState(true);
   const [visible, setVisible] = useState(true);
   const [foreground, setForeground] = useState(true);
   const region = useRef<HTMLDivElement>(null);
-  const running = playing && !reduceMotion && visible && foreground;
+  const running = !reduceMotion && visible && foreground;
   const standings = useMemo(() => previewStandings(frame, ladder), [frame, ladder]);
   const podium = [standings[1], standings[0], standings[2]];
   const unit = ladder === 'arena' ? 'GRAM' : 'XP';
@@ -83,28 +81,15 @@ export default function LeaderboardPreview() {
 
   return (
     <div ref={region} data-leaderboard-preview className="space-y-4">
-      <div className="leaderboard-preview-notice space-y-2">
-        <BadgeRow><Badge variant="amber" icon={<FiInfo />}>{t('badge')}</Badge><span className="t-caption text-brand-muted">{t('day', { day: previewDay(frame) })}</span></BadgeRow>
-        <p className="t-body text-brand-muted">{t('disclosure')}</p>
+      <div className="leaderboard-preview-notice">
+        <BadgeRow><Badge variant="amber">{t('badge')}</Badge><span className="t-caption text-brand-muted">{t('disclosure')}</span></BadgeRow>
       </div>
       <SegmentedControl value={ladder} onChange={setLadder} aria-label={t('ladder_label')}
         options={[
           { value: 'arena', label: t('arena'), icon: <FaChessKnight aria-hidden="true" /> },
           { value: 'academy', label: t('academy'), icon: <FaBookOpen aria-hidden="true" /> },
         ]} />
-      <div className="grid grid-cols-[var(--size-control-sm)_minmax(0,1fr)_var(--size-control-sm)] items-start gap-2">
-        <Button variant="secondary" className="p-0" size="sm" onClick={() => setPlaying(value => !value)} disabled={reduceMotion}
-          aria-label={running ? t('pause') : t('play')} title={running ? t('pause') : t('play')}
-          leftIcon={playing && !reduceMotion ? <FiPause /> : <FiPlay />} />
-        <Button variant="secondary" size="sm" onClick={() => setFrame(value => (Math.floor(value / PREVIEW_FRAMES_PER_DAY) + 1) * PREVIEW_FRAMES_PER_DAY)} leftIcon={<FiFastForward />}>{t('advance_day')}</Button>
-        <Button variant="ghost" className="p-0" size="sm" onClick={() => setFrame(0)} aria-label={t('reset')} title={t('reset')} leftIcon={<FiRotateCcw />} />
-      </div>
-      <p className="t-caption text-brand-muted" role="status">{reduceMotion ? t('reduced_motion') : running ? t('running') : t('paused')}</p>
       <Card variant="solid" className="leaderboard-shell overflow-hidden p-0">
-        <div className="leaderboard-header space-y-1 border-b px-4 py-3">
-          <h3 className="t-title-3 text-brand-primary">{ladder === 'arena' ? t('arena_metric') : t('academy_metric')}</h3>
-          <p className="t-caption text-brand-muted">{ladder === 'arena' ? t('arena_range') : t('academy_range')}</p>
-        </div>
         <div className="podium" role="group" aria-label={t('podium')}>
           {podium.map(entry => (
             <motion.div layout={reduceMotion ? false : 'position'} initial={false} transition={{ duration: reduceMotion ? 0 : 0.32 }}
@@ -137,7 +122,6 @@ export default function LeaderboardPreview() {
           ))}
         </ol>
       </Card>
-      <p className="t-caption text-brand-muted">{t('footnote')}</p>
     </div>
   );
 }
