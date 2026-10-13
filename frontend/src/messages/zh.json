@@ -1235,5 +1235,22 @@
     "ranking_empty": "暂时没有公开余额。你可以在设置中选择加入。",
     "join_button": "加入",
     "referral_minimum": "每场有效对局的双方落子总数至少为{moves}步。"
+  },
+  "QuickMatch": {
+    "title": "快速对局",
+    "description": "选择投注金额和时限以寻找对手。",
+    "popular": "热门",
+    "minutes": "{count}分钟",
+    "wager_option": "投注 {amount}",
+    "checking_balance": "正在检查余额…",
+    "start": "开始匹配",
+    "payout": "获胜时的到账金额",
+    "shortfall": "再充值{amount}即可参加此对局。",
+    "joining": "正在加入匹配…",
+    "cancelling": "正在取消搜索…",
+    "cancel_search": "取消搜索",
+    "search_hint": "搜索期间投注金额会被预留，取消后将退回。",
+    "queue_error": "无法加入匹配。余额已刷新，请重试。",
+    "connection_error": "正在连接游戏服务器。重新连接后将恢复搜索。"
   }
 }

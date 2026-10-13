@@ -83,6 +83,8 @@ jest.mock('@/components/DailyCheckinModal', () => () => null);
 jest.mock('@/components/FirstRunCoordinator', () => () => null);
 jest.mock('@/components/game/ArenaBanner', () => () => null);
 jest.mock('@/components/EngagementQuest', () => () => null);
+// Overlay behavior is covered by its own tests; this suite checks the dashboard.
+jest.mock('@/components/ui/Drawer', () => ({ Drawer: ({ isOpen, children }: any) => isOpen ? <div role="dialog">{children}</div> : null }));
 
 // Mock Framer Motion to avoid animation issues in tests
 jest.mock('framer-motion', () => ({

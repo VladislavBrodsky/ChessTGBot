@@ -1235,5 +1235,22 @@
     "ranking_empty": "Aucun solde partagé. Vous pouvez participer dans les Paramètres.",
     "join_button": "Rejoindre",
     "referral_minimum": "Chaque partie éligible doit comprendre au moins {moves} coups individuels."
+  },
+  "QuickMatch": {
+    "title": "Partie rapide",
+    "description": "Choisissez une mise et une cadence pour trouver un adversaire.",
+    "popular": "Populaire",
+    "minutes": "{count} min",
+    "wager_option": "Mise {amount}",
+    "checking_balance": "Vérification du solde…",
+    "start": "Chercher un adversaire",
+    "payout": "Versement en cas de victoire",
+    "shortfall": "Ajoutez {amount} pour participer à cette partie.",
+    "joining": "Inscription à la recherche…",
+    "cancelling": "Annulation de la recherche…",
+    "cancel_search": "Annuler la recherche",
+    "search_hint": "Votre mise est réservée pendant la recherche et restituée à son annulation.",
+    "queue_error": "Impossible de lancer la recherche. Votre solde a été actualisé. Réessayez.",
+    "connection_error": "Connexion au serveur. Votre recherche sera rétablie à la reconnexion."
   }
 }

@@ -1235,5 +1235,22 @@
     "ranking_empty": "Noch keine geteilten Guthaben. Teilnahme über Einstellungen.",
     "join_button": "Beitreten",
     "referral_minimum": "Jedes qualifizierende Spiel braucht mindestens {moves} einzelne Züge."
+  },
+  "QuickMatch": {
+    "title": "Schnelles Spiel",
+    "description": "Wähle Einsatz und Bedenkzeit, um einen Gegner zu finden.",
+    "popular": "Beliebt",
+    "minutes": "{count} Min.",
+    "wager_option": "Einsatz {amount}",
+    "checking_balance": "Guthaben wird geprüft…",
+    "start": "Gegner suchen",
+    "payout": "Auszahlung bei Sieg",
+    "shortfall": "Zahle weitere {amount} ein, um teilzunehmen.",
+    "joining": "Suche wird gestartet…",
+    "cancelling": "Suche wird abgebrochen…",
+    "cancel_search": "Suche abbrechen",
+    "search_hint": "Dein Einsatz wird während der Suche reserviert und beim Abbruch zurückgegeben.",
+    "queue_error": "Die Suche konnte nicht starten. Dein Guthaben wurde aktualisiert. Versuche es erneut.",
+    "connection_error": "Verbindung zum Spielserver wird hergestellt. Die Suche wird danach wiederhergestellt."
   }
 }

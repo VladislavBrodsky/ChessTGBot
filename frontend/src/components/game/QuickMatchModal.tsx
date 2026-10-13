@@ -2,15 +2,19 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaChessKnight, FaBolt, FaClock, FaShieldAlt, FaWallet, FaCheckCircle } from 'react-icons/fa';
+import { useLocale, useTranslations } from 'next-intl';
+import { FaChessKnight, FaClock, FaWallet } from 'react-icons/fa';
 import { useUser } from '@/context/UserContext';
 import { useAudio } from '@/hooks/useAudio';
 import { telegramHaptic } from '@/lib/telegram';
-import { apiFetch } from '@/lib/api';
-import { getRandomOpponent, saveGameOpponent, SimulatedOpponent } from '@/lib/opponents';
+import { getSocket } from '@/lib/socket';
+import { winnerCents } from '@/lib/settlement';
 import { DepositDialog } from '@/components/Wallet/WalletDialogs';
+import { Drawer } from '@/components/ui/Drawer';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Card } from '@/components/ui/Card';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 interface QuickMatchModalProps {
   isOpen: boolean;
@@ -18,441 +22,192 @@ interface QuickMatchModalProps {
   initialWagerCents?: number;
 }
 
-const WAGER_OPTIONS = [
-  { cents: 0, label: 'Free', sub: 'AI game', popular: false },
-  { cents: 100, label: '$1', sub: '$1.90 Pot', popular: false },
-  { cents: 300, label: '$3', sub: '$5.70 Pot', popular: false },
-  { cents: 500, label: '$5', sub: '$9.50 Pot', popular: true },
-  { cents: 1000, label: '$10', sub: '$19.00 Pot', popular: false },
-  { cents: 2500, label: '$25', sub: '$47.50 Pot', popular: false },
-];
+const WAGERS = [100, 300, 500, 1000, 2500];
+const TIMES = [180, 300, 600];
+const paidWager = (value: number) => WAGERS.includes(value) ? value : 500;
+type SearchState = 'config' | 'joining' | 'searching' | 'cancelling';
 
-const TIME_OPTIONS = [
-  { seconds: 180, label: '3 min', type: 'Blitz', icon: FaBolt },
-  { seconds: 300, label: '5 min', type: 'Rapid', icon: FaClock, popular: true },
-  { seconds: 600, label: '10 min', type: 'Classical', icon: FaShieldAlt },
-];
-
-const SEARCH_TIPS = [
-  'Scanning 1,480+ players online worldwide…',
-  'Filtering pool by ELO rating & time control…',
-  'Allocating low-latency match relay node…',
-  'Calibrating secure board clocks…',
-  'Opponent located! Establishing game board…',
-];
-
-export default function QuickMatchModal({
-  isOpen,
-  onClose,
-  initialWagerCents = 500,
-}: QuickMatchModalProps) {
+export default function QuickMatchModal({ isOpen, onClose, initialWagerCents = 500 }: QuickMatchModalProps) {
   const locale = useLocale();
   const router = useRouter();
+  const t = useTranslations('QuickMatch');
+  const tg = useTranslations('Game');
+  const tw = useTranslations('Wallet');
   const { play: playAudio } = useAudio();
-  const { walletBalance, syncBalance, stats } = useUser();
+  const { walletBalance, syncBalance, balanceError, loadingBalance } = useUser();
+  const [step, setStep] = useState<SearchState>('config');
+  const [wagerCents, setWagerCents] = useState(paidWager(initialWagerCents));
+  const [timeControl, setTimeControl] = useState(300);
+  const [showDeposit, setShowDeposit] = useState(false);
+  const [error, setError] = useState('');
+  const [connected, setConnected] = useState(true);
+  // Refs guard synchronous double taps and cancellation before the server acknowledges a join.
+  const activeRef = useRef(false);
+  const confirmedRef = useRef(false);
+  const cancelRef = useRef(false);
+  const closeRef = useRef(false);
+  const callbacks = useRef({ onClose, syncBalance, router, locale, playAudio, t });
+  useEffect(() => { callbacks.current = { onClose, syncBalance, router, locale, playAudio, t }; }, [onClose, syncBalance, router, locale, playAudio, t]);
 
-  const [step, setStep] = useState<'config' | 'searching' | 'matched'>('config');
-  const [wagerCents, setWagerCents] = useState<number>(initialWagerCents);
-  const [timeControl, setTimeControl] = useState<number>(300);
-  const [matchedOpponent, setMatchedOpponent] = useState<SimulatedOpponent | null>(null);
-  const [showDeposit, setShowDeposit] = useState<boolean>(false);
-  const [searchTimer, setSearchTimer] = useState<number>(0);
-  const [searchTipIndex, setSearchTipIndex] = useState<number>(0);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const money = (cents: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(cents / 100);
+  const insufficient = !loadingBalance && !balanceError && wagerCents > walletBalance;
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const matchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Sync initial wager
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    setWagerCents(paidWager(initialWagerCents));
+    setStep('config');
+    setError('');
+    setShowDeposit(false);
+    activeRef.current = confirmedRef.current = cancelRef.current = closeRef.current = false;
+    const socket = getSocket();
+    setConnected(socket.connected);
+    const reset = () => {
+      activeRef.current = confirmedRef.current = cancelRef.current = false;
       setStep('config');
-      setWagerCents(initialWagerCents);
-      setSearchTimer(0);
-      setIsSubmitting(false);
-    }
+      void callbacks.current.syncBalance();
+      if (closeRef.current) callbacks.current.onClose();
+      closeRef.current = false;
+    };
+    const onStatus = (data: { status?: string }) => {
+      if (!activeRef.current) return;
+      if (data.status === 'searching') {
+        confirmedRef.current = true;
+        if (cancelRef.current) socket.emit('leave_matchmaking', {});
+        else setStep('searching');
+      } else if (data.status === 'idle') reset();
+    };
+    const onError = () => {
+      if (!activeRef.current) return;
+      setError(callbacks.current.t('queue_error'));
+      telegramHaptic('error');
+      reset();
+    };
+    const onFound = (data: { game_id?: string }) => {
+      if (!activeRef.current || typeof data.game_id !== 'string' || !data.game_id) return;
+      activeRef.current = false;
+      confirmedRef.current = cancelRef.current = false;
+      callbacks.current.playAudio('start');
+      telegramHaptic('success');
+      callbacks.current.onClose();
+      callbacks.current.router.push(`/${callbacks.current.locale}/game?id=${encodeURIComponent(data.game_id)}`);
+      void callbacks.current.syncBalance();
+    };
+    const onConnect = () => {
+      setConnected(true);
+      // Reconcile an uncertain join; never replay a charge on reconnect.
+      if (activeRef.current) {
+        if (cancelRef.current && confirmedRef.current) socket.emit('leave_matchmaking', {});
+        else socket.emit('check_matchmaking', {});
+      }
+    };
+    const onDisconnect = () => setConnected(false);
+    socket.on('matchmaking_status', onStatus);
+    socket.on('matchmaking_error', onError);
+    socket.on('match_found', onFound);
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    return () => {
+      // Navigation can happen before the reservation is acknowledged. Retain only
+      // a cancellation listener in that case; never refund before a join finishes.
+      if (activeRef.current && !confirmedRef.current) {
+        const detach = () => {
+          socket.off('matchmaking_status', cancelAfterJoin);
+          socket.off('matchmaking_error', detach);
+          socket.off('match_found', detach);
+        };
+        const cancelAfterJoin = (data: { status?: string }) => {
+          if (data.status === 'searching') { socket.emit('leave_matchmaking', {}); detach(); }
+          else if (data.status === 'idle') detach();
+        };
+        socket.on('matchmaking_status', cancelAfterJoin);
+        socket.on('matchmaking_error', detach);
+        socket.on('match_found', detach);
+      } else if (activeRef.current) socket.emit('leave_matchmaking', {});
+      activeRef.current = false;
+      socket.off('matchmaking_status', onStatus);
+      socket.off('matchmaking_error', onError);
+      socket.off('match_found', onFound);
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+    };
   }, [isOpen, initialWagerCents]);
 
-  const hasInsufficientBalance = wagerCents > 0 && wagerCents > walletBalance;
+  const cancelSearch = useCallback((close = false) => {
+    if (!activeRef.current) { if (close) onClose(); return; }
+    closeRef.current ||= close;
+    if (cancelRef.current) return;
+    cancelRef.current = true;
+    setStep('cancelling');
+    // The join handler reserves the stake. Wait for its acknowledgement before cancelling,
+    // otherwise the server can process a refund before that reservation exists.
+    if (confirmedRef.current) getSocket().emit('leave_matchmaking', {});
+  }, [onClose]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current);
-    };
-  }, []);
-
-  const handleStartSearch = useCallback(async () => {
-    if (hasInsufficientBalance) {
-      telegramHaptic('warning');
-      setShowDeposit(true);
-      return;
-    }
-
-    telegramHaptic('medium');
-    setStep('searching');
-    setSearchTimer(0);
-    setSearchTipIndex(0);
-
-    // Tip rotation timer
-    const tipInterval = setInterval(() => {
-      setSearchTipIndex(prev => (prev + 1) % SEARCH_TIPS.length);
-    }, 1400);
-
-    // 1-second display timer
-    timerRef.current = setInterval(() => {
-      setSearchTimer(prev => prev + 1);
-    }, 1000);
-
-    // Exact 5.8s natural search duration
-    matchTimeoutRef.current = setTimeout(async () => {
-      clearInterval(tipInterval);
-      if (timerRef.current) clearInterval(timerRef.current);
-
-      try {
-        setIsSubmitting(true);
-        const opponent = getRandomOpponent(stats?.elo);
-        setMatchedOpponent(opponent);
-
-        // Play audio & strong vibration
-        playAudio('start');
-        telegramHaptic('heavy');
-        setStep('matched');
-
-        // Create the game on backend with difficulty=hard (professional master)
-        const res = await apiFetch(
-          `/api/v1/game/create?type=computer&difficulty=hard&time_control=${timeControl}&wager=${wagerCents}`,
-          { method: 'POST' }
-        );
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.game_id) {
-            saveGameOpponent(data.game_id, opponent);
-            
-            // Brief 1.6s reveal of opponent before navigating to board
-            setTimeout(() => {
-              onClose();
-              router.push(`/${locale}/game?id=${data.game_id}`);
-            }, 1600);
-            return;
-          }
-        }
-        // Fallback if network hiccups
-        onClose();
-        router.push(`/${locale}/game`);
-      } catch (err) {
-        console.error('Failed to create match:', err);
-        // Graceful fallback
-        onClose();
-        router.push(`/${locale}/game`);
-      }
-    }, 5800);
-  }, [hasInsufficientBalance, timeControl, wagerCents, stats?.elo, playAudio, onClose, router, locale]);
-
-  const handleCancelSearch = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current);
-    telegramHaptic('selection');
-    setStep('config');
-    setSearchTimer(0);
+  const start = () => {
+    if (activeRef.current || loadingBalance || balanceError) return;
+    if (insufficient) { setShowDeposit(true); return; }
+    const socket = getSocket();
+    if (!socket.connected) { setConnected(false); setError(t('connection_error')); return; }
+    activeRef.current = true;
+    confirmedRef.current = cancelRef.current = closeRef.current = false;
+    setError('');
+    setStep('joining');
+    socket.emit('join_matchmaking', { bid_amount: wagerCents, time_control: timeControl });
   };
 
-  if (!isOpen) return null;
+  const footer = step === 'config' ? <div className="space-y-2">
+    <Button variant="primary" size="lg" className="w-full" leftIcon={insufficient ? <FaWallet /> : <FaChessKnight />}
+      disabled={loadingBalance} onClick={balanceError ? () => { void syncBalance(); } : start}>
+      {balanceError ? tw('retry_btn') : loadingBalance ? t('checking_balance') : insufficient ? tw('top_up') : t('start')}
+    </Button>
+    <p className="text-caption text-brand-muted text-center">{tg('lobby_disclosure')}</p>
+  </div> : <Button variant="outline" size="lg" className="w-full" disabled={step === 'cancelling'} onClick={() => cancelSearch()}>
+    {step === 'cancelling' ? t('cancelling') : t('cancel_search')}
+  </Button>;
 
-  return (
-    <>
-      <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.98 }}
-          transition={{ duration: 0.2 }}
-          className="w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-brand-border bg-[#0A0A0A] p-5 shadow-2xl text-brand-primary relative overflow-hidden"
-          style={{ paddingBottom: 'calc(1.25rem + var(--app-safe-bottom, 0px))' }}
-        >
-          {/* Ambient Void Glow */}
-          <div className="pointer-events-none absolute -top-24 -left-24 size-48 rounded-full bg-emerald-500/15 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -right-24 size-48 rounded-full bg-purple-500/15 blur-3xl" />
-
-          {/* STEP 1: CONFIGURE MATCH */}
-          {step === 'config' && (
-            <div className="space-y-5 relative z-10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                    <span className="p-1.5 rounded-xl bg-emerald-500/15 text-emerald-400">
-                      <FaChessKnight size={16} />
-                    </span>
-                    Quick Match
-                  </h2>
-                  <p className="text-xs text-brand-muted mt-0.5">
-                    Fast pairing · Instant 95% settlement
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => { telegramHaptic('selection'); onClose(); }}
-                  className="size-8 rounded-full bg-brand-elevated text-brand-muted hover:text-white flex items-center justify-center text-sm font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Stake Selector */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="ui-eyebrow text-brand-muted font-semibold">Select Wager</span>
-                  <span className="text-brand-muted font-mono">
-                    Balance: <strong className="text-white">${(walletBalance / 100).toFixed(2)}</strong>
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {WAGER_OPTIONS.map((opt) => {
-                    const isSelected = wagerCents === opt.cents;
-                    return (
-                      <button
-                        key={opt.cents}
-                        type="button"
-                        onClick={() => {
-                          telegramHaptic('selection');
-                          setWagerCents(opt.cents);
-                        }}
-                        className={`relative p-2.5 rounded-2xl border text-center transition-all duration-150 flex flex-col items-center justify-center ${
-                          isSelected
-                            ? 'border-emerald-500 bg-emerald-500/15 shadow-sm'
-                            : 'border-brand-border bg-brand-elevated hover:border-brand-border-opacity-30'
-                        }`}
-                      >
-                        {opt.popular && (
-                          <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded-full ui-eyebrow font-bold bg-emerald-500 text-black">
-                            Popular
-                          </span>
-                        )}
-                        <span className={`text-base font-bold font-mono ${isSelected ? 'text-emerald-400' : 'text-white'}`}>
-                          {opt.label}
-                        </span>
-                        <span className="text-caption text-brand-muted font-mono mt-0.5">
-                          {opt.sub}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Time Control Selector */}
-              <div className="space-y-2">
-                <span className="ui-eyebrow text-brand-muted font-semibold block">Time Control</span>
-                <div className="grid grid-cols-3 gap-2">
-                  {TIME_OPTIONS.map((tOpt) => {
-                    const isSelected = timeControl === tOpt.seconds;
-                    const IconComp = tOpt.icon;
-                    return (
-                      <button
-                        key={tOpt.seconds}
-                        type="button"
-                        onClick={() => {
-                          telegramHaptic('selection');
-                          setTimeControl(tOpt.seconds);
-                        }}
-                        className={`p-2.5 rounded-2xl border transition-all duration-150 flex flex-col items-center justify-center gap-1 ${
-                          isSelected
-                            ? 'border-emerald-500 bg-emerald-500/15'
-                            : 'border-brand-border bg-brand-elevated hover:border-brand-border-opacity-30'
-                        }`}
-                      >
-                        <IconComp className={isSelected ? 'text-emerald-400' : 'text-brand-muted'} size={15} />
-                        <span className={`text-xs font-bold ${isSelected ? 'text-emerald-400' : 'text-white'}`}>
-                          {tOpt.label}
-                        </span>
-                        <span className="text-caption text-brand-muted">
-                          {tOpt.type}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Insufficient Balance Top-Up Warning */}
-              {hasInsufficientBalance && (
-                <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between gap-3 animate-in fade-in duration-150">
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-rose-400">Insufficient Balance</p>
-                    <p className="text-caption text-brand-muted truncate">
-                      Need ${(wagerCents / 100).toFixed(2)} USDT to enter this match
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => { telegramHaptic('selection'); setShowDeposit(true); }}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold shrink-0 flex items-center gap-1.5 transition-colors"
-                  >
-                    <FaWallet size={12} />
-                    Top Up
-                  </button>
-                </div>
-              )}
-
-              {wagerCents > 0 && (
-                <div className="p-3 rounded-2xl bg-brand-surface border border-brand-border flex items-center justify-between text-xs font-mono">
-                  <span className="text-brand-muted">Winner Takes (95%):</span>
-                  <span className="font-bold text-emerald-400">+${((wagerCents * 2 * 0.95) / 100).toFixed(2)} USDT</span>
-                </div>
-              )}
-
-              {/* Action Button */}
-              <button
-                type="button"
-                onClick={handleStartSearch}
-                disabled={isSubmitting}
-                className="w-full py-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-black font-bold text-base shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <FaChessKnight size={18} />
-                {hasInsufficientBalance ? 'Top Up Balance to Play' : 'Find Opponent Now'}
-              </button>
-            </div>
-          )}
-
-          {/* STEP 2: SEARCHING / RADAR VIBING ANIMATION (5-7s) */}
-          {step === 'searching' && (
-            <div className="py-6 flex flex-col items-center justify-center text-center space-y-6 relative z-10">
-              <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wider font-mono uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                Searching for Opponents
-              </span>
-
-              {/* Glowing High-Tech Radar */}
-              <div className="relative size-36 flex items-center justify-center">
-                {/* Sonar pulses */}
-                <div className="absolute inset-0 rounded-full border border-emerald-500/20 animate-ping opacity-40" />
-                <div className="absolute -inset-4 rounded-full border border-emerald-500/10 animate-pulse" />
-                
-                {/* Conic Radar Sweep */}
-                <div className="relative size-32 rounded-full border border-emerald-500/40 bg-brand-void overflow-hidden flex items-center justify-center shadow-inner">
-                  <div className="absolute inset-0 bg-conic-radar animate-radar-sweep pointer-events-none opacity-80" />
-                  <div className="absolute size-20 rounded-full border border-emerald-500/20" />
-                  <div className="absolute size-10 rounded-full border border-emerald-500/30" />
-                  
-                  {/* Center Node */}
-                  <div className="relative z-10 size-11 rounded-full bg-brand-surface border-2 border-emerald-400 flex items-center justify-center shadow-lg">
-                    <FaChessKnight className="text-emerald-400 text-lg animate-pulse" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Timer & Rotating Status */}
-              <div className="space-y-1.5 min-h-[56px]">
-                <div className="text-3xl font-extrabold font-mono text-white tracking-wider">
-                  0:0{searchTimer}
-                </div>
-                <AnimatePresence mode="wait">
-                  <motion.p
-                    key={searchTipIndex}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-xs text-brand-muted font-medium"
-                  >
-                    {SEARCH_TIPS[searchTipIndex]}
-                  </motion.p>
-                </AnimatePresence>
-              </div>
-
-              {/* Match Stake summary */}
-              <div className="w-full p-2.5 rounded-xl bg-brand-surface border border-brand-border text-xs font-mono text-brand-muted flex items-center justify-between">
-                <span>{wagerCents > 0 ? `$${(wagerCents / 100).toFixed(2)} USDT Match` : 'Free Qualifying Match'}</span>
-                <span className="text-emerald-400 font-semibold">{timeControl / 60}m Clock</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleCancelSearch}
-                className="w-full py-3 rounded-xl border border-brand-border bg-brand-elevated text-brand-muted hover:text-white text-xs font-semibold transition-colors"
-              >
-                Cancel Search
-              </button>
-            </div>
-          )}
-
-          {/* STEP 3: MATCH FOUND! (1.6s CELEBRATION) */}
-          {step === 'matched' && matchedOpponent && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="py-4 flex flex-col items-center text-center space-y-5 relative z-10"
-            >
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500 text-black text-xs font-bold tracking-wider uppercase font-mono shadow-md animate-bounce">
-                <FaCheckCircle size={14} />
-                Opponent Found!
-              </div>
-
-              {/* VS Faceoff Card */}
-              <div className="w-full grid grid-cols-[1fr_auto_1fr] items-center gap-3 p-4 rounded-2xl bg-brand-surface border border-emerald-500/30 shadow-xl">
-                {/* You */}
-                <div className="flex flex-col items-center">
-                  <div className="size-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/40 flex items-center justify-center font-bold text-white text-lg shadow-sm">
-                    {stats?.first_name ? stats.first_name.slice(0, 2).toUpperCase() : 'YOU'}
-                  </div>
-                  <span className="text-xs font-bold text-white mt-1.5 truncate max-w-[90px]">
-                    {stats?.first_name || 'You'}
-                  </span>
-                  <span className="text-caption font-mono text-brand-muted">
-                    ELO {stats?.elo || 1200}
-                  </span>
-                </div>
-
-                {/* VS Emblem */}
-                <div className="flex flex-col items-center">
-                  <span className="size-8 rounded-full bg-brand-elevated border border-brand-border flex items-center justify-center text-xs font-black text-amber-400 font-mono shadow-xs">
-                    VS
-                  </span>
-                </div>
-
-                {/* Opponent */}
-                <div className="flex flex-col items-center">
-                  <div className={`size-14 rounded-2xl bg-gradient-to-br ${matchedOpponent.gradient} border border-white/10 flex items-center justify-center font-bold text-white text-lg shadow-sm relative`}>
-                    {matchedOpponent.initials}
-                    <span className="absolute -bottom-1 -right-1 text-sm drop-shadow-md">
-                      {matchedOpponent.flag}
-                    </span>
-                  </div>
-                  <span className="text-xs font-bold text-white mt-1.5 truncate max-w-[90px]">
-                    {matchedOpponent.name}
-                  </span>
-                  <span className="text-caption font-mono text-emerald-400">
-                    ELO {matchedOpponent.elo}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 animate-pulse">
-                <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-                Launching Grandmaster Arena…
-              </div>
-            </motion.div>
-          )}
-        </motion.div>
-      </div>
-
-      {/* Embedded Deposit Dialog */}
-      {showDeposit && (
-        <DepositDialog
-          onClose={() => {
-            setShowDeposit(false);
-            void syncBalance();
-          }}
-          onSuccess={() => {
-            setShowDeposit(false);
-            void syncBalance();
-            telegramHaptic('heavy');
-          }}
-          chosenWager={wagerCents}
-          walletBalance={walletBalance}
-        />
-      )}
-    </>
-  );
+  return <>
+    <Drawer isOpen={isOpen && !showDeposit} onClose={() => cancelSearch(true)} title={<span className="flex items-center gap-2"><FaChessKnight aria-hidden="true" className="text-brand-success" />{t('title')}</span>}
+      description={t('description')} footer={footer}>
+      {step === 'config' ? <>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+          <span className="text-brand-muted">{tg('balance')}</span>
+          {loadingBalance ? <Skeleton width={72} height={20} /> : <span className="numeric-body font-semibold"><bdi>{balanceError ? '—' : new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(walletBalance / 100)}</bdi> <span className="text-caption text-brand-muted">USDT</span></span>}
+        </div>
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-semibold mb-2">{tg('select_wager')}</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {WAGERS.map(cents => <Button key={cents} variant="secondary" aria-pressed={cents === wagerCents} aria-label={t('wager_option', { amount: money(cents) })}
+              onClick={() => setWagerCents(cents)} className={`min-w-0 flex-col gap-1 px-2 py-3 ${cents === wagerCents ? 'border-brand-success bg-brand-success/10' : ''}`}>
+              <bdi className="numeric-body font-semibold">{money(cents).replace(/\.00$/, '')}</bdi>
+              {cents === 1000 && <Badge variant="emerald" size="counter">{t('popular')}</Badge>}
+            </Button>)}
+          </div>
+        </fieldset>
+        <fieldset className="space-y-2">
+          <legend className="text-sm font-semibold mb-2">{tg('time_control')}</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {TIMES.map(seconds => <Button key={seconds} variant="secondary" aria-pressed={seconds === timeControl} onClick={() => setTimeControl(seconds)}
+              className={`min-w-0 px-2 ${seconds === timeControl ? 'border-brand-success bg-brand-success/10' : ''}`}>
+              {t('minutes', { count: seconds / 60 })}
+            </Button>)}
+          </div>
+        </fieldset>
+        <Card variant="solid" className="p-3 space-y-2">
+          <div className="flex flex-wrap justify-between gap-2 text-sm"><span className="text-brand-muted">{tg('stake')}</span><bdi className="numeric-body font-semibold">{money(wagerCents)}</bdi></div>
+          <div className="flex flex-wrap justify-between gap-2 text-sm"><span>{t('payout')}</span><bdi className="numeric-body font-semibold text-brand-success">{money(winnerCents(wagerCents))}</bdi></div>
+          <p className="text-caption text-brand-muted">{tg('includes_stake')} · {tg('lobby_payout_note')}</p>
+        </Card>
+        {insufficient && <p className="text-sm text-brand-muted">{t('shortfall', { amount: money(wagerCents - walletBalance) })}</p>}
+        {balanceError && <p role="alert" className="text-sm text-brand-danger">{tw('balance_unavailable')}</p>}
+        {error && <p role="alert" className="text-sm text-brand-danger">{error}</p>}
+      </> : <Card variant="solid" className="p-4 space-y-3 text-center">
+        <FaClock aria-hidden="true" className="mx-auto text-brand-success" />
+        <p role="status" className="font-semibold">{step === 'cancelling' ? t('cancelling') : step === 'joining' ? t('joining') : tg('searching_opponent')}</p>
+        <p className="text-sm text-brand-muted"><bdi>{money(wagerCents)}</bdi> · {t('minutes', { count: timeControl / 60 })}</p>
+        <p className="text-caption text-brand-muted">{t('search_hint')}</p>
+      </Card>}
+      {!connected && <p role="status" className="text-caption text-brand-muted">{t('connection_error')}</p>}
+    </Drawer>
+    {isOpen && showDeposit && <DepositDialog onClose={() => setShowDeposit(false)} onSuccess={() => { void syncBalance(); }} />}
+  </>;
 }

@@ -4,6 +4,8 @@ import { useEffect, useRef, type RefObject } from 'react';
 
 const dialogs: HTMLElement[] = [];
 let previousOverflow = '';
+let previousRootOverflow = '';
+let previousOverscroll = '';
 const focusable = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /** Stack-aware focus, Escape and scroll ownership, with cleanup on navigation. */
@@ -16,12 +18,16 @@ export function useDialog(open: boolean, ref: RefObject<HTMLElement | null>, onC
     const previousFocus = document.activeElement as HTMLElement | null;
     if (dialogs.length === 0) {
       previousOverflow = document.body.style.overflow;
+      previousRootOverflow = document.documentElement.style.overflow;
+      previousOverscroll = document.documentElement.style.overscrollBehavior;
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.overscrollBehavior = 'none';
     }
     dialogs.push(dialog);
     const elements = () => Array.from(dialog.querySelectorAll<HTMLElement>(focusable))
       .filter(element => !element.hidden && element.getAttribute('aria-hidden') !== 'true' && element.getClientRects().length > 0);
-    (elements()[0] || dialog).focus();
+    (elements()[0] || dialog).focus({ preventScroll: true });
 
     const handleKey = (event: KeyboardEvent) => {
       if (dialogs.at(-1) !== dialog) return;
@@ -55,8 +61,12 @@ export function useDialog(open: boolean, ref: RefObject<HTMLElement | null>, onC
       document.removeEventListener('focusin', containFocus);
       const index = dialogs.indexOf(dialog);
       if (index >= 0) dialogs.splice(index, 1);
-      if (dialogs.length === 0) document.body.style.overflow = previousOverflow;
-      if (previousFocus?.isConnected && (!dialogs.length || dialogs.at(-1)?.contains(previousFocus))) previousFocus.focus();
+      if (dialogs.length === 0) {
+        document.body.style.overflow = previousOverflow;
+        document.documentElement.style.overflow = previousRootOverflow;
+        document.documentElement.style.overscrollBehavior = previousOverscroll;
+      }
+      if (previousFocus?.isConnected && (!dialogs.length || dialogs.at(-1)?.contains(previousFocus))) previousFocus.focus({ preventScroll: true });
     };
   }, [open, ref]);
 }

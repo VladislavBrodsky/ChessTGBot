@@ -1235,5 +1235,22 @@
     "ranking_empty": "Aún no hay saldos compartidos. Puedes unirte en Ajustes.",
     "join_button": "Unirse",
     "referral_minimum": "Cada partida válida debe incluir al menos {moves} jugadas individuales."
+  },
+  "QuickMatch": {
+    "title": "Partida rápida",
+    "description": "Elige una apuesta y un tiempo para encontrar rival.",
+    "popular": "Popular",
+    "minutes": "{count} min",
+    "wager_option": "Apuesta {amount}",
+    "checking_balance": "Verificando saldo…",
+    "start": "Buscar rival",
+    "payout": "Pago si ganas",
+    "shortfall": "Añade {amount} para entrar en esta partida.",
+    "joining": "Entrando en la búsqueda…",
+    "cancelling": "Cancelando búsqueda…",
+    "cancel_search": "Cancelar búsqueda",
+    "search_hint": "Tu apuesta queda reservada durante la búsqueda y se devuelve al cancelar.",
+    "queue_error": "No se pudo buscar rival. Tu saldo se ha actualizado. Inténtalo de nuevo.",
+    "connection_error": "Conectando con el servidor. La búsqueda se recupera al reconectar."
   }
 }

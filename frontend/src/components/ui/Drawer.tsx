@@ -7,6 +7,7 @@ import { motion, AnimatePresence, PanInfo, useDragControls } from 'framer-motion
 import { useNavbar } from '@/context/NavbarContext';
 import { telegramHaptic } from '@/lib/telegram';
 import { useDialog } from '@/hooks/useDialog';
+import { useAnimationsEnabled } from '@/hooks/useAnimationsEnabled';
 import { Button } from './Button';
 
 export interface DrawerProps {
@@ -18,6 +19,8 @@ export interface DrawerProps {
   className?: string;
   maxHeight?: string;
   showHandle?: boolean;
+  /** Keeps the primary action visible while only the body scrolls. */
+  footer?: React.ReactNode;
 }
 
 export function Drawer({
@@ -29,6 +32,7 @@ export function Drawer({
   className = '',
   maxHeight = 'max-h-[85dvh]',
   showHandle = true,
+  footer,
 }: DrawerProps) {
   const tc = useTranslations('Common');
   const dragControls = useDragControls();
@@ -37,6 +41,7 @@ export function Drawer({
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const descriptionId = useId();
+  const animations = useAnimationsEnabled();
   useDialog(isOpen && mounted, dialogRef, onClose);
 
   useEffect(() => {
@@ -69,7 +74,7 @@ export function Drawer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: animations ? 0.2 : 0 }}
             onClick={() => {
               telegramHaptic('light');
               onClose();
@@ -92,12 +97,13 @@ export function Drawer({
             dragConstraints={{ top: 0 }}
             dragElastic={0.2}
             onDragEnd={handleDragEnd}
-            initial={{ y: '100%' }}
+            initial={{ y: animations ? '100%' : 0 }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className={`relative z-10 w-full max-w-lg ${maxHeight} ui-drawer overflow-y-auto rounded-t-3xl sm:rounded-3xl border-t border-brand-border bg-brand-surface p-5 pb-[calc(1.25rem+var(--app-safe-bottom))] shadow-2xl ${className}`}
+            exit={{ y: animations ? '100%' : 0 }}
+            transition={animations ? { type: 'spring', damping: 28, stiffness: 300 } : { duration: 0 }}
+            className={`relative z-10 w-full max-w-lg ${maxHeight} ui-drawer rounded-t-3xl sm:rounded-3xl border-t border-brand-border bg-brand-surface shadow-2xl ${footer ? 'flex flex-col overflow-hidden' : 'overflow-y-auto p-5 pb-[calc(1.25rem+var(--app-safe-bottom))]'} ${className}`}
           >
+            <div className={footer ? 'shrink-0 px-5 pt-5' : undefined}>
             {/* Grab Handle */}
             {showHandle && (
               <div onPointerDown={(event) => dragControls.start(event)}
@@ -122,9 +128,11 @@ export function Drawer({
                 </Button>
               </div>
             )}
+            </div>
 
             {/* Content */}
-            <div className="space-y-4">{children}</div>
+            <div className={footer ? 'min-h-0 overflow-y-auto overscroll-contain space-y-4 px-5 pb-4' : 'space-y-4'}>{children}</div>
+            {footer && <div className="shrink-0 border-t border-brand-border bg-brand-surface px-5 pt-3 pb-[calc(1.25rem+var(--app-safe-bottom))]">{footer}</div>}
           </motion.div>
         </div>
       )}

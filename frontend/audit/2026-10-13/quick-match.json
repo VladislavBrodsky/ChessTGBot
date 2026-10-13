@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-13",
+  "environment": "localhost:3124 with disposable mock identity and balances",
+  "scope": "Paid Quick Match setup, overlay ownership, queue lifecycle",
+  "checks": {
+    "paid_wagers_cents": [
+      100,
+      300,
+      500,
+      1000,
+      2500
+    ],
+    "popular_wager_cents": 1000,
+    "internal_scroll_320x560": {
+      "background_scroll_y_before": 0,
+      "background_scroll_y_after": 0,
+      "body_scroll_top_after": 220,
+      "primary_action_visible": true
+    },
+    "root_and_body_locked": true,
+    "focus_trap_and_escape_return": true,
+    "deposit_return_preserves_wager": true,
+    "deposit_verification_never_starts_queue": true,
+    "rtl_320px_no_horizontal_overflow": true,
+    "light_theme_popular_badge": {
+      "ink": "rgb(4, 120, 87)",
+      "background": "rgba(16, 185, 129, 0.08)"
+    },
+    "reduced_motion_uses_instant_drawer": true,
+    "local_preferences_restored": true
+  },
+  "validation": {
+    "frontend_tests": 161,
+    "frontend_suites": 38,
+    "final_targeted_tests": 14,
+    "cold_typecheck": "passed",
+    "lint": "passed",
+    "messages": 1200,
+    "locales": 10,
+    "design_ratchet": "passed",
+    "static_build": "passed"
+  },
+  "limitations": [
+    "Mobile dimensions were checked in a browser; a physical iOS Telegram device was not available.",
+    "No real-money transaction or paid match was executed in production."
+  ],
+  "proofs": [
+    "quick-match.png",
+    "quick-match-mobile.png",
+    "quick-match-ar.png",
+    "quick-match-light.png"
+  ]
+}

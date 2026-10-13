@@ -1235,5 +1235,22 @@
     "ranking_empty": "No shared balances yet. Join in Settings when you choose.",
     "join_button": "Join",
     "referral_minimum": "Each qualifying match needs at least {moves} individual moves."
+  },
+  "QuickMatch": {
+    "title": "Quick Match",
+    "description": "Choose a stake and time to find an opponent.",
+    "popular": "Popular",
+    "minutes": "{count} min",
+    "wager_option": "Wager {amount}",
+    "checking_balance": "Checking balance…",
+    "start": "Start matchmaking",
+    "payout": "Payout if you win",
+    "shortfall": "Top up {amount} more to enter this match.",
+    "joining": "Joining matchmaking…",
+    "cancelling": "Cancelling search…",
+    "cancel_search": "Cancel search",
+    "search_hint": "Your stake is reserved while searching and returned when you cancel.",
+    "queue_error": "Could not join matchmaking. Your balance has been refreshed. Please try again.",
+    "connection_error": "Connecting to the game server. Your search is restored when reconnected."
   }
 }

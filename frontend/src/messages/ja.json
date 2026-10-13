@@ -1235,5 +1235,22 @@
     "ranking_empty": "公開残高はまだありません。設定から参加できます。",
     "join_button": "参加",
     "referral_minimum": "各対象対局は、両者の着手を合計して最低{moves}手必要です。"
+  },
+  "QuickMatch": {
+    "title": "クイックマッチ",
+    "description": "対戦相手を探すために賭け金と持ち時間を選択してください。",
+    "popular": "人気",
+    "minutes": "{count}分",
+    "wager_option": "賭け金 {amount}",
+    "checking_balance": "残高を確認中…",
+    "start": "対戦相手を探す",
+    "payout": "勝利時の受取額",
+    "shortfall": "参加するにはあと{amount}を入金してください。",
+    "joining": "マッチングに参加中…",
+    "cancelling": "検索をキャンセル中…",
+    "cancel_search": "検索をキャンセル",
+    "search_hint": "検索中は賭け金が確保され、キャンセルすると返金されます。",
+    "queue_error": "マッチングに参加できませんでした。残高を更新しました。再試行してください。",
+    "connection_error": "ゲームサーバーに接続中です。再接続すると検索が復元されます。"
   }
 }
