@@ -178,47 +178,49 @@ export default function HomePage() {
 
               {/* ── Real-time Social Proof & Match Activity ── */}
               <LiveSocialProof />
-
-              <div className="hero-support flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-caption text-fg-muted">
-                <div className="inline-flex items-center gap-1.5 flex-wrap">
-                  <Icon name="lightning" size={15} className="shrink-0 text-amber-500" />
-                  <span className="shrink-0">Instant on-chain</span>
-                  <span className="inline-flex items-center gap-1.5 font-semibold shrink-0">
-                    {/* Eye-catching GRAM Currency Badge */}
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#0098EA]/10 border border-[#0098EA]/30 text-[#0098EA] text-[11px] font-mono font-bold shadow-2xs">
-                      <span className="flex size-3.5 items-center justify-center rounded-full bg-[#0098EA] text-white shadow-xs">
-                        <svg viewBox="0 0 32 32" fill="none" className="size-2.5" aria-hidden="true">
-                          <path
-                            d="M16 6.5L7.5 11.5L16 25.5L24.5 11.5L16 6.5ZM14.8 8.8L16 8.1L17.2 8.8L21.5 11.3L16 12.7L10.5 11.3L14.8 8.8ZM9.8 12.8L15.3 14.2V22.4L9.8 12.8ZM16.7 22.4V14.2L22.2 12.8L16.7 22.4Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      GRAM
-                    </span>
-                    <span className="text-fg-muted">&amp;</span>
-                    {/* Eye-catching USDT Currency Badge */}
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#26A17B]/10 border border-[#26A17B]/30 text-[#047857] text-[11px] font-mono font-bold shadow-2xs">
-                      <span className="flex size-3.5 items-center justify-center rounded-full bg-[#26A17B] text-white shadow-xs">
-                        <svg viewBox="0 0 32 32" fill="none" className="size-2.5" aria-hidden="true">
-                          <path
-                            d="M17.9 12.3v-2h6.1V7H8v3.3h6.1v2C7.9 12.6 3 13.9 3 15.5c0 1.6 4.9 2.9 11.1 3.2v7.3h3.8v-7.3c6.2-.3 11.1-1.6 11.1-3.2 0-1.6-4.9-2.9-11.1-3.2zm-1.9 4.6c-5 0-9.2-.8-10-1.9.8-1.1 5-1.9 10-1.9s9.2.8 10 1.9c-.8 1.1-5 1.9-10 1.9z"
-                            fill="white"
-                          />
-                        </svg>
-                      </span>
-                      USDT
-                    </span>
-                    <span className="text-fg-default">payouts</span>
-                  </span>
-                </div>
-                <span className="text-line hidden sm:inline">·</span>
-                <span className="shrink-0">No download required</span>
-              </div>
             </div>
           </div>
           <div className="hero-visual">
-            <ChessSculpture />
+            <ChessSculpture
+              footer={
+                <div className="hero-support flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5">
+                  <div className="inline-flex items-center gap-1.5 flex-wrap justify-center">
+                    <Icon name="lightning" size={15} className="shrink-0 text-amber-500" />
+                    <span className="shrink-0">Instant on-chain</span>
+                    <span className="inline-flex items-center gap-1.5 font-semibold shrink-0">
+                      {/* Eye-catching GRAM Currency Badge */}
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#0098EA]/10 border border-[#0098EA]/30 text-[#0098EA] text-[11px] font-mono font-bold shadow-2xs">
+                        <span className="flex size-3.5 items-center justify-center rounded-full bg-[#0098EA] text-white shadow-xs">
+                          <svg viewBox="0 0 32 32" fill="none" className="size-2.5" aria-hidden="true">
+                            <path
+                              d="M16 6.5L7.5 11.5L16 25.5L24.5 11.5L16 6.5ZM14.8 8.8L16 8.1L17.2 8.8L21.5 11.3L16 12.7L10.5 11.3L14.8 8.8ZM9.8 12.8L15.3 14.2V22.4L9.8 12.8ZM16.7 22.4V14.2L22.2 12.8L16.7 22.4Z"
+                              fill="white"
+                            />
+                          </svg>
+                        </span>
+                        GRAM
+                      </span>
+                      <span className="text-fg-muted">&amp;</span>
+                      {/* Eye-catching USDT Currency Badge */}
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-[#26A17B]/10 border border-[#26A17B]/30 text-[#047857] text-[11px] font-mono font-bold shadow-2xs">
+                        <span className="flex size-3.5 items-center justify-center rounded-full bg-[#26A17B] text-white shadow-xs">
+                          <svg viewBox="0 0 32 32" fill="none" className="size-2.5" aria-hidden="true">
+                            <path
+                              d="M17.9 12.3v-2h6.1V7H8v3.3h6.1v2C7.9 12.6 3 13.9 3 15.5c0 1.6 4.9 2.9 11.1 3.2v7.3h3.8v-7.3c6.2-.3 11.1-1.6 11.1-3.2 0-1.6-4.9-2.9-11.1-3.2zm-1.9 4.6c-5 0-9.2-.8-10-1.9.8-1.1 5-1.9 10-1.9s9.2.8 10 1.9c-.8 1.1-5 1.9-10 1.9z"
+                              fill="white"
+                            />
+                          </svg>
+                        </span>
+                        USDT
+                      </span>
+                      <span className="text-fg">payouts</span>
+                    </span>
+                  </div>
+                  <span className="text-line hidden sm:inline">·</span>
+                  <span className="shrink-0">No download required</span>
+                </div>
+              }
+            />
           </div>
         </section>
 

@@ -1,11 +1,15 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { chessArt, type ChessArtVariant } from "@/lib/chess-art";
 import { SculptureMotion } from "./SculptureMotion";
 
 export function ChessSculpture({
   variant = "home",
+  footer,
 }: {
   variant?: ChessArtVariant;
+  /** Replaces the art tagline under the sculpture (e.g. the home payouts line). */
+  footer?: ReactNode;
 }) {
   const art = chessArt[variant];
   return (
@@ -22,9 +26,15 @@ export function ChessSculpture({
           fetchPriority="high"
         />
       </SculptureMotion>
-      <figcaption className="stage-caption relative z-10 text-caption text-fg-muted">
-        {art.title}
-      </figcaption>
+      {footer ? (
+        <div className="stage-caption relative z-10 text-caption text-fg-muted">
+          {footer}
+        </div>
+      ) : (
+        <figcaption className="stage-caption relative z-10 text-caption text-fg-muted">
+          {art.title}
+        </figcaption>
+      )}
     </figure>
   );
 }

@@ -198,10 +198,10 @@ export function LiveSocialProof() {
       ref={containerRef}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      className="group/proof relative inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-[#0C0D0F]/95 text-white border border-white/[0.12] py-1.5 px-2.5 sm:px-3.5 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_12px_35px_-5px_rgba(16,185,129,0.2)] max-w-full overflow-hidden"
+      className="group/proof relative inline-flex items-center gap-2 sm:gap-2.5 py-1 text-fg max-w-full overflow-hidden"
     >
-      {/* 1. Eye-Catching Solid Crimson LIVE Badge (Placed BEFORE avatars) */}
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-mono font-extrabold uppercase tracking-wider bg-[#E11D48] text-white shadow-[0_0_14px_rgba(225,29,72,0.6)] shrink-0 select-none">
+      {/* 1. Compact crimson LIVE badge — the only filled accent, so the Play CTA keeps visual priority */}
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-mono font-extrabold uppercase tracking-wider bg-[#E11D48] text-white shrink-0 select-none">
         <span className="relative flex size-2">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-85" />
           <span className="relative inline-flex size-2 rounded-full bg-white" />
@@ -221,30 +221,30 @@ export function LiveSocialProof() {
             height={28}
             sizes="28px"
             quality={75}
-            className={`size-6 sm:size-7 rounded-full border-2 border-[#0C0D0F] bg-[#1A1B1E] object-cover shadow-sm transition-transform duration-200 hover:scale-125 hover:z-30 cursor-pointer ${
+            className={`size-6 sm:size-7 rounded-full border-2 border-canvas bg-surface object-cover transition-transform duration-200 hover:scale-125 hover:z-30 cursor-pointer ${
               idx >= 2 ? "hidden sm:block" : "block"
             }`}
           />
         ))}
       </div>
 
-      {/* Acid Green Pulsing Dot + Online Counter (In range 1,374 to 3,278) */}
+      {/* Emerald Pulsing Dot + Online Counter (In range 1,374 to 3,278) */}
       <div
         className="flex items-center gap-1.5 shrink-0"
         title="Live active players (1,374 – 3,278 rivals)"
       >
         <span className="relative flex size-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00FF66] opacity-75" />
-          <span className="relative inline-flex size-2 rounded-full bg-[#00FF66]" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
         </span>
-        <span className="text-[12px] sm:text-[13px] font-semibold text-white tabular-nums">
+        <span className="text-[12px] sm:text-[13px] font-semibold text-fg tabular-nums">
           {liveCount.toLocaleString()}
         </span>
-        <span className="text-[11px] text-white/50 hidden sm:inline">online</span>
+        <span className="text-[11px] text-fg-muted hidden sm:inline">online</span>
       </div>
 
-      {/* Hairline Glass Divider */}
-      <div className="h-3.5 w-px bg-white/20 shrink-0" />
+      {/* Hairline Divider */}
+      <div className="h-3.5 w-px bg-line-strong shrink-0" />
 
       {/* Animated Live Activity Ticker (Zero Blitz/Rapid game type badges) */}
       <div className="relative h-5 flex-1 min-w-0 flex items-center overflow-hidden pr-1">
@@ -258,19 +258,19 @@ export function LiveSocialProof() {
             className="flex items-center gap-1.5 text-[12px] sm:text-[13px] whitespace-nowrap min-w-0 w-full"
           >
             <span className="shrink-0">{active.flag}</span>
-            <span className="font-semibold text-white truncate max-w-[70px] sm:max-w-none">
+            <span className="font-semibold text-fg truncate max-w-[70px] sm:max-w-none">
               @{active.user}
             </span>
-            <span className="text-white/60 text-[11px] sm:text-[12px] shrink-0">
+            <span className="text-fg-muted text-[11px] sm:text-[12px] shrink-0">
               {active.action}
             </span>
             <strong
               className={`font-mono font-bold shrink-0 ${
                 active.tone === "amber"
-                  ? "text-amber-400"
+                  ? "text-amber-700"
                   : active.tone === "cyan"
-                  ? "text-cyan-400"
-                  : "text-emerald-400"
+                  ? "text-cyan-700"
+                  : "text-emerald-700"
               }`}
             >
               {active.amount}
