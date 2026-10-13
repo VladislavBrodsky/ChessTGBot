@@ -128,12 +128,12 @@ interface OrbitItem {
 }
 
 const CHESS_PIECES: OrbitItem[] = [
-  { id: "king", name: "King", tag: "Sovereign 95% Pot", element: <KingIcon className="size-5 text-amber-600" /> },
-  { id: "queen", name: "Queen", tag: "Tactical Dominance", element: <QueenIcon className="size-5 text-purple-600" /> },
-  { id: "knight", name: "Knight", tag: "Speed & Mobility", element: <KnightIcon className="size-5 text-blue-600" /> },
-  { id: "rook", name: "Rook", tag: "Escrow Fortress", element: <RookIcon className="size-5 text-emerald-600" /> },
-  { id: "bishop", name: "Bishop", tag: "Long-Range Vision", element: <BishopIcon className="size-5 text-rose-600" /> },
-  { id: "pawn", name: "Pawn", tag: "Grandmaster Path", element: <PawnIcon className="size-5 text-slate-700" /> },
+  { id: "king", name: "King", tag: "Sovereign 95% Pot", element: <KingIcon className="size-5 text-fg-caution" /> },
+  { id: "queen", name: "Queen", tag: "Tactical Dominance", element: <QueenIcon className="size-5 text-fg-premium" /> },
+  { id: "knight", name: "Knight", tag: "Speed & Mobility", element: <KnightIcon className="size-5 text-fg-muted" /> },
+  { id: "rook", name: "Rook", tag: "Escrow Fortress", element: <RookIcon className="size-5 text-fg-win" /> },
+  { id: "bishop", name: "Bishop", tag: "Long-Range Vision", element: <BishopIcon className="size-5 text-fg-loss" /> },
+  { id: "pawn", name: "Pawn", tag: "Grandmaster Path", element: <PawnIcon className="size-5 text-fg-muted" /> },
 ];
 
 const CRYPTO_TOKENS: OrbitItem[] = [

@@ -164,45 +164,45 @@ export default function HomePage() {
 
         {/* ── MAGIC UI MARQUEE: Live Crypto Match Wins & Vault Drops ── */}
         <section className="shell-wide my-3" aria-label="Live PvP match activity">
-          <div className="relative rounded-full border border-line bg-surface/70 py-2 px-3 overflow-hidden shadow-2xs backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
+          <div className="relative rounded-full border border-line bg-surface/70 py-2 px-3 overflow-hidden shadow-none backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
             {/* Smooth optical edge fades */}
             <div className="pointer-events-none absolute inset-y-0 left-0 w-4 sm:w-16 bg-gradient-to-r from-surface via-surface/80 to-transparent z-10" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-4 sm:w-16 bg-gradient-to-l from-surface via-surface/80 to-transparent z-10" />
 
             <Marquee duration={35} pauseOnHover>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <strong className="text-emerald-600 font-bold">+$47.50 USDT</strong>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
+                <strong className="text-fg-win font-bold">+$47.50 USDT</strong>
                 <span className="text-fg-muted">·</span>
                 <span>GM_Morphy won 3+2 Blitz duel</span>
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-amber-500" />
-                <strong className="text-amber-600 font-bold">1,000 GRAM</strong>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-caution-soft" />
+                <strong className="text-fg-caution font-bold">1,000 GRAM</strong>
                 <span className="text-fg-muted">·</span>
                 <span>King’s Dominion Mystery Jackpot unlocked</span>
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <strong className="text-emerald-600 font-bold">+$95.00 USDT</strong>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
+                <strong className="text-fg-win font-bold">+$95.00 USDT</strong>
                 <span className="text-fg-muted">·</span>
                 <span>Magnus_99 won 5+3 Rapid table</span>
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-blue-500" />
-                <strong className="text-blue-600 font-bold">2.0% Rake</strong>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-fg-muted" />
+                <strong className="text-fg-muted font-bold">2.0% Rake</strong>
                 <span className="text-fg-muted">·</span>
                 <span>6-Tier Affiliate passive commissions credited</span>
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-purple-500" />
-                <strong className="text-purple-600 font-bold">95 USDT</strong>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-premium-soft" />
+                <strong className="text-fg-premium font-bold">95 USDT</strong>
                 <span className="text-fg-muted">·</span>
                 <span>@gm_vlad on-chain withdrawal settled (3.8s)</span>
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <strong className="text-emerald-600 font-bold">+$190.00 USDT</strong>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
+                <strong className="text-fg-win font-bold">+$190.00 USDT</strong>
                 <span className="text-fg-muted">·</span>
                 <span>Kasparov_X won 10+0 Classical match</span>
               </span>
@@ -298,8 +298,8 @@ export default function HomePage() {
         <section className="shell-wide home-section" aria-labelledby="fair-heading">
           <div data-surface="ink" className="statement-panel relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
             {/* Ambient atmospheric lighting */}
-            <div className="pointer-events-none absolute -top-20 -right-20 size-80 rounded-full bg-emerald-500/10 blur-3xl" aria-hidden="true" />
-            <div className="pointer-events-none absolute -bottom-20 -left-20 size-80 rounded-full bg-blue-500/10 blur-3xl" aria-hidden="true" />
+            <div className="pointer-events-none absolute -top-20 -right-20 size-80 rounded-full bg-win-fill/10 blur-3xl" aria-hidden="true" />
+            <div className="pointer-events-none absolute -bottom-20 -left-20 size-80 rounded-full bg-fg-muted/10 blur-3xl" aria-hidden="true" />
 
             <div className="relative z-10 section-index">
               <span>04 / Pure skill. Zero pay-to-win</span>
@@ -340,15 +340,15 @@ export default function HomePage() {
               ].map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-5.5 space-y-4 transition-all duration-300 hover:border-emerald-500/40 hover:bg-white/[0.07] hover:shadow-[0_12px_35px_-10px_rgba(16,185,129,0.18)] shadow-xs backdrop-blur-xs flex flex-col justify-between"
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-5.5 space-y-4 transition-all duration-300 hover:border-win/40 hover:bg-white/[0.07] hover:shadow-[0_12px_35px_-10px_rgba(16,185,129,0.18)] shadow-none backdrop-blur-xs flex flex-col justify-between"
                 >
                   <div className="space-y-3.5">
                     {/* Top Eyebrow Badge with Glowing Live Dot */}
                     <div>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-mono font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-mono font-bold tracking-wider uppercase bg-win-fill/15 text-fg-win border border-win/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
                         <span className="relative flex size-1.5">
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                          <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win-fill opacity-75" />
+                          <span className="relative inline-flex size-1.5 rounded-full bg-win-fill" />
                         </span>
                         {item.tag}
                       </span>
@@ -356,27 +356,27 @@ export default function HomePage() {
 
                     {/* Icon + Title on the SAME LINE */}
                     <div className="flex items-center gap-3">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.12)]">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-win-fill/15 border border-win/30 text-fg-win shadow-[0_0_12px_rgba(16,185,129,0.12)]">
                         <Icon name={item.icon} size={20} />
                       </div>
-                      <h3 className="text-heading-xs font-semibold text-white tracking-tight leading-snug">
+                      <h3 className="text-title font-semibold text-white tracking-tight leading-snug">
                         {item.title}
                       </h3>
                     </div>
 
                     {/* Body explanation */}
-                    <p className="text-body-sm text-stone-300/85 leading-relaxed">
+                    <p className="text-body-sm text-fg-muted/85 leading-relaxed">
                       {item.body}
                     </p>
                   </div>
 
                   {/* Footer Guarantee */}
-                  <div className="pt-3 border-t border-white/10 font-mono text-caption text-stone-400 flex flex-col xl:flex-row xl:items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-stone-400">
-                      <Icon name="shield-check" size={13} className="text-emerald-400 shrink-0" />
+                  <div className="pt-3 border-t border-white/10 font-mono text-caption text-fg-muted flex flex-col xl:flex-row xl:items-center justify-between gap-2">
+                    <span className="flex items-center gap-1.5 text-fg-muted">
+                      <Icon name="shield-check" size={13} className="text-fg-win shrink-0" />
                       Guarantee:
                     </span>
-                    <span className="text-emerald-400 font-semibold">{item.metric}</span>
+                    <span className="text-fg-win font-semibold">{item.metric}</span>
                   </div>
                 </div>
               ))}
@@ -415,7 +415,7 @@ export default function HomePage() {
                   <Badge tone="accent" icon="graduation-cap">
                     100 Tactical Levels
                   </Badge>
-                  <span className="font-mono text-caption text-emerald-600 font-semibold">
+                  <span className="font-mono text-caption text-fg-win font-semibold">
                     100% Free
                   </span>
                 </div>
@@ -432,7 +432,7 @@ export default function HomePage() {
                     desc: "Board geometry · Core rules",
                     tag: "Start here",
                     icon: "graduation-cap" as const,
-                    color: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+                    color: "text-fg-muted bg-fg-muted/10 border-line/20",
                   },
                   {
                     num: "02",
@@ -440,7 +440,7 @@ export default function HomePage() {
                     desc: "Center control · King safety",
                     tag: "Develop",
                     icon: "strategy" as const,
-                    color: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+                    color: "text-fg-win bg-win-fill/10 border-win/20",
                   },
                   {
                     num: "03",
@@ -448,7 +448,7 @@ export default function HomePage() {
                     desc: "Forks · Pins · Skewers · Nets",
                     tag: "Calculate",
                     icon: "lightning" as const,
-                    color: "text-amber-600 bg-amber-500/10 border-amber-500/20",
+                    color: "text-fg-caution bg-caution-soft/10 border-caution/20",
                   },
                   {
                     num: "04",
@@ -456,7 +456,7 @@ export default function HomePage() {
                     desc: "King activity · Passed pawns",
                     tag: "Convert",
                     icon: "crown-simple" as const,
-                    color: "text-purple-600 bg-purple-500/10 border-purple-500/20",
+                    color: "text-fg-premium bg-premium-soft/10 border-premium/20",
                   },
                 ].map((track) => (
                   <div
@@ -468,7 +468,7 @@ export default function HomePage() {
                         <Icon name={track.icon} size={16} />
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className="font-semibold text-fg-default text-caption truncate">
+                        <span className="font-semibold text-fg text-caption truncate">
                           {track.name}
                         </span>
                         <span className="text-caption text-fg-muted font-mono truncate">
@@ -485,7 +485,7 @@ export default function HomePage() {
 
               <div className="pt-4 mt-4 border-t border-line flex flex-col xl:flex-row xl:items-center justify-between gap-2 text-caption font-mono text-fg-muted">
                 <span>Stockfish A.I. Practice · Unlimited games</span>
-                <span className="text-emerald-600 font-semibold">Zero stake needed</span>
+                <span className="text-fg-win font-semibold">Zero stake needed</span>
               </div>
             </Card>
           </div>
@@ -506,8 +506,8 @@ export default function HomePage() {
                   <Badge tone="accent" icon="lightning">
                     95% Winner Payout
                   </Badge>
-                  <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
-                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-mono text-caption text-fg-win flex items-center gap-1.5 font-semibold">
+                    <span className="size-2 rounded-full bg-win-fill animate-pulse" />
                     Lowest rake in Web3
                   </span>
                 </div>
@@ -540,15 +540,15 @@ export default function HomePage() {
               <div className="relative rounded-2xl border border-line bg-inset p-5 sm:p-6 overflow-hidden space-y-3.5">
                 <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-caption font-semibold text-fg-default">
+                    <span className="text-caption font-semibold text-fg">
                       Popular Stakes &amp; Payouts
                     </span>
-                    <span className="flex items-center gap-1 font-mono text-caption font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                      <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="flex items-center gap-1 font-mono text-caption font-semibold text-fg-win bg-win-fill/10 px-2 py-0.5 rounded-full">
+                      <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
                       Live Pools
                     </span>
                   </div>
-                  <span className="font-mono text-caption sm:text-caption text-emerald-600 font-medium">
+                  <span className="font-mono text-caption sm:text-caption text-fg-win font-medium">
                     +90% Net ROI on win
                   </span>
                 </div>
@@ -573,7 +573,7 @@ export default function HomePage() {
                         win: 9.50,
                         net: "+$4.50",
                         tag: "Most Popular 🔥",
-                        tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
+                        tagColor: "bg-win-fill/15 border-win/30 text-fg-win",
                       },
                       {
                         tier: "Arena Contender",
@@ -582,7 +582,7 @@ export default function HomePage() {
                         win: 19.00,
                         net: "+$9.00",
                         tag: "Active Pool ⚡",
-                        tagColor: "bg-blue-500/15 border-blue-500/30 text-blue-700",
+                        tagColor: "bg-fg-muted/15 border-line/30 text-fg-muted",
                       },
                       {
                         tier: "High Roller",
@@ -591,7 +591,7 @@ export default function HomePage() {
                         win: 47.50,
                         net: "+$22.50",
                         tag: "Trending 🚀",
-                        tagColor: "bg-amber-500/15 border-amber-500/30 text-amber-700",
+                        tagColor: "bg-caution-soft/15 border-caution/30 text-fg-caution",
                       },
                       {
                         tier: "Championship Pot",
@@ -600,7 +600,7 @@ export default function HomePage() {
                         win: 95.00,
                         net: "+$45.00",
                         tag: "+90% Net ROI",
-                        tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
+                        tagColor: "bg-win-fill/15 border-win/30 text-fg-win",
                       },
                       {
                         tier: "Grandmaster Table",
@@ -609,7 +609,7 @@ export default function HomePage() {
                         win: 190.00,
                         net: "+$90.00",
                         tag: "VIP Table 👑",
-                        tagColor: "bg-purple-500/15 border-purple-500/30 text-purple-700",
+                        tagColor: "bg-premium-soft/15 border-premium/30 text-fg-premium",
                       },
                       {
                         tier: "Whales Arena",
@@ -618,12 +618,12 @@ export default function HomePage() {
                         win: 475.00,
                         net: "+$225.00",
                         tag: "Whales Club 💎",
-                        tagColor: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",
+                        tagColor: "bg-win-fill/15 border-win/30 text-fg-win",
                       },
                     ].map((item) => (
                       <div
                         key={item.tier}
-                        className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface/90 transition-all duration-200 hover:scale-[101%] hover:border-fg-muted/40 shadow-2xs"
+                        className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface/90 transition-all duration-200 hover:scale-[101%] hover:border-fg-muted/40 shadow-none"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#26A17B]/15 border border-[#26A17B]/30 text-[#26A17B]">
@@ -631,7 +631,7 @@ export default function HomePage() {
                           </div>
                           <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-semibold text-fg-default text-caption">
+                              <span className="font-semibold text-fg text-caption">
                                 ${item.stake} USDT
                               </span>
                               <span className="text-fg-muted text-caption hidden sm:inline">
@@ -648,7 +648,7 @@ export default function HomePage() {
                         </div>
 
                         <div className="text-right shrink-0 ps-2">
-                          <span className="font-mono font-bold text-emerald-600 block text-caption">
+                          <span className="font-mono font-bold text-fg-win block text-caption">
                             ${item.win.toFixed(2)} USDT
                           </span>
                           <span className="text-caption font-mono text-fg-muted">
@@ -759,8 +759,8 @@ export default function HomePage() {
             className="statement-panel relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.4)] text-center py-10 sm:py-14 flex flex-col items-center"
           >
             {/* Ambient atmospheric lighting */}
-            <div className="pointer-events-none absolute -top-20 -left-20 size-80 rounded-full bg-emerald-500/10 blur-3xl" aria-hidden="true" />
-            <div className="pointer-events-none absolute -bottom-20 -right-20 size-80 rounded-full bg-blue-500/10 blur-3xl" aria-hidden="true" />
+            <div className="pointer-events-none absolute -top-20 -left-20 size-80 rounded-full bg-win-fill/10 blur-3xl" aria-hidden="true" />
+            <div className="pointer-events-none absolute -bottom-20 -right-20 size-80 rounded-full bg-fg-muted/10 blur-3xl" aria-hidden="true" />
             <BorderBeam size={360} duration={14} colorFrom="#10b981" colorTo="#3b82f6" />
             <Badge tone="accent" icon="trophy" className="mb-4 relative z-10 self-center mx-auto">
               The Board Is Set

@@ -24,6 +24,7 @@
   .demo-note strong { font-weight: 500; }
   .settlement-feed { width: 100%; }
   .settlement-status { display: grid; gap: 0.375rem; padding-block-end: 0.875rem; border-block-end: 1px solid var(--line-hairline); font-family: var(--font-sans); font-size: var(--text-caption); line-height: 1.5; }
+  .settlement-status-heading { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; min-height: 44px; }
   .settlement-status-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
   .settlement-status-title i { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--color-win); }
   .settlement-status-details { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 0.75rem; color: var(--fg-muted); }

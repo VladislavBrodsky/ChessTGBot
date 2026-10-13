@@ -216,7 +216,7 @@ export default function RulesPage() {
                   <Badge tone="accent" icon="shield-check">
                     King Safety Move
                   </Badge>
-                  <span className="font-mono text-caption text-emerald-600 font-semibold">
+                  <span className="font-mono text-caption text-fg-win font-semibold">
                     Kingside &amp; Queenside
                   </span>
                 </div>
@@ -229,15 +229,15 @@ export default function RulesPage() {
 
                 <div className="space-y-2 border-t border-line pt-3 font-mono text-caption text-fg-muted">
                   <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
                     <span>Neither the king nor the castling rook has moved yet.</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
                     <span>All squares between the king and rook are empty.</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
                     <span>The king is not currently in check, and does not cross or land on attacked squares.</span>
                   </div>
                 </div>
@@ -263,15 +263,15 @@ export default function RulesPage() {
 
                 <div className="space-y-2 border-t border-line pt-3 font-mono text-caption text-fg-muted">
                   <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
                     <span>Applies strictly to pawns on the adjacent file.</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
                     <span>Must be played on the immediate next turn, or the right is forfeited.</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
                     <span>Prevents pawns from bypassing enemy control squares untouched.</span>
                   </div>
                 </div>
@@ -348,7 +348,7 @@ export default function RulesPage() {
             <Card className="p-6 bg-surface border border-line">
               <div className="flex items-center justify-between gap-3 mb-3">
                 <Badge tone="neutral" icon="lightning">Flagging</Badge>
-                <span className="font-mono text-caption text-amber-600 font-semibold">0:00 Timeout</span>
+                <span className="font-mono text-caption text-fg-caution font-semibold">0:00 Timeout</span>
               </div>
               <h3 className="text-heading-sm font-medium mb-2">What Happens When Clock Runs Out</h3>
               <p className="text-body-sm text-fg-muted leading-relaxed mb-4">
@@ -356,11 +356,11 @@ export default function RulesPage() {
               </p>
               <div className="space-y-2.5 text-caption font-mono text-fg-muted border-t border-line pt-3">
                 <div className="flex items-start gap-2">
-                  <span className="size-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                  <span className="size-1.5 rounded-full bg-loss-fill mt-1.5 shrink-0" />
                   <span><strong>Opponent has mating material:</strong> You lose the game on time.</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="size-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span className="size-1.5 rounded-full bg-win-fill mt-1.5 shrink-0" />
                   <span><strong>Opponent has insufficient material:</strong> The game is declared a Draw (FIDE 6.9).</span>
                 </div>
               </div>
@@ -381,7 +381,7 @@ export default function RulesPage() {
           <div className="space-y-3">
             {rulesFaqs.map((faq) => (
               <Card key={faq.question} className="p-5 bg-surface border border-line">
-                <h3 className="text-heading-xs font-semibold text-fg-default mb-2">
+                <h3 className="text-title font-semibold text-fg mb-2">
                   {faq.question}
                 </h3>
                 <p className="text-body-sm text-fg-muted leading-relaxed">

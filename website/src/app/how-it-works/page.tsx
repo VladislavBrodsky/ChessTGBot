@@ -148,7 +148,7 @@ export default function HowItWorksPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="size-2 rounded-full bg-win-fill" />
                 <span>One-tap Telegram launch · Zero friction</span>
               </div>
             </Card>
@@ -172,7 +172,7 @@ export default function HowItWorksPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-blue-500" />
+                <span className="size-2 rounded-full bg-fg-muted" />
                 <span>Free A.I. or USDT on GRAM</span>
               </div>
             </Card>
@@ -196,7 +196,7 @@ export default function HowItWorksPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-amber-500" />
+                <span className="size-2 rounded-full bg-caution-soft" />
                 <span>Smart ELO matchmaking</span>
               </div>
             </Card>
@@ -221,7 +221,7 @@ export default function HowItWorksPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="size-2 rounded-full bg-win-fill" />
                 <span>Instant pot credit · Bot confirmed withdrawal</span>
               </div>
             </Card>

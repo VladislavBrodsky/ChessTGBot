@@ -41,7 +41,7 @@ export function AvatarCircles({
             alt={item.name || `Player ${idx + 1}`}
             width={40}
             height={40}
-            className={`${sizeMap[size]} rounded-full border-2 border-canvas bg-surface object-cover shadow-xs transition-transform duration-200 hover:scale-110 hover:z-20`}
+            className={`${sizeMap[size]} rounded-full border-2 border-canvas bg-surface object-cover shadow-none transition-transform duration-200 hover:scale-110 hover:z-20`}
           />
         );
 
@@ -68,7 +68,7 @@ export function AvatarCircles({
 
       {numPeople !== undefined && numPeople > 0 && (
         <div
-          className={`flex ${sizeMap[size]} items-center justify-center rounded-full border-2 border-canvas bg-inset font-semibold text-fg-default shadow-xs`}
+          className={`flex ${sizeMap[size]} items-center justify-center rounded-full border-2 border-canvas bg-inset font-semibold text-fg shadow-none`}
         >
           +{numPeople >= 1000 ? `${(numPeople / 1000).toFixed(1)}k` : numPeople}
         </div>

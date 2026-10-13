@@ -91,7 +91,7 @@ export function ArenaBento() {
         {/* Live Match Settlement Visualization with NumberTicker */}
         <div className="relative z-10 rounded-2xl border border-line bg-inset p-3 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 border-b border-line pb-2 sm:pb-3 mb-2 sm:mb-3 text-caption sm:text-caption text-fg-muted">
-            <span className="flex items-center gap-1.5 font-semibold text-fg-default">
+            <span className="flex items-center gap-1.5 font-semibold text-fg">
               <span className="size-1.5 sm:size-2 rounded-full bg-inset animate-pulse" />
               Live Blitz Match 3+2
             </span>
@@ -142,24 +142,24 @@ export function ArenaBento() {
 
           {/* Orbiting Vault Reward Visualization */}
           <div className="relative my-3 flex h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-inset border border-line">
-            <div className="z-10 flex size-9 items-center justify-center rounded-full bg-inset border border-line text-fg shadow-xs">
+            <div className="z-10 flex size-9 items-center justify-center rounded-full bg-inset border border-line text-fg shadow-none">
               <Icon name="gift" size={18} />
             </div>
 
             <OrbitingCircles radius={38} duration={12} iconSize={22} path>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-caption">
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
                 💎
               </span>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-caption">
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
                 ⚡
               </span>
             </OrbitingCircles>
 
             <OrbitingCircles radius={56} reverse duration={18} iconSize={22} path>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-caption">
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
                 👑
               </span>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-xs text-caption">
+              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
                 🏆
               </span>
             </OrbitingCircles>
@@ -173,23 +173,23 @@ export function ArenaBento() {
               <span className="size-2 rounded-full bg-inset" />
               King’s Dominion Chest
             </span>
-            <span className="font-bold text-fg-default">
+            <span className="font-bold text-fg">
               <NumberTicker value={1000} suffix=" GRAM" /> Jackpot
             </span>
           </div>
           <div className="flex items-center justify-between font-medium">
             <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-yellow-400" />
+              <span className="size-2 rounded-full bg-caution-soft" />
               Queen’s Treasury Chest
             </span>
-            <span className="font-bold text-fg-default">1-Month Premium + Drops</span>
+            <span className="font-bold text-fg">1-Month Premium + Drops</span>
           </div>
           <div className="flex items-center justify-between font-medium">
             <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-slate-400" />
+              <span className="size-2 rounded-full bg-fg-muted" />
               Knight’s Gambit Chest
             </span>
-            <span className="font-bold text-fg-default">2× XP Boosts &amp; Skins</span>
+            <span className="font-bold text-fg">2× XP Boosts &amp; Skins</span>
           </div>
         </div>
       </Card>
@@ -214,20 +214,20 @@ export function ArenaBento() {
         {/* Leaderboard Micro Ticker */}
         <div className="space-y-1 sm:space-y-2 rounded-xl bg-inset p-2 sm:p-3.5 border border-line text-caption sm:text-caption font-mono">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-fg-default">#1 Morphy · 2480</span>
+            <span className="font-semibold text-fg">#1 Morphy · 2480</span>
             <span className="font-bold text-fg shrink-0">
               <NumberTicker value={2450} prefix="+$" suffix="" />
             </span>
           </div>
           <div className="flex items-center justify-between text-fg-muted">
             <span className="truncate">#2 Magnus · 2415</span>
-            <span className="font-semibold text-fg-default shrink-0">
+            <span className="font-semibold text-fg shrink-0">
               <NumberTicker value={1890} prefix="+$" suffix="" />
             </span>
           </div>
           <div className="flex items-center justify-between text-fg-muted">
             <span className="truncate">#3 Pawn · 2380</span>
-            <span className="font-semibold text-fg-default shrink-0">
+            <span className="font-semibold text-fg shrink-0">
               <NumberTicker value={1240} prefix="+$" suffix="" />
             </span>
           </div>
@@ -253,10 +253,10 @@ export function ArenaBento() {
 
         <div className="flex items-center justify-between rounded-xl bg-inset p-2 sm:p-3.5 border border-line text-caption sm:text-caption">
           <div className="space-y-0.5">
-            <span className="font-semibold text-fg-default block text-caption sm:text-caption">6 Levels</span>
+            <span className="font-semibold text-fg block text-caption sm:text-caption">6 Levels</span>
             <span className="text-fg-muted text-caption">To tier 6</span>
           </div>
-          <span className="poster text-heading-xs sm:text-stat text-fg">
+          <span className="poster text-title sm:text-stat text-fg">
             <NumberTicker value={2} suffix="%" />
           </span>
         </div>
@@ -283,7 +283,7 @@ export function ArenaBento() {
 
         <Link
           href="/academy"
-          className="inline-flex items-center justify-between rounded-xl bg-inset p-2 sm:p-3.5 border border-line text-caption sm:text-caption font-semibold text-fg-default hover:bg-canvas transition-colors"
+          className="inline-flex items-center justify-between rounded-xl bg-inset p-2 sm:p-3.5 border border-line text-caption sm:text-caption font-semibold text-fg hover:bg-canvas transition-colors"
         >
           <span>Explore tracks</span>
           <Icon name="arrow-right" size={13} />
@@ -317,7 +317,7 @@ export function ArenaBento() {
             {liveFeed.map((item) => (
               <figure
                 key={item.id}
-                className="relative mx-auto w-full overflow-hidden rounded-xl border border-line bg-inset p-2 sm:p-2.5 transition-all duration-200 hover:border-fg-muted/40 shadow-2xs"
+                className="relative mx-auto w-full overflow-hidden rounded-xl border border-line bg-inset p-2 sm:p-2.5 transition-all duration-200 hover:border-fg-muted/40 shadow-none"
               >
                 <div className="flex items-center gap-2 sm:gap-2.5">
                   <div className="flex size-6 sm:size-7 shrink-0 items-center justify-center rounded-lg bg-inset border border-line text-fg">
@@ -325,7 +325,7 @@ export function ArenaBento() {
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-between text-caption gap-2">
-                      <span className="font-semibold text-fg-default text-caption">{item.player}</span>
+                      <span className="font-semibold text-fg text-caption">{item.player}</span>
                       <span className="font-mono text-caption text-fg-muted shrink-0">{item.time}</span>
                     </div>
                     <div className="flex flex-wrap items-center justify-between text-caption gap-2 mt-0.5">

@@ -1,7 +1,7 @@
 # Web3Chess Website: DESIGN.md
 
 **System:** Concrete Poster (Dayos / Refero style ee403055), *"brutalist editorial showroom on warm gray"*
-**Version:** 2.18 · 2026-10-13
+**Version:** 2.19 · 2026-10-13
 **Scope:** the public marketing website for Web3Chess (web3chess.online).
 **Not in scope:** the Telegram Mini App in `frontend/`, which keeps **Obsidian Chess** ([`BRAND_DESIGN_SYSTEM.md`](../../BRAND_DESIGN_SYSTEM.md)).
 **Reference:** Dayos (dayos.com) via Refero Styles (`ee403055-480e-4bd4-9216-07c9ae2dde2e`).
@@ -83,6 +83,14 @@ The remaining language-route and launch recipes describe future work; they are n
 **Never import `theme.css` into `frontend/`.** The Mini App has its own dark system, its own invariants (safe areas, navbar, haptics) and a CI static-export guard.
 
 ---
+
+### 0.2 Verified component integration (2026-10-13)
+
+- **Read the integration contract:** [`website/docs/MAGIC_UI_INTEGRATION.md`](../../website/docs/MAGIC_UI_INTEGRATION.md) records the installed stack, local adapter APIs, stylesheet order, motion lifecycles, and verification requirements.
+- **Token namespaces:** the theme intentionally clears stock Tailwind colors and shadows. Registry examples using `bg-emerald-500` or `shadow-md` silently lose those declarations. Map them to defined roles; `text-fg`, `bg-inset`, `bg-inverse`, and `text-title` are the canonical names. State foregrounds use `text-fg-win/loss/premium/caution` to follow the enclosing light or dark surface. Never use a loss color to decorate a winning settlement. Currency artwork retains its native asset colors.
+- **Adapter structure:** `BentoGrid` uses the same natural-height responsive grid as RewardsBento. `BentoCard` uses the shared Card and copy/demo regions; its artwork stays in flow, its description is complete, and its 44px action stays visible. Avoid fixed demo rows, absolute full-card backgrounds, hidden actions, nested outlined metadata, or blurred amounts.
+- **Complete motion wiring:** animated lists pause on hover/focus and stop offscreen, in hidden tabs, and under reduced motion. Marquees use the same lifecycle. Settlement, vault, globe, and ecosystem expose native 44px pause controls. JS animation and CSS orbit/keyframe properties must agree; reduced motion must retain a complete static layout.
+- **Build contract:** `npm run ui:check` checks imports/dependencies and compiles the real Tailwind/PostCSS stylesheet to detect undefined utilities. `npm run build` runs it before compilation and again against the production CSS. No broad palette restoration or duplicate Motion/icon dependencies to make a copied demo pass. Shared-component changes require lint/build, phone/desktop visual checks, and the existing copy/SEO checks.
 
 ## 1. Brand foundation
 

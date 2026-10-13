@@ -39,7 +39,7 @@ export function Dock({
         ref={containerRef}
         onMouseMove={(e) => mouseX.set(e.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className={`site-dock max-w-full rounded-2xl border border-line bg-surface/85 shadow-sm backdrop-blur-md ${className}`}
+        className={`site-dock max-w-full rounded-2xl border border-line bg-surface/85 shadow-none backdrop-blur-md ${className}`}
         role="toolbar"
         aria-label="Application dock"
       >
@@ -102,14 +102,14 @@ export function DockIcon({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       aria-label={ariaLabel || title}
-      className={`group relative flex items-center justify-center rounded-xl bg-inset border border-line transition-colors hover:border-fg-muted/50 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${className}`}
+      className={`group relative flex items-center justify-center rounded-xl bg-inset border border-line transition-colors hover:border-fg-muted/50 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-win ${className}`}
     >
       <div className="flex size-full items-center justify-center p-2">
         {children}
       </div>
 
       {title && (
-        <span className="pointer-events-none absolute -top-8 whitespace-nowrap rounded-md border border-line bg-surface px-2 py-0.5 font-mono text-caption font-semibold text-fg-default opacity-0 shadow-xs transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">
+        <span className="pointer-events-none absolute -top-8 whitespace-nowrap rounded-md border border-line bg-surface px-2 py-0.5 font-mono text-caption font-semibold text-fg opacity-0 shadow-none transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">
           {title}
         </span>
       )}

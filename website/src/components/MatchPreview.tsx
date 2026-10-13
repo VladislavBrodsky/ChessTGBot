@@ -46,13 +46,13 @@ export function MatchPreview() {
             {names[time]}
           </p>
           <p
-            className="poster match-preview-clock mt-1 tabular-nums text-fg-default font-bold"
+            className="poster match-preview-clock mt-1 tabular-nums text-fg font-bold"
             aria-live="polite"
           >
             {time}
           </p>
         </div>
-        <span className="grid size-14 place-items-center rounded-2xl border border-line bg-inset text-fg-default">
+        <span className="grid size-14 place-items-center rounded-2xl border border-line bg-inset text-fg">
           <Icon name="clock" size={28} />
         </span>
       </div>
@@ -78,14 +78,14 @@ export function MatchPreview() {
             <span className="size-1.5 rounded-full bg-inset" />
             Lag compensation
           </span>
-          <span className="text-fg-default font-semibold">FIDE-standard</span>
+          <span className="text-fg font-semibold">FIDE-standard</span>
         </div>
         <div className="flex flex-wrap gap-2 items-center justify-between">
           <span className="flex items-center gap-1.5">
             <Icon name="shield-check" size={13} className="text-fg" />
             Disconnect protection
           </span>
-          <span className="text-fg-default font-semibold">60s forfeit timer</span>
+          <span className="text-fg font-semibold">60s forfeit timer</span>
         </div>
       </div>
     </Card>

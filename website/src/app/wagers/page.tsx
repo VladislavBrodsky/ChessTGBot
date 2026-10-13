@@ -120,7 +120,7 @@ export default function WagersPage() {
               </p>
             </div>
             <div className="shrink-0 flex items-center gap-2 text-caption font-mono text-fg-muted">
-              <span className="size-2 rounded-full bg-emerald-500" />
+              <span className="size-2 rounded-full bg-win-fill" />
               <span>Transparent 95/5 settlement</span>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function WagersPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="size-2 rounded-full bg-win-fill" />
                 <span>USDT on GRAM · Instant credit with ref comment</span>
               </div>
             </Card>
@@ -189,7 +189,7 @@ export default function WagersPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-blue-500" />
+                <span className="size-2 rounded-full bg-fg-muted" />
                 <span>Locked pot settlement</span>
               </div>
             </Card>
@@ -213,7 +213,7 @@ export default function WagersPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-amber-500" />
+                <span className="size-2 rounded-full bg-caution-soft" />
                 <span>Bot chat confirmation</span>
               </div>
             </Card>
@@ -238,7 +238,7 @@ export default function WagersPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="size-2 rounded-full bg-win-fill" />
                 <span>Verifiable on Tonviewer · Public ledger finality</span>
               </div>
             </Card>

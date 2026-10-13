@@ -84,8 +84,8 @@ export default async function PlayPage() {
             <Badge tone="accent" icon="lightning">
               Instant Launch
             </Badge>
-            <span className="font-mono text-caption text-emerald-600 flex items-center gap-1.5 font-semibold">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-mono text-caption text-fg-win flex items-center gap-1.5 font-semibold">
+              <span className="size-2 rounded-full bg-win-fill animate-pulse" />
               Live Arena · 3,840+ Active Rivals
             </span>
           </div>
@@ -102,7 +102,7 @@ export default async function PlayPage() {
             <BorderBeam size={260} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
             <div className="relative z-10 w-full flex flex-col flex-1 items-start">
               <div className="flex w-full items-center justify-between gap-3">
-                <div className="flex size-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-fg-muted/10 text-fg-muted border border-line/20">
                   <Icon name="telegram-logo" size={24} />
                 </div>
                 <Badge tone="accent">Recommended</Badge>
@@ -114,15 +114,15 @@ export default async function PlayPage() {
 
               <div className="my-5 w-full space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
                 <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span className="size-1.5 rounded-full bg-win-fill" />
                   <span>One-tap launch with Telegram profile</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span className="size-1.5 rounded-full bg-win-fill" />
                   <span>GRAM wallet deposit and withdrawal rails</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <span className="size-1.5 rounded-full bg-win-fill" />
                   <span>Push notification when rival is paired</span>
                 </div>
               </div>
@@ -137,7 +137,7 @@ export default async function PlayPage() {
           <Card className="flex flex-col justify-between p-4 sm:p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
             <div className="relative z-10 w-full flex flex-col flex-1 items-start">
               <div className="flex w-full items-center justify-between gap-3">
-                <div className="flex size-11 items-center justify-center rounded-xl bg-inset text-fg-default border border-line">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-inset text-fg border border-line">
                   <Icon name="globe" size={24} />
                 </div>
                 <span className="font-mono text-caption text-fg-muted bg-inset px-2.5 py-0.5 rounded-full border border-line">
@@ -151,15 +151,15 @@ export default async function PlayPage() {
 
               <div className="my-5 w-full space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
                 <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-blue-500" />
+                  <span className="size-1.5 rounded-full bg-fg-muted" />
                   <span>Expanded widescreen board layout</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-blue-500" />
+                  <span className="size-1.5 rounded-full bg-fg-muted" />
                   <span>Stockfish 16 engine analysis</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-blue-500" />
+                  <span className="size-1.5 rounded-full bg-fg-muted" />
                   <span>Synchronized cloud profile state</span>
                 </div>
               </div>
@@ -182,13 +182,13 @@ export default async function PlayPage() {
         {/* Desktop Mobile Bridge / QR Dock */}
         <div className="mt-6 hidden items-center justify-between gap-6 rounded-2xl border border-line bg-surface p-5 md:flex">
           <div className="flex items-center gap-5">
-            <div className="shrink-0 rounded-xl bg-white p-2.5 border border-line shadow-xs">
+            <div className="shrink-0 rounded-xl bg-white p-2.5 border border-line shadow-none">
               <div className="size-24 [&>svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} role="img" aria-label="QR code that opens Web3Chess in Telegram" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-title">Take the board with you</h2>
-                <span className="font-mono text-caption text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-semibold">
+                <span className="font-mono text-caption text-fg-win bg-win-fill/10 px-2 py-0.5 rounded-full border border-win/20 font-semibold">
                   Instant mobile handoff
                 </span>
               </div>
@@ -199,7 +199,7 @@ export default async function PlayPage() {
           </div>
           <div className="hidden lg:flex items-center gap-4 text-caption font-mono text-fg-muted pr-2">
             <div className="text-right">
-              <span className="block font-semibold text-fg-default">iOS &amp; Android</span>
+              <span className="block font-semibold text-fg">iOS &amp; Android</span>
               <span className="text-caption">Bot API 8.0+ Ready</span>
             </div>
           </div>
@@ -207,16 +207,16 @@ export default async function PlayPage() {
 
         {/* Trust & Safe Space Guarantees */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 rounded-xl border border-line bg-inset p-3.5 text-center font-mono text-caption">
-          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium py-1 sm:py-0">
-            <Icon name="shield-check" size={16} className="text-emerald-600 shrink-0" />
+          <div className="flex items-center justify-center gap-1.5 text-fg font-medium py-1 sm:py-0">
+            <Icon name="shield-check" size={16} className="text-fg-win shrink-0" />
             <span>Automated Match Escrow</span>
           </div>
-          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium border-y sm:border-y-0 sm:border-x border-line py-2 sm:py-0">
-            <Icon name="lightning" size={16} className="text-amber-500 shrink-0" />
+          <div className="flex items-center justify-center gap-1.5 text-fg font-medium border-y sm:border-y-0 sm:border-x border-line py-2 sm:py-0">
+            <Icon name="lightning" size={16} className="text-fg-caution shrink-0" />
             <span>Sub-Second Finality</span>
           </div>
-          <div className="flex items-center justify-center gap-1.5 text-fg-default font-medium py-1 sm:py-0">
-            <Icon name="cpu" size={16} className="text-blue-600 shrink-0" />
+          <div className="flex items-center justify-center gap-1.5 text-fg font-medium py-1 sm:py-0">
+            <Icon name="cpu" size={16} className="text-fg-muted shrink-0" />
             <span>Stockfish Anti-Cheat</span>
           </div>
         </div>

@@ -17,9 +17,9 @@ const parts = [
     percent: SETTLEMENT.platformFeePercent,
     name: "Platform infrastructure",
     tag: "Cloud Matchmaking",
-    tagColor: "text-slate-600 bg-slate-500/10 border-slate-500/20",
-    badgeStyle: "border-slate-500/30 bg-slate-500/10 text-slate-700",
-    barColor: "bg-slate-400",
+    tagColor: "text-fg-muted bg-fg-muted/10 border-line/20",
+    badgeStyle: "border-line/30 bg-fg-muted/10 text-fg-muted",
+    barColor: "bg-fg-muted",
     body: "3% platform fee covers move validation servers, real-time WebSocket matchmaking, and cloud hosting infrastructure.",
   },
   {
@@ -60,7 +60,7 @@ export function SettlementBreakdown() {
         <div className="space-y-1.5">
           <div className="flex justify-between text-caption font-mono text-fg-muted">
             <span>Combined Pot Distribution</span>
-            <span className="text-fg-default font-semibold">100% Accounted</span>
+            <span className="text-fg font-semibold">100% Accounted</span>
           </div>
           <div
             className="flex h-2.5 w-full gap-1 overflow-hidden rounded-full bg-inset p-0.5 border border-line"
@@ -90,7 +90,7 @@ export function SettlementBreakdown() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
-                  <h4 className="text-body font-medium text-fg-default">{part.name}</h4>
+                  <h4 className="text-body font-medium text-fg">{part.name}</h4>
                   <span
                     className={`font-mono text-caption font-semibold px-2 py-0.5 rounded-full border ${part.tagColor}`}
                   >
@@ -112,7 +112,7 @@ export function SettlementBreakdown() {
           <Icon name="shield-check" size={14} />
           Automated match escrow
         </span>
-        <span className="text-fg-default font-semibold">Platform balance payout</span>
+        <span className="text-fg font-semibold">Platform balance payout</span>
       </div>
     </Card>
   );

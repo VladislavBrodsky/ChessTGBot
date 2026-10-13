@@ -1,5 +1,6 @@
 "use client";
 
+import { BentoGrid } from "./magicui/bento-grid";
 import { Card } from "@/components/ui/Card";
 import { FeatureCardIntro } from "@/components/ui/FeatureCardIntro";
 import { Icon } from "@/icons";
@@ -10,7 +11,7 @@ import { LiveSettlementFeed } from "./LiveSettlementFeed";
 function GramToken({ className = "size-6.5 sm:size-8.5" }: { className?: string }) {
   return (
     <div
-      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#0098EA] via-[#0088d6] to-[#005fa8] text-white shadow-sm border border-white/60 `}
+      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#0098EA] via-[#0088d6] to-[#005fa8] text-white shadow-none border border-white/60 `}
       title="GRAM"
     >
       <svg viewBox="0 0 32 32" fill="none" className="size-3.5 sm:size-4.5" aria-label="GRAM">
@@ -26,7 +27,7 @@ function GramToken({ className = "size-6.5 sm:size-8.5" }: { className?: string 
 function BtcToken({ className = "size-6.5 sm:size-8.5" }: { className?: string }) {
   return (
     <div
-      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#F7931A] via-[#f59e0b] to-[#b45309] text-white shadow-sm border border-white/60 `}
+      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#F7931A] via-[#f59e0b] to-[#b45309] text-white shadow-none border border-white/60 `}
       title="Bitcoin"
     >
       <svg viewBox="0 0 32 32" fill="none" className="size-3.5 sm:size-4.5" aria-label="BTC">
@@ -42,7 +43,7 @@ function BtcToken({ className = "size-6.5 sm:size-8.5" }: { className?: string }
 function UsdtToken({ className = "size-6.5 sm:size-8.5" }: { className?: string }) {
   return (
     <div
-      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#26A17B] via-[#10b981] to-[#047857] text-white shadow-sm border border-white/60 `}
+      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#26A17B] via-[#10b981] to-[#047857] text-white shadow-none border border-white/60 `}
       title="Tether USDT"
     >
       <svg viewBox="0 0 32 32" fill="none" className="size-3.5 sm:size-4.5" aria-label="USDT">
@@ -58,7 +59,7 @@ function UsdtToken({ className = "size-6.5 sm:size-8.5" }: { className?: string 
 function KingChessToken({ className = "size-6.5 sm:size-8.5" }: { className?: string }) {
   return (
     <div
-      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#8b5cf6] via-[#7c3aed] to-[#581c87] text-white shadow-sm border border-amber-300/50 `}
+      className={`flex ${className} items-center justify-center rounded-full bg-gradient-to-br from-[#8b5cf6] via-[#7c3aed] to-[#581c87] text-white shadow-none border border-caution/50 `}
       title="Chess King"
     >
       <svg
@@ -96,7 +97,7 @@ const referrals = [
 
 export function RewardsBento() {
   return (
-    <div className="marketing-bento">
+    <BentoGrid>
       <Card className="reward-panel reward-settlements" role="article" aria-labelledby="settlement-card-title">
         <FeatureCardIntro id="settlement-card-title" label="Live Settlements" status="Real-time on-chain" icon="lightning" title="Instant 95% Winner Payouts" body="Both players lock equal USDT before move 1. The moment checkmate or resignation lands, 95% of the pot credits instantly to the winner’s balance." href="/how-it-works" action="Explore payout architecture" />
         <div className="reward-demo settlement-demo"><LiveSettlementFeed /></div>
@@ -140,6 +141,6 @@ export function RewardsBento() {
           <p className="demo-note demo-note-split"><span>Winner Share:</span><strong>95% Guaranteed</strong></p>
         </div>
       </Card>
-    </div>
+    </BentoGrid>
   );
 }

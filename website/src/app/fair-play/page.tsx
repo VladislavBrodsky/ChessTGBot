@@ -118,7 +118,7 @@ export default function FairPlayPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="size-2 rounded-full bg-win-fill" />
                 <span>Deterministic server validation · Anti-tamper state</span>
               </div>
             </Card>
@@ -142,7 +142,7 @@ export default function FairPlayPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-blue-500" />
+                <span className="size-2 rounded-full bg-fg-muted" />
                 <span>Authoritative timers</span>
               </div>
             </Card>
@@ -166,7 +166,7 @@ export default function FairPlayPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-amber-500" />
+                <span className="size-2 rounded-full bg-caution-soft" />
                 <span>Dynamic ELO bracket pool</span>
               </div>
             </Card>
@@ -191,7 +191,7 @@ export default function FairPlayPage() {
                 </p>
               </div>
               <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-emerald-500" />
+                <span className="size-2 rounded-full bg-win-fill" />
                 <span>Real-time heuristic auditing · Protected prize pools</span>
               </div>
             </Card>

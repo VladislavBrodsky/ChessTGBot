@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useShowcaseActivity } from "../home/useShowcaseActivity";
 
 export interface AnimatedListProps {
@@ -14,6 +14,7 @@ export interface AnimatedListProps {
 export const AnimatedList = React.memo(
   ({ className = "", children, delay = 1000, maxItems = 4 }: AnimatedListProps) => {
     const [index, setIndex] = useState(0);
+    const [paused, setPaused] = useState(false);
     const childrenArray = useMemo(
       () => React.Children.toArray(children),
       [children]
@@ -21,13 +22,13 @@ export const AnimatedList = React.memo(
     const { ref: containerRef, active: isVisible } = useShowcaseActivity();
 
     useEffect(() => {
-      if (!isVisible || childrenArray.length === 0) return;
+      if (!isVisible || paused || childrenArray.length === 0) return;
       const interval = setInterval(() => {
         setIndex((prevIndex) => (prevIndex + 1) % childrenArray.length);
-      }, delay);
+      }, Math.max(1000, delay));
 
       return () => clearInterval(interval);
-    }, [isVisible, childrenArray.length, delay]);
+    }, [isVisible, paused, childrenArray.length, delay]);
 
     const itemsToShow = useMemo(() => {
       if (childrenArray.length === 0) return [];
@@ -41,7 +42,9 @@ export const AnimatedList = React.memo(
     }, [index, childrenArray, maxItems]);
 
     return (
-      <div ref={containerRef} className={`flex flex-col items-center gap-2.5 ${className}`}>
+      <div ref={containerRef} onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
+        onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)}
+        className={`flex flex-col items-stretch gap-2.5 ${className}`}>
         <AnimatePresence initial={false} mode="popLayout">
           {itemsToShow.map((item, i) => (
             <AnimatedListItem
@@ -63,15 +66,16 @@ export const AnimatedList = React.memo(
 AnimatedList.displayName = "AnimatedList";
 
 export const AnimatedListItem = React.forwardRef<HTMLDivElement, { children: React.ReactNode }>(function AnimatedListItem({ children }, ref) {
+  const reduced = useReducedMotion();
   const animations = {
-    initial: { y: -8, opacity: 0 },
+    initial: reduced ? false as const : { y: -8, opacity: 0 },
     animate: { y: 0, opacity: 1 },
     exit: { opacity: 0 },
-    transition: { duration: 0.2 },
+    transition: { duration: reduced ? 0 : 0.2 },
   };
 
   return (
-    <motion.div ref={ref} {...animations} layout="position" className="relative mx-auto w-full">
+    <motion.div ref={ref} {...animations} layout={reduced ? false : "position"} className="relative mx-auto w-full">
       {children}
     </motion.div>
   );

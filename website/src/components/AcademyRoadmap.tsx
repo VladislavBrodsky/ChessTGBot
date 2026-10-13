@@ -154,12 +154,12 @@ export function AcademyRoadmap() {
   return (
     <div className="w-full space-y-6 sm:space-y-8 select-none">
       {/* ── 1. CONNECTED ROADMAP PROGRESS STEPPER HUD (Desktop & Tablet) ── */}
-      <div className="relative rounded-2xl border border-line bg-surface/80 p-3.5 sm:p-5 shadow-xs backdrop-blur-md">
+      <div className="relative rounded-2xl border border-line bg-surface/80 p-3.5 sm:p-5 shadow-none backdrop-blur-md">
         {/* Progress Bar Header Info */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-5">
           <div className="flex items-center gap-2">
             <span className="size-2 rounded-full bg-inset animate-pulse" />
-            <span className="font-mono text-caption font-bold text-fg-default tracking-wide uppercase">
+            <span className="font-mono text-caption font-bold text-fg tracking-wide uppercase">
               100-Level Tactical Academy Pipeline
             </span>
           </div>
@@ -189,7 +189,7 @@ export function AcademyRoadmap() {
               aria-label={track.title}
                   className={`group relative flex flex-col items-start p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? "bg-surface border-fg-muted/40 shadow-xs ring-1 ring-fg-muted/20"
+                      ? "bg-surface border-fg-muted/40 shadow-none ring-1 ring-fg-muted/20"
                       : "bg-surface/50 border-line hover:border-fg-muted/30 hover:bg-surface"
                   }`}
                 >
@@ -198,8 +198,8 @@ export function AcademyRoadmap() {
                     <div
                       className={`flex size-7 sm:size-8 items-center justify-center rounded-full font-mono text-caption text-caption font-bold border transition-all ${
                         isSelected
-                          ? `${track.color.bg} ${track.color.border} ${track.color.text} shadow-sm`
-                          : "bg-inset border-line text-fg-muted group-hover:text-fg-default"
+                          ? `${track.color.bg} ${track.color.border} ${track.color.text} shadow-none`
+                          : "bg-inset border-line text-fg-muted group-hover:text-fg"
                       }`}
                     >
                       {track.step}
@@ -211,7 +211,7 @@ export function AcademyRoadmap() {
                     </span>
                   </div>
 
-                  <span className="font-semibold text-fg-default text-caption leading-tight">
+                  <span className="font-semibold text-fg text-caption leading-tight">
                     {track.stageName}
                   </span>
                   <span className="font-mono text-caption text-fg-muted mt-0.5">
@@ -235,10 +235,10 @@ export function AcademyRoadmap() {
               onKeyDown={(event) => { if (event.target === event.currentTarget && ["Enter", " "].includes(event.key)) { event.preventDefault(); setSelectedTrack(track.id); } }}
               tabIndex={0}
               aria-label={track.title}
-              className={`relative flex flex-col justify-between rounded-2xl border bg-surface p-5 sm:p-5.5 transition-all duration-300 cursor-pointer shadow-xs ${
+              className={`relative flex flex-col justify-between rounded-2xl border bg-surface p-5 sm:p-5.5 transition-all duration-300 cursor-pointer shadow-none ${
                 isSelected
-                  ? "border-fg-muted/50 shadow-md ring-1 ring-fg-muted/25"
-                  : "border-line hover:border-fg-muted/35 hover:shadow-sm"
+                  ? "border-fg-muted/50 shadow-none ring-1 ring-fg-muted/25"
+                  : "border-line hover:border-fg-muted/35 hover:shadow-none"
               }`}
             >
               {/* BorderBeam subtle accent on selected or active card */}
@@ -283,7 +283,7 @@ export function AcademyRoadmap() {
                   >
                     <Icon name={track.icon} size={20} />
                   </div>
-                  <h3 className="text-[15px] sm:text-[16px] font-semibold text-fg-default leading-snug tracking-tight">
+                  <h3 className="text-[15px] sm:text-[16px] font-semibold text-fg leading-snug tracking-tight">
                     {track.title}
                   </h3>
                 </div>
@@ -302,7 +302,7 @@ export function AcademyRoadmap() {
                     {track.concepts.map((concept, cIdx) => (
                       <span
                         key={cIdx}
-                        className="inline-flex items-center gap-1 rounded-md bg-inset/60 border border-line/60 px-2 py-0.5 font-mono text-caption text-fg-default"
+                        className="inline-flex items-center gap-1 rounded-md bg-inset/60 border border-line/60 px-2 py-0.5 font-mono text-caption text-fg"
                       >
                         <span className="text-fg font-bold">✓</span>
                         <span>{concept}</span>
@@ -318,7 +318,7 @@ export function AcademyRoadmap() {
                 <div>
                   <div className="flex items-center justify-between text-caption font-mono mb-1.5">
                     <span className="text-fg-muted">Milestone Depth</span>
-                    <span className="font-semibold text-fg-default">
+                    <span className="font-semibold text-fg">
                       {track.lessonsCount} Lv · {track.drillsCount} Drills
                     </span>
                   </div>
@@ -338,7 +338,7 @@ export function AcademyRoadmap() {
                   href={telegramLink()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between w-full py-1.5 px-3 rounded-lg bg-inset hover:bg-line/40 transition-colors text-caption font-semibold text-fg-default group/link"
+                  className="flex items-center justify-between w-full py-1.5 px-3 rounded-lg bg-inset hover:bg-line/40 transition-colors text-caption font-semibold text-fg group/link"
                 >
                   <span>Practice Track {track.step}</span>
                   <span className="text-fg-muted group-hover/link:translate-x-0.5 transition-transform">
@@ -358,7 +358,7 @@ export function AcademyRoadmap() {
             <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Total Levels
             </span>
-            <div className="font-mono text-heading-xs font-bold text-fg-default">
+            <div className="font-mono text-title font-bold text-fg">
               100 Levels
             </div>
           </div>
@@ -366,7 +366,7 @@ export function AcademyRoadmap() {
             <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Puzzles &amp; Drills
             </span>
-            <div className="font-mono text-heading-xs font-bold text-fg">
+            <div className="font-mono text-title font-bold text-fg">
               275+ Tactical Drills
             </div>
           </div>
@@ -374,7 +374,7 @@ export function AcademyRoadmap() {
             <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Neural Engine
             </span>
-            <div className="font-mono text-heading-xs font-bold text-fg">
+            <div className="font-mono text-title font-bold text-fg">
               Stockfish 17 (800–2800)
             </div>
           </div>
@@ -382,7 +382,7 @@ export function AcademyRoadmap() {
             <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Entry Cost
             </span>
-            <div className="font-mono text-heading-xs font-bold text-fg">
+            <div className="font-mono text-title font-bold text-fg">
               100% Free Practice
             </div>
           </div>
@@ -394,7 +394,7 @@ export function AcademyRoadmap() {
             href={telegramLink()}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-control bg-surface-inverse px-4 py-2.5 text-caption font-semibold text-fg-inverse shadow-xs transition-transform active:scale-[0.98] hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-control bg-inverse px-4 py-2.5 text-caption font-semibold text-fg-inverse shadow-none transition-transform active:scale-[0.98] hover:opacity-90"
           >
             <span>Open Academy in Telegram</span>
             <Icon name="arrow-right" size={16} />

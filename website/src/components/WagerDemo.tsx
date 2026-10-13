@@ -59,7 +59,7 @@ export function WagerDemo() {
         <dl className="wager-ledger grid gap-2.5 border-t border-line pt-4 text-body-sm tabular-nums [&_dd]:shrink-0 [&_dd]:whitespace-nowrap">
           <div className="flex justify-between items-center gap-4">
             <dt className="text-fg-muted">Combined pot (2 players)</dt>
-            <dd className="font-mono font-semibold text-fg-default">{fmt(pot)}</dd>
+            <dd className="font-mono font-semibold text-fg">{fmt(pot)}</dd>
           </div>
           <div className="flex justify-between items-center gap-4">
             <dt className="text-fg-muted">
@@ -114,7 +114,7 @@ export function WagerDemo() {
           <Icon name="shield-check" size={14} />
           Automated match escrow
         </span>
-        <span className="text-fg-default font-semibold">Instant balance credit</span>
+        <span className="text-fg font-semibold">Instant balance credit</span>
       </div>
     </Card>
   );

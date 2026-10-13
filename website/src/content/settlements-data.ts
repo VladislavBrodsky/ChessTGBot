@@ -19,7 +19,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "14s ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-2",
@@ -29,7 +29,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "38s ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-3",
@@ -39,7 +39,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+50 GRAM",
     "time": "1m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-4",
@@ -49,7 +49,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "1m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-5",
@@ -59,7 +59,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "1m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-6",
@@ -69,7 +69,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "1m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-7",
@@ -79,7 +79,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "2m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-8",
@@ -89,7 +89,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "2m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-9",
@@ -99,7 +99,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "2m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-10",
@@ -109,7 +109,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "2m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-11",
@@ -119,7 +119,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "3m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-12",
@@ -129,7 +129,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "3m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-13",
@@ -139,7 +139,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "3m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-14",
@@ -149,7 +149,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "4m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-15",
@@ -159,7 +159,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "4m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-16",
@@ -169,7 +169,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "4m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-17",
@@ -179,7 +179,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "5m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-18",
@@ -189,7 +189,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "5m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-19",
@@ -199,7 +199,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "5m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-20",
@@ -209,7 +209,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "6m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-21",
@@ -219,7 +219,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "6m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-22",
@@ -229,7 +229,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "6m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-23",
@@ -239,7 +239,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "7m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-24",
@@ -249,7 +249,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "7m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-25",
@@ -259,7 +259,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "7m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-26",
@@ -269,7 +269,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "8m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-27",
@@ -279,7 +279,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "8m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-28",
@@ -289,7 +289,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "8m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-29",
@@ -299,7 +299,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "8m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-30",
@@ -309,7 +309,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "9m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-31",
@@ -319,7 +319,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "9m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-32",
@@ -329,7 +329,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "9m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-33",
@@ -339,7 +339,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "10m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-34",
@@ -349,7 +349,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "10m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-35",
@@ -359,7 +359,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "10m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-36",
@@ -369,7 +369,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "11m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-37",
@@ -379,7 +379,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "11m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-38",
@@ -389,7 +389,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "11m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-39",
@@ -399,7 +399,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "12m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-40",
@@ -409,7 +409,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "12m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-41",
@@ -419,7 +419,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "12m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-42",
@@ -429,7 +429,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "13m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-43",
@@ -439,7 +439,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "13m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-44",
@@ -449,7 +449,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "13m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-45",
@@ -459,7 +459,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "14m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-46",
@@ -469,7 +469,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "14m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-47",
@@ -479,7 +479,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "14m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-48",
@@ -489,7 +489,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "15m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-49",
@@ -499,7 +499,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "15m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-50",
@@ -509,7 +509,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "15m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-51",
@@ -519,7 +519,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "15m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-52",
@@ -529,7 +529,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "16m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-53",
@@ -539,7 +539,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "16m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-54",
@@ -549,7 +549,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "16m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-55",
@@ -559,7 +559,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "17m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-56",
@@ -569,7 +569,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "17m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-57",
@@ -579,7 +579,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "17m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-58",
@@ -589,7 +589,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "18m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-59",
@@ -599,7 +599,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "18m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-60",
@@ -609,7 +609,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "18m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-61",
@@ -619,7 +619,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "19m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-62",
@@ -629,7 +629,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "19m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-63",
@@ -639,7 +639,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "19m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-64",
@@ -649,7 +649,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "20m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-65",
@@ -659,7 +659,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "20m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-66",
@@ -669,7 +669,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "20m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-67",
@@ -679,7 +679,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "21m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-68",
@@ -689,7 +689,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "21m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-69",
@@ -699,7 +699,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "21m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-70",
@@ -709,7 +709,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "21m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-71",
@@ -719,7 +719,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "22m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-72",
@@ -729,7 +729,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "22m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-73",
@@ -739,7 +739,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "22m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-74",
@@ -749,7 +749,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "23m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-75",
@@ -759,7 +759,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "23m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-76",
@@ -769,7 +769,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "23m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-77",
@@ -779,7 +779,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "24m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-78",
@@ -789,7 +789,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "24m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-79",
@@ -799,7 +799,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "24m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-80",
@@ -809,7 +809,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "25m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-81",
@@ -819,7 +819,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "25m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-82",
@@ -829,7 +829,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "25m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-83",
@@ -839,7 +839,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "26m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-84",
@@ -849,7 +849,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "26m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-85",
@@ -859,7 +859,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "26m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-86",
@@ -869,7 +869,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "27m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-87",
@@ -879,7 +879,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "27m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-88",
@@ -889,7 +889,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "27m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-89",
@@ -899,7 +899,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "27m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-90",
@@ -909,7 +909,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "28m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-91",
@@ -919,7 +919,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "28m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-92",
@@ -929,7 +929,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "28m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-93",
@@ -939,7 +939,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "29m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-94",
@@ -949,7 +949,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "29m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-95",
@@ -959,7 +959,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "29m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-96",
@@ -969,7 +969,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "30m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-97",
@@ -979,7 +979,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "30m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-98",
@@ -989,7 +989,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "30m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-99",
@@ -999,7 +999,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "31m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-100",
@@ -1009,7 +1009,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "31m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-101",
@@ -1019,7 +1019,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "31m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-102",
@@ -1029,7 +1029,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "32m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-103",
@@ -1039,7 +1039,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "32m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-104",
@@ -1049,7 +1049,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "32m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-105",
@@ -1059,7 +1059,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "33m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-106",
@@ -1069,7 +1069,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "33m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-107",
@@ -1079,7 +1079,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "33m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-108",
@@ -1089,7 +1089,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "34m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-109",
@@ -1099,7 +1099,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "34m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-110",
@@ -1109,7 +1109,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "34m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-111",
@@ -1119,7 +1119,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "34m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-112",
@@ -1129,7 +1129,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "35m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-113",
@@ -1139,7 +1139,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "35m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-114",
@@ -1149,7 +1149,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "35m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-115",
@@ -1159,7 +1159,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "36m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-116",
@@ -1169,7 +1169,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "36m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-117",
@@ -1179,7 +1179,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "36m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-118",
@@ -1189,7 +1189,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "37m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-119",
@@ -1199,7 +1199,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "37m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-120",
@@ -1209,7 +1209,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "37m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-121",
@@ -1219,7 +1219,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+10 GRAM",
     "time": "38m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-122",
@@ -1229,7 +1229,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "38m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-123",
@@ -1239,7 +1239,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "38m ago",
     "icon": "target",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-124",
@@ -1249,7 +1249,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+75 GRAM",
     "time": "39m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-125",
@@ -1259,7 +1259,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "39m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-126",
@@ -1269,7 +1269,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "39m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-127",
@@ -1279,7 +1279,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+500 GRAM",
     "time": "40m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-128",
@@ -1289,7 +1289,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$1.90",
     "time": "40m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-129",
@@ -1299,7 +1299,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "40m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-130",
@@ -1309,7 +1309,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+25 GRAM",
     "time": "40m ago",
     "icon": "shield-check",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-131",
@@ -1319,7 +1319,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$28.50",
     "time": "41m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-132",
@@ -1329,7 +1329,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "41m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-133",
@@ -1339,7 +1339,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+100 GRAM",
     "time": "41m ago",
     "icon": "crown-simple",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-134",
@@ -1349,7 +1349,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$190.00",
     "time": "42m ago",
     "icon": "target",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-135",
@@ -1359,7 +1359,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "42m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-136",
@@ -1369,7 +1369,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+1,000 GRAM",
     "time": "42m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-137",
@@ -1379,7 +1379,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$3.80",
     "time": "43m ago",
     "icon": "target",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-138",
@@ -1389,7 +1389,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "43m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-139",
@@ -1399,7 +1399,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+50 GRAM",
     "time": "43m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-140",
@@ -1409,7 +1409,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$38.00",
     "time": "44m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-141",
@@ -1419,7 +1419,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "44m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-142",
@@ -1429,7 +1429,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+250 GRAM",
     "time": "44m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-143",
@@ -1439,7 +1439,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$285.00",
     "time": "45m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-144",
@@ -1449,7 +1449,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$475.00",
     "time": "45m ago",
     "icon": "shield-check",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-145",
@@ -1459,7 +1459,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+10 GRAM",
     "time": "45m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-146",
@@ -1469,7 +1469,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$4.75",
     "time": "46m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-147",
@@ -1479,7 +1479,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$14.25",
     "time": "46m ago",
     "icon": "crown-simple",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-148",
@@ -1489,7 +1489,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+75 GRAM",
     "time": "46m ago",
     "icon": "target",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-149",
@@ -1499,7 +1499,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$47.50",
     "time": "46m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-150",
@@ -1509,7 +1509,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$95.00",
     "time": "47m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-151",
@@ -1519,7 +1519,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+500 GRAM",
     "time": "47m ago",
     "icon": "target",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-152",
@@ -1529,7 +1529,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$380.00",
     "time": "47m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-153",
@@ -1539,7 +1539,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$950.00",
     "time": "48m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-154",
@@ -1549,7 +1549,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+25 GRAM",
     "time": "48m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-155",
@@ -1559,7 +1559,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$9.50",
     "time": "48m ago",
     "icon": "lightning",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-156",
@@ -1569,7 +1569,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$19.00",
     "time": "49m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-157",
@@ -1579,7 +1579,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+100 GRAM",
     "time": "49m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-158",
@@ -1589,7 +1589,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$76.00",
     "time": "49m ago",
     "icon": "shield-check",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-159",
@@ -1599,7 +1599,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+$142.50",
     "time": "50m ago",
     "icon": "crown-simple",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-160",
@@ -1609,7 +1609,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+1,000 GRAM",
     "time": "50m ago",
     "icon": "sword",
-    "color": "text-rose-600 bg-rose-500/15 border-rose-500/30"
+    "color": "text-fg bg-inset border-line"
   },
   {
     "id": "s-161",
@@ -1619,7 +1619,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+10 GRAM",
     "time": "50m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-162",
@@ -1629,7 +1629,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+25 GRAM",
     "time": "51m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-163",
@@ -1639,7 +1639,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+50 GRAM",
     "time": "51m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-164",
@@ -1649,7 +1649,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+75 GRAM",
     "time": "51m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-165",
@@ -1659,7 +1659,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+100 GRAM",
     "time": "52m ago",
     "icon": "coins",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-166",
@@ -1669,7 +1669,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+250 GRAM",
     "time": "52m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-167",
@@ -1679,7 +1679,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+500 GRAM",
     "time": "52m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-168",
@@ -1689,7 +1689,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+1,000 GRAM",
     "time": "53m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-169",
@@ -1699,7 +1699,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+10 GRAM",
     "time": "53m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-170",
@@ -1709,7 +1709,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+25 GRAM",
     "time": "53m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-171",
@@ -1719,7 +1719,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+50 GRAM",
     "time": "53m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-172",
@@ -1729,7 +1729,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+75 GRAM",
     "time": "54m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-173",
@@ -1739,7 +1739,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+100 GRAM",
     "time": "54m ago",
     "icon": "coins",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-174",
@@ -1749,7 +1749,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+250 GRAM",
     "time": "54m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-175",
@@ -1759,7 +1759,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+500 GRAM",
     "time": "55m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-176",
@@ -1769,7 +1769,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+1,000 GRAM",
     "time": "55m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-177",
@@ -1779,7 +1779,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+10 GRAM",
     "time": "55m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-178",
@@ -1789,7 +1789,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+25 GRAM",
     "time": "56m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-179",
@@ -1799,7 +1799,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+50 GRAM",
     "time": "56m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-180",
@@ -1809,7 +1809,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+75 GRAM",
     "time": "56m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-181",
@@ -1819,7 +1819,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+100 GRAM",
     "time": "57m ago",
     "icon": "coins",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-182",
@@ -1829,7 +1829,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+250 GRAM",
     "time": "57m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-183",
@@ -1839,7 +1839,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+500 GRAM",
     "time": "57m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-184",
@@ -1849,7 +1849,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+1,000 GRAM",
     "time": "58m ago",
     "icon": "trophy",
-    "color": "text-blue-600 bg-blue-500/15 border-blue-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-185",
@@ -1859,7 +1859,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+10 GRAM",
     "time": "58m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-186",
@@ -1869,7 +1869,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+25 GRAM",
     "time": "58m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-187",
@@ -1879,7 +1879,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+50 GRAM",
     "time": "59m ago",
     "icon": "gift",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-188",
@@ -1889,7 +1889,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+75 GRAM",
     "time": "59m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-189",
@@ -1899,7 +1899,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+100 GRAM",
     "time": "59m ago",
     "icon": "coins",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-190",
@@ -1909,7 +1909,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "+250 GRAM",
     "time": "59m ago",
     "icon": "sparkle",
-    "color": "text-amber-600 bg-amber-500/15 border-amber-500/30"
+    "color": "text-fg-caution bg-caution-soft/15 border-caution/30"
   },
   {
     "id": "s-191",
@@ -1919,7 +1919,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "✓ On-Chain",
     "time": "17s ago",
     "icon": "arrow-up-right",
-    "color": "text-purple-600 bg-purple-500/15 border-purple-500/30"
+    "color": "text-fg-premium bg-premium-soft/15 border-premium/30"
   },
   {
     "id": "s-192",
@@ -1929,7 +1929,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "✓ On-Chain",
     "time": "36s ago",
     "icon": "arrow-up-right",
-    "color": "text-purple-600 bg-purple-500/15 border-purple-500/30"
+    "color": "text-fg-premium bg-premium-soft/15 border-premium/30"
   },
   {
     "id": "s-193",
@@ -1939,7 +1939,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "Master Tier",
     "time": "55s ago",
     "icon": "trend-up",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-194",
@@ -1949,7 +1949,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "Master Tier",
     "time": "1m ago",
     "icon": "trend-up",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-195",
@@ -1959,7 +1959,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "Master Tier",
     "time": "1m ago",
     "icon": "shield-check",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   },
   {
     "id": "s-196",
@@ -1969,7 +1969,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "✓ On-Chain",
     "time": "1m ago",
     "icon": "arrow-up-right",
-    "color": "text-purple-600 bg-purple-500/15 border-purple-500/30"
+    "color": "text-fg-premium bg-premium-soft/15 border-premium/30"
   },
   {
     "id": "s-197",
@@ -1979,7 +1979,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "✓ On-Chain",
     "time": "2m ago",
     "icon": "arrow-up-right",
-    "color": "text-purple-600 bg-purple-500/15 border-purple-500/30"
+    "color": "text-fg-premium bg-premium-soft/15 border-premium/30"
   },
   {
     "id": "s-198",
@@ -1989,7 +1989,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "Master Tier",
     "time": "2m ago",
     "icon": "trend-up",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-199",
@@ -1999,7 +1999,7 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "Master Tier",
     "time": "2m ago",
     "icon": "trend-up",
-    "color": "text-emerald-600 bg-emerald-500/15 border-emerald-500/30"
+    "color": "text-fg-win bg-win-fill/15 border-win/30"
   },
   {
     "id": "s-200",
@@ -2009,6 +2009,6 @@ export const SETTLEMENT_VERSIONS: SettlementItem[] = [
     "payout": "Master Tier",
     "time": "3m ago",
     "icon": "shield-check",
-    "color": "text-cyan-600 bg-cyan-500/15 border-cyan-500/30"
+    "color": "text-fg-muted bg-fg-muted/15 border-line/30"
   }
 ];

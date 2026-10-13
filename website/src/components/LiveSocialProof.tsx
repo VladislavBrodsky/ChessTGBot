@@ -207,8 +207,8 @@ export function LiveSocialProof({ initial }: { initial: { count: number; hourSlo
         title="Live active players (1,374 – 3,278 rivals)"
       >
         <span className="relative flex size-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
-          <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win-fill opacity-75" />
+          <span className="relative inline-flex size-2 rounded-full bg-win-fill" />
         </span>
         <span className="text-caption font-semibold text-fg tabular-nums">
           {liveCount.toLocaleString("en-US")}
@@ -240,10 +240,10 @@ export function LiveSocialProof({ initial }: { initial: { count: number; hourSlo
             <strong
               className={`font-mono font-bold shrink-0 ${
                 active.tone === "amber"
-                  ? "text-amber-700"
+                  ? "text-fg-caution"
                   : active.tone === "cyan"
-                  ? "text-cyan-700"
-                  : "text-emerald-700"
+                  ? "text-fg-muted"
+                  : "text-fg-win"
               }`}
             >
               {active.amount}
