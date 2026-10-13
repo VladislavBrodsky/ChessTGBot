@@ -152,7 +152,7 @@ export default function Home() {
         </div>
         <div className="min-w-0 space-y-4">
           <div className="w-full"><DailyGoalsBento /></div>
-          <section aria-labelledby="home-leaderboard" className="w-full space-y-2"><SectionHeader id="home-leaderboard" title={t('leaderboard')} /><Leaderboard /></section>
+          <section aria-labelledby="home-leaderboard" className="w-full space-y-2"><SectionHeader id="home-leaderboard" title={t('leaderboard')} align="center" /><Leaderboard /></section>
         </div>
       </div>
     </main>

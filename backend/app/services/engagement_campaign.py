@@ -1,4 +1,4 @@
-"""One free, once-per-account box, earned from server-recorded AI games.
+"""One free, once-per-account box, earned from server-recorded online matches.
 
 Enrollment and receipts use the existing XP ledger. The user row serializes all
 mutations; the receipt and reward commit together. No wallet credits or wagers.
@@ -7,7 +7,7 @@ import json
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
@@ -38,7 +38,7 @@ def catalog():
         "accepting_enrollments": get_settings().ENGAGEMENT_CAMPAIGN_ENABLED,
         "target": TARGET,
         "minimum_plies": MIN_PLIES,
-        "game_type": "computer",
+        "game_type": "online",
         "once_per_account": True,
         "cash_value": False,
         "rewards": list(REWARDS),
@@ -68,10 +68,13 @@ async def status(db: AsyncSession, user: User):
     progress = 0
     if enrolled:
         progress = min(TARGET, (await db.execute(select(func.count(GameHistory.id)).where(
-            GameHistory.white_player_id == user.telegram_id,
-            GameHistory.black_player_id == -1,
-            GameHistory.game_type == "computer",
-            GameHistory.bid_amount == 0,
+            or_(
+                GameHistory.white_player_id == user.telegram_id,
+                GameHistory.black_player_id == user.telegram_id,
+            ),
+            GameHistory.black_player_id != -1,
+            GameHistory.white_player_id != -1,
+            GameHistory.game_type == "online",
             GameHistory.total_moves >= MIN_PLIES,
             GameHistory.result_type.in_(["checkmate", "resignation", "timeout", "draw"]),
             GameHistory.created_at >= enrolled.created_at,
@@ -123,7 +126,7 @@ async def claim(db: AsyncSession, user: User):
         return await status(db, user)  # retries return the same outcome
     before = await status(db, user)
     if before["state"] != "claimable":
-        raise CampaignError("Complete three qualifying free AI games after joining")
+        raise CampaignError("Complete three qualifying matches after joining")
     key = draw_reward()
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     if key == "border_gold":

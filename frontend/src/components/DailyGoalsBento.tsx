@@ -26,7 +26,7 @@ export default function DailyGoalsBento() {
 
   return (
     <section className="w-full space-y-3" aria-labelledby="daily-goals-title">
-      <SectionHeader id="daily-goals-title" title={ti('daily_tasks')} />
+      <SectionHeader id="daily-goals-title" title={ti('daily_tasks')} align="center" />
       {isLoading && !data ? <GoalTilesSkeleton label={t('loading_missions')} /> : error && !data ? (
         <ErrorState title={ti('load_failed')} onRetry={() => mutate()} retryLabel={ti('retry')} />
       ) : tasks.length === 0 ? (

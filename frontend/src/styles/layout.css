@@ -239,6 +239,8 @@
 
 .ui-section-title { display: flex; align-items: center; gap: 10px; }
 .ui-section-title::before { content: ""; flex: none; width: 4px; height: 18px; border-radius: 4px; background: linear-gradient(180deg, var(--action-bg), color-mix(in srgb, var(--action-bg) 25%, transparent)); }
+.ui-section-title--center { justify-content: center; text-align: center; gap: 8px; }
+.ui-section-title--center::before { display: none; }
 
 /* Daily-goal tiles: a ring tied to real task progress. */
 .goal-tile { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; padding: 10px 6px 8px; border: 1px solid var(--border-muted); border-radius: var(--radius-card); text-align: center; background: linear-gradient(180deg, color-mix(in srgb, #fff 3%, var(--bg-surface)), var(--bg-surface)); box-shadow: inset 0 1px 0 var(--border-highlight); }

@@ -44,10 +44,39 @@ export function PageHeader({ title, description, eyebrow, actions, backHref, bac
   );
 }
 
-export function SectionHeader({ title, id, action }: { title: ReactNode; id?: string; action?: ReactNode }) {
+export function SectionHeader({
+  title,
+  id,
+  action,
+  align = 'start',
+  subtitle,
+  className = '',
+}: {
+  title: ReactNode;
+  id?: string;
+  action?: ReactNode;
+  align?: 'start' | 'center';
+  subtitle?: ReactNode;
+  className?: string;
+}) {
+  if (align === 'center') {
+    return (
+      <div className={`flex w-full flex-col items-center justify-center text-center gap-1 my-1 ${className}`}>
+        <h2 id={id} className="ui-section-title ui-section-title--center t-title-2 text-brand-primary">
+          {title}
+        </h2>
+        {subtitle && <p className="text-caption text-brand-muted">{subtitle}</p>}
+        {action && <div className="mt-1">{action}</div>}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex w-full flex-wrap items-center justify-between gap-2">
-      <h2 id={id} className="ui-section-title t-title-2 text-brand-primary">{title}</h2>
+    <div className={`flex w-full flex-wrap items-center justify-between gap-2 ${className}`}>
+      <div className="min-w-0">
+        <h2 id={id} className="ui-section-title t-title-2 text-brand-primary">{title}</h2>
+        {subtitle && <p className="mt-0.5 text-caption text-brand-muted">{subtitle}</p>}
+      </div>
       {action}
     </div>
   );

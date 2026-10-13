@@ -51,11 +51,11 @@ test('rules show the server odds and a disabled campaign stays hidden', async ()
   await waitFor(() => expect(second.container).toBeEmptyDOMElement());
 });
 
-test('active quest opens the free AI practice path without an invented cash prize or activity count', async () => {
+test('active quest opens the match lobby without an invented cash prize or activity count', async () => {
   mockFetch.mockResolvedValue(response({ ...quest, progress: 1, state: 'active' }));
   mount();
   fireEvent.click(await screen.findByRole('button', { name: 'play' }));
-  expect(mockPush).toHaveBeenCalledWith('/en/game?practice=1');
+  expect(mockPush).toHaveBeenCalledWith('/en/game');
   expect(screen.queryByText(/TON|mystery boxes unlocked today/i)).not.toBeInTheDocument();
 });
 

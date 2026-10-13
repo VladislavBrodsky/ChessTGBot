@@ -35,7 +35,7 @@ async def games(db, user, count=3, **overrides):
     now = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(seconds=1)
     for i in range(count):
         values = dict(game_id=f"game-{now.isoformat()}-{i}", white_player_id=user.telegram_id,
-                      black_player_id=-1, game_type="computer", bid_amount=0,
+                      black_player_id=800801, game_type="online", bid_amount=100,
                       total_moves=20, result_type="draw", created_at=now, ended_at=now)
         values.update(overrides)
         db.add(GameHistory(**values))
@@ -51,11 +51,14 @@ async def test_qualifying_games_and_claim_retry(quest, monkeypatch):
     assert enrolled["progress"] == 0
     await games(db, user, count=1, total_moves=19)
     await games(db, user, count=1, result_type="aborted")
-    await games(db, user, count=1, bid_amount=100)
-    await games(db, user, count=1, game_type="online")
+    await games(db, user, count=1, game_type="computer", black_player_id=-1)  # AI games do not count
     assert (await campaign.status(db, user))["progress"] == 0
     with pytest.raises(campaign.CampaignError):
         await campaign.claim(db, user)
+    # 2 games as White, 1 game as Black: all online PvP games count
+    await games(db, user, count=2)
+    await games(db, user, count=1, white_player_id=800802, black_player_id=user.telegram_id)
+    assert (await campaign.status(db, user))["progress"] == 3
     await games(db, user)
     monkeypatch.setattr(campaign, "draw_reward", lambda: "xp_250")
     first = await campaign.claim(db, user)
@@ -125,7 +128,7 @@ def test_published_probability_boundaries(monkeypatch, roll, expected):
 
 @pytest.mark.asyncio
 async def test_real_ai_completion_keeps_start_time_and_quest_eligibility(quest, monkeypatch):
-    """Exercise the actual AI completion path with a real DB and memory store."""
+    """Exercise completion path with a real DB and verify online games advance quest while bot games do not."""
     from app.services import game_service
     from app.services.session_manager import SessionManager
     db, user = quest
@@ -147,4 +150,21 @@ async def test_real_ai_completion_keeps_start_time_and_quest_eligibility(quest, 
         row = (await db.execute(select(GameHistory).where(GameHistory.game_id == game_id))).scalar_one()
         assert row.created_at == started.replace(tzinfo=None)
         assert row.ended_at >= started.replace(tzinfo=None)
+    # Bot games do not advance quest progress
+    assert (await campaign.status(db, user))["progress"] == 0
+
+    # Real online PvP game advances quest progress
+    opponent = User(telegram_id=888999, first_name="Opponent", xp=0, level=1, balance=5000)
+    db.add(opponent)
+    await db.commit()
+
+    pvp_id = "quest-pvp-game"
+    pvp_state = await service.create_game(pvp_id, is_bot_game=False)
+    pvp_state.white_player_id = user.telegram_id
+    pvp_state.black_player_id = opponent.telegram_id
+    pvp_state.created_at = datetime.now(timezone.utc).timestamp()
+    pvp_state.is_game_over = True
+    pvp_state.result_type = "draw"
+    pvp_state.move_history = ["e2e4", "e7e5", "g1f3", "b8c6"] * 5
+    await service.end_game(pvp_id, pvp_state)
     assert (await campaign.status(db, user))["progress"] == 1

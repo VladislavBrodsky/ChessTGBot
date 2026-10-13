@@ -145,7 +145,7 @@ export default function EngagementQuest() {
             void act('claim');
           } else {
             telegramHaptic('selection');
-            router.push(`/${locale}/game?practice=1`);
+            router.push(`/${locale}/game`);
           }
         }}
       >
