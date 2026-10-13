@@ -25,7 +25,6 @@ import NotificationModal from '@/components/NotificationModal';
 import DailyGoalsBento from '@/components/DailyGoalsBento';
 import EngagementQuest from '@/components/EngagementQuest';
 import QuickMatchModal from '@/components/game/QuickMatchModal';
-import { LiveHomeTicker } from '@/components/home/LiveHomeTicker';
 import { telegramHaptic } from '@/lib/telegram';
 
 // Telegram's `start_param` persists for the whole webview session, so the
@@ -141,7 +140,6 @@ export default function Home() {
               <span className="block text-sm font-semibold">{t('execute_matchmaking')}</span>
             </ActionLink>
           </div>
-          <LiveHomeTicker onOpenQuickMatch={() => setShowQuickMatch(true)} />
           <div className="w-full"><ArenaBanner /></div>
           <div className="ui-quick-grid">
             <QuickTile href={`/${locale}/academy`} icon={<FaGraduationCap size={20} />} tone="info" label={t('academy')} />

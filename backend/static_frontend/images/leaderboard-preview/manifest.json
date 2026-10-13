@@ -1,0 +1,71 @@
+{
+  "created": "2026-10-13",
+  "generation": "Built-in image_gen tool; original fictional adult portraits. No actual player identities or testimonials.",
+  "usage": "Only for explicitly disclosed leaderboard simulations.",
+  "format": {
+    "width": 192,
+    "height": 192,
+    "encoding": "WebP",
+    "quality": 85
+  },
+  "portraits": [
+    {
+      "id": "leila",
+      "asset": "leila.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional woman aged 32, medium olive skin, dark wavy hair, wearing a charcoal knit top. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "haruto",
+      "asset": "haruto.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional man aged 29, light East Asian skin, short black hair, navy collared shirt. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "alexandra",
+      "asset": "alexandra.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional woman aged 35, fair skin, brown shoulder-length hair, soft grey blazer. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "daniel",
+      "asset": "daniel.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional man aged 38, dark brown skin, short textured hair, smart casual black jacket. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "amina",
+      "asset": "amina.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional woman aged 30, warm brown skin, light beige hijab, dark tailored jacket. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "kenji",
+      "asset": "kenji.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional man aged 43, East Asian features, medium complexion, salt-and-pepper hair, charcoal sweater. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "elena",
+      "asset": "elena.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional woman aged 28, fair skin, auburn hair, blue casual blazer. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "omar",
+      "asset": "omar.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional man aged 36, olive complexion, neat short dark beard, white shirt and navy blazer. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "maya",
+      "asset": "maya.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional woman aged 33, South Asian features, medium brown skin, long dark hair, olive blouse. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    },
+    {
+      "id": "gabriel",
+      "asset": "gabriel.webp",
+      "prompt": "Use case: photorealistic-natural. Asset type: professional square portrait for an explicitly labeled fictional chess leaderboard preview. Subject: A fictional man aged 31, tan skin, short curly hair, dark olive overshirt. Entirely original fictional adult, no resemblance to a public figure. Natural friendly expression looking at the camera. Head and shoulders portrait centered, include complete hair and shoulders with generous crop margin for a small round-cornered avatar. Editorial professional studio photography, soft natural window light, realistic skin texture, gently blurred neutral grey studio backdrop. Restrained premium style; no props, logos, text, borders, watermark, chessboards or currency. Single portrait only. Square image, optimized for display as a 64-pixel avatar."
+    }
+  ],
+  "gramLogo": {
+    "source": "https://ton.org/media/",
+    "download": "https://ton.org/assets/media/gram_diamond_mark.zip",
+    "asset": "gram.svg",
+    "retrieved": "2026-10-13",
+    "sha256": "60ed129e1cbae430b7fcf9ea1a5c7997df5e5ad8c551ee8ab5c6ad470c3816f3",
+    "note": "Official Gram Diamond Mark. Only a viewBox was added for responsive sizing; shape and colors are unchanged."
+  }
+}

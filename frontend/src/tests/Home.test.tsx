@@ -94,6 +94,12 @@ jest.mock('framer-motion', () => ({
 }));
 
 describe('Home', () => {
+    it('does not present simulated payouts and population counts as live platform activity', () => {
+        render(<Home />)
+        expect(screen.queryByRole('button', { name: 'Live platform activity' })).not.toBeInTheDocument()
+        expect(screen.queryByText(/Grandmasters Online|TON drop|Boxes Today/)).not.toBeInTheDocument()
+    })
+
     it('renders the main dashboard elements', async () => {
         render(<Home />)
         // Check for "Welcome" (from next-intl mock)

@@ -334,6 +334,8 @@ Empty: icon tile, one-line reason, **one** action that resolves it. Error: plain
   Earned promotional boxes show eligibility, exact odds, duplicate handling and virtual-only terms before enrollment. Progress comes from server-recorded qualifying games; reveal only a confirmed reward. The First Three quest is once per account, has no deadline, and opens free AI practice directly. Pausing new enrollment must preserve existing claim rights; channel ads require the live campaign contract to match their copy.
 - **Game screen**: board + clocks dominate; controls sit beneath/beside, never over the board; clock ticks are isolated in `ChessClockBadge` (4Hz) so the board never re-renders; `BoardA11y` names pieces for assistive tech.
 - **Lists**: `ui-list-row`, 8-12px gap, virtualise beyond ~60 rows, no per-row blur.
+- **Leaderboard previews**: explicit opt-in only, with a persistent simulation disclosure and fictional portrait attribution. GRAM/XP examples never merge into verified standings or create account balances, XP grants, wallet events or transactions. Use stable profile keys for restrained position transitions; pause automatic updates when hidden, offscreen, manually paused or reduced motion is enabled. Provide manual advance and reset controls.
+  GRAM uses the official locally served diamond mark, preserving its colors. Prefix illustrative profit totals with `+`; show daily example gains separately. Starting values may grow beyond their initial range. Progression is cumulative without a yearly reset; varied daily budgets drive ranking changes. Numeric count-ups and a single short opacity/scale response may accompany updates; no perpetual glow, invented win notifications or implied live account activity.
 
 ---
 

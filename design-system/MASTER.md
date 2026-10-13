@@ -180,6 +180,9 @@ All new pages and feature refactors MUST reuse existing design system primitives
 
 Keyboard patterns in shared controls use roving selection for Tabs/SegmentedControl and dialog focus management in Modal/Drawer. Respect reduced motion and Telegram haptics on state changes. Check `320px` reflow, desktop, light theme, and Arabic RTL before shipping a visual change.
 
+The opt-in leaderboard preview uses shared Drawer, Card, Avatar, Badge and controls, with `LeaderboardPreview` copy in all locales. Its sticky disclosure identifies every profile and GRAM/XP value as fictional. The simulation module is independent of account and API data; its timer stops when hidden/offscreen or reduced motion is active. Animated rows use stable profile IDs and transform-only position transitions. Advance day and reset remain available without animation.
+GRAM readouts use the official local vector mark and shared CountUp. Keep the running total and daily example gain in separate lines; gain feedback is a single short opacity/scale transition, disabled with reduced motion. Initial GRAM ranges describe starting values, not a ceiling on cumulative progression. All gain captions are localized; the disclosure stays visible while scrolling.
+
 ## Badge composition rules
 
 Use `frontend/src/components/ui/Badge.tsx` and `BadgeRow` for passive metadata across pages, cards, lists and controls. Themes change semantic colors, not placement or geometry.

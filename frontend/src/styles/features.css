@@ -525,6 +525,48 @@
   background: var(--bg-elevated);
 }
 
+/* This opt-in simulation is visually and structurally separate from verified standings. */
+.leaderboard-preview-notice {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  padding-block: var(--space-3);
+  background: var(--bg-surface);
+  border-block-end: 1px solid var(--border-muted);
+}
+
+.leaderboard-preview-row {
+  display: grid;
+  grid-template-columns: var(--size-icon-lg) var(--size-avatar-sm) minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  min-height: var(--size-row-min);
+}
+
+.leaderboard-preview-metric {
+  min-width: 0;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard-preview-metric--podium {
+  text-align: center;
+}
+
+.leaderboard-preview-value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
+
+.leaderboard-preview-coin {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  flex: none;
+}
+
 
 /* Board coordinates: react-chessboard paints them as absolutely positioned spans, which sit ABOVE its static piece
    layer and collide with the pieces. Lift the piece layer so labels read as part of the square, not on top of a piece. */

@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-13",
+  "mode": "local disclosed preview",
+  "profiles": 10,
+  "initialGramRange": [
+    211,
+    849
+  ],
+  "gramGrowth": "Cumulative positive daily example budgets; no yearly reset",
+  "clock": "One minute of visible animation simulates one day; not a calendar-day account accrual",
+  "gramLogoSource": "https://ton.org/media/",
+  "portraitsBytes": 42210,
+  "rtlLayout": {
+    "dialogWidth": 312,
+    "direction": "rtl",
+    "logos": 10,
+    "profiles": 10,
+    "scrollWidth": 312,
+    "width": 320
+  },
+  "checkedLocales": [
+    "en",
+    "ar"
+  ],
+  "checkedThemes": [
+    "dark",
+    "light"
+  ],
+  "reducedMotionVerified": true,
+  "stickyDisclosureVerified": true,
+  "dailyXPGains": [
+    {
+      "id": "haruto",
+      "gain": 297
+    },
+    {
+      "id": "leila",
+      "gain": 200
+    },
+    {
+      "id": "daniel",
+      "gain": 491
+    },
+    {
+      "id": "alexandra",
+      "gain": 394
+    },
+    {
+      "id": "amina",
+      "gain": 588
+    },
+    {
+      "id": "kenji",
+      "gain": 284
+    },
+    {
+      "id": "elena",
+      "gain": 381
+    },
+    {
+      "id": "omar",
+      "gain": 478
+    },
+    {
+      "id": "maya",
+      "gain": 575
+    },
+    {
+      "id": "gabriel",
+      "gain": 271
+    }
+  ],
+  "allDailyXPGainsInRange": true,
+  "dailyGRAMGains": [
+    {
+      "id": "leila",
+      "gain": 12
+    },
+    {
+      "id": "haruto",
+      "gain": 55
+    },
+    {
+      "id": "alexandra",
+      "gain": 34
+    },
+    {
+      "id": "amina",
+      "gain": 56
+    },
+    {
+      "id": "daniel",
+      "gain": 13
+    },
+    {
+      "id": "kenji",
+      "gain": 35
+    },
+    {
+      "id": "elena",
+      "gain": 14
+    },
+    {
+      "id": "omar",
+      "gain": 57
+    },
+    {
+      "id": "maya",
+      "gain": 36
+    },
+    {
+      "id": "gabriel",
+      "gain": 15
+    }
+  ],
+  "allDailyGRAMGainsPositive": true,
+  "misleadingHomeTickerRemoved": true,
+  "tests": 121,
+  "messagesValidated": 1138,
+  "localesValidated": 10,
+  "exportBuilt": true,
+  "desktopLayout": {
+    "dialogWidth": 506,
+    "logos": 10,
+    "scrollWidth": 506,
+    "width": 1280
+  }
+}

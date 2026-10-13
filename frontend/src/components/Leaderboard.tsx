@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 'react-icons/fa';
 import { FiChevronRight } from 'react-icons/fi';
 import { getFullPhotoUrl } from '@/lib/api';
@@ -12,6 +13,10 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { PodiumSkeleton } from '@/components/ui/Skeleton';
 import { Avatar } from '@/components/ui/Avatar';
 import { useTelemetry } from '@/hooks/useTelemetry';
+import { Button } from '@/components/ui/Button';
+import { Badge, BadgeRow } from '@/components/ui/Badge';
+
+const LeaderboardPreview = dynamic(() => import('@/components/leaderboard/LeaderboardPreview'), { ssr: false });
 
 interface LeaderboardItem {
   telegram_id: number;
@@ -29,6 +34,7 @@ interface LeaderboardItem {
 export default function Leaderboard() {
   const t = useTranslations('Index');
   const tc = useTranslations('Common');
+  const tp = useTranslations('LeaderboardPreview');
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState<'arena' | 'academy'>('arena');
   const { data: arenaData, isLoading: loadingArena } = useSWRFetch('/api/v1/users/leaderboard');
@@ -41,6 +47,7 @@ export default function Leaderboard() {
 
   const loading = activeTab === 'arena' ? loadingArena : loadingAcademy;
   const [showModal, setShowModal] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const { trackEvent } = useTelemetry();
 
   useEffect(() => {
@@ -236,6 +243,15 @@ export default function Leaderboard() {
           </div>
         )}
       </Card>
+
+      <Button variant="ghost" className="w-full" onClick={() => setShowPreview(true)}>{tp('open')}</Button>
+
+      {showPreview && (
+        <Drawer isOpen onClose={() => setShowPreview(false)}
+          title={<BadgeRow><span>{tp('title')}</span><Badge variant="amber">{tp('badge')}</Badge></BadgeRow>}>
+          <LeaderboardPreview />
+        </Drawer>
+      )}
 
       {/* Full Standings Drawer */}
       <Drawer
