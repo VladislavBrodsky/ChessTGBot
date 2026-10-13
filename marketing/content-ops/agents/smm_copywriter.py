@@ -383,24 +383,29 @@ class SmmCopywriterAgent:
         canvas_size = "square"
         clean_hook = hook.strip().rstrip(".")
         
-        # Inject 2-3 targeted algorithmic hashtags based on category
+        # Inject 2-3 targeted algorithmic hashtags based on category & audience preset
         hashtags_to_add = []
         if "#" not in body:
-            cat_key = category.lower()
-            if "tactic" in cat_key:
-                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("tactics", ["#Chess", "#SpeedChess"])
-            elif "culture" in cat_key or "news" in cat_key:
-                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("culture", ["#Chess", "#BlitzChess"])
-            elif "psycholog" in cat_key:
-                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("psychology", ["#Chess", "#MentalStamina"])
-            elif "debate" in cat_key:
-                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("debate", ["#Chess", "#SpeedChess"])
-            elif "engineer" in cat_key:
-                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("engineering", ["#TelegramMiniApp", "#WebSockets"])
-            elif "product" in cat_key or "arena" in cat_key or "rule" in cat_key:
-                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("telegram", ["#Chess", "#TelegramGaming", "#TON"])
+            if category in brand.AUDIENCE_TAG_PRESETS:
+                hashtags_to_add = brand.AUDIENCE_TAG_PRESETS[category]
             else:
-                hashtags_to_add = ["#Chess", "#SpeedChess"]
+                cat_key = category.lower()
+                if "tactic" in cat_key:
+                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("tactics", ["#Chess", "#SpeedChess", "#ChessTactics"])
+                elif "culture" in cat_key or "news" in cat_key:
+                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("culture", ["#Chess", "#BlitzChess", "#ChessLife"])
+                elif "psycholog" in cat_key:
+                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("psychology", ["#Chess", "#MentalStamina", "#CognitivePerformance"])
+                elif "debate" in cat_key:
+                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("debate", ["#Chess", "#SpeedChess", "#ChessCommunity"])
+                elif "engineer" in cat_key:
+                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("engineering", ["#TelegramMiniApp", "#WebSockets", "#BuildInPublic"])
+                elif "arena" in cat_key or "rule" in cat_key or "wager" in cat_key:
+                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("arena", ["#SkillGaming", "#iGaming", "#PvP"])
+                elif "product" in cat_key or "telegram" in cat_key:
+                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("telegram", ["#TelegramGaming", "#TON", "#Web3Gaming"])
+                else:
+                    hashtags_to_add = ["#Chess", "#SpeedChess"]
 
         tag_str = " ".join(hashtags_to_add[:3])
         if tag_str and tag_str not in body:

@@ -36,22 +36,52 @@ VIRAL_KEYWORD_CLUSTERS = {
     ],
     "skill_wager": [
         "skill-based gaming", "anti-brainrot", "zero-sum", "prize vault", "arena brackets",
-        "USDT payout", "instant settlement"
+        "USDT payout", "instant settlement", "provably fair", "peer-to-peer duel", "monotonic clock",
+        "zero-cheat engine", "speed bounty", "crypto betting", "iGaming"
+    ],
+    "web3_p2e": [
+        "PlayToEarn", "P2E", "GameFi", "Web3 gaming", "TON blockchain", "non-custodial",
+        "instant payout", "anti-tap", "skill economics", "smart contracts"
+    ],
+    "tech_arch": [
+        "FastAPI", "Socket.IO", "WebSockets", "sub-100ms latency", "Bot API 8.0",
+        "monotonic timestamps", "distributed cache", "Next.js App Router"
     ]
 }
 
 # 2026 Algorithmic Hashtag Strategy for X (strictly 2-3 focused hashtags per post)
-# Pair 1 Core Niche Anchor (#Chess / #SpeedChess) + 1 High-Discovery Tag (#TelegramGaming / #TON / #Web3Gaming)
+# Multi-Audience Targeting Matrix:
+# 1. Classical/Speed Chess Improvers (#Chess #SpeedChess #ChessTactics)
+# 2. Web3 & TON Migrants (#TelegramGaming #TON #Web3Gaming)
+# 3. Skill iGaming & Wagering Gladiators (#SkillGaming #iGaming #PvP)
+# 4. Tech & Architecture Builders (#TelegramMiniApp #WebSockets #BuildInPublic)
 VIRAL_HASHTAG_CLUSTERS = {
     "tactics": ["#Chess", "#SpeedChess", "#ChessTactics"],
     "culture": ["#Chess", "#BlitzChess", "#ChessLife"],
     "psychology": ["#Chess", "#MentalStamina", "#CognitivePerformance"],
     "debate": ["#Chess", "#SpeedChess", "#ChessCommunity"],
-    "telegram": ["#Chess", "#TelegramGaming", "#TON"],
-    "engineering": ["#WebSockets", "#TelegramMiniApp", "#BuildInPublic"],
-    "arena": ["#Chess", "#Web3Gaming", "#SkillGaming"],
-    "openings": ["#Chess", "#OpeningTheory", "#ChessGame"]
+    "telegram": ["#TelegramGaming", "#TON", "#Web3Gaming"],
+    "engineering": ["#TelegramMiniApp", "#WebSockets", "#BuildInPublic"],
+    "arena": ["#SkillGaming", "#iGaming", "#PvP"],
+    "openings": ["#Chess", "#OpeningTheory", "#ChessGame"],
+    "web3_p2e": ["#Web3Gaming", "#PlayToEarn", "#GameFi"],
+    "igaming": ["#SkillGaming", "#iGaming", "#CompetitiveGaming"]
 }
+
+# Presets mapping content categories to audience hashtag triples
+AUDIENCE_TAG_PRESETS = {
+    "Tactics": ["#Chess", "#SpeedChess", "#ChessTactics"],
+    "Tactical Matrix": ["#Chess", "#SpeedChess", "#ChessTactics"],
+    "Openings": ["#Chess", "#OpeningTheory", "#ChessGame"],
+    "Chess Culture": ["#Chess", "#BlitzChess", "#ChessLife"],
+    "Psychology": ["#Chess", "#MentalStamina", "#CognitivePerformance"],
+    "Chess Debate": ["#Chess", "#SpeedChess", "#ChessCommunity"],
+    "Engineering": ["#TelegramMiniApp", "#WebSockets", "#BuildInPublic"],
+    "Product": ["#TelegramGaming", "#TON", "#Web3Gaming"],
+    "Match Rules": ["#SkillGaming", "#iGaming", "#PvP"],
+    "Arena": ["#SkillGaming", "#iGaming", "#PvP"],
+}
+
 
 
 # CTA registry: id -> (button label, url, wager?)
