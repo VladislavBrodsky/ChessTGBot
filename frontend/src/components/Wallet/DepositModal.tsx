@@ -625,19 +625,19 @@ function DepositModalContent({
     <Drawer isOpen title={tw('deposit_invoice')} onClose={() => { if (!processing) closeDeposit(); }} maxHeight="90dvh">
         <div className="space-y-4">
           {chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance && (
-            <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 text-sm font-bold text-brand-muted leading-relaxed space-y-2.5 shadow-inner">
-              <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
-                <div className="text-start text-brand-muted">{tw('wager_stake')}</div>
-                <div className="text-end text-brand-primary font-semibold">${(chosenWager / 100).toFixed(2)} USDT</div>
+            <div className="w-full bg-brand-surface rounded-2xl p-3.5 border border-brand-border text-caption font-semibold text-brand-muted space-y-2 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span>{tw('wager_stake')}</span>
+                <span className="text-brand-primary font-bold">${(chosenWager / 100).toFixed(2)} USDT</span>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal">
-                <div className="text-start text-brand-muted">{tw('your_balance')}</div>
-                <div className="text-end text-brand-muted font-semibold">${(walletBalance / 100).toFixed(2)} USDT</div>
+              <div className="flex items-center justify-between">
+                <span>{tw('your_balance')}</span>
+                <span className="text-brand-muted font-bold">${(walletBalance / 100).toFixed(2)} USDT</span>
               </div>
-              <div className="h-px bg-brand-border-opacity-5 my-0.5" />
-              <div className="grid grid-cols-2 gap-2 text-caption normal-case tracking-normal font-semibold">
-                <div className="text-start text-brand-muted">{tw('deficit_needed')}</div>
-                <div className="text-end text-brand-primary">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</div>
+              <div className="h-px bg-brand-border/80 my-0.5" />
+              <div className="flex items-center justify-between text-caption font-bold">
+                <span className="text-brand-muted">{tw('deficit_needed')}</span>
+                <span className="text-emerald-400 font-bold">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</span>
               </div>
             </div>
           )}
@@ -861,54 +861,44 @@ function DepositModalContent({
           )}
 
           {activeTab === 'direct' && hasVerifiedAccountId && (
-            <div className="space-y-4">
-              <div className="p-3 rounded-xl bg-brand-void/50 border border-brand-border-opacity-10 flex items-center justify-between text-caption font-semibold">
-                <span className="text-brand-muted">{tw('asset')} & Network:</span>
-                <span className="text-emerald-400 font-mono">TON · USDT (Jetton)</span>
-              </div>
-              <ManualDepositSection
-                masterWallet={masterWallet}
-                memoComment={memoComment}
-                copiedWallet={copiedWallet}
-                copiedMemo={copiedMemo}
-                memoConfirmed={memoConfirmed}
-                manualTxHash={manualTxHash}
-                processing={processing}
-                onCopyWallet={() => {
-                  copyToClipboard(masterWallet).then((ok) => {
-                    if (!ok) return;
-                    setCopiedWallet(true);
-                    logTelemetryEvent('deposit_address_copied', {
-                      field: 'master_wallet',
-                      method: 'manual_transfer',
-                    });
-                    telegramHaptic('light');
-                    setTimeout(() => setCopiedWallet(false), 2000);
+            <ManualDepositSection
+              masterWallet={masterWallet}
+              memoComment={memoComment}
+              copiedWallet={copiedWallet}
+              copiedMemo={copiedMemo}
+              memoConfirmed={memoConfirmed}
+              manualTxHash={manualTxHash}
+              processing={processing}
+              onCopyWallet={() => {
+                copyToClipboard(masterWallet).then((ok) => {
+                  if (!ok) return;
+                  setCopiedWallet(true);
+                  logTelemetryEvent('deposit_address_copied', {
+                    field: 'master_wallet',
+                    method: 'manual_transfer',
                   });
-                }}
-                onCopyMemo={() => {
-                  copyToClipboard(memoComment).then((ok) => {
-                    if (!ok) return;
-                    setCopiedMemo(true);
-                    setMemoConfirmed(true);
-                    logTelemetryEvent('deposit_address_copied', {
-                      field: 'memo',
-                      method: 'manual_transfer',
-                    });
-                    telegramHaptic('medium');
-                    setTimeout(() => setCopiedMemo(false), 2500);
+                  telegramHaptic('light');
+                  setTimeout(() => setCopiedWallet(false), 2000);
+                });
+              }}
+              onCopyMemo={() => {
+                copyToClipboard(memoComment).then((ok) => {
+                  if (!ok) return;
+                  setCopiedMemo(true);
+                  setMemoConfirmed(true);
+                  logTelemetryEvent('deposit_address_copied', {
+                    field: 'memo',
+                    method: 'manual_transfer',
                   });
-                }}
-                setMemoConfirmed={setMemoConfirmed}
-                setManualTxHash={setManualTxHash}
-                onManualVerify={handleManualVerify}
-                commentMemoText={tw('comment_memo')}
-              />
-              {/* Commission Alert */}
-              <div className="p-3.5 rounded-lg border border-brand-border-opacity-10 bg-brand-bg-opacity-5 flex flex-col items-center justify-center text-caption font-bold text-brand-muted normal-case tracking-normal">
-                <span>{tw('platform_fee')} <strong className="text-brand-primary">5%</strong></span>
-              </div>
-            </div>
+                  telegramHaptic('medium');
+                  setTimeout(() => setCopiedMemo(false), 2500);
+                });
+              }}
+              setMemoConfirmed={setMemoConfirmed}
+              setManualTxHash={setManualTxHash}
+              onManualVerify={handleManualVerify}
+              commentMemoText={tw('comment_memo')}
+            />
           )}
 
           {activeTab === 'card' && (
