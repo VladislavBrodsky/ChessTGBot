@@ -4,9 +4,13 @@ import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react
 import dynamic from 'next/dynamic';
 import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 'react-icons/fa';
 import { FiChevronRight } from 'react-icons/fi';
+import { validGramQuote } from '@/lib/gram';
 import { getFullPhotoUrl } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useLocale, useTranslations } from 'next-intl';
+import { GramAmount } from '@/components/ui/GramAmount';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Drawer } from '@/components/ui/Drawer';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
@@ -30,6 +34,7 @@ interface LeaderboardItem {
   last_name?: string;
   photo_url?: string;
   elo?: number;
+  gram_value?: string;
   games_played?: number;
   win_rate?: number;
   xp?: number;
@@ -47,15 +52,17 @@ export default function Leaderboard() {
 function PlayerLeaderboard() {
   const t = useTranslations('Index');
   const tc = useTranslations('Common');
+  const tg = useTranslations('Gram');
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState<'arena' | 'academy'>('arena');
-  const { data: arenaData, isLoading: loadingArena } = useSWRFetch('/api/v1/users/leaderboard');
+  const { data: arenaResponse, isLoading: loadingArena, error: arenaError, mutate: refreshArena } = useSWRFetch('/api/v1/users/leaderboard/gram', { refreshInterval: 300_000, dedupingInterval: 60_000, revalidateOnFocus: true, focusThrottleInterval: 60_000 });
+  const arenaUnavailable = Boolean(arenaError || (arenaResponse && !validGramQuote(arenaResponse.quote)));
   const { data: academyData, isLoading: loadingAcademy } = useSWRFetch('/api/v1/users/leaderboard/academy');
   
   const players: LeaderboardItem[] = useMemo(() => {
-    const raw = activeTab === 'arena' ? arenaData : academyData;
+    const raw = activeTab === 'arena' ? (!arenaUnavailable ? arenaResponse?.players : undefined) : academyData;
     return Array.isArray(raw) ? raw : [];
-  }, [activeTab, arenaData, academyData]);
+  }, [activeTab, arenaResponse, arenaUnavailable, academyData]);
 
   const loading = activeTab === 'arena' ? loadingArena : loadingAcademy;
   const [showModal, setShowModal] = useState(false);
@@ -101,23 +108,23 @@ function PlayerLeaderboard() {
   const displayedPlayers = useMemo(() => players.slice(0, 5), [players]);
   const hasPodium = displayedPlayers.length >= 3;
   const podium = hasPodium ? [displayedPlayers[1], displayedPlayers[0], displayedPlayers[2]] : [];
-  const scoreOf = (p: LeaderboardItem) => (activeTab === 'arena' ? (p.elo || 0) : (p.xp || 0));
-  const unit = activeTab === 'arena' ? 'ELO' : 'XP';
-  const metricLabel = activeTab === 'arena' ? 'Elo rating' : 'Academy XP';
+  const scoreOf = (p: LeaderboardItem) => (activeTab === 'arena' ? (Number(p.gram_value) || 0) : (p.xp || 0));
+  const unit = activeTab === 'arena' ? 'GRAM' : 'XP';
+  const metricLabel = activeTab === 'arena' ? tg('ranking_metric') : 'Academy XP';
   const leader = players[0];
-  const leaderScore = leader ? (activeTab === 'arena' ? (leader.elo || 0) : (leader.xp || 0)) : 0;
-  const secondScore = players[1] ? (activeTab === 'arena' ? (players[1].elo || 0) : (players[1].xp || 0)) : 0;
+  const leaderScore = leader ? (activeTab === 'arena' ? (Number(leader.gram_value) || 0) : (leader.xp || 0)) : 0;
+  const secondScore = players[1] ? (activeTab === 'arena' ? (Number(players[1].gram_value) || 0) : (players[1].xp || 0)) : 0;
   const leaderGap = Math.max(0, leaderScore - secondScore);
   const topScore = useMemo(() => {
     if (players.length === 0) return activeTab === 'arena' ? 2500 : 5000;
     return activeTab === 'arena'
-      ? Math.max(...players.map(p => p.elo || 1000), 2500)
+      ? Math.max(...players.map(p => Number(p.gram_value) || 0), 1)
       : Math.max(...players.map(p => p.xp || 0), 5000);
   }, [players, activeTab]);
 
   const renderRow = (item: LeaderboardItem, idx: number, _isModal = false) => {
     const cfg = getRankConfig(item.rank);
-    const score = activeTab === 'arena' ? (item.elo || 0) : (item.xp || 0);
+    const score = activeTab === 'arena' ? (Number(item.gram_value) || 0) : (item.xp || 0);
     const barPct = Math.min(100, Math.round((score / topScore) * 100));
     const fullName = `${item.first_name} ${item.last_name || ''}`.trim();
 
@@ -144,7 +151,7 @@ function PlayerLeaderboard() {
             </p>
             <p className="text-caption text-brand-muted truncate">
               {activeTab === 'arena'
-                ? t('ladder_stats', { games: item.games_played || 0, rate: item.win_rate || 0 })
+                ? tg('ranking_metric')
                 : t('ladder_streak', { days: item.study_streak || 0 })}
             </p>
           </div>
@@ -153,12 +160,7 @@ function PlayerLeaderboard() {
         {/* Right: Score & Mini Progress */}
         <div className="flex flex-col items-end shrink-0 ml-3">
           <div className="text-right">
-            <span className={`text-sm font-semibold tabular-nums ${item.rank === 1 ? 'text-brand-gold' : 'text-brand-primary'}`}>
-              {score.toLocaleString(locale)}
-            </span>
-            <span className="text-caption font-medium text-brand-muted ms-1">
-              {activeTab === 'arena' ? 'ELO' : 'XP'}
-            </span>
+            {activeTab === 'arena' ? <GramAmount estimate={score} className="t-label" /> : <span className="t-label">{score.toLocaleString(locale)} XP</span>}
           </div>
           <div className="h-1 w-14 bg-brand-elevated rounded-full mt-1 overflow-hidden">
             <div
@@ -195,11 +197,11 @@ function PlayerLeaderboard() {
               {activeTab === 'arena' ? t('ladder_arena') : t('ladder_academy')}
             </p>
             <p className="text-caption text-brand-muted truncate">
-              {metricLabel} · {activeTab === 'arena' ? t('ladder_arena_hint') : t('ladder_academy_hint')}
+              {metricLabel} · {activeTab === 'arena' ? tg('ranking_hint') : t('ladder_academy_hint')}
             </p>
           </div>
           {leaderGap > 0 && (
-            <span className="ui-badge ui-badge--amber shrink-0 tabular-nums">{t('leader_gap', { gap: leaderGap.toLocaleString(locale) })}</span>
+            <span className="ui-badge ui-badge--amber shrink-0 tabular-nums">{t('leader_gap', { gap: leaderGap.toLocaleString(locale, { maximumFractionDigits: 2 }) })}</span>
           )}
         </div>
 
@@ -216,7 +218,7 @@ function PlayerLeaderboard() {
                     {first ? <span className="ui-avatar-ring">{avatar}</span> : avatar}
                   </div>
                   <span className="podium__name" title={fullName}>{p.first_name}</span>
-                  <span className="podium__score">{scoreOf(p).toLocaleString(locale)} {unit}</span>
+                  <span className="podium__score">{activeTab === "arena" ? <GramAmount estimate={scoreOf(p)} /> : `${scoreOf(p).toLocaleString(locale)} ${unit}`}</span>
                   <div className={`podium__step podium__step--${p.rank}`} aria-label={t('ladder_rank', { rank: p.rank })}>{p.rank}</div>
                 </div>
               );
@@ -225,7 +227,9 @@ function PlayerLeaderboard() {
         )}
 
         <ol aria-label={tc('standings')} className="p-3 space-y-2 list-none m-0">
-          {loading ? (
+          {activeTab === "arena" && arenaUnavailable ? (
+            <li><ErrorState title={tg("rate_unavailable")} message={tg("ranking_retry")} onRetry={() => refreshArena()} /></li>
+          ) : loading ? (
             <li className="list-none"><PodiumSkeleton label={t('global_ranking')} /></li>
           ) : displayedPlayers.length > 0 ? (
             (hasPodium ? displayedPlayers.slice(3) : displayedPlayers).map((item, idx) => renderRow(item, idx))
@@ -233,7 +237,7 @@ function PlayerLeaderboard() {
             <li className="py-8 px-4 text-center space-y-2 list-none">
               <span className="ui-icon-tile mx-auto h-12 w-12 rounded-2xl"><FaChessKnight size={20} aria-hidden="true" /></span>
               <p className="text-brand-primary font-semibold text-sm">{t('no_data')}</p>
-              <p className="text-brand-muted text-sm">{t('ladder_empty')}</p>
+              <p className="text-brand-muted text-sm">{activeTab === "arena" ? tg("ranking_empty") : t("ladder_empty")}</p>
             </li>
           )}
         </ol>
@@ -243,14 +247,7 @@ function PlayerLeaderboard() {
             <span className="text-caption font-medium text-brand-muted">
               {t('ladder_showing', { shown: 5, total: Math.min(players.length, 50) })}
             </span>
-            <button type="button"
-              onClick={() => setShowModal(true)}
-              className="ui-tap-target flex shrink-0 items-center gap-1.5 px-3.5 rounded-xl border border-brand-border bg-brand-surface text-sm font-semibold text-brand-primary hover:bg-brand-elevated transition-colors cursor-pointer"
-            >
-              <FaTrophy size={11} className="text-brand-gold" aria-hidden="true" />
-              {t('show_top_50')}
-              <FiChevronRight size={13} aria-hidden="true" />
-            </button>
+            <Button variant="secondary" size="sm" onClick={() => setShowModal(true)} leftIcon={<FaTrophy className="text-brand-gold" aria-hidden="true" />} rightIcon={<FiChevronRight aria-hidden="true" />}>{t('show_top_50')}</Button>
           </div>
         )}
       </Card>

@@ -303,7 +303,8 @@
     "home_screen_verify_network_error": "Erreur réseau lors de la vérification de l'écran d'accueil.",
     "subscription_verified": "Abonnement vérifié avec succès ! Vous pouvez réclamer votre récompense ELO/XP.",
     "subscription_verify_failed": "Échec de la vérification. Assurez-vous d'avoir rejoint le canal/groupe d'abord.",
-    "subscription_verify_network_error": "Erreur réseau lors de la vérification de l'abonnement."
+    "subscription_verify_network_error": "Erreur réseau lors de la vérification de l'abonnement.",
+    "claim_failed": "Impossible de récupérer la récompense. Actualisez et réessayez."
   },
   "Academy": {
     "complete_lesson": "Terminer la leçon",
@@ -1214,5 +1215,25 @@
     "brazil": "Brésil",
     "daily_gain": "Par jour {gain}",
     "top_50": "Top 50"
+  },
+  "Gram": {
+    "equivalent": "Valeur estimée des USDT en GRAM",
+    "rate_unavailable": "Taux indisponible",
+    "rate_updated": "{provider} · mis à jour à {time}",
+    "rate_stale": "{provider} · dernier taux connu à {time}",
+    "earned": "Récompenses GRAM gagnées",
+    "separate": "Crédits de récompense de l’app, distincts des USDT. Les retraits de GRAM ne sont pas encore disponibles.",
+    "referral_reward": "Gagnez 1 GRAM par ami éligible",
+    "referral_rules": "Votre ami doit utiliser votre lien, déposer des USDT et terminer 3 parties avec mise contre des personnes. La récompense est créditée une seule fois après validation.",
+    "referral_qualified": "{count, plural, one {# ami éligible} other {# amis éligibles}}",
+    "privacy_title": "Rejoindre le classement GRAM",
+    "privacy_description": "Partagez la valeur estimée de votre portefeuille : équivalent USDT plus GRAM gagnés. Désactivé par défaut.",
+    "privacy_error": "Impossible d’enregistrer cette préférence. Réessayez.",
+    "ranking_metric": "Portefeuille GRAM estimé",
+    "ranking_hint": "Joueurs réels · participation volontaire",
+    "ranking_retry": "Les taux sont temporairement indisponibles. Réessayez.",
+    "ranking_empty": "Aucun solde partagé. Vous pouvez participer dans les Paramètres.",
+    "join_button": "Rejoindre",
+    "referral_minimum": "Chaque partie éligible doit comprendre au moins {moves} coups individuels."
   }
 }

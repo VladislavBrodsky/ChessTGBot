@@ -294,6 +294,8 @@ async def fetch_all_prices() -> dict:
 
 class BalanceResponse(BaseModel):
     balance: int
+    gram_rewards_nano: str = "0"
+    gram_leaderboard_visible: bool = False
     wallet_address: Optional[str] = None
     master_wallet_address: Optional[str] = None
     telegram_id: Optional[int] = None
@@ -327,20 +329,48 @@ class ConnectWalletRequest(BaseModel):
 
 @router.get("/balance", response_model=BalanceResponse)
 async def get_wallet_balance(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get current user platform balance and connected wallet address.
     """
     from app.core.config import get_settings
     settings = get_settings()
+    from app.services.gram_rewards import earned_gram_nano
     return BalanceResponse(
         balance=current_user.balance,
+        gram_rewards_nano=str(await earned_gram_nano(db, current_user.id)),
+        gram_leaderboard_visible=bool(current_user.gram_leaderboard_visible),
         wallet_address=current_user.wallet_address,
         master_wallet_address=settings.MASTER_WALLET_ADDRESS,
         telegram_id=current_user.telegram_id,
         deposit_memo=f"ref_{current_user.telegram_id}" if current_user.telegram_id else None
     )
+
+
+@router.get("/gram-quote", dependencies=[Depends(rate_limit(limit=30, window=60))])
+async def gram_quote():
+    """Public informational quote, separate from authenticated balance reads."""
+    from app.services.gram_quote import get_gram_quote
+    quote = await get_gram_quote()
+    return {"available": quote is not None, "quote": quote.payload() if quote else None}
+
+
+class GramVisibilityRequest(BaseModel):
+    visible: bool
+
+
+@router.put("/gram-leaderboard-visibility")
+async def gram_leaderboard_visibility(
+    request: GramVisibilityRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """A real player's financial value is private until they opt into sharing."""
+    current_user.gram_leaderboard_visible = request.visible
+    await db.commit()
+    return {"visible": request.visible}
 
 @router.post("/connect", response_model=BalanceResponse)
 async def connect_web3_wallet(
@@ -357,8 +387,11 @@ async def connect_web3_wallet(
         updated_user = await user_crud.update_wallet_address(db, current_user, request.wallet_address)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    from app.services.gram_rewards import earned_gram_nano
     return BalanceResponse(
         balance=updated_user.balance,
+        gram_rewards_nano=str(await earned_gram_nano(db, updated_user.id)),
+        gram_leaderboard_visible=bool(updated_user.gram_leaderboard_visible),
         wallet_address=updated_user.wallet_address,
         master_wallet_address=settings.MASTER_WALLET_ADDRESS,
         telegram_id=updated_user.telegram_id,
@@ -912,6 +945,8 @@ async def receive_ton_deposit_webhook(
         await db.rollback()
         current = (await db.execute(select(User).filter(User.telegram_id == telegram_id))).scalars().first()
         return {"status": "success", "message": "Transaction already processed", "credited_amount": 0, "new_balance": current.balance if current else 0}
+    from app.services.gram_rewards import check_referral_after_deposit
+    await check_referral_after_deposit(db, updated_user.id)
     logger.info(f"[TRANSACTION] user_id={telegram_id} | type=deposit | amount={credited_amount} cents (${credited_amount/100:.2f}) | fee={fee} cents (${fee/100:.2f}) | reference_id={tx_hash} | status=completed")
     logger.info(f"[TRANSACTION] user_id={telegram_id} | type=deposit_fee | amount=-{fee} cents (-${fee/100:.2f}) | fee=0 cents ($0.00) | reference_id={tx_commission.reference_id} | status=completed")
 
@@ -1317,6 +1352,8 @@ async def verify_deposit(
             await db.rollback()
             current = (await db.execute(select(User).filter(User.telegram_id == telegram_id))).scalars().first()
             return {"status": "success", "credited_amount": 0, "new_balance": current.balance if current else 0, "message": "Already processed"}
+        from app.services.gram_rewards import check_referral_after_deposit
+        await check_referral_after_deposit(db, user.id)
         await db.refresh(user)
         final_balance = user.balance
 
@@ -1494,6 +1531,8 @@ async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, ses
             db.add(user)
             db.add(tx)
             await db.commit()
+            from app.services.gram_rewards import check_referral_after_deposit
+            await check_referral_after_deposit(db, user.id)
             
             try:
                 from app.services.telegram_bot import TelegramService

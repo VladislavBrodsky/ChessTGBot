@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { GramAmount } from '@/components/ui/GramAmount';
 import { useTasks } from '@/hooks/useTasks';
 import { useToast } from '@/context/ToastContext';
 import { FaCheck, FaGift } from 'react-icons/fa';
@@ -20,7 +21,7 @@ const TaskSkeleton = () => <SkeletonList count={3} />;
 export default function DailyTasks() {
     const t = useTranslations('Gamification');
     const ti = useTranslations('Index');
-    const { syncStats } = useUser();
+    const { syncStats, syncBalance } = useUser();
     const { tasks: allTasks, error: loadError, loading, refresh: fetchTasks, setTasks } = useTasks();
     const tasks = allTasks.filter(task => task.title_key.startsWith('daily_'));
     const [claimingId, setClaimingId] = useState<number | null>(null);
@@ -40,7 +41,7 @@ export default function DailyTasks() {
             });
             if (res.ok) {
                 // Sync user stats in real time so XP score & progress bar update immediately
-                syncStats();
+                void Promise.allSettled([syncStats(), syncBalance()]);
                 if (task) {
                     let title = task.title_key;
                     try {
@@ -93,8 +94,9 @@ export default function DailyTasks() {
                                                 <h3 className={`text-sm font-semibold leading-snug break-words ${status === 'completed' ? 'text-brand-muted' : 'text-brand-primary'}`}>
                                                     {t(task.title_key)}
                                                 </h3>
-                                                <div className="flex items-center gap-2 text-caption font-medium text-brand-muted mt-0.5 tabular-nums">
+                                                <div className="flex flex-wrap items-center gap-2 text-caption font-medium text-brand-muted mt-0.5 tabular-nums">
                                                     <span className="text-brand-gold">+{task.xp_reward} XP</span>
+                                                    {task.gram_reward_nano && task.gram_reward_nano !== "0" && <GramAmount plus nano={task.gram_reward_nano} className="text-brand-action" />}
                                                     <span aria-hidden="true">·</span>
                                                     <span dir="ltr">{task.progress} / {task.target_count}</span>
                                                 </div>

@@ -105,7 +105,7 @@ class GamificationService:
             if task_def.task_type == TaskType.REFER:
                 from sqlalchemy import func
                 ref_count_res = await db.execute(
-                    select(func.count(Referral.id)).where(Referral.referrer_id == user_id)
+                    select(func.count(Referral.id)).where(Referral.referrer_id == user_id, Referral.activated_at.is_not(None))
                 )
                 ref_count = ref_count_res.scalar() or 0
                 progress = min(ref_count, task_def.target_count)
@@ -292,7 +292,7 @@ class GamificationService:
         if referrer and referrer.id != new_user.id:
             # Lock referrer and new_user in sorted ID order to prevent deadlocks
             sorted_ids = sorted([referrer.id, new_user.id])
-            lock_stmt = select(User).where(User.id.in_(sorted_ids)).with_for_update()
+            lock_stmt = select(User).where(User.id.in_(sorted_ids)).order_by(User.id).with_for_update()
             lock_res = await db.execute(lock_stmt)
             users_map = {u.id: u for u in lock_res.scalars().all()}
 
@@ -406,7 +406,7 @@ class GamificationService:
 
         # 1. Check if this user was referred by someone
         ref_result = await db.execute(
-            select(Referral).where(Referral.referred_user_id == referred_user_id)
+            select(Referral).where(Referral.referred_user_id == referred_user_id).order_by(Referral.id)
         )
         referral = ref_result.scalars().first()
         if not referral:
@@ -414,20 +414,17 @@ class GamificationService:
 
         # 2. Lock both users in sorted ID order to prevent deadlocks
         sorted_ids = sorted([referral.referrer_id, referred_user_id])
-        lock_stmt = select(User).where(User.id.in_(sorted_ids)).with_for_update()
+        lock_stmt = select(User).where(User.id.in_(sorted_ids)).order_by(User.id).with_for_update().execution_options(populate_existing=True)
         lock_res = await db.execute(lock_stmt)
         users_map = {u.id: u for u in lock_res.scalars().all()}
 
         referrer = users_map.get(referral.referrer_id)
         new_user = users_map.get(referred_user_id)
 
-        if not referrer or not new_user:
+        if not referrer or not new_user or referrer.id == new_user.id:
             return False
 
         # 3. Check if the referred user has played at least 3 games
-        if new_user.games_played < 3:
-            return False
-
         # 3b. Sybil guard: the 3 games must be REAL games. An instant resign
         # (create account -> resign 3 bot games -> collect bonus) doesn't
         # qualify; only games with enough moves count.
@@ -442,11 +439,30 @@ class GamificationService:
                     GameHistory.black_player_id == new_user.telegram_id,
                 ),
                 GameHistory.total_moves >= settings.REFERRAL_MILESTONE_MIN_MOVES,
+                GameHistory.game_type == "online",
+                GameHistory.bid_amount > 0,
+                GameHistory.white_player_id > 0,
+                GameHistory.black_player_id > 0,
+                GameHistory.white_player_id != GameHistory.black_player_id,
+                GameHistory.result_type.in_(["checkmate", "resignation", "timeout", "draw", "stalemate", "insufficient_material", "threefold_repetition", "fifty_move", "agreed_draw"]),
+                GameHistory.ended_at >= referral.created_at,
             )
         )
         qualifying_games = int(qualifying_res.scalar() or 0)
         if qualifying_games < 3:
             return False
+
+        # The native-GRAM invitation credit is independent of the legacy USDT
+        # bonus. Accounts activated before this feature still need three paid
+        # human games, and one recruit can produce only one GRAM credit.
+        from app.services.gram_rewards import credit_reward, referral_notification, NANO_GRAM
+        deposited = (await db.execute(select(Transaction.id).where(
+            Transaction.user_id == new_user.telegram_id, Transaction.type == "deposit",
+            Transaction.status == "completed", Transaction.amount > 0,
+            Transaction.created_at >= referral.created_at,
+        ).limit(1))).scalar_one_or_none()
+        if deposited is not None:
+            await credit_reward(db, referrer, NANO_GRAM, f"referral:{new_user.id}", "referral", referral_notification(new_user))
 
         # 3c. Sybil guard: a referrer banks at most N signup bonuses per
         # rolling 24h. Returning False here DEFERS the bonus (this check
@@ -552,7 +568,7 @@ class GamificationService:
         # 8. Check and award referrer milestone achievements
         try:
             l1_count_result = await db.execute(
-                select(func.count(Referral.id)).where(Referral.referrer_id == referrer.id)
+                select(func.count(Referral.id)).where(Referral.referrer_id == referrer.id, Referral.activated_at.is_not(None))
             )
             l1_count = l1_count_result.scalar() or 0
 
@@ -596,7 +612,7 @@ class GamificationService:
                         f"• Badge Gained: 🎖️ <b>{milestone_name}</b>\n\n"
                         f"<i>Keep growing your network to unlock the next level of referral commissions! ♟️🏆</i>"
                     )
-                    await TelegramService.send_notification(referrer.telegram_id, ms_msg)
+                    db.info.setdefault("referral_notifications", []).append((referrer.telegram_id, ms_msg))
                 except Exception:
                     pass
 
@@ -626,7 +642,7 @@ class GamificationService:
                 f"⚡ Keep earning <b>up to 2% commission</b> on every wager they place!\n\n"
                 f"<i>Recruit more players to multiply your passive income! ♟️💸</i>"
             )
-            await TelegramService.send_notification(referrer.telegram_id, referrer_msg)
+            db.info.setdefault("referral_notifications", []).append((referrer.telegram_id, referrer_msg))
         except Exception as e:
             import logging
             logging.getLogger(__name__).warning(f"Failed to send referral bonus unlock notification to referrer: {e}")
@@ -642,7 +658,7 @@ class GamificationService:
                 f"🏅 <b>+{new_user_xp} XP</b> added to your account\n\n"
                 f"<i>Invite your friends with your referral link and earn even more rewards! ♟️⚡</i>"
             )
-            await TelegramService.send_notification(new_user.telegram_id, recruit_msg)
+            db.info.setdefault("referral_notifications", []).append((new_user.telegram_id, recruit_msg))
         except Exception as e:
             import logging
             logging.getLogger(__name__).warning(f"Failed to send referral bonus unlock notification to recruit: {e}")
@@ -661,7 +677,7 @@ class GamificationService:
                     f"Your decentralized player network is growing.\n\n"
                     f"<i>Level up your XP and Premium status to secure higher passive commissions! ♟️📈</i>"
                 )
-                await TelegramService.send_notification(grand_referrer.telegram_id, grand_msg)
+                db.info.setdefault("referral_notifications", []).append((grand_referrer.telegram_id, grand_msg))
         except Exception as e:
             import logging
             logging.getLogger(__name__).warning(f"Failed to send grandparent milestone notifications: {e}")
@@ -671,8 +687,19 @@ class GamificationService:
     @staticmethod
     async def claim_task(db: AsyncSession, user_id: int, task_id: int):
 
+        from app.services.gram_rewards import credit_reward, task_reward_nano, task_notification, verify_channel_membership
+        # Verify external membership before taking money/user/task row locks.
+        definition = (await db.execute(select(Task).where(Task.id == task_id))).scalars().first()
+        telegram_id = (await db.execute(select(User.telegram_id).where(User.id == user_id))).scalar_one_or_none()
+        if definition and telegram_id and definition.title_key in {"join_channel", "join_chat"}:
+            try:
+                if not await verify_channel_membership(telegram_id, definition.title_key):
+                    return None, "Join the required channel or group before claiming"
+            except Exception:
+                return None, "Membership verification unavailable. Please try again"
+
         # 1. Lock User row first to prevent deadlock and serialize claims per user
-        user_stmt = select(User).where(User.id == user_id).with_for_update()
+        user_stmt = select(User).where(User.id == user_id).with_for_update().execution_options(populate_existing=True)
         res_user = await db.execute(user_stmt)
         user = res_user.scalars().first()
         if not user:
@@ -681,7 +708,7 @@ class GamificationService:
         # 2. Find and lock the specific user task
         result = await db.execute(select(UserTask).where(
             and_(UserTask.user_id == user_id, UserTask.task_id == task_id)
-        ).with_for_update())
+        ).with_for_update().execution_options(populate_existing=True))
         user_task = result.scalars().first()
 
         if not user_task:
@@ -699,6 +726,20 @@ class GamificationService:
         
         if not task_def:
              return None, "Task definition not found"
+
+        if user.level < (task_def.required_level or 0):
+            return None, "Task level requirement not met"
+        today = datetime.now(timezone.utc).date()
+        if task_def.is_daily and (not user_task.updated_at or user_task.updated_at.date() != today):
+            return None, "Daily task expired. Refresh Task Center"
+        period = today.isoformat() if task_def.is_daily else "once"
+        if task_def.title_key in {"join_channel", "join_chat", "add_to_home_screen"}:
+            source = f"task:{user.id}:{task_def.title_key}:once"
+        else:
+            source = f"task:{user.id}:{task_def.id}:{period}"
+        amount = task_reward_nano(task_def)
+        if amount and not await credit_reward(db, user, amount, source, "task", task_notification(amount)):
+            return None, "Task reward already credited"
 
         # Mark as claimed
         user_task.claimed = True

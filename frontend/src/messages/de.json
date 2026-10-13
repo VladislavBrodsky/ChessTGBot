@@ -303,7 +303,8 @@
     "home_screen_verify_network_error": "Netzwerkfehler bei der Startbildschirm-Bestätigung.",
     "subscription_verified": "Abonnement erfolgreich bestätigt! Du kannst jetzt deine ELO/XP-Belohnung einfordern.",
     "subscription_verify_failed": "Bestätigung fehlgeschlagen. Bitte stelle sicher, dass du dem Kanal/der Gruppe beigetreten bist.",
-    "subscription_verify_network_error": "Netzwerkfehler bei der Abonnement-Bestätigung."
+    "subscription_verify_network_error": "Netzwerkfehler bei der Abonnement-Bestätigung.",
+    "claim_failed": "Prämie konnte nicht abgeholt werden. Aktualisiere und versuche es erneut."
   },
   "Academy": {
     "complete_lesson": "Lektion abschließen",
@@ -1214,5 +1215,25 @@
     "brazil": "Brasilien",
     "daily_gain": "Täglich {gain}",
     "top_50": "Top 50"
+  },
+  "Gram": {
+    "equivalent": "Geschätzter USDT-Wert in GRAM",
+    "rate_unavailable": "Kurs nicht verfügbar",
+    "rate_updated": "{provider} · aktualisiert um {time}",
+    "rate_stale": "{provider} · letzter bekannter Kurs um {time}",
+    "earned": "Verdiente GRAM-Prämien",
+    "separate": "App-Prämienguthaben, getrennt von USDT. GRAM-Auszahlungen sind noch nicht verfügbar.",
+    "referral_reward": "1 GRAM je qualifiziertem Freund",
+    "referral_rules": "Dein Freund muss deinem Link folgen, USDT einzahlen und 3 Spiele mit Einsatz gegen Menschen abschließen. Die Prämie wird nach Erfüllung einmal gutgeschrieben.",
+    "referral_qualified": "{count, plural, one {# Freund qualifiziert} other {# Freunde qualifiziert}}",
+    "privacy_title": "Der GRAM-Rangliste beitreten",
+    "privacy_description": "Teile deinen geschätzten Portfoliowert: USDT-Gegenwert plus verdiente GRAM. Standardmäßig ausgeschaltet.",
+    "privacy_error": "Einstellung konnte nicht gespeichert werden. Versuche es erneut.",
+    "ranking_metric": "Geschätztes GRAM-Portfolio",
+    "ranking_hint": "Echte Spieler · freiwillige Teilnahme",
+    "ranking_retry": "Kurse sind vorübergehend nicht verfügbar. Versuche es erneut.",
+    "ranking_empty": "Noch keine geteilten Guthaben. Teilnahme über Einstellungen.",
+    "join_button": "Beitreten",
+    "referral_minimum": "Jedes qualifizierende Spiel braucht mindestens {moves} einzelne Züge."
   }
 }

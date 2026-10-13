@@ -296,6 +296,10 @@ async def lifespan(app: FastAPI):
     from app.services.ledger_audit import start_ledger_audit_loop
     start_background_task(start_ledger_audit_loop())
 
+    # Notification outbox reads only committed GRAM reward credits.
+    from app.services.gram_rewards import start_gram_reward_notifications
+    start_background_task(start_gram_reward_notifications())
+
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
     from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop
     start_background_task(start_solvency_alert_loop())

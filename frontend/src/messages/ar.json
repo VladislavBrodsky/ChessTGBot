@@ -303,7 +303,8 @@
     "home_screen_verify_network_error": "خطأ في الشبكة أثناء التحقق من الشاشة الرئيسية.",
     "subscription_verified": "تم التحقق من الاشتراك بنجاح! يمكنك الآن المطالبة بمكافأة ELO/XP.",
     "subscription_verify_failed": "فشل التحقق. يرجى التأكد من الانضمام إلى القناة/المجموعة أولاً.",
-    "subscription_verify_network_error": "خطأ في الشبكة أثناء التحقق من الاشتراك."
+    "subscription_verify_network_error": "خطأ في الشبكة أثناء التحقق من الاشتراك.",
+    "claim_failed": "تعذر المطالبة بالمكافأة. حدّث الصفحة وحاول مجدداً."
   },
   "Academy": {
     "complete_lesson": "إكمال الدرس",
@@ -1214,5 +1215,25 @@
     "brazil": "البرازيل",
     "daily_gain": "يومياً {gain}",
     "top_50": "أفضل 50"
+  },
+  "Gram": {
+    "equivalent": "القيمة التقديرية لـ USDT بوحدة GRAM",
+    "rate_unavailable": "سعر الصرف غير متاح",
+    "rate_updated": "{provider} · تم التحديث {time}",
+    "rate_stale": "{provider} · آخر سعر معروف {time}",
+    "earned": "مكافآت GRAM المكتسبة",
+    "separate": "رصيد مكافآت التطبيق منفصل عن USDT. سحب GRAM غير متاح بعد.",
+    "referral_reward": "اكسب 1 GRAM لكل صديق مؤهل",
+    "referral_rules": "يجب أن ينضم صديقك عبر رابطك ويودع USDT ويكمل 3 مباريات برهان ضد أشخاص. تُضاف المكافأة مرة واحدة بعد استيفاء الشروط.",
+    "referral_qualified": "{count} أصدقاء استوفوا الشروط",
+    "privacy_title": "الانضمام إلى ترتيب GRAM",
+    "privacy_description": "شارك قيمة محفظتك التقديرية: ما يعادل USDT بالإضافة إلى GRAM المكتسبة. معطل افتراضياً.",
+    "privacy_error": "تعذر حفظ تفضيل الترتيب. حاول مجدداً.",
+    "ranking_metric": "قيمة المحفظة التقديرية بـ GRAM",
+    "ranking_hint": "لاعبون حقيقيون · مشاركة اختيارية",
+    "ranking_retry": "أسعار الصرف غير متاحة مؤقتاً. حاول مجدداً.",
+    "ranking_empty": "لا توجد أرصدة مشتركة بعد. يمكنك الانضمام من الإعدادات.",
+    "join_button": "انضمام",
+    "referral_minimum": "تحتاج كل مباراة مؤهلة إلى {moves} نقلات فردية على الأقل."
   }
 }

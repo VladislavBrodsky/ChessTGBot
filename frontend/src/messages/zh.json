@@ -303,7 +303,8 @@
     "home_screen_verify_network_error": "主屏幕验证过程中出现网络错误。",
     "subscription_verified": "订阅验证成功！您现在可以领取 ELO/XP 奖励了。",
     "subscription_verify_failed": "验证失败。请确保您已先加入频道/群组。",
-    "subscription_verify_network_error": "订阅验证过程中出现网络错误。"
+    "subscription_verify_network_error": "订阅验证过程中出现网络错误。",
+    "claim_failed": "无法领取奖励，请刷新后重试。"
   },
   "Academy": {
     "complete_lesson": "完成课程",
@@ -1214,5 +1215,25 @@
     "brazil": "巴西",
     "daily_gain": "每日 {gain}",
     "top_50": "前50名"
+  },
+  "Gram": {
+    "equivalent": "USDT的GRAM估算价值",
+    "rate_unavailable": "汇率暂不可用",
+    "rate_updated": "{provider} · 更新于{time}",
+    "rate_stale": "{provider} · 最近已知汇率{time}",
+    "earned": "已获得的GRAM奖励",
+    "separate": "应用奖励余额与USDT分开。GRAM提现尚未开放。",
+    "referral_reward": "每位达标好友可获得1 GRAM",
+    "referral_rules": "好友必须通过你的链接加入、充值USDT，并完成3场与真人的有押注对局。达标后奖励仅发放一次。",
+    "referral_qualified": "{count}位好友已达标",
+    "privacy_title": "加入GRAM排行榜",
+    "privacy_description": "公开你的估算资产价值：USDT等值加已获得的GRAM。默认关闭。",
+    "privacy_error": "无法保存排行榜设置，请重试。",
+    "ranking_metric": "估算GRAM资产",
+    "ranking_hint": "真实玩家 · 自愿公开",
+    "ranking_retry": "汇率暂不可用，请重试。",
+    "ranking_empty": "暂时没有公开余额。你可以在设置中选择加入。",
+    "join_button": "加入",
+    "referral_minimum": "每场有效对局的双方落子总数至少为{moves}步。"
   }
 }

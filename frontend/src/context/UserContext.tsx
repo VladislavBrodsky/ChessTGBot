@@ -9,6 +9,8 @@ import { getInitDataNow, waitForInitData } from '@/lib/telegramAuth';
 interface UserContextType {
     walletBalance: number;
     walletAddress: string;
+    gramRewardsNano: string | null;
+    gramLeaderboardVisible: boolean | null;
     stats: any;
     syncBalance: () => Promise<{ balance: number; wallet_address?: string } | null>;
     syncStats: () => Promise<any>;
@@ -27,6 +29,8 @@ interface UserContextType {
 const UserContext = createContext<UserContextType>({
     walletBalance: 0,
     walletAddress: "",
+    gramRewardsNano: null,
+    gramLeaderboardVisible: null,
     stats: null,
     syncBalance: async () => null,
     syncStats: async () => null,
@@ -37,7 +41,10 @@ const UserContext = createContext<UserContextType>({
 });
 
 const BALANCE_SWR_OPTIONS = {
-    revalidateOnFocus: false,
+    revalidateOnFocus: true,
+    focusThrottleInterval: 30_000,
+    refreshInterval: 60_000,
+    refreshWhenHidden: false,
     dedupingInterval: 30_000,
 };
 
@@ -63,18 +70,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
         return () => { cancelled = true; };
     }, [pathname]);
-    const { data: balanceData, error: balanceSWR_Error, isLoading: loadingBalance, mutate: syncBalance } = useSWRFetch(
+    const { data: balanceData, error: balanceSWR_Error, isLoading: fetchingBalance, mutate: syncBalance } = useSWRFetch(
         authenticated ? '/api/v1/wallet/balance' : null,
         BALANCE_SWR_OPTIONS,
     );
 
-    const { data: statsData, error: statsSWR_Error, isLoading: loadingStats, mutate: syncStats } = useSWRFetch(
+    const { data: statsData, error: statsSWR_Error, isLoading: fetchingStats, mutate: syncStats } = useSWRFetch(
         authenticated ? STATS_SWR_KEY : null,
         STATS_SWR_OPTIONS,
     );
 
+    const loadingBalance = !authenticated || (fetchingBalance && !balanceData);
+    const loadingStats = !authenticated || (fetchingStats && !statsData);
     const walletBalance = balanceData?.balance || 0;
     const walletAddress = balanceData?.wallet_address || "";
+    const gramRewardsNano = typeof balanceData?.gram_rewards_nano === "string" ? balanceData.gram_rewards_nano : null;
+    const gramLeaderboardVisible = typeof balanceData?.gram_leaderboard_visible === "boolean" ? balanceData.gram_leaderboard_visible : null;
     const balanceError = !!balanceSWR_Error;
 
     const stats = statsData || null;
@@ -95,6 +106,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const value = useMemo(() => ({
             walletBalance,
             walletAddress,
+            gramRewardsNano,
+            gramLeaderboardVisible,
             stats,
             syncBalance: syncBalanceWrapper,
             syncStats: syncStatsWrapper,
@@ -105,6 +118,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }), [
             walletBalance,
             walletAddress,
+            gramRewardsNano,
+            gramLeaderboardVisible,
             stats,
             syncBalanceWrapper,
             syncStatsWrapper,

@@ -303,7 +303,8 @@
     "home_screen_verify_network_error": "ホーム画面確認中にネットワークエラーが発生しました。",
     "subscription_verified": "登録が確認されました！ELO/XP報酬を獲得できます。",
     "subscription_verify_failed": "確認に失敗しました。まずチャンネル/グループに参加してください。",
-    "subscription_verify_network_error": "登録確認中にネットワークエラーが発生しました。"
+    "subscription_verify_network_error": "登録確認中にネットワークエラーが発生しました。",
+    "claim_failed": "報酬を受け取れませんでした。更新して再度お試しください。"
   },
   "Academy": {
     "complete_lesson": "レッスンを完了",
@@ -1214,5 +1215,25 @@
     "brazil": "ブラジル",
     "daily_gain": "1日 {gain}",
     "top_50": "トップ50"
+  },
+  "Gram": {
+    "equivalent": "USDTの推定GRAM換算額",
+    "rate_unavailable": "レートを取得できません",
+    "rate_updated": "{provider} · {time}更新",
+    "rate_stale": "{provider} · 最終取得レート {time}",
+    "earned": "獲得したGRAM報酬",
+    "separate": "アプリ内報酬はUSDTと別の残高です。GRAMの出金はまだ利用できません。",
+    "referral_reward": "条件達成した友達ごとに1 GRAM",
+    "referral_rules": "友達が紹介リンクから参加し、USDTを入金して、人間相手の賭け金ありの対局を3回完了する必要があります。条件達成後、報酬は一度だけ付与されます。",
+    "referral_qualified": "条件達成した友達：{count}人",
+    "privacy_title": "GRAMランキングに参加",
+    "privacy_description": "USDT換算額と獲得GRAMを合計した推定資産額を公開します。初期設定はオフです。",
+    "privacy_error": "設定を保存できませんでした。もう一度お試しください。",
+    "ranking_metric": "推定GRAM資産額",
+    "ranking_hint": "実際のプレイヤー · 任意参加",
+    "ranking_retry": "レートを一時的に取得できません。再度お試しください。",
+    "ranking_empty": "公開残高はまだありません。設定から参加できます。",
+    "join_button": "参加",
+    "referral_minimum": "各対象対局は、両者の着手を合計して最低{moves}手必要です。"
   }
 }

@@ -7,6 +7,7 @@ import { FaTrophy, FaFire, FaCheckCircle, FaStar } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
 import XPProgressBar from "@/components/XPProgressBar";
 import { useState } from "react";
+import { GramAmount } from '@/components/ui/GramAmount';
 import { useTasks } from '@/hooks/useTasks';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { useTranslations } from "next-intl";
@@ -26,16 +27,17 @@ import EngagementQuest from '@/components/EngagementQuest';
 export default function ChallengesPage() {
   const t = useTranslations('Gamification');
   const ti = useTranslations('Index');
+  const tGram = useTranslations('Gram');
 
   // Use global context — no stub defaults, no duplicate fetch
-  const { stats, syncStats } = useUser();
+  const { stats, syncStats, syncBalance } = useUser();
 
   const { tasks, setTasks, loading, error: tasksError, refresh: refreshTasks } = useTasks();
   const [claimingId, setClaimingId] = useState<number | null>(null);
   const [showArchive, setShowArchive] = useState<boolean>(false);
 
   const handleClaim = async (taskDefId: number) => {
-    if (claimingId) return;
+    if (claimingId !== null) return;
     setClaimingId(taskDefId);
     const task = tasks.find(t => t.task_id === taskDefId);
     const previousTasks = [...tasks];
@@ -56,15 +58,17 @@ export default function ChallengesPage() {
       triggerTaskSuccess(title, task.xp_reward);
     }
 
-        syncStats();
+        void Promise.allSettled([syncStats(), syncBalance()]);
       } else {
         // Rollback on non-200
         setTasks(previousTasks);
+        telegramAlert(t("claim_failed"));
       }
     } catch (err) {
       console.error("Failed to claim task reward:", err);
       // Rollback on network error
       setTasks(previousTasks);
+      telegramAlert(t("claim_failed"));
     } finally {
       setClaimingId(null);
     }
@@ -141,13 +145,6 @@ export default function ChallengesPage() {
       return;
     }
 
-    const link = titleKey === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
-    if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
-      (window as any).Telegram.WebApp.openTelegramLink(link);
-    } else {
-      window.open(link, "_blank");
-    }
-
     try {
       const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/verify`, {
         method: "POST"
@@ -157,7 +154,7 @@ export default function ChallengesPage() {
         setTasks((prev: any[]) => prev.map(t => t.task_id === taskDefId ? { ...t, completed: true } : t));
         telegramAlert(t('subscription_verified'));
       } else {
-        telegramAlert(data.detail || t('subscription_verify_failed'));
+        telegramAlert(t(res.status >= 500 ? 'subscription_verify_network_error' : 'subscription_verify_failed'));
       }
     } catch (err) {
       console.error("Verification failed", err);
@@ -263,13 +260,14 @@ export default function ChallengesPage() {
                   variant="solid"
                   className={`w-full p-3 transition-colors ${task.completed && !task.claimed ? 'ui-stat--accent' : ''}`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
                     <span className={`ui-icon-tile ${task.completed ? 'ui-icon-tile--success' : ''}`}>
                       {task.completed ? <FaCheckCircle aria-hidden="true" /> : <FaStar aria-hidden="true" />}
                     </span>
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <h3 className="text-sm font-bold text-brand-primary normal-case tracking-normal">{t(task.title_key)}</h3>
                       <p className="text-caption text-brand-muted leading-snug">{t(`${task.title_key}_desc`)}</p>
+                      {task.gram_reward_nano && task.gram_reward_nano !== "0" && <GramAmount plus nano={task.gram_reward_nano} className="t-caption text-brand-action" />}
                       {t.has(`${task.title_key}_inst`) && !task.completed && (
                         <p className="flex items-start gap-1.5 text-caption font-medium leading-snug text-brand-primary">
                           <FiInfo size={12} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
@@ -291,19 +289,26 @@ export default function ChallengesPage() {
                       </div>
                     </div>
 
+                    <div className="col-start-2 sm:col-start-3 sm:row-start-1 sm:self-center">
                     {task.completed && !task.claimed ? (
                       <Button
                         variant="action"
                         size="sm"
-                        disabled={claimingId === task.task_id}
+                        disabled={claimingId !== null}
                         onClick={() => handleClaim(task.task_id)}
                         className="shrink-0 whitespace-nowrap px-3"
                       >
-                        {claimingId === task.task_id ? '...' : t('claim_xp_btn')}
+                        {claimingId === task.task_id ? '...' : t('claim_reward')}
                       </Button>
                     ) : task.claimed ? (
                       <Badge variant="secondary" className="shrink-0">{t('claimed_status')}</Badge>
                     ) : (task.title_key === "join_channel" || task.title_key === "join_chat" || task.title_key === "add_to_home_screen") ? (
+                      <div className="flex flex-wrap gap-2">
+                      {task.title_key !== "add_to_home_screen" && <Button variant="secondary" size="sm" onClick={() => {
+                        const link = task.title_key === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
+                        const host = (window as any).Telegram?.WebApp;
+                        if (host?.openTelegramLink) host.openTelegramLink(link); else window.open(link, "_blank", "noopener,noreferrer");
+                      }}>{tGram("join_button")}</Button>}
                       <Button
                         variant="action"
                         size="sm"
@@ -312,6 +317,7 @@ export default function ChallengesPage() {
                       >
                         {t('verify_btn')}
                       </Button>
+                      </div>
                     ) : task.title_key.startsWith("ach_refer_") ? (
                       <div className="flex shrink-0 flex-col items-end gap-1">
                         <span className="text-sm font-semibold tabular-nums text-brand-primary">{task.xp_reward} XP</span>
@@ -335,6 +341,7 @@ export default function ChallengesPage() {
                         <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">{t('reward')}</span>
                       </div>
                     )}
+                    </div>
                   </div>
                 </Card>
               ))

@@ -20,7 +20,10 @@ async def _add_qualifying_games(db, telegram_id: int, n: int = 3, moves: int = 3
         db.add(GameHistory(
             game_id=f"qual_{uuid.uuid4().hex[:12]}",
             white_player_id=telegram_id,
-            black_player_id=-1,
+            black_player_id=telegram_id + 999999,
+            game_type="online",
+            bid_amount=100,
+            result_type="checkmate",
             total_moves=moves,
         ))
     await db.commit()
@@ -1116,7 +1119,8 @@ async def test_referral_ach_self_healing(db_session: AsyncSession):
         recruits.append(rec)
         
         # Link referral
-        ref = Referral(referrer_id=referrer.id, referred_user_id=rec.id)
+        from datetime import datetime, timezone
+        ref = Referral(referrer_id=referrer.id, referred_user_id=rec.id, activated_at=datetime.now(timezone.utc).replace(tzinfo=None))
         db_session.add(ref)
         await db_session.commit()
 

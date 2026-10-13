@@ -46,12 +46,26 @@ function SettingLink({ href, icon, label, description, badge }: {
 
 export default function SettingsPage() {
   const t = useTranslations('Settings');
+  const tg = useTranslations('Gram');
   const locale = useLocale();
   const { theme, setTheme } = useTheme();
   const { reducedMotion, setReducedMotion } = useReducedMotionPreference();
   const { soundEnabled, setSoundEnabled } = useSoundPreference();
   const toast = useToast();
-  const { walletAddress, stats, syncStats, syncBalance, loadingStats, loadingBalance } = useUser();
+  const { walletAddress, stats, syncStats, syncBalance, loadingStats, loadingBalance, gramLeaderboardVisible } = useUser();
+  const [isSavingGram, setIsSavingGram] = useState(false);
+  const [gramVisible, setGramVisible] = useState(false);
+  useEffect(() => { if (typeof gramLeaderboardVisible === "boolean") setGramVisible(gramLeaderboardVisible); }, [gramLeaderboardVisible]);
+  const saveGramVisibility = async (next: boolean) => {
+    if (isSavingGram) return;
+    const previous = gramVisible; setGramVisible(next); setIsSavingGram(true);
+    try {
+      const response = await apiFetch("/api/v1/wallet/gram-leaderboard-visibility", { method: "PUT", body: JSON.stringify({ visible: next }) });
+      if (!response.ok) throw new Error("Preference unavailable");
+      void syncBalance().catch(() => {});
+    } catch { setGramVisible(previous); toast.error(tg("privacy_error")); }
+    finally { setIsSavingGram(false); }
+  };
   const [showHelp, setShowHelp] = useState(false);
   const [isResyncing, setIsResyncing] = useState(false);
   const [arenaAlerts, setArenaAlerts] = useState(true);
@@ -123,6 +137,7 @@ export default function SettingsPage() {
               <div className="settings-list">
                 <SettingLink href={`/${locale}/wallet`} icon={<FiCreditCard />} label={t('ton_wallet')}
                   description={loadingBalance && !walletAddress ? <Skeleton textRole="caption" width="var(--size-stat-min)" /> : walletAddress ? <bdi className="font-mono">{walletAddress.slice(0, 6)}…{walletAddress.slice(-4)}</bdi> : t('ton_not_connected')} />
+                <SettingToggle icon={<FiShield />} label={tg("privacy_title")} description={tg("privacy_description")} checked={gramVisible} onChange={saveGramVisibility} busy={isSavingGram} disabled={isSavingGram || gramLeaderboardVisible == null} />
                 <SettingLink href={`/${locale}/membership`} icon={<FaGem />} label={t('premium_membership')}
                   description={t('membership_details')} badge={stats?.is_premium ? <Badge variant="purple" size="counter">{t('membership_active')}</Badge> : undefined} />
                 <details className="settings-tools">

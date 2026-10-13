@@ -98,6 +98,9 @@ class ReferralEarningPoint(BaseModel):
     amount: float  # In USDT (cents / 100)
 
 class ReferralStats(BaseModel):
+    qualifying_min_moves: int = 10
+    gram_rewards_nano: str = "0"
+    gram_rewarded_referrals: int = 0
     total_referrals: int
     activated_referrals: int  # completed the qualifying referral milestone
     activation_rate: float
@@ -210,7 +213,12 @@ async def get_referral_stats(
         for row in daily_rows
     ]
 
+    from app.models.gram_reward import GramReward
+    gram_result = (await db.execute(select(func.coalesce(func.sum(GramReward.amount_nano), 0), func.count(GramReward.id)).where(
+        GramReward.user_id == current_user.id, GramReward.source_kind == "referral"))).one()
     return ReferralStats(
+        qualifying_min_moves=settings.REFERRAL_MILESTONE_MIN_MOVES,
+        gram_rewards_nano=str(gram_result[0]), gram_rewarded_referrals=int(gram_result[1]),
         total_referrals=total_referrals,
         activated_referrals=activated_referrals,
         activation_rate=activation_rate,
@@ -218,6 +226,31 @@ async def get_referral_stats(
         total_earnings_usdt=round(total_earnings_usdt, 4),
         earnings_chart=earnings_chart
     )
+
+@router.get("/leaderboard/gram", dependencies=[Depends(ip_rate_limit(limit=30, window=60))])
+async def gram_leaderboard(db: AsyncSession = Depends(get_read_db)):
+    """Real opt-in portfolios only. Aggregate value is an estimate, not profit."""
+    from decimal import Decimal
+    from sqlalchemy import cast, Numeric
+    from app.models.gram_reward import GramReward
+    from app.services.gram_quote import get_gram_quote
+    quote = await get_gram_quote()
+    if quote is None:
+        raise HTTPException(status_code=503, detail="GRAM estimate temporarily unavailable")
+    rewards = (select(GramReward.user_id, func.sum(GramReward.amount_nano).label("nano"))
+        .join(User, User.id == GramReward.user_id).where(User.gram_leaderboard_visible.is_(True))
+        .group_by(GramReward.user_id).subquery())
+    score = (cast(User.balance, Numeric(30, 9)) / Decimal(100) * quote.gram_per_usdt
+             + cast(func.coalesce(rewards.c.nano, 0), Numeric(30, 9)) / Decimal(1_000_000_000))
+    rows = (await db.execute(select(User.telegram_id, User.first_name, User.last_name, User.photo_url, score.label("gram_value"))
+        .outerjoin(rewards, rewards.c.user_id == User.id)
+        .where(User.gram_leaderboard_visible.is_(True), User.is_blocked.is_(False), score > 0)
+        .order_by(score.desc(), User.id.asc()).limit(50))).all()
+    return {"players": [{"telegram_id": row.telegram_id, "first_name": row.first_name,
+            "last_name": row.last_name, "photo_url": row.photo_url,
+            "gram_value": str(row.gram_value), "rank": rank} for rank, row in enumerate(rows, 1)],
+            "quote": quote.payload(), "metric": "estimated_portfolio", "opt_in": True}
+
 
 @router.get("/leaderboard")
 async def get_leaderboard(db: AsyncSession = Depends(get_read_db)):

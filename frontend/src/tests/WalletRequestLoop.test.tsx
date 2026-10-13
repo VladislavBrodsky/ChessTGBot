@@ -70,6 +70,8 @@ describe('wallet request lifecycle', () => {
     mockUseUser.mockImplementation(() => ({
       walletBalance,
       walletAddress: 'EQ-test',
+      gramRewardsNano: null,
+      gramLeaderboardVisible: false,
       stats: null,
       syncBalance,
       syncStats: async () => null,
@@ -102,6 +104,8 @@ describe('wallet request lifecycle', () => {
     mockUseUser.mockReturnValue({
       walletBalance: 1250,
       walletAddress: 'EQ-test',
+      gramRewardsNano: null,
+      gramLeaderboardVisible: false,
       stats: null,
       syncBalance,
       syncStats: async () => null,

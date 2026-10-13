@@ -4,6 +4,7 @@ import { FiCreditCard, FiLink } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { GramBalances } from '@/components/Wallet/GramBalances';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 interface CyberCardProps {
@@ -36,6 +37,7 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
           <span className="text-sm font-medium text-brand-muted">USDT</span>
         </p>
       )}
+      <GramBalances />
       <div className="flex items-start gap-3 border-t border-brand-border pt-3">
         <FiLink size={16} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
         <div className="min-w-0">

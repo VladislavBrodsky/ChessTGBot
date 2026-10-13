@@ -303,7 +303,8 @@
     "home_screen_verify_network_error": "Error de red durante la verificación de pantalla de inicio.",
     "subscription_verified": "¡Suscripción verificada con éxito! Ya puedes reclamar tu recompensa de ELO/XP.",
     "subscription_verify_failed": "Verificación fallida. Asegúrate de haberte unido al canal/grupo primero.",
-    "subscription_verify_network_error": "Error de red durante la verificación de suscripción."
+    "subscription_verify_network_error": "Error de red durante la verificación de suscripción.",
+    "claim_failed": "No se pudo reclamar la recompensa. Actualiza e inténtalo de nuevo."
   },
   "Academy": {
     "complete_lesson": "Completar lección",
@@ -1214,5 +1215,25 @@
     "brazil": "Brasil",
     "daily_gain": "Diario {gain}",
     "top_50": "Top 50"
+  },
+  "Gram": {
+    "equivalent": "Valor estimado de USDT en GRAM",
+    "rate_unavailable": "Tipo de cambio no disponible",
+    "rate_updated": "{provider} · actualizado a las {time}",
+    "rate_stale": "{provider} · último tipo conocido a las {time}",
+    "earned": "Recompensas GRAM ganadas",
+    "separate": "Créditos de recompensa de la app, separados de USDT. Los retiros de GRAM aún no están disponibles.",
+    "referral_reward": "Gana 1 GRAM por amigo elegible",
+    "referral_rules": "Tu amigo debe entrar con tu enlace, depositar USDT y completar 3 partidas con apuesta contra personas. La recompensa se acredita una sola vez al cumplir los requisitos.",
+    "referral_qualified": "{count, plural, one {# amigo cumplió los requisitos} other {# amigos cumplieron los requisitos}}",
+    "privacy_title": "Unirse a la clasificación GRAM",
+    "privacy_description": "Comparte el valor estimado de tu cartera: equivalente de USDT más GRAM ganado. Desactivado por defecto.",
+    "privacy_error": "No se pudo guardar la preferencia. Inténtalo de nuevo.",
+    "ranking_metric": "Cartera GRAM estimada",
+    "ranking_hint": "Jugadores reales · participación voluntaria",
+    "ranking_retry": "Los tipos de cambio no están disponibles. Inténtalo de nuevo.",
+    "ranking_empty": "Aún no hay saldos compartidos. Puedes unirte en Ajustes.",
+    "join_button": "Unirse",
+    "referral_minimum": "Cada partida válida debe incluir al menos {moves} jugadas individuales."
   }
 }

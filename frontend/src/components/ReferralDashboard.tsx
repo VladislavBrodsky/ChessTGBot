@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { FaChartLine, FaCopy, FaQrcode, FaShareAlt, FaUsers } from 'react-icons/fa';
+import { GramAmount } from '@/components/ui/GramAmount';
 import { useUser } from '@/context/UserContext';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { telegramHaptic } from '@/lib/telegram';
@@ -15,6 +16,9 @@ import { ActionLink, SectionHeader } from './ui/PageHeader';
 
 interface EarningPoint { date: string; amount: number; }
 interface ReferralStats {
+  qualifying_min_moves?: number;
+  gram_rewards_nano?: string;
+  gram_rewarded_referrals?: number;
   total_referrals: number;
   active_referrals: number;
   total_earnings_usdt: number;
@@ -42,6 +46,7 @@ function EarningsChart({ data, label }: { data: EarningPoint[]; label: string })
 /** Referral metrics come only from /users/referrals/stats; unavailable is never shown as zero. */
 export default function ReferralDashboard({ referralCode, botUsername }: ReferralDashboardProps = {}) {
   const t = useTranslations('Referral');
+  const tg = useTranslations('Gram');
   const ti = useTranslations('Index');
   const locale = useLocale();
   const { stats: user, syncStats } = useUser();
@@ -95,6 +100,13 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
             <p className="ui-stat__meta">{t('earnings_label')} · USDT</p>
           </div>
         </div>
+        <Card variant="solid" className="space-y-2 p-3">
+          <h3 className="t-title-3">{tg("referral_reward")}</h3>
+          <p className="t-caption text-brand-muted">{tg("referral_rules")}</p>
+          {typeof referralStats.qualifying_min_moves === "number" && <p className="t-caption text-brand-muted">{tg("referral_minimum", { moves: referralStats.qualifying_min_moves })}</p>}
+          <GramAmount nano={referralStats.gram_rewards_nano} className="t-label text-brand-action" />
+          {typeof referralStats.gram_rewarded_referrals === "number" && <p className="t-caption text-brand-muted">{tg("referral_qualified", { count: referralStats.gram_rewarded_referrals })}</p>}
+        </Card>
         {Array.isArray(referralStats.earnings_chart) && referralStats.earnings_chart.length > 0 && (
           <Card variant="solid" className="p-3">
             <div className="mb-1 flex items-center gap-2 text-caption font-medium text-brand-muted"><FaChartLine aria-hidden="true" />{t('chart_label')}</div>

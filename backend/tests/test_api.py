@@ -300,7 +300,7 @@ async def test_profile_metrics_calculations(client, db_session):
 
 
 @pytest.mark.asyncio
-async def test_subscription_tasks_verification(client, db_session):
+async def test_subscription_tasks_verification(client, db_session, monkeypatch):
     if hasattr(db_session, "users"):
         return
 
@@ -343,7 +343,16 @@ async def test_subscription_tasks_verification(client, db_session):
         init_data = f"auth_date={quote(auth_date)}&user={quote(user_str)}&hash={calculated_hash}"
         headers = {"X-Telegram-Init-Data": init_data}
 
-        # Verify task 201 (join channel)
+        # No token/SQLite bypass may unlock a financial subscription prize.
+        res_unavailable = await client.post("/api/v1/gamification/tasks/201/verify", headers=headers)
+        assert res_unavailable.status_code == 503
+        from unittest.mock import AsyncMock
+        from app.services import gram_rewards
+        proof = AsyncMock(return_value=False)
+        monkeypatch.setattr(gram_rewards, "verify_channel_membership", proof)
+        assert (await client.post("/api/v1/gamification/tasks/201/verify", headers=headers)).status_code == 400
+        proof.return_value = True
+        # Verify task 201 with explicit membership proof.
         res = await client.post("/api/v1/gamification/tasks/201/verify", headers=headers)
         assert res.status_code == 200
         data = res.json()

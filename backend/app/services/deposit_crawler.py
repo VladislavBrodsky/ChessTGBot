@@ -221,6 +221,8 @@ async def start_deposit_crawler():
                                         db.add(tx_fee)
                                         
                                         await db.commit()
+                                        from app.services.gram_rewards import check_referral_after_deposit
+                                        await check_referral_after_deposit(db, user.id)
                                         await db.refresh(user)
                                         
                                         # Send telegram notification

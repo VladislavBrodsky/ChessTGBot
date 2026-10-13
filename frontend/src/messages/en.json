@@ -303,7 +303,8 @@
     "home_screen_verify_network_error": "Network error during home screen verification.",
     "subscription_verified": "Subscription verified successfully! You can now claim your ELO/XP reward.",
     "subscription_verify_failed": "Verification failed. Please make sure you have joined the channel/group first.",
-    "subscription_verify_network_error": "Network error during subscription verification."
+    "subscription_verify_network_error": "Network error during subscription verification.",
+    "claim_failed": "Could not claim this reward. Refresh and try again."
   },
   "Academy": {
     "complete_lesson": "Complete lesson",
@@ -1214,5 +1215,25 @@
     "brazil": "Brazil",
     "daily_gain": "Daily {gain}",
     "top_50": "Top 50"
+  },
+  "Gram": {
+    "equivalent": "Estimated USDT value in GRAM",
+    "rate_unavailable": "Rate unavailable",
+    "rate_updated": "{provider} · updated {time}",
+    "rate_stale": "{provider} · last known rate {time}",
+    "earned": "Earned GRAM rewards",
+    "separate": "App reward credits, separate from USDT. GRAM withdrawals are not available yet.",
+    "referral_reward": "Earn 1 GRAM per qualified friend",
+    "referral_rules": "Your friend must join through your link, deposit USDT and complete 3 human wager matches. Rewards are credited once after qualification.",
+    "referral_qualified": "{count, plural, one {# friend qualified} other {# friends qualified}}",
+    "privacy_title": "Join the GRAM leaderboard",
+    "privacy_description": "Share your estimated portfolio value: USDT equivalent plus earned GRAM. Off by default.",
+    "privacy_error": "Could not save your leaderboard preference. Try again.",
+    "ranking_metric": "Estimated GRAM portfolio",
+    "ranking_hint": "Real players · opt-in balances",
+    "ranking_retry": "Rates are temporarily unavailable. Try again.",
+    "ranking_empty": "No shared balances yet. Join in Settings when you choose.",
+    "join_button": "Join",
+    "referral_minimum": "Each qualifying match needs at least {moves} individual moves."
   }
 }

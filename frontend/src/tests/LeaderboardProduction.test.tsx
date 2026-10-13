@@ -18,9 +18,10 @@ jest.mock('@/hooks/useSWRFetch', () => ({ useSWRFetch: (url: string) => {
   mockAPIReads(url);
   return {
   isLoading: false,
-  data: [{ telegram_id: 42, first_name: 'API player', elo: 1425, xp: 600, rank: 1, games_played: 10, win_rate: 60, study_streak: 2 }],
+  data: url.endsWith("/gram") ? { quote: { gram_per_usdt: "0.5", fetched_at: new Date().toISOString(), provider: "TonAPI", display_only: true, stale: false }, players: [{ telegram_id: 42, first_name: "API player", gram_value: "12.5", rank: 1 }] } : [{ telegram_id: 42, first_name: 'API player', elo: 1425, xp: 600, rank: 1, games_played: 10, win_rate: 60, study_streak: 2 }],
   endpoint: url,
 }; } }));
+jest.mock('@/context/ReducedMotionContext', () => ({ useReducedMotionPreference: () => ({ reducedMotion: true }) }));
 jest.mock('@/hooks/useTelemetry', () => ({ useTelemetry: () => ({ trackEvent: mockTrackEvent }) }));
 jest.mock('@/lib/api', () => ({ getFullPhotoUrl: (src: string) => src }));
 jest.mock('next/dynamic', () => ({ __esModule: true, default: () => function Preview() { return <p>Sample preview content</p>; } }));
@@ -35,14 +36,13 @@ describe('Production leaderboard presentation', () => {
     mockPreviewAllowed = false;
     render(<Leaderboard />);
     expect(screen.getByText('API player')).toBeVisible();
-    expect(screen.getByText('1,425')).toBeVisible();
-    expect(screen.getByText('ELO')).toBeVisible();
+    expect(screen.getByText('≈ 12.5 GRAM')).toBeVisible();
+    expect(screen.queryByText('ELO')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: mockMessages.LeaderboardPreview.open })).not.toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(screen.queryByText(/GRAM/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Demo|fictional|simulation/i)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: mockMessages.Index.nav_learn }));
-    expect(screen.getByText('600')).toBeVisible();
-    expect(screen.getByText('XP')).toBeVisible();
+    expect(screen.getByText('600 XP')).toBeVisible();
   });
 
   it('shows the local preview directly without rendering or fetching API standings', () => {

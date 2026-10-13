@@ -298,6 +298,7 @@ async def db_session(test_engine):
         # Clean up database tables to prevent cross-test state leakage
         from sqlalchemy import text
         tables = [
+            "gram_rewards",
             "unlocked_puzzles",
             "solved_puzzles",
             "unlocked_lessons",

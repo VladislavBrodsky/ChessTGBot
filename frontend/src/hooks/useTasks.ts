@@ -10,6 +10,8 @@ export interface Task {
   progress: number;
   target_count: number;
   xp_reward: number;
+  gram_reward_nano?: string;
+  gram_reward_mode?: string;
   completed: boolean;
   claimed: boolean;
 }

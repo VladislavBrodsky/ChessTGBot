@@ -49,7 +49,8 @@ async def _add_games(db: AsyncSession, telegram_id: int, n: int, moves: int):
         db.add(GameHistory(
             game_id=f"syb_{uuid.uuid4().hex[:12]}",
             white_player_id=telegram_id,
-            black_player_id=-1,
+            black_player_id=telegram_id + 999999,
+            game_type="online", bid_amount=100, result_type="checkmate",
             total_moves=moves,
         ))
     await db.commit()

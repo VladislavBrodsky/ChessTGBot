@@ -11,7 +11,7 @@ from app.models.xp_transaction import XpTransaction
 from app.services.gamification_service import GamificationService
 
 @pytest.mark.asyncio
-async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_session: AsyncSession):
+async def test_withdrawal_waits_for_confirmation(client: AsyncClient, db_session: AsyncSession, monkeypatch):
     # Skip if using mock session
     if hasattr(db_session, "users"):
         return
@@ -34,6 +34,10 @@ async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_ses
     init_data = f"user={quote(json.dumps({'id': telegram_id, 'first_name': 'WithdrawUser'}))}"
     headers = {"X-Telegram-Init-Data": init_data}
 
+    from unittest.mock import AsyncMock
+    from app.services.telegram_bot import TelegramService
+    confirmation = AsyncMock(return_value=True)
+    monkeypatch.setattr(TelegramService, "send_withdrawal_confirmation_request", confirmation)
     # 2. Initiate withdrawal of $20.00 (2000 cents)
     dest_address = "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs"
     res = await client.post(
@@ -43,16 +47,19 @@ async def test_withdrawal_queue_admin_approve_reject(client: AsyncClient, db_ses
     )
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "completed"
+    assert data["status"] == "pending_confirmation"
     assert data["new_balance"] == 3000
 
-    # 3. Verify it is logged as completed in database (auto-approved)
+    # 3. Money is held pending second-factor confirmation; no payout is made.
     result = await db_session.execute(
         select(Transaction).where(Transaction.user_id == telegram_id, Transaction.type == "withdrawal")
     )
     tx_auto = result.scalars().first()
     assert tx_auto is not None
-    assert tx_auto.reference_id.startswith("mock_")
+    assert tx_auto.status == "pending_confirmation"
+    confirmation.assert_awaited_once()
+    assert confirmation.call_args.kwargs["tx_id"] == tx_auto.id
+    assert confirmation.call_args.kwargs["nonce"]
 
 
 

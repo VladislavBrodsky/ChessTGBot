@@ -1,3 +1,4 @@
+from app.services.gram_rewards import dispatch_referral_notifications
 import chess
 import time
 import asyncio
@@ -959,6 +960,7 @@ class GameService:
                     state.black_xp_gained = 0
 
                     await session.commit()
+                    await dispatch_referral_notifications(session)
 
                     print(f"[GameService] Bot game history saved: {game_id} ({result_type}, winner={state.winner})")
                 except Exception as hist_err:
@@ -1416,6 +1418,7 @@ class GameService:
                 await GamificationService.check_referral_game_milestone(session, white_user.id)
                 await GamificationService.check_referral_game_milestone(session, black_user.id)
                 await session.commit()
+                await dispatch_referral_notifications(session)
 
                 print(f"[GameService] Game history saved: {game_id} ({result_type}, winner={state.winner})")
             except Exception as hist_err:

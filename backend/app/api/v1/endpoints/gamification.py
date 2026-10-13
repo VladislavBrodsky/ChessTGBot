@@ -44,6 +44,8 @@ class UserTaskResponse(BaseModel):
     title_key: str
     description_key: str
     xp_reward: int
+    gram_reward_nano: str = "0"
+    gram_reward_mode: str = "claim"
     target_count: int
     icon: Optional[str] = None
 
@@ -70,6 +72,8 @@ async def get_my_tasks(
     )
 
     tasks_list = []
+    from app.services.gram_rewards import task_reward_nano
+    from app.models.gamification import TaskType
     for user_task, task_def in result.all():
         tasks_list.append(UserTaskResponse(
             id=user_task.id,
@@ -80,27 +84,30 @@ async def get_my_tasks(
             title_key=task_def.title_key,
             description_key=task_def.description_key,
             xp_reward=task_def.xp_reward,
+            gram_reward_nano=str(task_reward_nano(task_def)),
+            gram_reward_mode="referral" if task_def.task_type == TaskType.REFER else "claim",
             target_count=task_def.target_count,
             icon=task_def.icon
         ))
     return tasks_list
 
-@router.post("/tasks/{task_id}/claim")
+@router.post("/tasks/{task_id}/claim", dependencies=[Depends(rate_limit(12, 60))])
 async def claim_task(
     task_id: int,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Claim a completed task reward."""
-    """Claim a completed task reward."""
     updated_user, message = await GamificationService.claim_task(db, current_user.id, task_id)
     
     if not updated_user:
         raise HTTPException(status_code=400, detail=message)
         
-    return {"status": "success", "new_xp": updated_user.xp, "new_level": updated_user.level}
+    from app.services.gram_rewards import earned_gram_nano
+    return {"status": "success", "new_xp": updated_user.xp, "new_level": updated_user.level,
+            "gram_rewards_nano": str(await earned_gram_nano(db, current_user.id))}
 
-@router.post("/tasks/{task_id}/verify")
+@router.post("/tasks/{task_id}/verify", dependencies=[Depends(rate_limit(12, 60))])
 async def verify_task(
     task_id: int,
     current_user: User = Depends(get_current_user),
@@ -111,92 +118,32 @@ async def verify_task(
     """
     from app.models.gamification import Task, UserTask
     from sqlalchemy import select, and_
-    from app.core.config import get_settings
-    import logging
-    
-    logger = logging.getLogger(__name__)
-    settings = get_settings()
+    from app.services.gram_rewards import verify_channel_membership
 
-    # 1. Lock the user task first using with_for_update to prevent concurrent verification updates
-    user_task_result = await db.execute(
-        select(UserTask)
-        .where(and_(UserTask.user_id == current_user.id, UserTask.task_id == task_id))
-        .with_for_update()
-    )
-    user_task = user_task_result.scalars().first()
+    definition = (await db.execute(select(Task).where(Task.id == task_id))).scalars().first()
+    if not definition:
+        raise HTTPException(status_code=404, detail="Task definition not found")
+    if definition.title_key in {"join_channel", "join_chat"}:
+        try:
+            joined = await verify_channel_membership(current_user.telegram_id, definition.title_key)
+        except Exception:
+            raise HTTPException(status_code=503, detail="Membership verification temporarily unavailable. Please try again.")
+        if not joined:
+            raise HTTPException(status_code=400, detail="Join the required channel or group before verifying.")
+    elif definition.title_key != "add_to_home_screen":
+        raise HTTPException(status_code=400, detail="This task cannot be verified here")
+
+    # External verification finishes before row locks. Installation is a
+    # client-reported one-time action; it is never described as server proof.
+    user_task = (await db.execute(select(UserTask).where(and_(
+        UserTask.user_id == current_user.id, UserTask.task_id == task_id,
+    )).with_for_update().execution_options(populate_existing=True))).scalars().first()
     if not user_task:
         raise HTTPException(status_code=404, detail="Task not found or not assigned")
-
-    # 2. Get the task definition separately
-    task_def_result = await db.execute(select(Task).where(Task.id == task_id))
-    task_def = task_def_result.scalars().first()
-    if not task_def:
-        raise HTTPException(status_code=404, detail="Task definition not found")
-
-    if user_task.completed:
-        return {"status": "success", "completed": True, "message": "Task already completed"}
-
-    if task_def.title_key == "add_to_home_screen":
-        user_task.progress = 1
-        user_task.completed = True
-        await db.commit()
-        return {"status": "success", "completed": True}
-
-    chat_username = None
-    if task_def.title_key == "join_channel":
-        chat_username = "@chess_hub"
-    elif task_def.title_key == "join_chat":
-        chat_username = "@chesshub_chat"
-    else:
-        raise HTTPException(status_code=400, detail="Only subscription tasks can be verified via this endpoint")
-
-    from app.core.database import engine
-    is_sqlite = engine.url.drivername.startswith("sqlite")
-    if is_sqlite or not settings.TELEGRAM_BOT_TOKEN or settings.TELEGRAM_BOT_TOKEN == "123456789:test_token":
-        user_task.progress = 1
-        user_task.completed = True
-        await db.commit()
-        return {"status": "success", "completed": True, "message": "Verification bypassed (Dev mode active)"}
-
-    from app.services.telegram_bot import TelegramService
-    bot = TelegramService.application.bot if (TelegramService.application and TelegramService.application.bot) else None
-    if not bot:
-        from telegram import Bot
-        bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
-
-    try:
-        member = await bot.get_chat_member(chat_id=chat_username, user_id=current_user.telegram_id)
-        if member.status in ["member", "creator", "administrator", "restricted"]:
-            user_task.progress = 1
-            user_task.completed = True
-            await db.commit()
-            return {"status": "success", "completed": True}
-        else:
-            raise HTTPException(status_code=400, detail="You have not joined this channel or group yet.")
-    except HTTPException:
-        raise
-    except Exception as e:
-        from telegram.error import BadRequest
-        from app.core.alerts import is_transient_telegram_error
-        if isinstance(e, BadRequest) or "chat not found" in str(e).lower() or "user not found" in str(e).lower():
-            logger.warning(f"Telegram subscription check failed for {chat_username} (User not joined): {e}")
-            raise HTTPException(
-                status_code=400,
-                detail=f"Verification failed: Please make sure you have joined {chat_username}."
-            )
-        if is_transient_telegram_error(e):
-            # Momentary Telegram API outage (timeout / 502) — retryable, not
-            # an actionable backend fault, so WARNING (no admin alert).
-            logger.warning(f"Telegram subscription verification for {chat_username} hit a transient Telegram API error: {e}")
-            raise HTTPException(
-                status_code=503,
-                detail="Verification service temporarily unavailable. Please try again."
-            )
-        logger.error(f"Telegram subscription verification failed for {chat_username}: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail="Verification service temporarily unavailable"
-        )
+    user_task.progress = 1
+    user_task.completed = True
+    await db.commit()
+    return {"status": "success", "completed": True}
 
 @router.put("/language")
 async def update_language(
