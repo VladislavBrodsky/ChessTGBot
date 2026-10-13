@@ -41,6 +41,7 @@ Tailwind 4 reads tokens **only** from `@theme`. There is no `tailwind.config.js`
 2. **One primary action per view.** One emerald gradient button/link in the first viewport; everything else is secondary or ghost.
 3. **Calm under pressure.** Quiet surfaces, one border, restrained accent. Motion and glow are reserved for earned moments (win, level-up, box reveal).
 4. **Honest data.** Loading ≠ empty ≠ zero ≠ error. Never invent counts, rewards, fees, balances or testimonials to fill a card.
+   Planned prize concepts belong in separate, explicitly labelled previews with no entry control or live progress. Keep the active free box's odds and rewards distinct. A GRAM win reveal, confetti, balance, or payout state requires a server-confirmed award; see `marketing/GRAM_VAULT_SEASON_SPEC.md`.
 5. **Tokens, not values.** No raw hex, no raw palette classes, no magic pixels. If a value is missing, add a token.
 6. **Thumb-first.** Primary controls live in the lower two thirds. Hit areas are ≥44px.
 7. **Predictable layout.** Skeletons match final geometry; layout shift is a bug (budget CLS ≤ 0.08, **⚙ enforced** by `e2e/layout-shift.spec.ts`).

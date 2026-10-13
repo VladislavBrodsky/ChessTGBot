@@ -24,6 +24,7 @@ import FirstRunCoordinator from '@/components/FirstRunCoordinator';
 import NotificationModal from '@/components/NotificationModal';
 import DailyGoalsBento from '@/components/DailyGoalsBento';
 import EngagementQuest from '@/components/EngagementQuest';
+import { GramVaultPreview } from '@/components/GramVaultPreview';
 import QuickMatchModal from '@/components/game/QuickMatchModal';
 import { telegramHaptic } from '@/lib/telegram';
 
@@ -141,6 +142,7 @@ export default function Home() {
             </ActionLink>
           </div>
           <EngagementQuest />
+          <GramVaultPreview />
           <div className="w-full"><ArenaBanner /></div>
           <div className="ui-quick-grid">
             <QuickTile href={`/${locale}/academy`} icon={<FaGraduationCap size={20} />} tone="info" label={t('academy')} />

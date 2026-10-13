@@ -1106,6 +1106,18 @@
       "gold_duplicate": "250 XP · duplicate gold border"
     }
   },
+  "GramVaultPreview": {
+    "badge": "Planned",
+    "title": "100 GRAM Vault",
+    "summary": "Future season: one 100 GRAM prize across 1,000 boxes.",
+    "status": "Preview only. The season has not started.",
+    "current_box": "Your current free box cannot award GRAM.",
+    "phase_one": "Boxes 1–800: no GRAM prize.",
+    "phase_two": "Boxes 801–1,000: one randomly chosen winning box.",
+    "chance": "Each of the final 200 positions starts with a 1-in-200 chance. The chance for the next box rises after each non-winning box.",
+    "details": "See planned rules",
+    "close": "Close"
+  },
   "Common": {
     "dialog": "Dialog",
     "close": "Close",

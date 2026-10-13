@@ -1106,6 +1106,18 @@
       "gold_duplicate": "250 XP · marco repetido"
     }
   },
+  "GramVaultPreview": {
+    "badge": "Planeado",
+    "title": "Bóveda de 100 GRAM",
+    "summary": "Temporada futura: un premio de 100 GRAM entre 1.000 cajas.",
+    "status": "Solo una vista previa. La temporada no ha comenzado.",
+    "current_box": "Tu caja gratuita actual no puede otorgar GRAM.",
+    "phase_one": "Cajas 1–800: sin premio GRAM.",
+    "phase_two": "Cajas 801–1.000: una caja ganadora elegida al azar.",
+    "chance": "Cada una de las últimas 200 posiciones empieza con una probabilidad de 1 entre 200. La probabilidad de la siguiente caja aumenta tras cada caja sin premio.",
+    "details": "Ver reglas previstas",
+    "close": "Cerrar"
+  },
   "Common": {
     "dialog": "Diálogo",
     "close": "Cerrar",

@@ -1106,6 +1106,18 @@
       "gold_duplicate": "250 XP · 重复金色头像框"
     }
   },
+  "GramVaultPreview": {
+    "badge": "规划中",
+    "title": "100 GRAM 宝库",
+    "summary": "未来赛季：1,000 个宝箱中有一份 100 GRAM 奖品。",
+    "status": "仅为预览。赛季尚未开始。",
+    "current_box": "当前的免费宝箱不会获得 GRAM。",
+    "phase_one": "宝箱 1–800：没有 GRAM 奖品。",
+    "phase_two": "宝箱 801–1,000：随机选定一个获奖宝箱。",
+    "chance": "最后 200 个位置最初各有 1/200 的机会。每开出一个未中奖宝箱，下一个宝箱的机会就会提高。",
+    "details": "查看拟定规则",
+    "close": "关闭"
+  },
   "Common": {
     "dialog": "对话框",
     "close": "关闭",

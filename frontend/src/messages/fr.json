@@ -1106,6 +1106,18 @@
       "gold_duplicate": "250 XP · cadre déjà obtenu"
     }
   },
+  "GramVaultPreview": {
+    "badge": "Prévu",
+    "title": "Coffre de 100 GRAM",
+    "summary": "Saison future : un prix de 100 GRAM parmi 1 000 boîtes.",
+    "status": "Aperçu uniquement. La saison n’a pas commencé.",
+    "current_box": "Votre boîte gratuite actuelle ne peut pas donner de GRAM.",
+    "phase_one": "Boîtes 1 à 800 : aucun prix GRAM.",
+    "phase_two": "Boîtes 801 à 1 000 : une boîte gagnante choisie au hasard.",
+    "chance": "Chacune des 200 dernières positions a d’abord une chance sur 200. La chance de la boîte suivante augmente après chaque boîte non gagnante.",
+    "details": "Voir les règles prévues",
+    "close": "Fermer"
+  },
   "Common": {
     "dialog": "Dialogue",
     "close": "Fermer",
