@@ -152,6 +152,7 @@ export function ChessEcosystemOrbit() {
   const outerRadius = "calc(50cqw - 28px)";
   const innerRadius = "calc((50cqw - 28px) * 0.60)";
   const activeItem = hovered ?? selected;
+  const motionPaused = !active || paused || hovered !== null;
   const inspectButton = (item: OrbitItem, labelled = false) => (
     <button type="button" key={item.id} className={labelled ? "ecosystem-piece-button" : "ecosystem-node"}
       aria-label={item.name + " · " + item.tag} aria-pressed={selected?.id === item.id}
@@ -167,8 +168,8 @@ export function ChessEcosystemOrbit() {
       <div ref={ref} className="ecosystem-orbit" data-active={active && !paused && !hovered}>
         <div className="ecosystem-orbit-stage">
           <div className="ecosystem-core"><KingIcon className="size-7" /><span>ARENA</span></div>
-          <div className="ecosystem-chess-ring"><OrbitingCircles radius={innerRadius} duration={32} delay={0} iconSize={44}>{CHESS_PIECES.map((item) => inspectButton(item))}</OrbitingCircles></div>
-          <OrbitingCircles radius={outerRadius} duration={44} delay={0} reverse iconSize={44}>{CRYPTO_TOKENS.map((item) => inspectButton(item))}</OrbitingCircles>
+          <div className="ecosystem-chess-ring"><OrbitingCircles paused={motionPaused} radius={innerRadius} duration={32} delay={0} iconSize={44}>{CHESS_PIECES.map((item) => inspectButton(item))}</OrbitingCircles></div>
+          <OrbitingCircles paused={motionPaused} radius={outerRadius} duration={44} delay={0} reverse iconSize={44}>{CRYPTO_TOKENS.map((item) => inspectButton(item))}</OrbitingCircles>
         </div>
         <div className="ecosystem-piece-grid">{CHESS_PIECES.map((item) => inspectButton(item, true))}</div>
       </div>

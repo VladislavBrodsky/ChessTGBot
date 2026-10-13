@@ -6,6 +6,7 @@ interface OrbitingCirclesProps {
   className?: string;
   children?: React.ReactNode;
   reverse?: boolean;
+  paused?: boolean;
   duration?: number;
   delay?: number;
   radius?: number | string;
@@ -17,6 +18,7 @@ export function OrbitingCircles({
   className = "",
   children,
   reverse = false,
+  paused = false,
   duration = 20,
   delay = 10,
   radius = 120,
@@ -59,6 +61,8 @@ export function OrbitingCircles({
                 "--duration": `${duration}s`,
                 "--angle": angle,
                 "--icon-size": `${iconSize}px`,
+                // Inline state outranks the utility animation shorthand.
+                animationPlayState: paused ? "paused" : "running",
                 animationDelay: `-${(delay / Math.max(1, count)) * index}s`,
               } as React.CSSProperties
             }

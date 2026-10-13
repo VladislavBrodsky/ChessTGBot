@@ -38,7 +38,7 @@ Typography uses Onest for explanations, controls, and 14px metadata; Barlow Cond
 | [Bento Grid](https://magicui.design/docs/components/bento-grid) | `magicui/bento-grid.tsx`, `RewardsBento`, `FeatureCardIntro` | Natural rows; 1/2/3 columns at 640/1024px; shared Card; complete copy; always visible 44px actions; demo in flow |
 | [Animated List](https://magicui.design/docs/components/animated-list) | `magicui/animated-list.tsx`, `LiveSettlementFeed` | Deterministic first frame; bounded visible item count; stable keys; complete rows; cleaned-up timer; hover/focus pause and reduced motion |
 | [Icon Cloud](https://magicui.design/docs/components/icon-cloud) | `magicui/icon-cloud.tsx` | Local `children` and `center` API, four SVG assets and a gold king core; bounded perspective orbit; no token/core/legend collision; separate pause dock |
-| [Orbiting Circles](https://magicui.design/docs/components/orbiting-circles) | `magicui/orbiting-circles.tsx`, `ChessEcosystemOrbit` | Numeric or CSS-length `radius`; consistent `--orbit-distance`, `--duration`, `--angle`, `--icon-size`; responsive container geometry; all eleven selectors accessible |
+| [Orbiting Circles](https://magicui.design/docs/components/orbiting-circles) | `magicui/orbiting-circles.tsx`, `ChessEcosystemOrbit` | Numeric or CSS-length `radius`; explicit `paused` prop; consistent `--orbit-distance`, `--duration`, `--angle`, `--icon-size`; responsive container geometry; all eleven selectors accessible |
 
 The reference demos include their own palettes, fixed visual stages, masking, and positioning. Translate their behavior into our layout and tokens. Do not copy their wrapper geometry unchanged into production. The local IconCloud API intentionally differs from the current registry's `icons`/`images` API; substituting that source requires an explicit migration of consumers and controls.
 
@@ -46,7 +46,7 @@ Below 340px of available orbit-panel width, keep the five currency/platform toke
 
 ## Motion, interaction, and verification
 
-Use `useShowcaseActivity` for viewport, tab visibility, and reduced-motion preferences. Clear every timer, animation frame, observer, and listener. Vault frames are capped; globe/orbit/list work stops offscreen. Prefer transform/opacity motion. Financial rows remain sharp. Native pause controls use shared Button, accessible names, `aria-pressed`, and keyboard focus. Keep hover/focus inspection temporary and click/tap selection persistent.
+Use `useShowcaseActivity` for viewport, tab visibility, and reduced-motion preferences. Tailwind animation utilities outrank component-layer declarations, and their shorthand resets play state. Pass the combined lifecycle/user/hover pause state to `OrbitingCircles`; its inline `animationPlayState` reliably pauses both rings. Verify computed animation state as well as the control’s pressed state. Clear every timer, animation frame, observer, and listener. Vault frames are capped; globe/orbit/list work stops offscreen. Prefer transform/opacity motion. Financial rows remain sharp. Native pause controls use shared Button, accessible names, `aria-pressed`, and keyboard focus. Keep hover/focus inspection temporary and click/tap selection persistent.
 
 Never hide a layout problem with root `overflow-x: hidden`. Interactive panels use `data-interactive-workspace` so the phone action does not cover their controls. QR overlays do not reserve page width. Respect symmetric `--site-safe-gutter` and top/bottom insets.
 
