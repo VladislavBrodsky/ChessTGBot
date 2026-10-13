@@ -5,7 +5,7 @@
   "category": "Psychology",
   "hook": "What happens to your brain when the clock drops below 6 seconds",
   "text": "What happens to your brain when the clock drops below 6 seconds\n\nHeart rate spikes to 140+ BPM.\nPeripheral vision narrows into tunnel vision.\nConscious calculation shuts down.\n\nUnder extreme time trouble, only trained pattern recognition survives.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -46,5 +46,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-13T23:35:00Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110152349683479019",
+    "reply_id": "2110152351935803528",
+    "root_url": "https://x.com/defi_ambassador/status/2110152349683479019"
+  },
+  "published": {
+    "root_id": "2110152349683479019",
+    "at": "2026-10-13T23:35:00Z"
   }
 }

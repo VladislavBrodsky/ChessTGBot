@@ -184,6 +184,11 @@
       "subhead": "Calculated to the end.",
       "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
       "cta_label": "Play Next Puzzle"
+    },
+    "sent": {
+      "at": "2026-10-13T22:32:32Z",
+      "claimed": true,
+      "message_id": 18
     }
   },
   "approved_by": "cmo_orchestrator"

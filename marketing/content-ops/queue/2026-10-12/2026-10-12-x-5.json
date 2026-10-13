@@ -5,7 +5,7 @@
   "category": "Tactical Matrix",
   "hook": "The 4 tactical motifs that decide 85% of blitz games",
   "text": "The 4 tactical motifs that decide 85% of blitz games\n\n1. Deflection (pull defender away)\n2. Pin (freeze critical piece)\n3. Fork (attack 2 targets)\n4. Decoy (fatal square)\n\nSave this matrix before your next session 🔖",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -46,5 +46,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-13T23:04:11Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110144593752719650",
+    "reply_id": "2110144595904401696",
+    "root_url": "https://x.com/defi_ambassador/status/2110144593752719650"
+  },
+  "published": {
+    "root_id": "2110144593752719650",
+    "at": "2026-10-13T23:04:11Z"
   }
 }
