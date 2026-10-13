@@ -80,8 +80,9 @@
     }
   ],
   "relatedSlugs": [
-    "why-telegram-mini-apps-for-chess",
-    "opening-mastery-tactics"
+    "chess-cheating-scandals-and-stockfish-telemetry",
+    "synchronous-arena-matchmaking-vs-stale-queues",
+    "why-telegram-mini-apps-for-chess"
   ],
   "metaDescription": "A closer look at legal-move validation, match clocks, and the difference between a platform balance and a wallet withdrawal.",
   "sources": [

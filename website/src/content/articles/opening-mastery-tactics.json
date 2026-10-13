@@ -45,7 +45,11 @@
     {
       "type": "chess_position",
       "fen": "rnbqkbnr/pppp1ppp/8/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 1 2",
-      "moves": ["e4", "e5", "Qh5"],
+      "moves": [
+        "e4",
+        "e5",
+        "Qh5"
+      ],
       "caption": "After 1.e4 e5 2.Qh5, Black should inspect the queen’s attacks before developing automatically."
     },
     {
@@ -71,8 +75,9 @@
     }
   ],
   "relatedSlugs": [
-    "elo-xp-progression-guide",
-    "fair-play-in-web3-chess"
+    "top-5-opening-traps-every-beginner-falls-into",
+    "the-fried-liver-attack-punish-weak-f7-pawns",
+    "survive-the-blackburne-shilling-gambit-trap"
   ],
   "updatedAt": "2026-10-07",
   "metaDescription": "Learn how to check early queen attacks, avoid loose pieces, and use opening principles when a blitz opponent sets a trap.",

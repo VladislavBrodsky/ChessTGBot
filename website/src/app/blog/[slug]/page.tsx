@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Badge, Eyebrow } from "@/components/ui/Badge";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -12,7 +13,6 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { ChessPositionCard } from "@/components/ChessPositionCard";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE } from "@/lib/config";
 import { Icon } from "@/icons";
@@ -27,8 +27,53 @@ interface PageProps {
 }
 
 // Articles scheduled for later are rendered on demand once they go live.
-export const revalidate = 600;
+export const revalidate = 60;
 export const dynamicParams = true;
+
+function renderFormattedText(text: string): ReactNode {
+  if (!text || !text.includes("[")) return text;
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const label = match[1];
+    const href = match[2];
+    const isInternal = href.startsWith("/");
+    if (isInternal) {
+      parts.push(
+        <Link
+          key={`${match.index}-${href}`}
+          href={href}
+          className="font-medium text-fg underline decoration-line-strong underline-offset-4 hover:decoration-fg transition-colors"
+        >
+          {label}
+        </Link>
+      );
+    } else {
+      parts.push(
+        <a
+          key={`${match.index}-${href}`}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-fg underline decoration-line-strong underline-offset-4 hover:decoration-fg transition-colors"
+        >
+          {label}
+        </a>
+      );
+    }
+    lastIndex = linkRegex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts.length > 0 ? parts : text;
+}
 
 export async function generateStaticParams() {
   return getPublishedPosts().map((post) => ({
@@ -318,7 +363,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     key={index}
                     className="text-body text-fg-muted leading-relaxed"
                   >
-                    {block.text}
+                    {renderFormattedText(block.text ?? "")}
                   </p>
                 );
               case "quote":
@@ -327,7 +372,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     key={index}
                     className="my-6 rounded-control border-s-4 border-line-strong bg-inset p-5 text-lead font-medium text-fg"
                   >
-                    {block.text}
+                    {renderFormattedText(block.text ?? "")}
                   </blockquote>
                 );
               case "callout":
@@ -337,7 +382,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     className="my-6 rounded-control bg-mint/50 border border-line p-6 text-fg"
                   >
                     <p className="text-body font-medium text-fg">
-                      {block.text}
+                      {renderFormattedText(block.text ?? "")}
                     </p>
                   </div>
                 );
@@ -363,7 +408,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                         <span className="grid size-6 shrink-0 place-items-center rounded-full bg-inset font-mono text-overline font-bold text-fg mt-0.5">
                           {i + 1}
                         </span>
-                        <span>{item}</span>
+                        <span>{renderFormattedText(item)}</span>
                       </li>
                     ))}
                   </ul>
@@ -432,7 +477,6 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       <Footer />
 
-      <QrDock />
       <MobileCta />
     </div>
   );

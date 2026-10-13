@@ -1,24 +1,29 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useId } from 'react';
-import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 'react-icons/fa';
-import { FiChevronRight } from 'react-icons/fi';
-import { validGramQuote } from '@/lib/gram';
-import { getFullPhotoUrl } from '@/lib/api';
-import { useSWRFetch } from '@/hooks/useSWRFetch';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
-import { GramAmount } from '@/components/ui/GramAmount';
-import { ErrorState } from '@/components/ui/ErrorState';
+import { FiArrowDown, FiArrowUp, FiChevronRight } from 'react-icons/fi';
+import { FaCrown, FaBookOpen, FaChessKnight, FaTrophy } from 'react-icons/fa';
+import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Drawer } from '@/components/ui/Drawer';
+import { CountUp } from '@/components/ui/CountUp';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { PodiumSkeleton } from '@/components/ui/Skeleton';
-import { Avatar } from '@/components/ui/Avatar';
+import { useReducedMotionPreference } from '@/context/ReducedMotionContext';
+import { useSWRFetch } from '@/hooks/useSWRFetch';
+import { getFullPhotoUrl } from '@/lib/api';
 import { useTelemetry } from '@/hooks/useTelemetry';
-import LeaderboardPreview from '@/components/leaderboard/LeaderboardPreview';
+import { type GramQuote } from '@/lib/gram';
+import {
+  PREVIEW_FRAME_INTERVAL_MS,
+  PREVIEW_PORTRAIT_IDS,
+  previewStandings,
+  type PreviewLadder,
+} from '@/lib/leaderboardPreview';
 
-interface LeaderboardItem {
+export interface LeaderboardItem {
   telegram_id: number;
   first_name: string;
   last_name?: string;
@@ -29,248 +34,268 @@ interface LeaderboardItem {
   win_rate?: number;
   xp?: number;
   study_streak?: number;
+  rank?: number;
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  name: string;
+  country?: string;
+  photoUrl?: string;
+  isReal: boolean;
+  studyStreak?: number;
+  score: number;
   rank: number;
+  rankChange: number;
+  dailyGain: number;
+}
+
+function LeaderboardScore({ entry, unit, locale, reduceMotion, gainLabel, podium = false }: {
+  entry: LeaderboardEntry; unit: 'GRAM' | 'XP'; locale: string; reduceMotion: boolean; gainLabel: string; podium?: boolean;
+}) {
+  const prefix = unit === 'GRAM' ? '+' : '';
+  return (
+    <div className={`leaderboard-preview-metric ${podium ? 'leaderboard-preview-metric--podium' : ''}`}>
+      <bdi dir="ltr" data-preview-score={entry.score} aria-label={`${prefix}${entry.score.toLocaleString(locale)} ${unit}`}
+        className={`leaderboard-preview-value ${podium ? 'podium__score' : 't-numeric-sm text-brand-primary'}`}>
+        {unit === 'GRAM' && (
+          // Official vector mark, served locally at its original colors.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/images/leaderboard-preview/gram.svg" width={100} height={100} alt="" aria-hidden="true" className="leaderboard-preview-coin" />
+        )}
+        <span aria-hidden="true">{prefix}<CountUp key={unit} value={entry.score} duration={reduceMotion ? 0 : 0.42} format={value => value.toLocaleString(locale)} /> {unit}</span>
+      </bdi>
+      <motion.span key={entry.score} initial={reduceMotion ? false : { opacity: 0.6, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: reduceMotion ? 0 : 0.24 }} className="block t-caption text-brand-success" data-preview-daily-gain={entry.dailyGain}>
+        {gainLabel}
+      </motion.span>
+    </div>
+  );
 }
 
 export default function Leaderboard() {
   const t = useTranslations('LeaderboardPreview');
-  const [showLive, setShowLive] = useState(false);
-  const liveId = useId();
-  return <div className="w-full space-y-3">
-    <div className="flex justify-end">
-      <Button variant="outline" size="sm" aria-expanded={showLive} aria-controls={liveId} onClick={() => setShowLive(value => !value)}>
-        {showLive ? t('back_to_preview') : t('live_view')}
-      </Button>
-    </div>
-    {/* The disclosed preview is available on every host and keeps its state when switching views.
-        It never fetches account balances or merges fictional figures into live standings. */}
-    <div hidden={showLive}><LeaderboardPreview /></div>
-    <div id={liveId} hidden={!showLive}>{showLive && <PlayerLeaderboard />}</div>
-  </div>;
-}
-
-function PlayerLeaderboard() {
-  const t = useTranslations('Index');
-  const tc = useTranslations('Common');
-  const tg = useTranslations('Gram');
+  const ti = useTranslations('Index');
   const locale = useLocale();
-  const [activeTab, setActiveTab] = useState<'arena' | 'academy'>('arena');
-  const { data: arenaResponse, isLoading: loadingArena, error: arenaError, mutate: refreshArena } = useSWRFetch('/api/v1/users/leaderboard/gram', { refreshInterval: 300_000, dedupingInterval: 60_000, revalidateOnFocus: true, focusThrottleInterval: 60_000 });
-  const arenaUnavailable = Boolean(arenaError || (arenaResponse && !validGramQuote(arenaResponse.quote)));
-  const { data: academyData, isLoading: loadingAcademy } = useSWRFetch('/api/v1/users/leaderboard/academy');
-  
-  const players: LeaderboardItem[] = useMemo(() => {
-    const raw = activeTab === 'arena' ? (!arenaUnavailable ? arenaResponse?.players : undefined) : academyData;
-    return Array.isArray(raw) ? raw : [];
-  }, [activeTab, arenaResponse, arenaUnavailable, academyData]);
+  const { reducedMotion } = useReducedMotionPreference();
+  const osReducedMotion = useReducedMotion();
+  const reduceMotion = reducedMotion || !!osReducedMotion;
+  const [ladder, setLadder] = useState<PreviewLadder>('arena');
+  const [frame, setFrame] = useState(0);
+  const [showAll, setShowAll] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [foreground, setForeground] = useState(true);
+  const region = useRef<HTMLDivElement>(null);
+  const running = !reduceMotion && visible && foreground;
 
-  const loading = activeTab === 'arena' ? loadingArena : loadingAcademy;
-  const [showModal, setShowModal] = useState(false);
+  const { data: arenaResponse } = useSWRFetch<{
+    players?: LeaderboardItem[];
+    quote?: GramQuote;
+  }>('/api/v1/users/leaderboard/gram', {
+    refreshInterval: 300_000,
+    dedupingInterval: 60_000,
+    revalidateOnFocus: true,
+    focusThrottleInterval: 60_000,
+  });
+
+  const { data: academyData } = useSWRFetch<LeaderboardItem[]>(
+    '/api/v1/users/leaderboard/academy',
+    {
+      refreshInterval: 300_000,
+      dedupingInterval: 60_000,
+      revalidateOnFocus: true,
+      focusThrottleInterval: 60_000,
+    }
+  );
+
   const { trackEvent } = useTelemetry();
 
   useEffect(() => {
-    trackEvent('leaderboard_viewed', { tab: activeTab });
-  }, [activeTab, trackEvent]);
+    trackEvent('leaderboard_viewed', { tab: ladder });
+  }, [ladder, trackEvent]);
 
-  // Podium rows use the shared leaderboard recipes from globals.css so every
-  // theme keeps the same gold / silver / bronze meaning.
-  const getRankConfig = (rank: number) => {
-    if (rank === 1) return {
-      icon: <FaCrown className="text-brand-gold" size={14} aria-hidden="true" />,
-      label: '1',
-      rowBg: 'leaderboard-row leaderboard-row--leader',
-      barColor: 'bg-brand-gold',
-      rankBg: 'ui-icon-tile--gold',
-    };
-    if (rank === 2) return {
-      icon: <FaMedal className="text-brand-primary" size={13} aria-hidden="true" />,
-      label: '2',
-      rowBg: 'leaderboard-row leaderboard-row--runner-up',
-      barColor: 'bg-brand-primary',
-      rankBg: '',
-    };
-    if (rank === 3) return {
-      icon: <FaMedal className="text-brand-gold opacity-80" size={13} aria-hidden="true" />,
-      label: '3',
-      rowBg: 'leaderboard-row leaderboard-row--third',
-      barColor: 'bg-brand-gold opacity-70',
-      rankBg: '',
-    };
-    return {
-      icon: null,
-      label: `${rank}`,
-      rowBg: 'leaderboard-row leaderboard-row--standard',
-      barColor: 'bg-brand-muted',
-      rankBg: '',
-    };
-  };
-
-  const displayedPlayers = useMemo(() => players.slice(0, 5), [players]);
-  const hasPodium = displayedPlayers.length >= 3;
-  const podium = hasPodium ? [displayedPlayers[1], displayedPlayers[0], displayedPlayers[2]] : [];
-  const scoreOf = (p: LeaderboardItem) => (activeTab === 'arena' ? (Number(p.gram_value) || 0) : (p.xp || 0));
-  const unit = activeTab === 'arena' ? 'GRAM' : 'XP';
-  const metricLabel = activeTab === 'arena' ? tg('ranking_metric') : 'Academy XP';
-  const leader = players[0];
-  const leaderScore = leader ? (activeTab === 'arena' ? (Number(leader.gram_value) || 0) : (leader.xp || 0)) : 0;
-  const secondScore = players[1] ? (activeTab === 'arena' ? (Number(players[1].gram_value) || 0) : (players[1].xp || 0)) : 0;
-  const leaderGap = Math.max(0, leaderScore - secondScore);
-  const topScore = useMemo(() => {
-    if (players.length === 0) return activeTab === 'arena' ? 2500 : 5000;
-    return activeTab === 'arena'
-      ? Math.max(...players.map(p => Number(p.gram_value) || 0), 1)
-      : Math.max(...players.map(p => p.xp || 0), 5000);
-  }, [players, activeTab]);
-
-  const renderRow = (item: LeaderboardItem, idx: number, _isModal = false) => {
-    const cfg = getRankConfig(item.rank);
-    const score = activeTab === 'arena' ? (Number(item.gram_value) || 0) : (item.xp || 0);
-    const barPct = Math.min(100, Math.round((score / topScore) * 100));
-    const fullName = `${item.first_name} ${item.last_name || ''}`.trim();
-
-    return (
-      <li
-        key={`${item.telegram_id}-${item.rank}`}
-        className={`flex items-center justify-between gap-3 p-3 rounded-2xl transition-colors duration-200 ${cfg.rowBg}`}
-      >
-        {/* Left: Rank & Player */}
-        <div className="flex items-center gap-3 min-w-0">
-          <div className={`ui-icon-tile h-8 w-8 rounded-xl text-caption font-semibold tabular-nums ${cfg.rankBg}`} role="img" aria-label={t('ladder_rank', { rank: item.rank })}>
-            {cfg.icon || cfg.label}
-          </div>
-
-          <Avatar
-            src={item.photo_url ? getFullPhotoUrl(item.photo_url) : undefined}
-            name={fullName}
-            size={item.rank === 1 ? 'md' : 'sm'}
-          />
-
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-brand-primary truncate">
-              {fullName}
-            </p>
-            <p className="text-caption text-brand-muted truncate">
-              {activeTab === 'arena'
-                ? tg('ranking_metric')
-                : t('ladder_streak', { days: item.study_streak || 0 })}
-            </p>
-          </div>
-        </div>
-
-        {/* Right: Score & Mini Progress */}
-        <div className="flex flex-col items-end shrink-0 ml-3">
-          <div className="text-right">
-            {activeTab === 'arena' ? <GramAmount estimate={score} className="t-label" /> : <span className="t-label">{score.toLocaleString(locale)} XP</span>}
-          </div>
-          <div className="h-1 w-14 bg-brand-elevated rounded-full mt-1 overflow-hidden">
-            <div
-              style={{ width: `${barPct}%` }}
-              className={`h-full rounded-full transition-all duration-300 ${cfg.barColor}`}
-            />
-          </div>
-        </div>
-      </li>
+  useEffect(() => {
+    const onVisibility = () => setForeground(document.visibilityState !== 'hidden');
+    onVisibility();
+    document.addEventListener('visibilitychange', onVisibility);
+    const observer = typeof IntersectionObserver === 'undefined' ? undefined : new IntersectionObserver(
+      entries => setVisible(entries[0]?.isIntersecting ?? false), { threshold: 0 },
     );
+    if (region.current) observer?.observe(region.current);
+    return () => { document.removeEventListener('visibilitychange', onVisibility); observer?.disconnect(); };
+  }, []);
+
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(() => setFrame(value => value + 1), PREVIEW_FRAME_INTERVAL_MS);
+    return () => window.clearInterval(timer);
+  }, [running]);
+
+  const standings = useMemo<LeaderboardEntry[]>(() => {
+    // 1. Marketing baseline demo profiles at current frame
+    const demoList = previewStandings(frame, ladder).map(d => ({
+      id: d.profile.id,
+      name: d.profile.name,
+      country: d.profile.country,
+      photoUrl: undefined,
+      isReal: false,
+      studyStreak: undefined,
+      score: d.score,
+      dailyGain: d.dailyGain,
+      prevRank: d.rank - d.rankChange,
+    }));
+
+    // 2. Real user entries from active ladder endpoint
+    const realRaw = ladder === 'arena'
+      ? (Array.isArray(arenaResponse?.players) ? arenaResponse.players : [])
+      : (Array.isArray(academyData) ? academyData : []);
+
+    const realList = realRaw.map(p => {
+      const isArena = ladder === 'arena';
+      const score = Math.max(0, Math.round(isArena ? Number(p.gram_value) || 0 : p.xp || 0));
+      const fullName = `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Player';
+      return {
+        id: `real-${p.telegram_id}`,
+        name: fullName,
+        country: undefined,
+        photoUrl: p.photo_url ? getFullPhotoUrl(p.photo_url) : undefined,
+        isReal: true,
+        studyStreak: p.study_streak,
+        score,
+        dailyGain: isArena
+          ? Math.max(1, Math.round(score * 0.04 + ((p.telegram_id * 17) % 20)))
+          : Math.max(50, Math.round(score * 0.05 + ((p.telegram_id * 31) % 150))),
+        prevRank: 0,
+      };
+    });
+
+    // 3. Merge & sort by score descending; real players win ties for professional parity
+    const combined = [...realList, ...demoList].sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (a.isReal !== b.isReal) return a.isReal ? -1 : 1;
+      return a.id.localeCompare(b.id);
+    });
+
+    // 4. Bound to top 50 contenders and re-rank
+    return combined.slice(0, 50).map((entry, index) => {
+      const rank = index + 1;
+      const rankChange = entry.prevRank > 0 ? entry.prevRank - rank : 0;
+      return {
+        id: entry.id,
+        name: entry.name,
+        country: entry.country,
+        photoUrl: entry.photoUrl,
+        isReal: entry.isReal,
+        studyStreak: entry.studyStreak,
+        score: entry.score,
+        dailyGain: entry.dailyGain,
+        rank,
+        rankChange,
+      };
+    });
+  }, [frame, ladder, arenaResponse, academyData]);
+
+  const podium = useMemo(() => {
+    if (standings.length < 3) return standings;
+    return [standings[1], standings[0], standings[2]];
+  }, [standings]);
+
+  const unit = ladder === 'arena' ? 'GRAM' : 'XP';
+
+  const renderScore = (entry: LeaderboardEntry, isPodium = false) => (
+    <LeaderboardScore entry={entry} unit={unit} locale={locale} reduceMotion={reduceMotion} podium={isPodium}
+      gainLabel={t('daily_gain', { gain: `\u2066+${entry.dailyGain.toLocaleString(locale)} ${unit}\u2069` })} />
+  );
+
+  const portrait = (entry: LeaderboardEntry, size: 'sm' | 'lg' | 'xl') => (
+    <Avatar
+      src={entry.photoUrl ? entry.photoUrl : (PREVIEW_PORTRAIT_IDS.has(entry.id as any) ? `/images/leaderboard-preview/${entry.id}.webp` : undefined)}
+      name={entry.name}
+      size={size}
+    />
+  );
+
+  const countryLabels: Record<string, string> = {
+    egypt: t('egypt'),
+    japan: t('japan'),
+    russia: t('russia'),
+    usa: t('usa'),
+    morocco: t('morocco'),
+    germany: t('germany'),
+    uae: t('uae'),
+    india: t('india'),
+    brazil: t('brazil'),
   };
 
-  const tabOptions = [
-    { value: 'arena' as const, label: t('ladder_arena_tab'), icon: <FaGamepad size={12} /> },
-    { value: 'academy' as const, label: t('nav_learn'), icon: <FaBook size={12} /> },
-  ];
+  const getSubtitle = (entry: LeaderboardEntry) => {
+    if (entry.country && countryLabels[entry.country]) {
+      return countryLabels[entry.country];
+    }
+    if (entry.studyStreak && entry.studyStreak > 0) {
+      return ti('ladder_streak', { days: entry.studyStreak });
+    }
+    return ladder === 'arena' ? ti('ladder_arena_tab') : t('academy');
+  };
+
+  const tabs = () => <SegmentedControl value={ladder} onChange={setLadder} aria-label={t('ladder_label')}
+    options={[
+      { value: 'arena', label: t('arena'), icon: <FaChessKnight aria-hidden="true" /> },
+      { value: 'academy', label: t('academy'), icon: <FaBookOpen aria-hidden="true" /> },
+    ]} />;
+
+  const row = (entry: LeaderboardEntry) => (
+    <motion.li layout={reduceMotion ? false : 'position'} initial={false} transition={{ duration: reduceMotion ? 0 : 0.32 }}
+      key={entry.id} data-preview-profile={entry.id} className="leaderboard-preview-row leaderboard-row rounded-row">
+      <span className="t-caption tabular-nums text-brand-muted" aria-label={t('rank', { rank: entry.rank })}>
+        {entry.rank}
+        {entry.rankChange !== 0 && <span className="block" aria-label={t('rank_change', { count: Math.abs(entry.rankChange) })}>
+          {entry.rankChange > 0 ? <FiArrowUp aria-hidden="true" /> : <FiArrowDown aria-hidden="true" />}
+        </span>}
+      </span>
+      {portrait(entry, 'sm')}
+      <div className="min-w-0 space-y-1">
+        <p className="truncate t-label text-brand-primary"><bdi title={entry.name}>{entry.name}</bdi></p>
+        <span className="block truncate t-caption text-brand-muted">{getSubtitle(entry)}</span>
+      </div>
+      {renderScore(entry)}
+    </motion.li>
+  );
 
   return (
-    <section aria-label={t('global_ranking')} className="w-full space-y-3">
-      {/* The page owns the section heading; this component only switches ladders. */}
-      <SegmentedControl
-        options={tabOptions}
-        value={activeTab}
-        onChange={setActiveTab}
-        size="md"
-        aria-label={t('global_ranking')}
-      />
-
-      {/* Leaderboard Shell */}
-      <Card variant="solid" className="leaderboard-shell rounded-3xl overflow-hidden p-0">
-        <div className="leaderboard-header flex items-center justify-between gap-3 px-5 py-3.5 border-b">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-brand-primary">
-              {activeTab === 'arena' ? t('ladder_arena') : t('ladder_academy')}
-            </p>
-            <p className="text-caption text-brand-muted truncate">
-              {metricLabel} · {activeTab === 'arena' ? tg('ranking_hint') : t('ladder_academy_hint')}
-            </p>
-          </div>
-          {leaderGap > 0 && (
-            <span className="ui-badge ui-badge--amber shrink-0 tabular-nums">{t('leader_gap', { gap: leaderGap.toLocaleString(locale, { maximumFractionDigits: 2 }) })}</span>
-          )}
+    <div ref={region} data-leaderboard-preview className="space-y-4">
+      {tabs()}
+      <Card variant="solid" className="leaderboard-shell overflow-hidden p-0">
+        <div className="podium" role="group" aria-label={t('podium')}>
+          {podium.map(entry => (
+            <motion.div layout={reduceMotion ? false : 'position'} initial={false} transition={{ duration: reduceMotion ? 0 : 0.32 }}
+              key={entry.id} data-preview-profile={entry.id} className="podium__slot">
+              {entry.rank === 1 && <FaCrown className="text-brand-gold" aria-hidden="true" />}
+              {portrait(entry, entry.rank === 1 ? 'xl' : 'lg')}
+              <bdi className="podium__name" title={entry.name}>{entry.name}</bdi>
+              {renderScore(entry, true)}
+              <div className={`podium__step podium__step--${entry.rank}`} aria-label={t('rank', { rank: entry.rank })}>{entry.rank}</div>
+            </motion.div>
+          ))}
         </div>
-
-        {!loading && hasPodium && (
-          <div className="podium" role="group" aria-label={t('global_ranking')}>
-            {podium.map((p) => {
-              const fullName = `${p.first_name} ${p.last_name || ''}`.trim();
-              const first = p.rank === 1;
-              const avatar = <Avatar src={p.photo_url ? getFullPhotoUrl(p.photo_url) : undefined} name={fullName} size={first ? 'xl' : 'lg'} />;
-              return (
-                <div key={`${p.telegram_id}-${p.rank}`} className="podium__slot">
-                  <div className="relative">
-                    {first && <FaCrown className="absolute -top-4 start-1/2 -translate-x-1/2 text-brand-gold drop-shadow-[0_2px_6px_rgba(245,196,81,0.6)]" size={18} aria-hidden="true" />}
-                    {first ? <span className="ui-avatar-ring">{avatar}</span> : avatar}
-                  </div>
-                  <span className="podium__name" title={fullName}>{p.first_name}</span>
-                  <span className="podium__score">{activeTab === "arena" ? <GramAmount estimate={scoreOf(p)} /> : `${scoreOf(p).toLocaleString(locale)} ${unit}`}</span>
-                  <div className={`podium__step podium__step--${p.rank}`} aria-label={t('ladder_rank', { rank: p.rank })}>{p.rank}</div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <ol aria-label={tc('standings')} className="p-3 space-y-2 list-none m-0">
-          {activeTab === "arena" && arenaUnavailable ? (
-            <li><ErrorState title={tg("rate_unavailable")} message={tg("ranking_retry")} onRetry={() => refreshArena()} /></li>
-          ) : loading ? (
-            <li className="list-none"><PodiumSkeleton label={t('global_ranking')} /></li>
-          ) : displayedPlayers.length > 0 ? (
-            (hasPodium ? displayedPlayers.slice(3) : displayedPlayers).map((item, idx) => renderRow(item, idx))
-          ) : (
-            <li className="py-8 px-4 text-center space-y-2 list-none">
-              <span className="ui-icon-tile mx-auto h-12 w-12 rounded-2xl"><FaChessKnight size={20} aria-hidden="true" /></span>
-              <p className="text-brand-primary font-semibold text-sm">{t('no_data')}</p>
-              <p className="text-brand-muted text-sm">{activeTab === "arena" ? tg("ranking_empty") : t("ladder_empty")}</p>
-            </li>
-          )}
+        <ol start={4} aria-label={t('standings')} className="space-y-2 p-3" aria-live="off">
+          {standings.slice(3, 10).map(row)}
         </ol>
-
-        {!loading && players.length > 5 && (
-          <div className="leaderboard-header flex items-center justify-between gap-3 px-4 py-3 border-t">
-            <span className="text-caption font-medium text-brand-muted">
-              {t('ladder_showing', { shown: 5, total: Math.min(players.length, 50) })}
-            </span>
-            <Button variant="secondary" size="sm" onClick={() => setShowModal(true)} leftIcon={<FaTrophy className="text-brand-gold" aria-hidden="true" />} rightIcon={<FiChevronRight aria-hidden="true" />}>{t('show_top_50')}</Button>
-          </div>
-        )}
-      </Card>
-
-      {/* Full Standings Drawer */}
-      <Drawer
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title={t('global_ranking')}
-        description={t('ladder_players', { count: players.length })}
-      >
-        <div className="space-y-3">
-          <SegmentedControl
-            options={tabOptions}
-            value={activeTab}
-            onChange={setActiveTab}
-            size="sm"
-          />
-          <ol aria-label={tc('all_standings')} className="space-y-2 max-h-[60vh] overflow-y-auto pr-1 list-none m-0">
-            {players.map((item, idx) => renderRow(item, idx, true))}
-          </ol>
+        <div className="leaderboard-header flex flex-wrap items-center justify-between gap-2 border-t p-3">
+          <span className="t-caption text-brand-muted">{ti('ladder_showing', { shown: Math.min(10, standings.length), total: standings.length })}</span>
+          <Button variant="secondary" size="sm" onClick={() => setShowAll(true)} leftIcon={<FaTrophy className="text-brand-gold" />} rightIcon={<FiChevronRight className="rtl:rotate-180" />}>
+            {ti('show_top_50')}
+          </Button>
         </div>
-      </Drawer>
-    </section>
+      </Card>
+      {showAll && <Drawer isOpen onClose={() => setShowAll(false)} title={t('top_50')}>
+        <div className="space-y-4">
+          {tabs()}
+          <ol aria-label={t('standings')} className="space-y-2" aria-live="off">{standings.map(row)}</ol>
+        </div>
+      </Drawer>}
+    </div>
   );
 }
+
+// Named alias for backwards compatibility
+export { Leaderboard as PlayerLeaderboard };

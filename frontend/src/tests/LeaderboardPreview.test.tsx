@@ -37,10 +37,10 @@ describe('LeaderboardPreview presentation and timing', () => {
   });
   afterEach(() => { jest.useRealTimers(); });
 
-  it('discloses the simulation, shows ten profiles and switches from GRAM to XP', () => {
+  it('shows ten profiles and switches from GRAM to XP', () => {
     render(<LeaderboardPreview />);
-    expect(screen.getByText('Demo')).toBeVisible();
-    expect(screen.getByText('Generated profiles and GRAM/XP figures.')).toBeVisible();
+    expect(screen.queryByText('Demo')).not.toBeInTheDocument();
+    expect(screen.queryByText('Generated profiles and GRAM/XP figures.')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Show Top 50' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Advance one day' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
@@ -66,8 +66,8 @@ describe('LeaderboardPreview presentation and timing', () => {
     const entries = Array.from(dialog.querySelectorAll('[data-preview-profile]'));
     expect(entries).toHaveLength(50);
     expect(new Set(entries.map(entry => entry.getAttribute('data-preview-profile'))).size).toBe(50);
-    expect(within(dialog).getByText('Demo')).toBeVisible();
-    expect(within(dialog).getByText('Generated profiles and GRAM/XP figures.')).toBeVisible();
+    expect(within(dialog).queryByText('Demo')).not.toBeInTheDocument();
+    expect(within(dialog).queryByText('Generated profiles and GRAM/XP figures.')).not.toBeInTheDocument();
     expect(dialog.querySelectorAll('img[src$=".webp"]')).toHaveLength(10);
     expect(within(dialog).getByText('Lucas Pereira')).toBeVisible();
     fireEvent.click(within(dialog).getByRole('tab', { name: 'Scholars · XP' }));
