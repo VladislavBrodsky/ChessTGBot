@@ -56,10 +56,10 @@ describe('BetSlip', () => {
     expect(screen.getByText('lobby_disclosure')).toBeInTheDocument();
   });
 
-  it('labels the winner amount as a payout that includes the stake', () => {
+  it('labels the winner amount as a payout without cluttering stake note', () => {
     slip();
     expect(screen.getByText('win_up_to')).toBeInTheDocument();
-    expect(screen.getByText('includes_stake')).toBeInTheDocument();
+    expect(screen.queryByText('includes_stake')).not.toBeInTheDocument();
   });
 
   it('starts matchmaking from the primary action when the balance covers the stake', () => {

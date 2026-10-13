@@ -105,14 +105,16 @@
 .lobby-input { width: 100%; min-height: 44px; padding: 0 14px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--bg-primary); color: var(--text-primary); font-size: 16px; font-weight: 650; text-align: center; font-variant-numeric: tabular-nums; }
 
 /* Stake / payout line */
-.lobby-payout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: end; gap: 8px; padding: 8px 8px 8px 12px; border: 1px solid var(--border-muted); border-radius: var(--radius-row); background: color-mix(in srgb, var(--bg-primary) 55%, transparent); }
-.lobby-payout__col { display: flex; min-width: 0; flex-direction: column; gap: 2px; }
-.lobby-payout__label { font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--text-muted); }
-.lobby-payout__value { font-size: 20px; white-space: nowrap; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; color: var(--text-primary); }
-.lobby-payout__value--win { color: var(--brand-success); font-size: 20px; letter-spacing: -0.02em; }
-.lobby-payout__note { font-size: 12px; line-height: 1.3; color: var(--text-muted); text-align: end; }
-.lobby-payout__info { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; align-self: center; color: var(--text-muted); border-radius: 12px; }
-.lobby-payout__info:hover { color: var(--text-primary); }
+.lobby-payout { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border: 1px solid var(--border-muted); border-radius: var(--radius-row); background: color-mix(in srgb, var(--bg-primary) 55%, transparent); }
+.lobby-payout__col { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.lobby-payout__col--end { align-items: flex-end; text-align: end; }
+.lobby-payout__label { font-size: var(--type-caption-size); font-weight: 500; line-height: var(--type-caption-leading); color: var(--text-muted); letter-spacing: 0; }
+.lobby-payout__value { font-size: 22px; white-space: nowrap; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; color: var(--text-primary); letter-spacing: -0.02em; }
+.lobby-payout__win-row { display: inline-flex; align-items: center; gap: 6px; }
+.lobby-payout__value--win { color: var(--brand-success); font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.lobby-payout__note { display: none; }
+.lobby-payout__info { display: inline-flex; width: 28px; height: 28px; align-items: center; justify-content: center; color: var(--text-muted); border-radius: 8px; transition: color 150ms, background-color 150ms; cursor: pointer; }
+.lobby-payout__info:hover { color: var(--text-primary); background: var(--bg-elevated); }
 
 /* Primary action */
 .lobby-cta {

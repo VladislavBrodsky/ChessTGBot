@@ -76,16 +76,17 @@ export function BetSlip(p: BetSlipProps) {
           <span className="lobby-payout__label">{p.tg('stake')}</span>
           <span className="lobby-payout__value">{valid ? formatUsd(p.chosenWager) : '—'}</span>
         </div>
-        <div className="lobby-payout__col" style={{ alignItems: 'flex-end' }}>
+        <div className="lobby-payout__col lobby-payout__col--end">
           <span className="lobby-payout__label">{p.tg('win_up_to')}</span>
-          <span className="lobby-payout__value lobby-payout__value--win">
-            <CountUp value={win} duration={0.5} format={formatUsd} />
-          </span>
-          <span className="lobby-payout__note">{p.tg('includes_stake')}</span>
+          <div className="lobby-payout__win-row">
+            <span className="lobby-payout__value lobby-payout__value--win">
+              <CountUp value={win} duration={0.5} format={formatUsd} />
+            </span>
+            <button type="button" className="lobby-payout__info" aria-label={p.tg('platform_commission')} onClick={p.onShowRake}>
+              <FiInfo size={16} aria-hidden="true" />
+            </button>
+          </div>
         </div>
-        <button type="button" className="lobby-payout__info" aria-label={p.tg('platform_commission')} onClick={p.onShowRake}>
-          <FiInfo size={18} aria-hidden="true" />
-        </button>
       </div>
 
       <button type="button" className="lobby-cta" data-state={state} onClick={p.onStart} disabled={p.isCreating || state === 'busy' || state === 'invalid'}>

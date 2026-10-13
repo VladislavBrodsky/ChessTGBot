@@ -612,10 +612,9 @@ export default function PlayLobby() {
                     <span className="lobby-payout__label">{tg('stake')}</span>
                     <span className="lobby-payout__value">{formatUsd(chosenWager)}</span>
                   </div>
-                  <div className="lobby-payout__col" style={{ alignItems: 'flex-end' }}>
+                  <div className="lobby-payout__col lobby-payout__col--end">
                     <span className="lobby-payout__label">{tg('win_up_to')}</span>
                     <span className="lobby-payout__value lobby-payout__value--win">{formatUsd(winnerCents(chosenWager))}</span>
-                    <span className="lobby-payout__note">{tg('includes_stake')}</span>
                   </div>
                 </div>
               )}
