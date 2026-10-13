@@ -36,6 +36,12 @@ async def test_withdrawal_waits_for_confirmation(client: AsyncClient, db_session
 
     from unittest.mock import AsyncMock
     from app.services.telegram_bot import TelegramService
+    from app.core.config import get_settings
+    settings = get_settings()
+    # CI has no bot secret. Select the confirmation path explicitly and mock
+    # delivery so this test never relies on local credentials or Telegram.
+    monkeypatch.setattr(settings, "TELEGRAM_BOT_TOKEN", "123456789:test_token")
+    monkeypatch.setattr(settings, "WITHDRAWAL_CONFIRMATION_ENABLED", True)
     confirmation = AsyncMock(return_value=True)
     monkeypatch.setattr(TelegramService, "send_withdrawal_confirmation_request", confirmation)
     # 2. Initiate withdrawal of $20.00 (2000 cents)
