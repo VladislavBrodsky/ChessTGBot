@@ -134,7 +134,19 @@ def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:
         if not reveal or reveal.get("sent"): continue
         published = datetime.strptime(post["published"]["at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
         if now < published + timedelta(hours=reveal.get("after_hours", 6)): continue
-        image = queue.ROOT / reveal["image"] if reveal.get("image") else None
+        image = None
+        if reveal.get("image"):
+            p = Path(reveal["image"])
+            if p.is_absolute() and p.exists():
+                image = p
+            elif (queue.ROOT / p).exists():
+                image = queue.ROOT / p
+            elif (queue.HERE / p).exists():
+                image = queue.HERE / p
+        elif reveal.get("creative"):
+            cand = queue.QUEUE / post.get("date", post["id"][:10]) / f"{post['id']}.reveal.png"
+            if cand.exists():
+                image = cand
         if reveal.get("creative") and not (image and image.exists()):
             report.append({"id": post["id"], "error": "reveal image missing: run `daily.py render`"}); continue
         if not live:
