@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
 import dynamic from 'next/dynamic';
 import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 'react-icons/fa';
 import { FiChevronRight } from 'react-icons/fi';
@@ -15,8 +15,12 @@ import { Avatar } from '@/components/ui/Avatar';
 import { useTelemetry } from '@/hooks/useTelemetry';
 import { Button } from '@/components/ui/Button';
 import { Badge, BadgeRow } from '@/components/ui/Badge';
+import { isLeaderboardPreviewAllowed } from '@/lib/leaderboardPreviewAccess';
 
 const LeaderboardPreview = dynamic(() => import('@/components/leaderboard/LeaderboardPreview'), { ssr: false });
+const subscribePreviewAccess = () => () => {};
+const previewAccessSnapshot = () => isLeaderboardPreviewAllowed(process.env.NODE_ENV, window.location.hostname);
+const serverPreviewAccessSnapshot = () => false;
 
 interface LeaderboardItem {
   telegram_id: number;
@@ -48,6 +52,7 @@ export default function Leaderboard() {
   const loading = activeTab === 'arena' ? loadingArena : loadingAcademy;
   const [showModal, setShowModal] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const previewAllowed = useSyncExternalStore(subscribePreviewAccess, previewAccessSnapshot, serverPreviewAccessSnapshot);
   const { trackEvent } = useTelemetry();
 
   useEffect(() => {
@@ -244,9 +249,11 @@ export default function Leaderboard() {
         )}
       </Card>
 
-      <Button variant="ghost" className="w-full" onClick={() => setShowPreview(true)}>{tp('open')}</Button>
+      {previewAllowed && (
+        <Button variant="ghost" className="w-full" onClick={() => setShowPreview(true)}>{tp('open')}</Button>
+      )}
 
-      {showPreview && (
+      {previewAllowed && showPreview && (
         <Drawer isOpen onClose={() => setShowPreview(false)}
           title={<BadgeRow><span>{tp('title')}</span><Badge variant="amber">{tp('badge')}</Badge></BadgeRow>}>
           <LeaderboardPreview />

@@ -1,4 +1,5 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
+import { getSoundEnabled, setSoundEnabled } from '@/lib/soundPreference';
 
 type SoundType = 'move' | 'capture' | 'check' | 'win' | 'loss' | 'start' | 'topup';
 
@@ -20,10 +21,8 @@ function getAudioContext(): AudioContext | null {
 }
 
 export const useAudio = () => {
-  const enabledRef = useRef(true);
-
   const play = useCallback((type: SoundType) => {
-    if (!enabledRef.current || typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !getSoundEnabled()) return;
 
     try {
       const ctx = getAudioContext();
@@ -100,7 +99,7 @@ export const useAudio = () => {
   }, []);
 
   const toggleSound = useCallback((enabled: boolean) => {
-    enabledRef.current = enabled;
+    setSoundEnabled(enabled);
   }, []);
 
   return { play, toggleSound };

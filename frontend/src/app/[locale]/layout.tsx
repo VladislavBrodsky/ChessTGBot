@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import DocumentStartup from '@/components/DocumentStartup';
 import "@fontsource-variable/outfit";
 import "../globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -62,42 +63,7 @@ export default async function LocaleLayout({
                 <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
                 <meta httpEquiv="Pragma" content="no-cache" />
                 <meta httpEquiv="Expires" content="0" />
-                {/* Synchronous script tag so window.Telegram.WebApp is guaranteed ready before ANY React component hydrates */}
-                {/* eslint-disable-next-line @next/next/no-sync-scripts -- Telegram WebApp must be ready before hydration */}
-                <script src="https://telegram.org/js/telegram-web-app.js"></script>
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                            (function() {
-                                try {
-                                    if (window.Telegram && window.Telegram.WebApp) {
-                                        window.Telegram.WebApp.ready();
-                                        window.Telegram.WebApp.expand();
-                                    }
-                                } catch (e) {}
-                                try {
-                                    var savedTheme = localStorage.getItem('theme');
-                                    if (savedTheme === 'light') {
-                                        document.documentElement.setAttribute('data-theme', 'light');
-                                    } else {
-                                        document.documentElement.setAttribute('data-theme', 'dark');
-                                    }
-                                    var reduceMotion = localStorage.getItem('setting_reduce_motion') === 'true';
-                                    document.documentElement.setAttribute('data-reduce-motion', String(reduceMotion));
-
-                                    var lite = false;
-                                    var n = navigator;
-                                    if ((n.hardwareConcurrency || 8) <= 4) lite = true;
-                                    if (typeof n.deviceMemory === 'number' && n.deviceMemory <= 4) lite = true;
-                                    var pm = (location.hash || '').match(/tgWebAppPlatform=([a-z]+)/);
-                                    var platform = pm ? pm[1] : (window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp.platform : '');
-                                    if (platform === 'ios' || platform === 'android') lite = true;
-                                    if (lite) document.documentElement.classList.add('lite-fx');
-                                } catch (e) {}
-                            })();
-                        `
-                    }}
-                />
+                <DocumentStartup />
             </head>
             <body
                 className="antialiased"

@@ -1,4 +1,46 @@
 /* Feature-specific styling: tactics grid, premium liquid/neon cards, admin console, arena, leaderboard. */
+/* Settings: preferences first, account and help alongside on desktop. */
+.settings-layout, .settings-secondary {
+  display: grid;
+  gap: var(--space-gap-section);
+  min-width: 0;
+}
+.settings-layout > *, .settings-secondary > * { min-width: 0; }
+.settings-panel__heading { padding: var(--space-pad-md); border-block-end: 1px solid var(--border-muted); }
+.settings-list > * + * { border-block-start: 1px solid var(--border-muted); }
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-gap-stack);
+  width: 100%;
+  min-height: calc(var(--size-control-sm) + var(--space-pad-sm) * 2);
+  padding: var(--space-pad-sm) var(--space-pad-md);
+  text-align: start;
+  border-radius: 0;
+}
+.settings-row--interactive { cursor: pointer; transition: background-color var(--motion-duration-fast); }
+.settings-row--interactive:hover { background: var(--bg-elevated); }
+.settings-row__icon, .settings-row__chevron {
+  display: inline-flex;
+  flex: none;
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+  color: var(--text-muted);
+}
+.settings-row__icon svg { width: 100%; height: 100%; }
+.settings-row__chevron { width: var(--size-icon-sm); height: var(--size-icon-sm); }
+.settings-row__copy { min-width: 0; flex: 1; display: block; }
+.settings-row label > span:first-child { font-weight: var(--type-label-weight); }
+.settings-row__copy > :last-child:not(:first-child) { margin-block-start: var(--space-1); }
+.settings-tools > summary, .settings-faq > summary { list-style: none; }
+.settings-tools > summary::-webkit-details-marker, .settings-faq > summary::-webkit-details-marker { display: none; }
+.settings-tools[open] > summary .settings-row__chevron, .settings-faq[open] > summary .settings-row__chevron { transform: rotate(180deg); }
+.settings-tools__body { display: grid; gap: var(--space-gap-stack); padding: var(--space-pad-md); padding-block-start: 0; }
+.settings-tools__body > .ui-button { justify-self: start; }
+.settings-faq__answer { padding: 0 var(--space-pad-md) var(--space-pad-md); }
+@media (min-width: 1024px) {
+  .settings-layout { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+}
 /* =====================================================
    Tactics Grid Cells — theme-aware utility classes
    Uses data-theme attribute (not Tailwind dark: prefix)

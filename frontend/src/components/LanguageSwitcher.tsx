@@ -54,10 +54,10 @@ export default function LanguageSwitcher() {
     };
 
     return <>
-      <Button variant="ghost" className="w-full justify-between gap-3 px-0 py-0 text-start text-brand-primary hover:bg-transparent" disabled={isPending} aria-haspopup="dialog" aria-expanded={isOpen} onClick={() => setIsOpen(true)}>
-        <FiGlobe size={20} aria-hidden="true" className="shrink-0 text-brand-muted" />
-        <span className="flex-1"><span className="block text-caption text-brand-muted">{t('select')}</span><span className="block text-sm font-semibold">{currentLang.name}</span></span>
-        <FiChevronRight size={18} aria-hidden="true" className="rtl:rotate-180" />
+      <Button variant="ghost" className="settings-row settings-row--interactive" disabled={isPending} aria-haspopup="dialog" aria-expanded={isOpen} aria-label={`${t('select')}: ${currentLang.name}`} onClick={() => setIsOpen(true)}>
+        <span className="settings-row__icon" aria-hidden="true"><FiGlobe /></span>
+        <span className="settings-row__copy"><span className="block t-label text-brand-primary">{t('label')}</span><span className="block t-caption text-brand-muted">{currentLang.name}</span></span>
+        <FiChevronRight aria-hidden="true" className="settings-row__chevron rtl:rotate-180" />
       </Button>
       <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} title={t('select')}>
         <div className="space-y-2">

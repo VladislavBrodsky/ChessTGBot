@@ -91,6 +91,7 @@ For balance-funded play, upgrades, and deposits, disable the action or offer a r
 6. **No Infinite GPU Blurs**: Prohibit continuous 80px CSS blur animations on idle screens.
 7. **No Invented Data**: Do not populate empty cards with fake tasks, stats, balances, activity, participant counts, or prize claims. Treat unavailable data separately from zero.
 8. **Stable Route Shell**: Load TON providers only inside lazy wallet dialogs (`WalletDialogs`), with a closeable skeleton. Do not remount authenticated pages when navigating. Deposits refresh the balance; they never automatically enter a match.
+   `DocumentStartup` emits stable Next `Script` queues with `beforeInteractive` for initial HTML/hydration only: load Telegram SDK before the preference bootstrap, preserve theme/motion before hydration, and leave loaded scripts intact on client locale navigation.
 9. **Quiet Dashboard Headers**: `PageHeader` has no decorative grid or glow. Reserve side control space only when controls exist. Profile shows level/XP once and rating in its statistics group.
 10. **Visible Browser Back Links**: Hide HTML back links only inside a Telegram host with nonempty init data and a native back button; SDK presence alone does not prove a native control exists.
 
@@ -152,6 +153,9 @@ The default dark foundation uses `#000000` canvas, `#0A0A0A` surfaces and 1px `#
 
 Desktop (>= 1024px): a two-column split must balance; if the second column has nothing real to show, stay in one `.app-page--focused` column. Never leave tiles hugging the inline-start edge of a half-empty row.
 
+Settings uses Preferences, Account and Help cards. Its responsive two-column layout keeps all everyday preferences visible; mobile stacks them before account links. `settings-row` reserves icon/copy/control space and a 64px minimum; descriptions wrap, chevrons mirror in RTL, and the shared Switch labels remain clickable. Language uses the same row anatomy. FAQs live in a shared Drawer with native disclosures; account tools expand on demand. Sound is a shared persisted preference read by game audio, and server-backed changes disable repeated saves and roll back on failure.
+Mobile Settings highlights Profile as its parent with `aria-current="location"`, while the desktop sidebar marks Settings as the current page. Both links retain their normal navigation behavior.
+
 **Quality gates:** `npm run check:design` (ratchet), `npm run tokens -- --check`, `e2e/layout-shift.spec.ts` (CLS < 0.08), `e2e/ui-system.spec.ts` (every route renders). Details in the brand guide section 10.
 
 ## 5. UI Primitives Catalog (`frontend/src/components/ui/`)
@@ -180,7 +184,7 @@ All new pages and feature refactors MUST reuse existing design system primitives
 
 Keyboard patterns in shared controls use roving selection for Tabs/SegmentedControl and dialog focus management in Modal/Drawer. Respect reduced motion and Telegram haptics on state changes. Check `320px` reflow, desktop, light theme, and Arabic RTL before shipping a visual change.
 
-The opt-in leaderboard preview uses shared Drawer, Card, Avatar, Badge and controls, with `LeaderboardPreview` copy in all locales. Its sticky disclosure identifies every profile and GRAM/XP value as fictional. The simulation module is independent of account and API data; its timer stops when hidden/offscreen or reduced motion is active. Animated rows use stable profile IDs and transform-only position transitions. Advance day and reset remain available without animation.
+The opt-in leaderboard preview is available only in development on loopback hostnames. Production hides its entry and Drawer, showing API standings only. It uses shared Drawer, Card, Avatar, Badge and controls, with `LeaderboardPreview` copy in all locales. Its sticky disclosure identifies every profile and GRAM/XP value as fictional. The simulation module is independent of account and API data; its timer stops when hidden/offscreen or reduced motion is active. Animated rows use stable profile IDs and transform-only position transitions. Advance day and reset remain available without animation.
 GRAM readouts use the official local vector mark and shared CountUp. Keep the running total and daily example gain in separate lines; gain feedback is a single short opacity/scale transition, disabled with reduced motion. Initial GRAM ranges describe starting values, not a ceiling on cumulative progression. All gain captions are localized; the disclosure stays visible while scrolling.
 
 ## Badge composition rules

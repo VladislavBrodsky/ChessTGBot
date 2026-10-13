@@ -1,405 +1,170 @@
 'use client';
 
+import { useEffect, useState, type ReactNode } from 'react';
+import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
+import { FiBell, FiChevronDown, FiChevronRight, FiCreditCard, FiHelpCircle, FiMoon, FiRefreshCw, FiSettings, FiShield, FiSliders, FiVolume2, FiZap } from 'react-icons/fi';
+import { FaGem } from 'react-icons/fa';
+import LayoutWrapper from '@/components/LayoutWrapper';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Badge } from '@/components/ui/Badge';
-
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Drawer } from '@/components/ui/Drawer';
 import { PageHeader } from '@/components/ui/PageHeader';
-import LayoutWrapper from "@/components/LayoutWrapper";
-import Link from "next/link";
-import { FaArrowLeft, FaVolumeUp, FaMoon, FaSun, FaWallet, FaQuestionCircle, FaShieldAlt, FaChevronDown, FaTrophy, FaUniversalAccess, FaGem, FaSyncAlt, FaStore, FaGraduationCap } from "react-icons/fa";
-import { useTheme } from "@/context/ThemeContext";
-import { useTranslations, useLocale } from 'next-intl';
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { telegramHaptic } from "@/lib/telegram";
-import { useUser } from "@/context/UserContext";
-import { useToast } from "@/context/ToastContext";
-import { Switch } from "@/components/ui/Switch";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { apiFetch } from "@/lib/api";
-import { useReducedMotionPreference } from "@/context/ReducedMotionContext";
-import { FiSettings } from 'react-icons/fi';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { Switch } from '@/components/ui/Switch';
+import { useTheme } from '@/context/ThemeContext';
+import { useReducedMotionPreference } from '@/context/ReducedMotionContext';
+import { useToast } from '@/context/ToastContext';
+import { useUser } from '@/context/UserContext';
+import { useSoundPreference } from '@/hooks/useSoundPreference';
+import { apiFetch } from '@/lib/api';
+import { telegramHaptic } from '@/lib/telegram';
+
+function SettingToggle({ icon, label, description, checked, onChange, disabled = false, busy = false }: {
+  icon: ReactNode; label: string; description: string; checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean; busy?: boolean;
+}) {
+  return <div className="settings-row" aria-busy={busy || undefined}>
+    <span className="settings-row__icon" aria-hidden="true">{icon}</span>
+    <Switch className="min-w-0 flex-1" label={label} description={description} checked={checked} onChange={onChange} disabled={disabled} />
+  </div>;
+}
+
+function SettingLink({ href, icon, label, description, badge }: {
+  href: string; icon: ReactNode; label: string; description: ReactNode; badge?: ReactNode;
+}) {
+  return <Link href={href} onClick={() => telegramHaptic('selection')} className="settings-row settings-row--interactive">
+    <span className="settings-row__icon" aria-hidden="true">{icon}</span>
+    <div className="settings-row__copy">
+      <div className="flex flex-wrap items-center gap-2"><span className="t-label text-brand-primary">{label}</span>{badge}</div>
+      <div className="t-caption text-brand-muted">{description}</div>
+    </div>
+    <FiChevronRight className="settings-row__chevron rtl:rotate-180" aria-hidden="true" />
+  </Link>;
+}
 
 export default function SettingsPage() {
- const t = useTranslations('Settings');
- const locale = useLocale();
- const { theme, toggleTheme } = useTheme();
- const { reducedMotion, setReducedMotion } = useReducedMotionPreference();
- const toast = useToast();
- const [soundEnabled, setSoundEnabled] = useState(true);
- const [isResyncing, setIsResyncing] = useState(false);
- // Pull wallet address & sync utilities from global context
- const { walletAddress, stats, syncStats, syncBalance } = useUser();
- const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const t = useTranslations('Settings');
+  const locale = useLocale();
+  const { theme, setTheme } = useTheme();
+  const { reducedMotion, setReducedMotion } = useReducedMotionPreference();
+  const { soundEnabled, setSoundEnabled } = useSoundPreference();
+  const toast = useToast();
+  const { walletAddress, stats, syncStats, syncBalance, loadingStats, loadingBalance } = useUser();
+  const [showHelp, setShowHelp] = useState(false);
+  const [isResyncing, setIsResyncing] = useState(false);
+  const [arenaAlerts, setArenaAlerts] = useState(true);
+  const [isSavingAlerts, setIsSavingAlerts] = useState(false);
 
- // Daily-arena heads-up opt-out. Seed from synced stats; optimistic on toggle.
- const [arenaAlerts, setArenaAlerts] = useState(true);
- useEffect(() => {
-   const v = stats?.arena_notifications;
-   if (typeof v === 'boolean') setArenaAlerts(v);
- }, [stats?.arena_notifications]);
+  useEffect(() => {
+    if (typeof stats?.arena_notifications === 'boolean') setArenaAlerts(stats.arena_notifications);
+  }, [stats?.arena_notifications]);
 
- const handleArenaAlertsToggle = async () => {
-   const next = !arenaAlerts;
-   setArenaAlerts(next); // optimistic
-   telegramHaptic('light');
-   toast.info(next ? 'Arena alerts enabled' : 'Arena alerts disabled');
-   try {
-     const res = await apiFetch('/api/v1/gamification/arena-notifications', {
-       method: 'PUT',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({ enabled: next }),
-     });
-     if (!res.ok) throw new Error('failed');
-     syncStats();
-   } catch {
-     setArenaAlerts(!next); // revert on failure
-     toast.error('Failed to update alert settings');
-   }
- };
+  const handleArenaAlertsToggle = async (next: boolean) => {
+    if (isSavingAlerts) return;
+    const previous = arenaAlerts;
+    setArenaAlerts(next);
+    setIsSavingAlerts(true);
+    try {
+      const response = await apiFetch('/api/v1/gamification/arena-notifications', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: next }),
+      });
+      if (!response.ok) throw new Error('Preference update failed');
+      // Revalidate independently: a refresh failure must not undo a saved preference.
+      void syncStats().catch(() => {});
+    } catch {
+      setArenaAlerts(previous);
+      toast.error(t('alerts_error'));
+    } finally { setIsSavingAlerts(false); }
+  };
 
- const faqItems = [
-   { q: 'faq_q1', a: 'faq_a1' },
-   { q: 'faq_q2', a: 'faq_a2' },
-   { q: 'faq_q3', a: 'faq_a3' },
-   { q: 'faq_q4', a: 'faq_a4' },
- ];
+  const handleResync = async () => {
+    if (isResyncing) return;
+    setIsResyncing(true);
+    try {
+      const [account, balance] = await Promise.all([syncStats(), syncBalance()]);
+      if (!account || !balance) throw new Error('Account refresh unavailable');
+      telegramHaptic('success');
+      toast.success(t('refresh_success'));
+    } catch { toast.error(t('refresh_error')); }
+    finally { setIsResyncing(false); }
+  };
 
- const tgId = stats?.telegram_id || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id : null);
- const isAdmin = Boolean(stats?.is_admin || tgId === 1016749901 || tgId === 716720099);
+  const tgId = stats?.telegram_id || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id : null);
+  const isAdmin = Boolean(stats?.is_admin || tgId === 1016749901 || tgId === 716720099);
+  const faqItems = ['1', '2', '3', '4'] as const;
 
- const handleResyncCache = async () => {
-   if (isResyncing) return;
-   setIsResyncing(true);
-   telegramHaptic('medium');
-   try {
-     await Promise.all([
-       syncStats?.(),
-       syncBalance?.(),
-     ]);
-     telegramHaptic('success');
-     toast.success('System state & wallet re-synchronized');
-   } catch {
-     toast.error('Failed to sync system state');
-   } finally {
-     setIsResyncing(false);
-   }
- };
-
- const handleThemeToggle = () => {
-   toggleTheme();
-   telegramHaptic('light');
-   toast.info(`Theme set to ${theme === 'dark' ? 'Light' : 'Dark'}`);
- };
-
- const handleSoundToggle = () => {
-   setSoundEnabled(prev => {
-     const next = !prev;
-     toast.info(next ? 'Sound FX enabled' : 'Sound FX muted');
-     return next;
-   });
-   telegramHaptic('light');
- };
-
- const handleReducedMotionToggle = () => {
-   const next = !reducedMotion;
-   setReducedMotion(next);
-   telegramHaptic('light');
-   toast.info(next ? 'Reduced motion active' : 'Full animations active');
- };
-
- return (
-  <LayoutWrapper className="w-full ">
-  <main className="w-full app-page flex flex-col items-center mx-auto ">
-
-  {/* Page Title & Subtitle Centered in 1 Line */}
-  <PageHeader title={t('title')} description={t('subtitle')} icon={<FiSettings />} />
-
-  {/* Standalone Glowing Premium Card */}
-  <Link href={`/${locale}/membership`} className="w-full block">
-    <Card variant="premium" interactive className="ui-hero-card ui-hero-card--premium p-3 flex items-center justify-between gap-3 rounded-2xl">
-      <div className="flex min-w-0 items-center gap-3.5">
-        <span className="ui-icon-tile ui-icon-tile--premium"><FaGem aria-hidden="true" /></span>
-        <div className="flex min-w-0 flex-col text-start">
-          <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5 flex flex-wrap items-center gap-2">
-            {t('premium_membership')}
-            <Badge variant="purple" size="counter">{stats?.is_premium ? 'Active' : 'Pro'}</Badge>
-          </span>
-          <span className="text-caption font-medium text-brand-muted leading-snug">
-            {stats?.is_premium ? t('enhanced_access') : t('upgrade_for_access')}
-          </span>
-        </div>
-      </div>
-      <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
-    </Card>
-  </Link>
-
-  {/* Section: Gameplay & Visuals */}
-  <section aria-labelledby="gameplay-visuals-heading" className="w-full space-y-2">
-    <h2 id="gameplay-visuals-heading" className="ui-section-title t-title-2 text-brand-primary text-start">
-      {t('gameplay_visuals')}
-    </h2>
-    <Card variant="x-panel" className="divide-y divide-brand-border-opacity-10">
-      
-      {/* Theme row */}
-      <div className="px-3 py-2.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="ui-icon-tile">
-            {theme === 'dark' ? <FaMoon /> : <FaSun />}
-          </span>
-          <div className="flex min-w-0 flex-col text-start">
-            <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-              {t('luminance_mode')}
-            </span>
-            <span className="text-caption font-medium text-brand-muted">
-              {theme === 'dark' ? t('deep_void') : t('solar_flare')}
-            </span>
-          </div>
-        </div>
-        <Switch
-          checked={theme === 'dark'}
-          onChange={handleThemeToggle}
-          aria-label={t('luminance_mode')}
-        />
-      </div>
-
-      {/* Reduce motion row */}
-      <div className="px-3 py-2.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="ui-icon-tile">
-            <FaUniversalAccess />
-          </span>
-          <div className="flex min-w-0 flex-col text-start">
-            <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-              {t('reduce_motion')}
-            </span>
-            <span className="text-caption font-medium text-brand-muted">
-              {reducedMotion ? t('reduce_motion_on') : t('reduce_motion_off')}
-            </span>
-          </div>
-        </div>
-        <Switch
-          checked={reducedMotion}
-          onChange={handleReducedMotionToggle}
-          aria-label={t('reduce_motion')}
-        />
-      </div>
-
-      {/* Sound effects row */}
-      <div className="px-3 py-2.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="ui-icon-tile">
-            <FaVolumeUp />
-          </span>
-          <div className="flex min-w-0 flex-col text-start">
-            <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-              {t('audio_protocol')}
-            </span>
-            <span className="text-caption font-medium text-brand-muted">
-              {soundEnabled ? t('active_sync') : t('muted')}
-            </span>
-          </div>
-        </div>
-        <Switch
-          checked={soundEnabled}
-          onChange={handleSoundToggle}
-          aria-label={t('audio_protocol')}
-        />
-      </div>
-    </Card>
-  </section>
-
-  {/* Section: Notifications & Wallet */}
-  <section aria-labelledby="notifications-wallet-heading" className="w-full space-y-2">
-    <h2 id="notifications-wallet-heading" className="ui-section-title t-title-2 text-brand-primary text-start">
-      {t('notifications_wallet')}
-    </h2>
-    <Card variant="x-panel" className="divide-y divide-brand-border-opacity-10">
-      
-      {/* Arena alerts row */}
-      <div className="px-3 py-2.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="ui-icon-tile">
-            <FaTrophy />
-          </span>
-          <div className="flex min-w-0 flex-col text-start">
-            <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-              {t('arena_alerts')}
-            </span>
-            <span className="text-caption font-medium text-brand-muted">
-              {arenaAlerts ? t('arena_alerts_on') : t('arena_alerts_off')}
-            </span>
-          </div>
-        </div>
-        <Switch
-          checked={arenaAlerts}
-          onChange={handleArenaAlertsToggle}
-          aria-label={t('arena_alerts')}
-        />
-      </div>
-
-      {/* TON Wallet Card (Inside group now) */}
-      <Link href={`/${locale}/wallet`} className="w-full block">
-        <div className="px-3 py-2.5 flex items-center justify-between gap-3 hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
-          <div className="flex items-center gap-3">
-            <span className="ui-icon-tile">
-              <FaWallet />
-            </span>
-            <div className="flex min-w-0 flex-col text-start">
-              <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5 flex items-center">
-                {t('ton_wallet')}
-              </span>
-              <span className="text-caption font-medium text-brand-muted">
-                {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : t('ton_not_connected')}
-              </span>
+  return <LayoutWrapper>
+    <main className="app-page settings-page">
+      <PageHeader title={t('title')} description={t('subtitle')} icon={<FiSettings />} align="start" backHref={`/${locale}/home`} backLabel={t('return')} />
+      <div className="settings-layout">
+        <section aria-labelledby="settings-preferences-title">
+          <Card variant="solid" className="settings-panel p-0">
+            <h2 id="settings-preferences-title" className="settings-panel__heading t-title-3">{t('preferences')}</h2>
+            <div className="settings-list">
+              <LanguageSwitcher />
+              <SettingToggle icon={<FiMoon />} label={t('luminance_mode')} description={t('appearance_description')}
+                checked={theme === 'dark'} onChange={checked => setTheme(checked ? 'dark' : 'light')} />
+              <SettingToggle icon={<FiZap />} label={t('reduce_motion')} description={t('motion_description')}
+                checked={reducedMotion} onChange={setReducedMotion} />
+              <SettingToggle icon={<FiVolume2 />} label={t('audio_protocol')} description={t('sound_description')}
+                checked={soundEnabled} onChange={setSoundEnabled} />
+              <SettingToggle icon={<FiBell />} label={t('arena_alerts')} description={isSavingAlerts ? t('saving') : t('arena_description')}
+                checked={arenaAlerts} onChange={handleArenaAlertsToggle} busy={isSavingAlerts}
+                disabled={isSavingAlerts || (!stats && loadingStats)} />
             </div>
-          </div>
-          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
-        </div>
-      </Link>
-    </Card>
-  </section>
-  
-  {/* Section: Support & Security */}
-  <section aria-labelledby="support-security-heading" className="w-full space-y-2">
-    <h2 id="support-security-heading" className="ui-section-title t-title-2 text-brand-primary text-start">
-      {t('support_security')}
-    </h2>
-    
-    <Card variant="x-panel" className="divide-y divide-brand-border-opacity-10">
-      
-      {/* Language row */}
-      <div className="px-3 py-2.5 flex items-center justify-between gap-3">
-        <LanguageSwitcher />
-      </div>
-
-      {/* FAQ items directly integrated */}
-      {faqItems.map((item, index) => (
-        <div key={index} className="w-full">
-          <button type="button" aria-expanded={openFaq === index} aria-controls={`faq-answer-${index}`}
-            onClick={() => {
-              setOpenFaq(openFaq === index ? null : index);
-              telegramHaptic('light');
-            }}
-            className="ui-tap-target w-full px-3 py-2.5 flex items-center justify-between gap-3 text-start hover:bg-brand-bg-opacity-5 transition-colors cursor-pointer"
-          >
-            <div className="flex items-center gap-3 pe-2">
-              <div className="w-6 h-6 rounded-lg bg-brand-elevated flex items-center justify-center text-brand-muted border border-brand-border-opacity-10 shrink-0">
-                <FaQuestionCircle className="text-sm" />
+          </Card>
+        </section>
+        <div className="settings-secondary">
+          <section aria-labelledby="settings-account-title">
+            <Card variant="solid" className="settings-panel p-0">
+              <h2 id="settings-account-title" className="settings-panel__heading t-title-3">{t('account')}</h2>
+              <div className="settings-list">
+                <SettingLink href={`/${locale}/wallet`} icon={<FiCreditCard />} label={t('ton_wallet')}
+                  description={loadingBalance && !walletAddress ? <Skeleton textRole="caption" width="var(--size-stat-min)" /> : walletAddress ? <bdi className="font-mono">{walletAddress.slice(0, 6)}…{walletAddress.slice(-4)}</bdi> : t('ton_not_connected')} />
+                <SettingLink href={`/${locale}/membership`} icon={<FaGem />} label={t('premium_membership')}
+                  description={t('membership_details')} badge={stats?.is_premium ? <Badge variant="purple" size="counter">{t('membership_active')}</Badge> : undefined} />
+                <details className="settings-tools">
+                  <summary className="settings-row settings-row--interactive">
+                    <span className="settings-row__icon" aria-hidden="true"><FiSliders /></span>
+                    <span className="settings-row__copy t-label text-brand-primary">{t('account_tools')}</span>
+                    <FiChevronDown className="settings-row__chevron" aria-hidden="true" />
+                  </summary>
+                  <div className="settings-tools__body">
+                    <p className="t-caption text-brand-muted">{t('data_sync_description')}</p>
+                    <Button variant="secondary" size="sm" isLoading={isResyncing} onClick={handleResync} leftIcon={<FiRefreshCw />}>
+                      {isResyncing ? t('refreshing') : t('refresh')}
+                    </Button>
+                    {isAdmin && <SettingLink href={`/${locale}/admin`} icon={<FiShield />} label={t('command_center')} description={t('manage_admin')} badge={<Badge size="counter">{t('admin')}</Badge>} />}
+                  </div>
+                </details>
               </div>
-              <span className="text-sm font-bold text-brand-primary normal-case tracking-normal leading-tight">
-                {t(item.q)}
-              </span>
-            </div>
-            <motion.div
-              animate={{ rotate: openFaq === index ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-              className="text-brand-muted shrink-0"
-            >
-              <FaChevronDown className="text-sm" />
-            </motion.div>
-          </button>
-          
-          <div id={`faq-answer-${index}`} hidden={openFaq !== index} className="px-3 pb-3 ps-12 t-body text-brand-muted text-start">
-            {t(item.a)}
-          </div>
+            </Card>
+          </section>
+          <section aria-labelledby="settings-help-title">
+            <Card variant="solid" className="settings-panel p-0">
+              <h2 id="settings-help-title" className="settings-panel__heading t-title-3">{t('help')}</h2>
+              <Button variant="ghost" className="settings-row settings-row--interactive" aria-haspopup="dialog" aria-expanded={showHelp} onClick={() => setShowHelp(true)}>
+                <span className="settings-row__icon" aria-hidden="true"><FiHelpCircle /></span>
+                <span className="settings-row__copy"><span className="block t-label text-brand-primary">{t('faq_title')}</span><span className="block t-caption text-brand-muted">{t('help_description')}</span></span>
+                <FiChevronRight className="settings-row__chevron rtl:rotate-180" aria-hidden="true" />
+              </Button>
+            </Card>
+          </section>
         </div>
-      ))}
-    </Card>
-
-    {/* Quick Hub Navigation */}
-    <Card variant="x-panel" className="divide-y divide-brand-border-opacity-10 mt-2">
-      <Link href={`/${locale}/marketplace`} className="w-full block">
-        <div className="px-3 py-2.5 flex items-center justify-between gap-3 hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
-          <div className="flex items-center gap-3">
-            <span className="ui-icon-tile ui-icon-tile--gold"><FaStore aria-hidden="true" /></span>
-            <div className="flex min-w-0 flex-col text-start">
-              <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-                {t('marketplace_link')}
-              </span>
-              <span className="text-caption font-medium text-brand-muted">
-                {t('marketplace_description')}
-              </span>
-            </div>
-          </div>
-          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
-        </div>
-      </Link>
-
-      <Link href={`/${locale}/academy`} className="w-full block">
-        <div className="px-3 py-2.5 flex items-center justify-between gap-3 hover:bg-brand-bg-opacity-5 transition-all cursor-pointer">
-          <div className="flex items-center gap-3">
-            <span className="ui-icon-tile ui-icon-tile--info"><FaGraduationCap aria-hidden="true" /></span>
-            <div className="flex min-w-0 flex-col text-start">
-              <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-                Chess Academy
-              </span>
-              <span className="text-caption font-medium text-brand-muted">
-                {t('academy_description')}
-              </span>
-            </div>
-          </div>
-          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
-        </div>
-      </Link>
-
-      {/* Diagnostics / State Re-sync */}
-      <div className="px-3 py-2.5 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="ui-icon-tile">
-            <FaSyncAlt className={isResyncing ? "animate-spin text-emerald-400" : ""} />
-          </span>
-          <div className="flex min-w-0 flex-col text-start">
-            <span className="text-sm font-semibold text-brand-primary leading-tight mb-0.5">
-              {t('data_sync')}
-            </span>
-            <span className="text-caption font-medium text-brand-muted">
-              {t('data_sync_description')}
-            </span>
-          </div>
-        </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          disabled={isResyncing}
-          onClick={handleResyncCache}
-          className="shrink-0 text-caption font-semibold normal-case tracking-normal hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30"
-        >
-          {isResyncing ? "Syncing..." : "Re-sync"}
-        </Button>
       </div>
-    </Card>
-
-    {/* Admin Command Center Card - Standalone if present */}
-    {isAdmin && (
-      <Card variant="solid" interactive className="mt-3 border-brand-danger/20">
-        <Link href={`/${locale}/admin`} className="flex items-center justify-between p-3.5 group">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <span className="ui-icon-tile ui-icon-tile--danger"><FaShieldAlt aria-hidden="true" /></span>
-            </div>
-            <div className="flex flex-col">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-semibold text-brand-primary tracking-tight leading-tight">{t('command_center')}</span>
-                <Badge variant="secondary">{t('admin')}</Badge>
-              </div>
-              <span className="text-caption font-bold text-brand-danger normal-case tracking-normal leading-none">
-                {t('manage_admin')}
-              </span>
-            </div>
-          </div>
-          <FaArrowLeft className="rotate-180 rtl:rotate-0 shrink-0 text-brand-muted" aria-hidden="true" />
-        </Link>
-      </Card>
-    )}
-  </section>
- 
-  {/* versioning */}
-  <footer className="w-full flex flex-col items-center select-none pointer-events-none text-center">
-  <span className="text-caption font-medium text-brand-muted">{t('footer')}</span>
-  </footer>
-  </main>
-  </LayoutWrapper>
- );
+      {showHelp && <Drawer isOpen onClose={() => setShowHelp(false)} title={t('faq_title')}>
+        <Card variant="solid" className="settings-list p-0">
+          {faqItems.map(item => <details key={item} className="settings-faq">
+            <summary className="settings-row settings-row--interactive">
+              <span className="settings-row__copy t-label text-brand-primary">{t(`faq_q${item}`)}</span>
+              <FiChevronDown className="settings-row__chevron" aria-hidden="true" />
+            </summary>
+            <p className="settings-faq__answer t-body text-brand-muted">{t(`faq_a${item}`)}</p>
+          </details>)}
+        </Card>
+      </Drawer>}
+    </main>
+  </LayoutWrapper>;
 }

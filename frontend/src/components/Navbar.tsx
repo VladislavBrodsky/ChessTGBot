@@ -61,12 +61,14 @@ export default function Navbar({ hide = false }: { hide?: boolean }) {
       <ul className={desktop ? 'flex flex-1 flex-col gap-1' : 'grid w-full grid-cols-5 gap-1'}>
         {items.map(item => {
           const href = `/${locale}${item.href}`;
-          const active = currentPath === href || currentPath.startsWith(href + '/');
+          const exactActive = currentPath === href || currentPath.startsWith(href + '/');
+          const settingsParent = !desktop && item.href === '/profile' && currentPath === `/${locale}/settings`;
+          const active = exactActive || settingsParent;
           const Icon = item.icon;
           return (
             <li key={href} className="min-w-0">
-              <Link href={href} aria-label={claimable > 0 && item.href === '/profile' ? `${t(item.key)}: ${tg('claim')}` : t(item.key)} aria-current={active ? 'page' : undefined}
-                onClick={() => { if (!active) telegramHaptic('selection'); }}
+              <Link href={href} aria-label={claimable > 0 && item.href === '/profile' ? `${t(item.key)}: ${tg('claim')}` : t(item.key)} aria-current={exactActive ? 'page' : settingsParent ? 'location' : undefined}
+                onClick={() => { if (!exactActive) telegramHaptic('selection'); }}
                 className={`${desktop ? 'app-sidebar__link' : 'app-bottom-nav__link'} ${active ? 'is-active' : ''}`}>
                 <span className="relative inline-flex">
                   <Icon size={21} aria-hidden="true" className="shrink-0" />

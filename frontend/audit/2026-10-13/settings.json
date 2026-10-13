@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-13",
+  "mode": "local review",
+  "sections": [
+    "Preferences",
+    "Account",
+    "Help"
+  ],
+  "desktop": {
+    "columns": "480px 400px",
+    "headingCount": 1,
+    "rowHeights": [
+      64,
+      65,
+      65,
+      65,
+      65,
+      64,
+      64,
+      64,
+      64
+    ],
+    "scrollWidth": 1276,
+    "theme": "light",
+    "width": 1280
+  },
+  "mobileRTL": {
+    "bootstrapScripts": 1,
+    "columns": "284px",
+    "controls": [
+      {
+        "height": 44,
+        "width": 48
+      },
+      {
+        "height": 44,
+        "width": 48
+      },
+      {
+        "height": 44,
+        "width": 48
+      },
+      {
+        "height": 44,
+        "width": 48
+      }
+    ],
+    "direction": "rtl",
+    "scrollWidth": 316,
+    "sdkScripts": 1,
+    "width": 320
+  },
+  "navigation": {
+    "issues": [],
+    "scripts": {
+      "bootstrap": 1,
+      "sdk": 1
+    }
+  },
+  "checks": {
+    "helpKeyboard": true,
+    "accountToolsKeyboard": true,
+    "accountRefresh": true,
+    "soundPersistsAfterReload": true,
+    "mutedGameAudioTested": true,
+    "reducedMotion": true,
+    "mobileProfileParent": true,
+    "originalPreferencesRestored": true,
+    "tests": 142,
+    "translationMessages": 1156,
+    "locales": 10,
+    "productionPreviewHidden": true,
+    "localPreviewStillDisclosed": true,
+    "staticBuildPages": 213
+  },
+  "evidence": {
+    "scriptLoadingReference": "https://nextjs.org/docs/app/api-reference/components/script"
+  }
+}
