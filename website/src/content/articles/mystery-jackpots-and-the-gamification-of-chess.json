@@ -1,9 +1,9 @@
 {
   "slug": "mystery-jackpots-and-the-gamification-of-chess",
-  "title": "Mystery Jackpots: The Gamification of Chess",
-  "subtitle": "How Web3Chess introduced daily loot drops, 1,000 GRAM mystery jackpots, and streak multipliers to ancient board game competition.",
-  "excerpt": "How Web3Chess combined traditional Elo progression with daily mystery loot boxes, 1,000 GRAM jackpots, and streak multiplier rewards.",
-  "metaDescription": "Discover the gamification of competitive chess with daily mystery box loot drops, 1,000 GRAM prize chests, and match streak rewards on Web3Chess.",
+  "title": "How the first three-game mystery box works",
+  "subtitle": "A free chess challenge with one in-app reward and published odds.",
+  "excerpt": "Join the free AI challenge, finish three qualifying games, and open one mystery box. See the exact in-app reward odds.",
+  "metaDescription": "Learn how to unlock the free Web3Chess mystery box after three qualifying AI games, including the rules and reward odds.",
   "category": "Product",
   "author": {
     "name": "Web3Chess Research",
@@ -12,49 +12,49 @@
     "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
-  "readingTime": "4 min read",
+  "readingTime": "2 min read",
   "takeaways": [
-    "Gamified quest loops reward players for tactical puzzle milestones and active daily duels.",
-    "King’s Dominion Mystery Boxes offer prizes up to 1,000 GRAM directly inside Telegram.",
-    "Daily match streak multipliers incentivize consistent competitive practice over bingeing.",
-    "Progressing through the 100-level Academy unlocks exclusive board cosmetics and bonus loot."
+    "Join before playing; only free AI games started afterward count.",
+    "Finish three games with at least 10 moves per side each.",
+    "Open one box per account for 250 XP, a 24-hour XP boost, or a gold profile border.",
+    "Rewards are in-app items without cash value. No deposit or purchase is needed."
   ],
   "content": [
     {
       "type": "paragraph",
-      "text": "Chess has remained virtually unchanged for over a millennium. But while the 64 squares remain timeless, the modern player journey benefits immensely from positive feedback loops and gamified progression."
+      "text": "A useful chess challenge should make the next move clear. Web3Chess gives new players a simple path: join the first-three challenge, play free games against the AI, then open one mystery box."
     },
     {
       "type": "heading",
-      "text": "The King’s Dominion Mystery Boxes"
-    },
-    {
-      "type": "paragraph",
-      "text": "In Web3Chess, completing tactical puzzle sets or competing in daily arena matches awards players with Mystery Boxes. Players can unlock on-chain jackpot prizes of up to 1,000 GRAM tokens, deposited directly into their connected platform balance."
-    },
-    {
-      "type": "subheading",
-      "text": "Rewarding Mastery and Daily Consistency"
-    },
-    {
-      "type": "paragraph",
-      "text": "Traditional gaming platforms offer empty digital trophies. In Web3Chess, completing all four tracks of the Tactics Academy (Origins, Openings, Tactics, and Endgames) elevates player rank and boosts passive rake commissions from referred friends."
-    },
-    {
-      "type": "quote",
-      "text": "Gamification does not change chess rules; it celebrates the dedication required to master them with real on-chain incentives."
-    },
-    {
-      "type": "heading",
-      "text": "How to Maximize Your Rewards"
+      "text": "How to qualify"
     },
     {
       "type": "list",
       "items": [
-        "Maintain Daily Streaks: Log in and solve at least one puzzle daily to maintain streak multipliers.",
-        "Complete Academy Tracks: Unlock advanced mystery box drop tiers by mastering all 100 tactical levels.",
-        "Invite Friends: Earn a permanent 2% share of match rake pools whenever friends play duels."
+        "Join the challenge inside the Mini App before you start a game.",
+        "Finish three free AI games, each with at least 20 half-moves (10 moves per side). Wins, losses and draws count.",
+        "Return to the challenge card and open your box. Games started before joining, paid games and abandoned games do not count."
       ]
+    },
+    {
+      "type": "heading",
+      "text": "What the box contains"
+    },
+    {
+      "type": "paragraph",
+      "text": "The box awards one in-app reward: 250 XP (60%), a 1.5× XP boost for 24 hours (30%), or a gold profile border (10%). If you already own the border and draw it again, you receive 250 XP instead. The app shows these odds before you join."
+    },
+    {
+      "type": "paragraph",
+      "text": "This challenge is free, once per account, and has no deadline. The rewards have no cash value and are not GRAM, TON, or Telegram gifts."
+    },
+    {
+      "type": "heading",
+      "text": "Make the next game worth sharing"
+    },
+    {
+      "type": "paragraph",
+      "text": "After practicing, share an actual game or a chess position with a friend. A useful challenge travels farther when the recipient can play or solve it immediately; a prize claim should never be the only reason to invite someone."
     }
   ],
   "relatedSlugs": [
@@ -72,7 +72,7 @@
     }
   ],
   "cta": {
-    "label": "Open Daily Mystery Box",
+    "label": "Start free AI practice",
     "href": "/play"
   }
 }

@@ -140,6 +140,7 @@ export default function Home() {
               <span className="block text-sm font-semibold">{t('execute_matchmaking')}</span>
             </ActionLink>
           </div>
+          <EngagementQuest />
           <div className="w-full"><ArenaBanner /></div>
           <div className="ui-quick-grid">
             <QuickTile href={`/${locale}/academy`} icon={<FaGraduationCap size={20} />} tone="info" label={t('academy')} />
@@ -148,7 +149,6 @@ export default function Home() {
           </div>
         </div>
         <div className="min-w-0 space-y-4">
-          <EngagementQuest />
           <div className="w-full"><DailyGoalsBento /></div>
           <section aria-labelledby="home-leaderboard" className="w-full space-y-2"><SectionHeader id="home-leaderboard" title={t('leaderboard')} /><Leaderboard /></section>
         </div>

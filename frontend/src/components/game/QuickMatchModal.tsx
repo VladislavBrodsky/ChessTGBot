@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaChessKnight, FaBolt, FaClock, FaShieldAlt, FaTrophy, FaWallet, FaCheckCircle } from 'react-icons/fa';
+import { FaChessKnight, FaBolt, FaClock, FaShieldAlt, FaWallet, FaCheckCircle } from 'react-icons/fa';
 import { useUser } from '@/context/UserContext';
 import { useAudio } from '@/hooks/useAudio';
 import { telegramHaptic } from '@/lib/telegram';
@@ -19,7 +19,7 @@ interface QuickMatchModalProps {
 }
 
 const WAGER_OPTIONS = [
-  { cents: 0, label: 'Free', sub: 'Qualifier', popular: false },
+  { cents: 0, label: 'Free', sub: 'AI game', popular: false },
   { cents: 100, label: '$1', sub: '$1.90 Pot', popular: false },
   { cents: 300, label: '$3', sub: '$5.70 Pot', popular: false },
   { cents: 500, label: '$5', sub: '$9.50 Pot', popular: true },
@@ -296,23 +296,12 @@ export default function QuickMatchModal({
                 </div>
               )}
 
-              {/* Match Highlights / Mystery Box Note */}
-              <div className="p-3 rounded-2xl bg-brand-surface border border-brand-border flex items-center justify-between text-xs font-mono">
-                {wagerCents > 0 ? (
-                  <>
-                    <span className="text-brand-muted">Winner Takes (95%):</span>
-                    <span className="font-bold text-emerald-400">+${((wagerCents * 2 * 0.95) / 100).toFixed(2)} USDT</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-brand-muted flex items-center gap-1.5">
-                      <FaTrophy className="text-amber-400" size={13} />
-                      Mystery Box Qualifier
-                    </span>
-                    <span className="text-amber-400 font-bold">1,000 TON Drop Pool</span>
-                  </>
-                )}
-              </div>
+              {wagerCents > 0 && (
+                <div className="p-3 rounded-2xl bg-brand-surface border border-brand-border flex items-center justify-between text-xs font-mono">
+                  <span className="text-brand-muted">Winner Takes (95%):</span>
+                  <span className="font-bold text-emerald-400">+${((wagerCents * 2 * 0.95) / 100).toFixed(2)} USDT</span>
+                </div>
+              )}
 
               {/* Action Button */}
               <button

@@ -1089,7 +1089,7 @@
     "remaining": "Noch {count} gültige Partien",
     "qualification": "Erst teilnehmen, dann 3 KI-Partien mit mindestens 10 Zügen je Seite beenden.",
     "rules": "Nimm teil und beende 3 kostenlose KI-Partien mit jeweils mindestens 20 Halbzügen (10 je Seite). Siege, Niederlagen und Remis zählen. Frühere, bezahlte oder abgebrochene Partien zählen nicht. Eine Box pro Konto. Keine Frist.",
-    "virtual_only": "Nur virtuelle Belohnungen in der App. Kein Geldwert, TON oder Telegram-Geschenke. Keine Einzahlung und kein Kauf nötig.",
+    "virtual_only": "Nur virtuelle Belohnungen in der App. Kein Geldwert, GRAM/TON oder Telegram-Geschenke. Keine Einzahlung und kein Kauf nötig.",
     "duplicate": "Goldrahmen schon vorhanden? Du erhältst 250 XP. Ein stärkerer aktiver Boost bleibt erhalten und wird um 24 Stunden verlängert.",
     "revealed": "Deine Belohnung ist bereit",
     "close": "Schließen",
@@ -1103,8 +1103,7 @@
       "xp_250": "250 XP",
       "boost_24h": "1,5× XP-Boost · 24 Stunden",
       "border_gold": "Goldener Profilrahmen",
-      "gold_duplicate": "250 XP · Goldrahmen bereits vorhanden",
-      "jackpot_ton_1000": "🔥 Up to 1,000 TON Jackpot Drop"
+      "gold_duplicate": "250 XP · Goldrahmen bereits vorhanden"
     }
   },
   "Common": {

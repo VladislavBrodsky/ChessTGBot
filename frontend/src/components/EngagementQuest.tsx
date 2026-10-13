@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import useSWR from 'swr';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { FiGift } from 'react-icons/fi';
-import { FaTrophy, FaFire } from 'react-icons/fa';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, sendTelemetryEvent } from '@/lib/api';
 import { telegramHaptic } from '@/lib/telegram';
 import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/Button';
@@ -13,7 +13,6 @@ import { Card } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Skeleton } from '@/components/ui/Skeleton';
-import QuickMatchModal from '@/components/game/QuickMatchModal';
 
 interface Quest {
   enabled: boolean;
@@ -41,16 +40,32 @@ async function readQuest(): Promise<Quest> {
 
 export default function EngagementQuest() {
   const t = useTranslations('Engagement');
+  const tReferral = useTranslations('Referral');
+  const locale = useLocale();
+  const router = useRouter();
   const { stats, syncStats } = useUser();
   const { data, error, isValidating, mutate } = useSWR(stats ? PATH : null, readQuest, { errorRetryCount: 1 });
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const [details, setDetails] = useState(false);
   const [revealed, setRevealed] = useState(false);
-  const [showQuickMatch, setShowQuickMatch] = useState(false);
+  const referralCode = stats?.referral_code;
+  const canShare = typeof referralCode === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(referralCode);
 
-  // Dynamic 24h rolling activity seed
-  const todayBoxesOpened = 240 + (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 13 % 145);
+  function shareInvite() {
+    if (!canShare || !referralCode) return;
+    const bot = (stats?.bot_username || process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').replace(/^@+/, '');
+    if (!/^[A-Za-z0-9_]{5,32}$/.test(bot)) return;
+    const inviteLink = `https://t.me/${bot}?start=ref_${referralCode}`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}`;
+    telegramHaptic('selection');
+    void sendTelemetryEvent('engagement_quest_share', { campaign_id: 'first-three-v1' });
+    if (window.Telegram?.WebApp?.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(shareUrl);
+    } else {
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    }
+  }
 
   async function act(action: 'join' | 'claim') {
     if (!data || busy) return;
@@ -93,26 +108,14 @@ export default function EngagementQuest() {
     <Card variant="solid" className="p-4 space-y-3 relative overflow-hidden" aria-labelledby="engagement-title" aria-busy={busy}>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="ui-icon-tile ui-icon-tile--premium relative">
-            <FiGift size={20} aria-hidden="true" className="animate-pulse" />
+          <span className="ui-icon-tile ui-icon-tile--premium">
+            <FiGift size={20} aria-hidden="true" />
           </span>
           <div className="min-w-0">
             <h2 id="engagement-title" className="t-title-3 truncate">{t('title')}</h2>
             <p className="t-caption text-brand-muted">{t('subtitle')}</p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-mono font-bold bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
-          <FaTrophy className="size-3 text-amber-400" />
-          1,000 TON
-        </span>
-      </div>
-
-      {/* Live 24h Viral Social Signal */}
-      <div className="flex items-center gap-1.5 text-caption font-mono text-fg-muted bg-brand-elevated/60 px-2.5 py-1 rounded-xl border border-brand-border">
-        <FaFire className="text-amber-500 shrink-0 size-3" />
-        <span className="truncate">
-          <strong className="text-amber-400 font-bold">{todayBoxesOpened}</strong> mystery boxes unlocked today
-        </span>
       </div>
 
       <p className="t-body text-brand-muted">{t('description')}</p>
@@ -142,12 +145,18 @@ export default function EngagementQuest() {
             void act('claim');
           } else {
             telegramHaptic('selection');
-            setShowQuickMatch(true);
+            router.push(`/${locale}/game?practice=1`);
           }
         }}
       >
         {label}
       </Button>
+
+      {data.state === 'claimed' && canShare && (
+        <Button variant="secondary" className="w-full" onClick={shareInvite}>
+          {tReferral('share_invite')}
+        </Button>
+      )}
 
       <Button variant="ghost" size="sm" className="w-full text-brand-muted hover:text-white" onClick={() => setDetails(true)}>
         {t('odds')}
@@ -161,27 +170,11 @@ export default function EngagementQuest() {
       <div className="space-y-4">
         {revealed && data.reward_key && (
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-center space-y-1">
-            <span className="ui-eyebrow font-mono text-amber-400 font-bold block">You Unlocked</span>
+            <span className="ui-eyebrow text-brand-muted block">{t('revealed')}</span>
             <p className="t-title-2 text-white" role="status">{rewardLabel(data.reward_key)}</p>
           </div>
         )}
         
-        {/* Grand Prize Spotlight */}
-        <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent border border-amber-500/30 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="size-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-              <FaTrophy size={16} />
-            </span>
-            <div>
-              <p className="text-xs font-bold text-white">Grand Jackpot Prize</p>
-              <p className="text-caption text-amber-400 font-mono font-semibold">Up to 1,000 TON Drop Pool</p>
-            </div>
-          </div>
-          <span className="px-2 py-0.5 rounded-full ui-eyebrow font-mono font-bold bg-amber-500 text-black">
-            Top Reward
-          </span>
-        </div>
-
         <p className="t-body text-brand-muted">{t('rules')}</p>
         <ul className="space-y-2">
           {data.rewards.map(reward => (
@@ -196,14 +189,5 @@ export default function EngagementQuest() {
       </div>
     </Modal>
 
-    {/* Quick Match Modal with 0 Stake / Qualifier Mode */}
-    <QuickMatchModal
-      isOpen={showQuickMatch}
-      onClose={() => {
-        setShowQuickMatch(false);
-        void mutate();
-      }}
-      initialWagerCents={0}
-    />
   </>;
 }

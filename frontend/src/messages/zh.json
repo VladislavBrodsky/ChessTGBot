@@ -1089,7 +1089,7 @@
     "remaining": "还需完成{count}局有效对局",
     "qualification": "先参加任务，再完成3局双方各走至少10步的AI对局。",
     "rules": "参加后完成3局免费AI对局。每局至少20个半回合（双方各10步）。胜、负、和都计入。参加前、付费或取消的对局不计入。每个账号限一个宝箱。无截止时间。",
-    "virtual_only": "仅限应用内虚拟奖励。无现金价值，不含TON或Telegram礼物。无需充值或购买。",
+    "virtual_only": "仅限应用内虚拟奖励。无现金价值，不含GRAM/TON或Telegram礼物。无需充值或购买。",
     "duplicate": "已拥有金色头像框？改为获得250 XP。已有更强的有效加成将保留并延长24小时。",
     "revealed": "你的奖励已就绪",
     "close": "关闭",
@@ -1103,8 +1103,7 @@
       "xp_250": "250 XP",
       "boost_24h": "1.5倍XP加成 · 24小时",
       "border_gold": "金色头像框",
-      "gold_duplicate": "250 XP · 重复金色头像框",
-      "jackpot_ton_1000": "🔥 Up to 1,000 TON Jackpot Drop"
+      "gold_duplicate": "250 XP · 重复金色头像框"
     }
   },
   "Common": {

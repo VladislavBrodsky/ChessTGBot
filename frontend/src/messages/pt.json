@@ -1089,7 +1089,7 @@
     "remaining": "Faltam {count} partidas válidas",
     "qualification": "Entre primeiro. Termine 3 partidas de IA com pelo menos 10 lances de cada lado.",
     "rules": "Entre e termine 3 partidas grátis contra a IA, cada uma com pelo menos 20 meios-lances (10 por lado). Vitórias, derrotas e empates contam. Partidas anteriores, pagas ou canceladas não contam. Uma caixa por conta. Sem prazo.",
-    "virtual_only": "Somente recompensas virtuais no app. Sem valor em dinheiro, TON ou presentes do Telegram. Sem depósito ou compra.",
+    "virtual_only": "Somente recompensas virtuais no app. Sem valor em dinheiro, GRAM/TON ou presentes do Telegram. Sem depósito ou compra.",
     "duplicate": "Já tem a moldura dourada? Receba 250 XP. Um bônus ativo mais forte é mantido e estendido por 24 horas.",
     "revealed": "Sua recompensa está pronta",
     "close": "Fechar",
@@ -1103,8 +1103,7 @@
       "xp_250": "250 XP",
       "boost_24h": "Bônus de XP 1,5× · 24 horas",
       "border_gold": "Moldura dourada de perfil",
-      "gold_duplicate": "250 XP · moldura repetida",
-      "jackpot_ton_1000": "🔥 Up to 1,000 TON Jackpot Drop"
+      "gold_duplicate": "250 XP · moldura repetida"
     }
   },
   "Common": {

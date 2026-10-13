@@ -46,27 +46,18 @@ export function trackPageView(url: string, title?: string): void {
 }
 
 /**
- * Primary conversion tracking: Launching the Telegram Mini App or Bot.
- * Emits both recommended GA4 conversion ('generate_lead') and domain-specific
- * ('play_in_telegram') events with rich funnel parameters.
+ * Tracks a website click toward Telegram. This is a handoff attempt, not a
+ * confirmed Telegram arrival, registered player, game, or revenue event.
  */
 export function trackPlayClick(location: string, startapp?: string): void {
   const destination = startapp
     ? `https://t.me/chess_matbot/Web3Chess?startapp=${startapp}`
     : "https://t.me/chess_matbot/Web3Chess";
 
-  // Google Ads / GA4 standard lead conversion
-  trackEvent("generate_lead", {
-    currency: "USDT",
-    value: 1.0, // baseline intent value for matchmaking funnels
-    event_category: "conversion",
-    event_label: location,
-    conversion_type: "telegram_launch",
-    startapp_param: startapp || "default",
-  });
-
-  // Detailed custom conversion event
+  // Keep the established event name for trend continuity; classify its stage
+  // explicitly so a click cannot be reported as an acquired player or income.
   trackEvent("play_in_telegram", {
+    funnel_stage: "telegram_handoff_click",
     click_location: location,
     startapp_param: startapp || "default",
     destination_url: destination,

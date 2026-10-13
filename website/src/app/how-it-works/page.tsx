@@ -238,7 +238,7 @@ export default function HowItWorksPage() {
                 Built for competitive chess and real crypto rewards
               </h2>
               <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
-                From micro-stakes PvP to high-roller tables, seasonal leaderboards, and 1,000 GRAM mystery jackpots — every move counts.
+                Start with free AI practice and a first-three-games mystery box. USDT-staked player matches remain optional, with the pot and fees shown before you join.
               </p>
             </div>
             <ButtonLink href="/wagers" variant="secondary">
