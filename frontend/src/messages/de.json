@@ -1115,7 +1115,8 @@
       "boost_24h": "1,5× XP-Boost · 24 Stunden",
       "border_gold": "Goldener Profilrahmen",
       "gold_duplicate": "250 XP · Goldrahmen bereits vorhanden"
-    }
+    },
+    "brief": "Info"
   },
   "GramVaultPreview": {
     "badge": "Geplant",

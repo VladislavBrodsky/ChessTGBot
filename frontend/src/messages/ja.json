@@ -1115,7 +1115,8 @@
       "boost_24h": "XP 1.5倍ブースト・24時間",
       "border_gold": "ゴールドのプロフィール枠",
       "gold_duplicate": "250 XP・ゴールド枠重複"
-    }
+    },
+    "brief": "詳細"
   },
   "GramVaultPreview": {
     "badge": "企画中",

@@ -1115,7 +1115,8 @@
       "boost_24h": "1.5倍XP加成 · 24小时",
       "border_gold": "金色头像框",
       "gold_duplicate": "250 XP · 重复金色头像框"
-    }
+    },
+    "brief": "规则"
   },
   "GramVaultPreview": {
     "badge": "规划中",

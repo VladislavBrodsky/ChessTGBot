@@ -4,7 +4,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { FiGift } from 'react-icons/fi';
+import { FiGift, FiInfo } from 'react-icons/fi';
 import { apiFetch, sendTelemetryEvent } from '@/lib/api';
 import { telegramHaptic } from '@/lib/telegram';
 import { useUser } from '@/context/UserContext';
@@ -116,6 +116,19 @@ export default function EngagementQuest() {
             <p className="t-caption text-brand-muted">{t('subtitle')}</p>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            telegramHaptic('selection');
+            setDetails(true);
+          }}
+          className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-pill bg-brand-elevated/80 border border-brand-border text-brand-muted hover:text-white hover:border-brand-action/40 transition-all text-xs font-semibold cursor-pointer active:scale-95"
+          aria-label={t('odds')}
+        >
+          <FiInfo size={13} className="text-brand-action" aria-hidden="true" />
+          <span>{t('brief')}</span>
+        </button>
       </div>
 
       <p className="t-body text-brand-muted">{t('description')}</p>
@@ -158,9 +171,6 @@ export default function EngagementQuest() {
         </Button>
       )}
 
-      <Button variant="ghost" size="sm" className="w-full text-brand-muted hover:text-white" onClick={() => setDetails(true)}>
-        {t('odds')}
-      </Button>
       {isValidating && !busy && <p className="t-caption text-brand-muted" role="status">{t('refreshing')}</p>}
       {failed && <ErrorState title={t('action_error')} message={t('retry_message')} onRetry={() => void mutate()} retryLabel={t('retry')} />}
     </Card>

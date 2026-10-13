@@ -1115,7 +1115,8 @@
       "boost_24h": "1.5× XP boost · 24 hours",
       "border_gold": "Gold profile border",
       "gold_duplicate": "250 XP · duplicate gold border"
-    }
+    },
+    "brief": "Brief"
   },
   "GramVaultPreview": {
     "badge": "Planned",

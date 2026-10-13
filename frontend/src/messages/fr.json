@@ -1115,7 +1115,8 @@
       "boost_24h": "Bonus XP 1,5× · 24 heures",
       "border_gold": "Cadre de profil doré",
       "gold_duplicate": "250 XP · cadre déjà obtenu"
-    }
+    },
+    "brief": "Info"
   },
   "GramVaultPreview": {
     "badge": "Prévu",

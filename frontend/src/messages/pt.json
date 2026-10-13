@@ -1115,7 +1115,8 @@
       "boost_24h": "Bônus de XP 1,5× · 24 horas",
       "border_gold": "Moldura dourada de perfil",
       "gold_duplicate": "250 XP · moldura repetida"
-    }
+    },
+    "brief": "Info"
   },
   "GramVaultPreview": {
     "badge": "Planejado",

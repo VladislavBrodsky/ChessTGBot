@@ -43,7 +43,8 @@ test('a failed claim rolls back and offers recovery', async () => {
 test('rules show the server odds and a disabled campaign stays hidden', async () => {
   mockFetch.mockResolvedValue(response(quest));
   const first = mount();
-  fireEvent.click(await screen.findByRole('button', { name: 'odds' }));
+  expect(await screen.findByText('brief')).toBeVisible();
+  fireEvent.click(screen.getByRole('button', { name: 'odds' }));
   for (const probability of ['60%', '30%', '10%']) expect(screen.getByText(probability)).toBeVisible();
   first.unmount();
   mockFetch.mockResolvedValue(response({ enabled: false }));
