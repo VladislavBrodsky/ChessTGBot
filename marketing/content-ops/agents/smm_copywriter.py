@@ -133,6 +133,186 @@ class SmmCopywriterAgent:
             },
         }
 
+    def draft_opening_trap_telegram_post(
+        self,
+        slot_id: str,
+        trap_name: str,
+        hook: str,
+        body: str,
+        fen: Optional[str] = None,
+        solution: Optional[List[str]] = None,
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Drafts an opening trap Telegram post with visual board and Academy CTA."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        clean_hook = hook.rstrip(".")
+        clean_fen = fen or "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Openings",
+            "format": "trap",
+            "hook": clean_hook[:110],
+            "cta": "academy",
+            "text": f"<b>{clean_hook}</b>\n\n{body.strip()}",
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/academy"}],
+            "chess": {
+                "fen": clean_fen,
+                "solution": solution or ["Bxf7+"],
+                "claim": "line_legal",
+            },
+            "creative": {
+                "template": "trap",
+                "size": canvas_size,
+                "tag": f"Trap Breakdown: {trap_name}",
+                "headline": f"{trap_name.upper()}\n*PUNISH GREED*",
+                "subhead": "Can you spot the refutation line?",
+                "fen": clean_fen,
+                "cta_label": "Learn in Academy",
+                "footer": "Study full lines in the Web3Chess Academy.",
+            },
+        }
+
+    def draft_blitz_culture_telegram_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        left_label: str = "Premove Recapture",
+        right_label: str = "In-Between Check",
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Drafts a Telegram speed chess culture post with visual comparison panels."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        clean_hook = hook.rstrip(".")
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Chess Culture",
+            "format": "news",
+            "hook": clean_hook[:110],
+            "cta": "play",
+            "text": f"<b>{clean_hook}</b>\n\n{body.strip()}",
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}"}],
+            "creative": {
+                "template": "culture",
+                "size": canvas_size,
+                "tag": "Blitz Culture",
+                "headline": "SPEED SCRAMBLE\n*PREMOVE TILT*",
+                "subhead": "Under 5 seconds, calculation collapses into survival",
+                "cta_label": "Challenge a Friend",
+                "panels": [
+                    {"label": "Mistake", "text": left_label, "piece": "K"},
+                    {"label": "Counter", "text": right_label, "piece": "Q"},
+                ],
+            },
+        }
+
+    def draft_academy_lesson_telegram_post(
+        self,
+        slot_id: str,
+        topic: str,
+        hook: str,
+        body: str,
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Drafts a Pro Tip Telegram post with Academy deep linking."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        clean_hook = hook.rstrip(".")
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Academy",
+            "format": "news",
+            "hook": clean_hook[:110],
+            "cta": "academy",
+            "text": f"<b>{clean_hook}</b>\n\n{body.strip()}",
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/academy"}],
+            "creative": {
+                "template": "tip",
+                "size": canvas_size,
+                "tag": f"Pro Tip: {topic}",
+                "headline": f"{topic.upper()}\n*MASTER PATTERN*",
+                "subhead": "Three candidate moves before any capture",
+                "cta_label": "Open Academy",
+                "footer": "Free structured lessons inside Web3Chess Academy.",
+            },
+        }
+
+    def draft_match_rules_telegram_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Drafts an educational 18+ compliant Match Rules post for Telegram."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        clean_hook = hook.rstrip(".")
+        # Ensure compliance disclaimer is present
+        disclosure = brand.WAGER_DISCLOSURE
+        full_text = f"<b>{clean_hook}</b>\n\n{body.strip()}\n\n{disclosure}"
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Match Rules",
+            "format": "rules",
+            "hook": clean_hook[:110],
+            "cta": "rules",
+            "text": full_text,
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/wagers"}],
+            "creative": {
+                "template": "rules",
+                "size": canvas_size,
+                "tag": "PvP Match Integrity",
+                "headline": "SPEED ARENA\n*FAIR PLAY RULES*",
+                "subhead": "Zero bots • 95% pot return • Instant TON payout",
+                "cta_label": "Read Full Rules",
+                "footer": f"18+ only · You can lose your stake · web3chess.online/wagers",
+            },
+        }
+
+    def draft_engineering_telegram_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Drafts a tech & infrastructure post highlighting zero-lag WebSockets."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        clean_hook = hook.rstrip(".")
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Product",
+            "format": "news",
+            "hook": clean_hook[:110],
+            "cta": "play",
+            "text": f"<b>{clean_hook}</b>\n\n{body.strip()}",
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}"}],
+            "creative": {
+                "template": "news",
+                "size": canvas_size,
+                "tag": "Architecture Update",
+                "headline": "SUB-50MS ENGINE\n*ZERO BOARD LAG*",
+                "subhead": "FastAPI + Socket.IO real-time sync on Bot API 8.0",
+                "cta_label": "Test Engine",
+                "source": "Web3Chess Core Engineering",
+                "footer": "Built for competitive blitz on high-frequency mobile connections.",
+            },
+        }
+
     def draft_seo_blog_article(
         self,
         slug: str,

@@ -7,7 +7,7 @@
   "hook": "White to move. Black neglected the back rank. Spot the mate",
   "cta": "play",
   "text": "<b>White to move. Black neglected the back rank. Spot the mate</b>\n\nBlack king on g8 is blocked by pawns on f7, g7, and h7. Can you spot the clean finish in under 3 seconds?\n\n❤ Re8#   🔥 Rd1   👏 f4\nAnswer reveals in 7 hours.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -52,5 +52,10 @@
   "qa": {
     "passed": true,
     "issues": []
+  },
+  "updated_at": "2026-10-13T22:23:44Z",
+  "published": {
+    "message_id": 17,
+    "at": "2026-10-13T22:23:44Z"
   }
 }

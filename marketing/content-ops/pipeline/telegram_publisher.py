@@ -9,10 +9,20 @@ from . import brand, queue
 
 API = "https://api.telegram.org"
 
+# Load local marketing .env if present
+ROOT_DIR = Path(__file__).resolve().parents[3]
+ENV_FILE = ROOT_DIR / "marketing/.env"
+if ENV_FILE.exists():
+    for line in ENV_FILE.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
+
 def _credentials():
     cfg = queue.CONFIG["telegram"]
-    token = os.environ.get(cfg["token_env"]) or os.environ.get("TELEGRAM_BOT_TOKEN")
-    channel = os.environ.get(cfg["channel_env"]) or os.environ.get("TELEGRAM_CHANNEL") or "@chess_hub"
+    token = os.environ.get(cfg["token_env"]) or os.environ.get("TELEGRAM_BOT_TOKEN") or os.environ.get("W3_TG_BOT_TOKEN")
+    channel = os.environ.get(cfg["channel_env"]) or os.environ.get("TELEGRAM_CHANNEL") or os.environ.get("W3_TG_CHANNEL") or "@chess_hub"
     return token, channel
 
 def build_keyboard(post: dict) -> dict:
@@ -20,7 +30,16 @@ def build_keyboard(post: dict) -> dict:
     rows = []
     for cta_id in ids[:2]:
         label, url, _ = brand.CTAS[cta_id]
-        rows.append([{"text": label, "url": brand.with_utm(url, post.get("category", "content").lower().replace(" ", "-"), post["id"])}])
+        if "t.me" in url:
+            tracked_url = brand.with_startapp(url, "tg", post["id"])
+        else:
+            tracked_url = brand.with_utm(
+                url,
+                post.get("category", "content").lower().replace(" ", "-"),
+                post["id"],
+                source="telegram",
+            )
+        rows.append([{"text": label, "url": tracked_url}])
     return {"inline_keyboard": rows}
 
 def _call(token: str, method: str, fields: dict, file: tuple[str, Path] | None = None) -> dict:
@@ -66,7 +85,22 @@ def publish(post: dict, dry_run: bool | None = None) -> dict:
     token, channel = _credentials()
     live = bool(token and channel) and dry_run is not True
     markup = build_keyboard(post)
-    image = queue.ROOT / post["image"] if post.get("image") else None
+    image = None
+    if post.get("image"):
+        p = Path(post["image"])
+        if p.is_absolute() and p.exists():
+            image = p
+        elif (queue.ROOT / p).exists():
+            image = queue.ROOT / p
+        elif (queue.HERE / p).exists():
+            image = queue.HERE / p
+        else:
+            image = queue.ROOT / p
+    elif post.get("creative"):
+        cand = queue.QUEUE / post.get("date", post["id"][:10]) / f"{post['id']}.png"
+        if cand.exists():
+            image = cand
+
     if post.get("creative") and not (image and image.exists()):
         raise RuntimeError("creative image missing: run `daily.py render` (never falling back to a text-only post)")
     if not live:

@@ -51,7 +51,8 @@ def main():
     parser.add_argument("--post-id", default=None, help="Specific post ID to publish (e.g. 2026-10-12-tg-1)")
     parser.add_argument("--date", default=None, help="Filter date (e.g. 2026-10-12)")
     parser.add_argument("--domain", default="web3chess.online", help="Target landing page domain (default: web3chess.online)")
-    parser.add_argument("--x-batch", action="store_true", help="Generate, QA-validate, and queue today's 3 daily X (Twitter) posts")
+    parser.add_argument("--tg-batch", action="store_true", help="Generate, QA-validate, render, and queue today's 8 viral Telegram posts")
+    parser.add_argument("--x-batch", action="store_true", help="Generate, QA-validate, and queue today's daily X (Twitter) posts")
     parser.add_argument("--x-thread", action="store_true", help="Generate, QA-validate, and queue the flagship 5-tweet viral X manifesto thread")
     parser.add_argument("--x-sniper", action="store_true", help="Generate targeted high-leverage Reply Sniper scripts for top chess & TON accounts")
     parser.add_argument("--x-status", action="store_true", help="Display status of queued X (Twitter) posts and threads")
@@ -88,6 +89,17 @@ def main():
                 hook = hook[:37] + "..."
             print(f"{e['id']:<28} {kind:<10} {cat:<14} {status:<10} {hook}")
         print()
+
+    elif args.tg_batch:
+        target_day = (
+            datetime.strptime(args.date, "%Y-%m-%d").date()
+            if args.date
+            else queue.utcnow().date()
+        )
+        print(f"\n🚀 Generating Telegram Daily Batch (8 slots spaced every 3 hours for {target_day})...")
+        res = orchestrator.generate_telegram_daily_batch(target_date=target_day)
+        print("\n✅ Successfully generated, QA-approved, and queued Telegram posts:")
+        print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.x_batch:
         print("\n🚀 Generating X (Twitter) Daily Batch (3 slots: Tactics, Culture, Arena)...")

@@ -18,7 +18,7 @@ from .chess_editor import ChessEditorAgent
 from .smm_copywriter import SmmCopywriterAgent
 from .qa_compliance import QaComplianceAgent
 from .publisher import PublisherAgent
-from pipeline import queue, brand
+from pipeline import queue, brand, renderer
 
 
 class ContentEngineOrchestrator:
@@ -873,6 +873,179 @@ class ContentEngineOrchestrator:
             "blog_articles_created": len(art_results),
             "telegram_posts": tg_results,
             "blog_articles": art_results,
+        }
+
+    def generate_telegram_daily_batch(self, target_date: Optional[date] = None, render_images: bool = True) -> Dict[str, Any]:
+        """Generates, verifies, renders, and stages 8 daily Telegram posts spaced every 3 hours.
+        
+        Pillars:
+        - TG-1 (00:00 UTC): Tactics Puzzle (Back rank with 7h spoiler reveal)
+        - TG-2 (03:00 UTC): Opening Trap (Blackburne-Shilling Gambiteer lesson)
+        - TG-3 (06:00 UTC): Arena Vault FOMO (Morning Vault countdown with 18+ wager disclaimer)
+        - TG-4 (09:00 UTC): Academy Pro Tip (Candidate move calculation & prophylactic thinking)
+        - TG-5 (12:00 UTC): Speed Chess Culture (Zwischenzug / Premove tilt)
+        - TG-6 (15:00 UTC): Match Rules & Fair Play (95% pot return & zero-cheat engine)
+        - TG-7 (18:00 UTC): Product Architecture (Sub-50ms sync on Bot API 8.0)
+        - TG-8 (21:00 UTC): Evening Tactics Puzzle (Arabian Mate with 7h spoiler reveal)
+        """
+        d = target_date or self.plan_date
+        d_str = d.isoformat()
+        results: List[Dict[str, Any]] = []
+
+        slots_utc = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"]
+
+        # 1. TG-1: Tactics
+        p1 = self.copywriter.draft_viral_telegram_post(
+            slot_id=f"{d_str}-tg-1",
+            category="Tactics",
+            hook="White to move. Black's king is boxed in. Spot the 1-move mate",
+            body=(
+                "Black's king on g8 has three pawns acting as walls.\n"
+                "One rook move delivers instant checkmate.\n\n"
+                "❤ Ra8#   🔥 Rd1   👏 f4\n"
+                "Answer reveals in 7 hours."
+            ),
+            cta="play",
+            fen="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+            solution=["Ra8#"],
+            claim="mate_in_1",
+            reveal_text=(
+                "<b>Solved: 1. Ra8#.</b>\n\n"
+                "The back rank is completely undefended, delivering instantaneous checkmate."
+            ),
+        )
+        p1["scheduled_at"] = f"{d_str}T{slots_utc[0]}:00Z"
+
+        # 2. TG-2: Opening Trap
+        p2 = self.copywriter.draft_opening_trap_telegram_post(
+            slot_id=f"{d_str}-tg-2",
+            trap_name="Blackburne-Shilling Gambit",
+            hook="White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3",
+            body=(
+                "Greedy play in the opening gets punished fast in speed chess.\n"
+                "When Black plays 3...Nd4, White thinks: 'A free pawn with an f7 attack!'\n"
+                "Then came 4.Nxe5? Qg5! and White's king never survived past move 7.\n\n"
+                "The refutation: 4.Nxd4! exd4 5.O-O, leaving White with superior development and complete center control."
+            ),
+            fen="r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+            solution=["Bxf7+"],
+        )
+        p2["scheduled_at"] = f"{d_str}T{slots_utc[1]}:00Z"
+
+        # 3. TG-3: Arena Vault FOMO
+        p3 = self.copywriter.draft_fomo_arena_alert(
+            slot_id=f"{d_str}-tg-3",
+            tournament_name="Morning Blitz Vault ($250 USDT)",
+            start_time_utc="08:00 UTC",
+            minutes_remaining=15,
+            wager_entry=5,
+        )
+        p3["scheduled_at"] = f"{d_str}T{slots_utc[2]}:00Z"
+
+        # 4. TG-4: Academy Pro Tip
+        p4 = self.copywriter.draft_academy_lesson_telegram_post(
+            slot_id=f"{d_str}-tg-4",
+            topic="Candidate Moves",
+            hook="Stop looking for the best move before you calculate all forcing checks",
+            body=(
+                "In 3-minute blitz, players jump at the first plausible recapture.\n\n"
+                "Master players scan three things in under 2 seconds:\n"
+                "1. Checks (every check must be calculated)\n"
+                "2. Captures (every piece tension)\n"
+                "3. Threats (forcing queen or rook moves)\n\n"
+                "Review candidate calculation inside the free Web3Chess Academy."
+            ),
+        )
+        p4["scheduled_at"] = f"{d_str}T{slots_utc[3]}:00Z"
+
+        # 5. TG-5: Speed Chess Culture
+        p5 = self.copywriter.draft_blitz_culture_telegram_post(
+            slot_id=f"{d_str}-tg-5",
+            hook="You premoved a recapture. Your opponent found an in-between check. Familiar pain?",
+            body=(
+                "The German masters named it a century ago: <i>Zwischenzug</i> (the in-between move).\n"
+                "In 3-minute blitz, 80% of lost pieces come from assuming the opponent will play the expected recapture.\n\n"
+                "Before snatching a piece back, always ask: Can they check me first?\n"
+                "Train your eye to spot intermediate moves before your opponent spots them for you."
+            ),
+        )
+        p5["scheduled_at"] = f"{d_str}T{slots_utc[4]}:00Z"
+
+        # 6. TG-6: Match Rules & Fair Play
+        p6 = self.copywriter.draft_match_rules_telegram_post(
+            slot_id=f"{d_str}-tg-6",
+            hook="How Web3Chess eliminates luck: 100% skill-based speed duels with instant settlement",
+            body=(
+                "Online chess platforms often suffer from bots, hidden fees, or delayed payouts.\n\n"
+                "Web3Chess is built on zero-cheat transparency:\n"
+                "• Microsecond monotonic server clocks prevent lag manipulation\n"
+                "• 95% of every entry fee pool goes directly to the winner\n"
+                "• Instant TON wallet delivery upon match finish"
+            ),
+        )
+        p6["scheduled_at"] = f"{d_str}T{slots_utc[5]}:00Z"
+
+        # 7. TG-7: Product Engineering
+        p7 = self.copywriter.draft_engineering_telegram_post(
+            slot_id=f"{d_str}-tg-7",
+            hook="How we built sub-50ms board sync inside Telegram Mini Apps",
+            body=(
+                "FastAPI + Socket.IO real-time engine built for Bot API 8.0.\n\n"
+                "• Microsecond server monotonic timestamps\n"
+                "• Zero board lag on high-frequency mobile connections\n"
+                "• Instant PvP matchmaking without leaving Telegram chats"
+            ),
+        )
+        p7["scheduled_at"] = f"{d_str}T{slots_utc[6]}:00Z"
+
+        # 8. TG-8: Evening Tactics Puzzle
+        p8 = self.copywriter.draft_viral_telegram_post(
+            slot_id=f"{d_str}-tg-8",
+            category="Tactics",
+            hook="White to move. The knight guards the escape squares. Find the mate",
+            body=(
+                "Black's king on h8 is locked down by White's knight on f6.\n"
+                "One rook move delivers instant checkmate.\n\n"
+                "❤ Rh7#   🔥 Ra8+   👏 Ne8\n"
+                "Answer reveals in 7 hours."
+            ),
+            cta="play",
+            fen="7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+            solution=["Rh7#"],
+            claim="mate_in_1",
+            reveal_text=(
+                "<b>Solved: 1. Rh7#. The Arabian Mate.</b>\n\n"
+                "The knight on f6 covers g8 and h7, defending the rook while sealing all flight squares."
+            ),
+        )
+        p8["scheduled_at"] = f"{d_str}T{slots_utc[7]}:00Z"
+
+        posts = [p1, p2, p3, p4, p5, p6, p7, p8]
+
+        for p in posts:
+            qa_res = self.qa.inspect_telegram_post(p)
+            if not qa_res["passed"]:
+                raise RuntimeError(f"Post {p['id']} QA failed: {qa_res['issues']}")
+            p["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
+            p["status"] = "approved"
+
+            if render_images:
+                renderer.render(p)
+
+            queue.save(p)
+            results.append({
+                "id": p["id"],
+                "category": p["category"],
+                "scheduled_at": p["scheduled_at"],
+                "qa_passed": True,
+                "image": p.get("image"),
+            })
+
+        return {
+            "status": "success",
+            "date": d_str,
+            "posts_created": len(results),
+            "posts": results,
         }
 
     def generate_x_daily_batch(self, target_date: Optional[date] = None) -> Dict[str, Any]:

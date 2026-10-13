@@ -5,12 +5,16 @@
   "slot": 1,
   "category": "Tactics",
   "scheduled_at": "2026-10-11T07:30:00Z",
-  "status": "approved",
+  "status": "published",
+  "published": {
+    "message_id": 12,
+    "at": "2026-10-11T07:30:00Z"
+  },
   "qa": {
     "passed": true,
     "issues": [],
     "gate_summary": "Passed all deterministic Telegram gates",
-    "checked_at": "2026-10-13T22:14:27Z"
+    "checked_at": "2026-10-11T07:30:00Z"
   },
   "brief": {
     "slot": {

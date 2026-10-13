@@ -112,7 +112,17 @@ def cmd_stage(args):
 
 def cmd_publish(args):
     dry = True if args.dry_run else None
-    print(json.dumps({"posts": telegram_publisher.publish_due(dry_run=dry), "reveals": telegram_publisher.publish_reveals(dry_run=dry)}, indent=2))
+    day = _day(args).isoformat() if getattr(args, "date", None) else None
+    post_id = getattr(args, "id", None)
+    if post_id:
+        res = telegram_publisher.publish_post_by_id(post_id, dry_run=dry)
+        print(json.dumps({"posts": [res], "reveals": []}, indent=2))
+    else:
+        limit = getattr(args, "limit", 5) or 5
+        print(json.dumps({
+            "posts": telegram_publisher.publish_due(dry_run=dry, limit=limit, day=day),
+            "reveals": telegram_publisher.publish_reveals(dry_run=dry)
+        }, indent=2))
 
 def cmd_publish_x(args):
     from agents.publisher import PublisherAgent
@@ -145,7 +155,10 @@ def main():
     for name, fn in (("plan", cmd_plan), ("briefs", cmd_briefs), ("write", cmd_write), ("qa", cmd_qa), ("status", cmd_status), ("render", cmd_render), ("stage", cmd_stage), ("publish", cmd_publish), ("cmo-report", cmd_cmo_report)):
         p = sub.add_parser(name); p.add_argument("--date"); p.set_defaults(run=fn)
         if name == "plan": p.add_argument("--days", type=int, default=1)
-        if name == "publish": p.add_argument("--dry-run", action="store_true")
+        if name == "publish":
+            p.add_argument("--dry-run", action="store_true")
+            p.add_argument("--id")
+            p.add_argument("--limit", type=int, default=None)
     p_x = sub.add_parser("publish-x")
     p_x.add_argument("--date")
     p_x.add_argument("--id")

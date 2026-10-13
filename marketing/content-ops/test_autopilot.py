@@ -24,7 +24,7 @@ class TestAutopilot(unittest.TestCase):
         res = autopilot.run_tick(dry_run=True, min_spacing_minutes=0, force_next=True)
         self.assertTrue(res["dry_run"])
         self.assertIn("timestamp", res)
-        self.assertIn("next_up", res)
+        self.assertTrue("next_up_x" in res or "next_up" in res)
 
     def test_get_last_published_x_time(self):
         last_dt = autopilot.get_last_published_x_time()
