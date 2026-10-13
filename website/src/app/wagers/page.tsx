@@ -288,7 +288,7 @@ export default function WagersPage() {
           <div className="mt-5 grid gap-8 lg:grid-cols-[1fr_.7fr] lg:items-end">
             <div>
               <h2 className="poster text-heading-xl">
-                Set your limits.
+                Set your limits
                 <br />
                 Keep your perspective
               </h2>

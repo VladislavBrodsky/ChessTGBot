@@ -38,12 +38,12 @@ export function MobileCta() {
       );
       const workspaceVisible = workspaces.some((workspace) => {
         const bounds = workspace.getBoundingClientRect();
-        return bounds.top < window.innerHeight && bounds.bottom > 0;
+        return bounds.width > 0 && bounds.height > 0 && bounds.top < window.innerHeight && bounds.bottom > 0;
       });
       // Do not duplicate CTA when an inline play button is already visible in viewport
       const inlineCtaVisible = inlineCtas.some((btn) => {
         const bounds = btn.getBoundingClientRect();
-        return bounds.top < window.innerHeight + 20 && bounds.bottom > -20;
+        return bounds.width > 0 && bounds.height > 0 && bounds.top < window.innerHeight + 20 && bounds.bottom > -20;
       });
       setShow(heroPassed && !nearFooter && !editing && !workspaceVisible && !inlineCtaVisible);
     };
@@ -78,7 +78,10 @@ export function MobileCta() {
       className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/92 backdrop-blur-lg px-4 pt-2.5 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] transition-all duration-300 lg:hidden ${
         show ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
       }`}
-      style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+      style={{
+        paddingBottom: "max(0.75rem, var(--site-safe-bottom))",
+        paddingInline: "var(--site-safe-gutter)",
+      }}
     >
       <PlayButton trackingLocation="sticky_mobile_dock" size="md" className="w-full" />
     </div>

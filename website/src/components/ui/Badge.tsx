@@ -16,6 +16,19 @@ export function Badge({ tone = "neutral", icon, className = "", children, ...pro
   );
 }
 
+/** A short product label with separate, readable qualifiers; copy stays verbatim. */
+export function HeroContext({ children, ...props }: BadgeProps & { children: string }) {
+  const [primary, ...details] = children.split(" · ");
+  if (details.length === 0) return <Badge {...props}>{children}</Badge>;
+  return (
+    <div className="hero-context">
+      <Badge {...props}>{primary}</Badge>
+      <span className="hero-context-divider" aria-hidden="true"> · </span>
+      <span className="hero-context-details">{details.join(" · ")}</span>
+    </div>
+  );
+}
+
 export function BadgeRow({ className = "", ...props }: ComponentProps<"div">) {
   return <div className={`badge-row ${className}`} {...props} />;
 }

@@ -105,7 +105,7 @@ export function Nav() {
       <div
         inert={(!stuck || open) ? true : undefined}
         aria-hidden={!stuck || open}
-        className={`fixed inset-x-0 top-4 z-40 hidden justify-center transition-[opacity,transform] duration-200 lg:flex ${stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"}`}
+        className={`site-sticky-wrap fixed inset-x-0 z-40 hidden justify-center transition-[opacity,transform] duration-200 lg:flex ${stuck ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"}`}
       >
         <nav
           aria-label="Sticky"
@@ -155,6 +155,7 @@ export function Nav() {
           style={{
             paddingTop: "max(1.5rem, env(safe-area-inset-top))",
             paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+            paddingInline: "max(1.5rem, var(--site-safe-gutter))",
           }}
         >
           <div className="flex items-center justify-between">

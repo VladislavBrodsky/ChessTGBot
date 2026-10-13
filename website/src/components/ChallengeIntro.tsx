@@ -16,7 +16,7 @@ export function ChallengeIntro({
           </>
         ) : (
           <>
-            One move.
+            One move
             <br />
             Big difference
           </>

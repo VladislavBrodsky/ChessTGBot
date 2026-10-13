@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useShowcaseActivity } from "../home/useShowcaseActivity";
 
 export interface AnimatedListProps {
   className?: string;
@@ -17,24 +18,7 @@ export const AnimatedList = React.memo(
       () => React.Children.toArray(children),
       [children]
     );
-    const containerRef = React.useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-      const el = containerRef.current;
-      if (!el || typeof IntersectionObserver === "undefined") {
-        setIsVisible(true);
-        return;
-      }
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          setIsVisible(entry.isIntersecting);
-        },
-        { rootMargin: "150px" }
-      );
-      observer.observe(el);
-      return () => observer.disconnect();
-    }, []);
+    const { ref: containerRef, active: isVisible } = useShowcaseActivity();
 
     useEffect(() => {
       if (!isVisible || childrenArray.length === 0) return;
@@ -58,7 +42,7 @@ export const AnimatedList = React.memo(
 
     return (
       <div ref={containerRef} className={`flex flex-col items-center gap-2.5 ${className}`}>
-        <AnimatePresence initial={false}>
+        <AnimatePresence initial={false} mode="popLayout">
           {itemsToShow.map((item, i) => (
             <AnimatedListItem
               key={
@@ -78,17 +62,17 @@ export const AnimatedList = React.memo(
 
 AnimatedList.displayName = "AnimatedList";
 
-export function AnimatedListItem({ children }: { children: React.ReactNode }) {
+export const AnimatedListItem = React.forwardRef<HTMLDivElement, { children: React.ReactNode }>(function AnimatedListItem({ children }, ref) {
   const animations = {
-    initial: { scale: 0, opacity: 0, height: 0 },
-    animate: { scale: 1, opacity: 1, height: "auto", originY: 0 },
-    exit: { scale: 0, opacity: 0, height: 0 },
-    transition: { type: "spring" as const, stiffness: 350, damping: 40 },
+    initial: { y: -8, opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.2 },
   };
 
   return (
-    <motion.div {...animations} layout className="mx-auto w-full overflow-hidden">
+    <motion.div ref={ref} {...animations} layout="position" className="relative mx-auto w-full">
       {children}
     </motion.div>
   );
-}
+});

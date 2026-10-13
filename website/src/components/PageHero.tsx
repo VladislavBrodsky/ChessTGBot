@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/Badge";
+import { HeroContext } from "@/components/ui/Badge";
 import type { ReactNode } from "react";
 
 export function PageHero({
@@ -16,9 +16,12 @@ export function PageHero({
 }) {
   return (
     <section className="page-hero" aria-labelledby="page-title">
+      <div className="page-hero-context">
+        <HeroContext tone="accent">{eyebrow}</HeroContext>
+      </div>
+      <div className="hero-visual min-w-0">{visual}</div>
       <div className="page-hero-copy min-w-0 flex-col items-start gap-5">
         <div className="hero-intro">
-          <Badge tone="accent">{eyebrow}</Badge>
           <h1 id="page-title" className="poster page-title">{title}</h1>
           <p className="hero-lead max-w-[42ch] text-fg-muted">{lead}</p>
         </div>
@@ -26,7 +29,6 @@ export function PageHero({
           {children}
         </div>
       </div>
-      <div className="hero-visual min-w-0">{visual}</div>
     </section>
   );
 }

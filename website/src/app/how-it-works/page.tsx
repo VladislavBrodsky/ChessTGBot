@@ -267,7 +267,7 @@ export default function HowItWorksPage() {
           <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_.7fr] lg:items-end">
             <div>
               <h2 className="poster text-heading-xl">
-                Know the rules.
+                Know the rules
                 <br />
                 Enjoy the game
               </h2>

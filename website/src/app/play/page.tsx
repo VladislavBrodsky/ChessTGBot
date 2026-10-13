@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PlayButton } from "@/components/PlayButton";
+import { ChessSculpture } from "@/components/ChessSculpture";
 import { Logo } from "@/components/Logo";
 import { buttonClass } from "@/components/ui/button-styles";
 import { Card } from "@/components/ui/Card";
@@ -76,7 +77,9 @@ export default async function PlayPage() {
         <Link href="/" aria-label="Back to the website" className="site-nav-link gap-2"><Icon name="arrow-left" size={16} /><span className="hidden sm:inline">Website</span></Link>
       </header>
       <main id="main" className="play-page mx-auto max-w-4xl">
-        <div className="mb-8 space-y-4 sm:mb-10">
+        <section className="page-hero mb-8 sm:mb-10" aria-labelledby="page-title">
+          <div className="hero-visual"><ChessSculpture /></div>
+          <div className="page-hero-copy hero-intro space-y-4">
           <div className="flex flex-wrap items-center gap-2.5">
             <Badge tone="accent" icon="lightning">
               Instant Launch
@@ -86,13 +89,14 @@ export default async function PlayPage() {
               Live Arena · 3,840+ Active Rivals
             </span>
           </div>
-          <h1 className="poster play-heading">Play Chess Online: Telegram Chess Bot &amp; Web Arena</h1>
+          <h1 id="page-title" className="poster play-heading">Play Chess Online: Telegram Chess Bot &amp; Web Arena</h1>
           <p className="max-w-[50ch] hero-lead text-fg-muted">
             Launch directly in Telegram with the premier Telegram chess bot or play in your desktop browser. Enjoy free Stockfish A.I. practice, solve 100 tactics puzzles, or enter live USDT matches on GRAM rails.
           </p>
-        </div>
+          </div>
+        </section>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {/* Card 1: Telegram Mini App (Recommended) */}
           <Card className="flex flex-col justify-between p-4 sm:p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
             <BorderBeam size={260} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
@@ -184,7 +188,7 @@ export default async function PlayPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-title">Take the board with you</h2>
-                <span className="font-mono text-[10px] text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-semibold">
+                <span className="font-mono text-caption text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-semibold">
                   Instant mobile handoff
                 </span>
               </div>
@@ -196,7 +200,7 @@ export default async function PlayPage() {
           <div className="hidden lg:flex items-center gap-4 text-caption font-mono text-fg-muted pr-2">
             <div className="text-right">
               <span className="block font-semibold text-fg-default">iOS &amp; Android</span>
-              <span className="text-[11px]">Bot API 8.0+ Ready</span>
+              <span className="text-caption">Bot API 8.0+ Ready</span>
             </div>
           </div>
         </div>

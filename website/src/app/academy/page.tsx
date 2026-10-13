@@ -234,7 +234,7 @@ export default function AcademyPage() {
           <div className="mt-5 grid items-end gap-8 lg:grid-cols-[1fr_.7fr]">
             <div>
               <h2 className="poster text-heading-xl">
-                Try the idea.
+                Try the idea
                 <br />
                 Learn from the game
               </h2>

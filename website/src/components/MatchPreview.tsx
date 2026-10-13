@@ -18,10 +18,10 @@ export function MatchPreview() {
   };
 
   const badges: Record<string, { tag: string; color: string }> = {
-    "1+0": { tag: "Ultra Fast", color: "text-amber-600 bg-amber-500/10 border-amber-500/20" },
-    "3+2": { tag: "Most Popular", color: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20" },
-    "5+0": { tag: "Tactical Depth", color: "text-blue-600 bg-blue-500/10 border-blue-500/20" },
-    "10+0": { tag: "Deep Calculation", color: "text-purple-600 bg-purple-500/10 border-purple-500/20" },
+    "1+0": { tag: "Ultra Fast", color: "text-fg bg-inset border-line" },
+    "3+2": { tag: "Most Popular", color: "text-fg bg-inset border-line" },
+    "5+0": { tag: "Tactical Depth", color: "text-fg bg-inset border-line" },
+    "10+0": { tag: "Deep Calculation", color: "text-fg bg-inset border-line" },
   };
 
   const descriptions: Record<string, string> = {
@@ -35,18 +35,18 @@ export function MatchPreview() {
     <Card className="match-preview p-6 bg-surface border border-line rounded-2xl relative overflow-hidden" data-interactive-workspace>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Eyebrow>Matchmaker tempo selector</Eyebrow>
-        <span className={`font-mono text-[11px] font-semibold px-2 py-0.5 rounded-full border ${badges[time].color}`}>
+        <span className={`font-mono text-caption font-semibold px-2 py-0.5 rounded-full border ${badges[time].color}`}>
           {badges[time].tag}
         </span>
       </div>
 
-      <div className="my-5 flex items-center justify-between">
+      <div className="my-5 flex flex-wrap gap-2 items-center justify-between">
         <div>
           <p className="font-mono text-overline uppercase text-fg-muted">
             {names[time]}
           </p>
           <p
-            className="poster mt-1 text-stat tabular-nums text-fg-default font-bold"
+            className="poster match-preview-clock mt-1 tabular-nums text-fg-default font-bold"
             aria-live="polite"
           >
             {time}
@@ -73,16 +73,16 @@ export function MatchPreview() {
 
       {/* Safe Space Clock & Matchmaking Guarantees */}
       <div className="space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap gap-2 items-center justify-between">
           <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
+            <span className="size-1.5 rounded-full bg-inset" />
             Lag compensation
           </span>
           <span className="text-fg-default font-semibold">FIDE-standard</span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap gap-2 items-center justify-between">
           <span className="flex items-center gap-1.5">
-            <Icon name="shield-check" size={13} className="text-emerald-600" />
+            <Icon name="shield-check" size={13} className="text-fg" />
             Disconnect protection
           </span>
           <span className="text-fg-default font-semibold">60s forfeit timer</span>
