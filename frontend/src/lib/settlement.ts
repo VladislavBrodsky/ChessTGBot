@@ -7,7 +7,8 @@ export const WINNER_PERCENT = 95;
 /** What the winner receives for a stake, in cents (pot = 2 x stake). */
 export function winnerCents(stakeCents: number): number {
   if (!Number.isFinite(stakeCents) || stakeCents <= 0) return 0;
-  return Math.round((stakeCents * 2 * WINNER_PERCENT) / 100);
+  const pot = Math.round(stakeCents) * 2;
+  return pot - Math.floor(pot * 3 / 100) - Math.floor(pot * 2 / 100);
 }
 
 export const formatUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;

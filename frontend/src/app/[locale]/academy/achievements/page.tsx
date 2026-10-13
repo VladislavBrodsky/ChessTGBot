@@ -44,8 +44,8 @@ export default function AchievementsPage() {
 
   return (
     <LayoutWrapper className="">
-      <div className="w-full app-page mx-auto relative z-10 flex flex-col">
-        <PageHeader icon={<FaTrophy />} tone="gold" title={t('achievements')} description={loading ? undefined : `${t('unlocked')}: ${unlockedCount} / ${achievements.length}`}  backHref={`/${locale}/academy`} />
+      <main className="w-full app-page mx-auto relative z-10 flex flex-col">
+        <PageHeader icon={<FaTrophy />} tone="gold" title={t('achievements')} description={loading ? <Skeleton textRole="body" width="12ch" /> : loadError && !data ? ti('load_failed') : `${t('unlocked')}: ${unlockedCount} / ${achievements.length}`}  backHref={`/${locale}/academy`} />
 
         {loading && <div className="grid grid-cols-2 md:grid-cols-3 gap-4" aria-busy="true">{[0, 1].map(i => <Card key={i} variant="solid" className="p-4 min-h-48 flex flex-col items-center gap-3"><Skeleton variant="rectangular" width={40} height={40} /><SkeletonText lines={2} className="w-full" /><Skeleton textRole="caption" width={64} /></Card>)}</div>}
         {loadError && !data && <ErrorState title={ti('load_failed')} onRetry={() => { void loadAchievements(); }} retryLabel={ti('retry')} />}
@@ -85,7 +85,7 @@ export default function AchievementsPage() {
             </Card>
           ))}
         </div>}
-      </div>
+      </main>
 
       <BadgeShowcaseModal
         isOpen={Boolean(selectedBadge)}

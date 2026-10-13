@@ -8,8 +8,8 @@ import { telegramHaptic } from '@/lib/telegram';
 
 export type HeroTone = 'success' | 'gold' | 'info' | 'premium' | 'danger';
 
-/** One centered heading and one clear orientation point on every destination, with an optional icon medallion. */
-export function PageHeader({ title, description, eyebrow, actions, backHref, backLabel, icon, tone, align = 'center' }: {
+/** One stable title/purpose group and in-flow utilities on every destination. */
+export function PageHeader({ title, description, eyebrow, actions, backHref, backLabel, icon, tone, align = 'start' }: {
   title: ReactNode;
   description?: ReactNode;
   eyebrow?: ReactNode;
@@ -18,12 +18,12 @@ export function PageHeader({ title, description, eyebrow, actions, backHref, bac
   backLabel?: string;
   icon?: ReactNode;
   tone?: HeroTone;
-  /** `start` left-aligns the title block (greetings); everything else is centred. */
+  /** Dashboard headers use `start`; entry and invite screens may explicitly use `center`. */
   align?: 'center' | 'start';
 }) {
   const t = useTranslations('Index');
   return (
-    <header className="page-header" data-tone={tone} data-align={align === 'start' ? 'start' : undefined} data-has-lead={backHref ? true : undefined} data-has-actions={actions ? true : undefined}>
+    <header className="page-header" data-tone={tone} data-align={align} data-has-lead={backHref ? true : undefined} data-has-actions={actions ? true : undefined}>
       <div className="page-header__lead">
         {backHref && (
           <Link href={backHref} aria-label={backLabel || t('back')} className="html-back-button ui-icon-button" onClick={() => telegramHaptic('selection')}>
@@ -32,12 +32,12 @@ export function PageHeader({ title, description, eyebrow, actions, backHref, bac
         )}
       </div>
       <div className="page-header__main">
-        {eyebrow && <p className="page-header__eyebrow t-eyebrow text-brand-muted">{eyebrow}</p>}
-        <h1 className="page-header__title t-title-1 text-brand-primary">
-          {icon && <span className="page-header__icon" aria-hidden="true">{icon}</span>}
-          <span>{title}</span>
-        </h1>
-        {description && <div className="page-header__desc">{description}</div>}
+        {icon && <span className="page-header__icon" aria-hidden="true">{icon}</span>}
+        <div className="page-header__copy">
+          {eyebrow && <p className="page-header__eyebrow t-eyebrow text-brand-muted">{eyebrow}</p>}
+          <h1 className="page-header__title t-title-1 text-brand-primary">{title}</h1>
+          {description && <div className="page-header__desc t-body text-brand-muted">{description}</div>}
+        </div>
       </div>
       <div className="page-header__actions">{actions}</div>
     </header>

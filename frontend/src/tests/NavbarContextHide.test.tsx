@@ -17,6 +17,9 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn(), replace: jest.fn(), prefetch: jest.fn(), back: jest.fn() }),
 }));
 
+let mockActiveId: string | null = null;
+jest.mock('@/hooks/useActiveGame', () => ({ useActiveGame: () => ({ activeGameId: mockActiveId, urlGameId: null }) }));
+
 jest.mock('@/lib/api', () => ({
   apiFetch: jest.fn().mockResolvedValue({ ok: true, json: async () => ({ active_game_id: null }) }),
   getFullPhotoUrl: (u: string) => u,
@@ -46,6 +49,7 @@ describe('LayoutWrapper navbar-hide wiring', () => {
     // Skip onboarding — it legitimately hides the navbar and would mask the
     // context-driven behavior this test isolates.
     localStorage.setItem('onboarding_completed', 'true');
+    mockActiveId = null;
   });
 
   it('keeps the navbar visible when no drawer requests a hide', async () => {
@@ -72,6 +76,12 @@ describe('LayoutWrapper navbar-hide wiring', () => {
     await waitFor(() =>
       expect(screen.getByTestId('navbar')).toHaveAttribute('data-hidden', 'false'),
     );
+  });
+
+  it('retains the lobby menu when cached active-game state is stale', () => {
+    mockActiveId = 'stale-match';
+    render(<NavbarProvider><LayoutWrapper><div>Lobby</div></LayoutWrapper></NavbarProvider>);
+    expect(screen.getByTestId('navbar')).toHaveAttribute('data-hidden', 'false');
   });
 
   it('keeps the navbar visible while the marketplace confirmation sheet is closed', async () => {

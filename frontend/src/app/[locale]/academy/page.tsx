@@ -1,7 +1,7 @@
 'use client';
 
 import BoardA11y from '@/components/game/BoardA11y';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import dynamic from 'next/dynamic';
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -10,17 +10,17 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import AcademyProgressCard from '@/components/Academy/AcademyProgressCard';
 import LessonCard from "@/components/Academy/LessonCard";
 import DailyHintCard from "@/components/Academy/DailyHintCard";
-import { FaChessKnight, FaBrain, FaLock, FaBolt, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaWallet, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChessKnight, FaBrain, FaLock, FaBolt, FaCheckCircle, FaTrophy, FaPlay, FaFire, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
-import { createPortal } from 'react-dom';
-import { useNavbar } from '@/context/NavbarContext';
+import { Drawer } from '@/components/ui/Drawer';
 import { useUser } from '@/context/UserContext';
 import useSWR from 'swr';
 import { apiFetch } from "@/lib/api";
 import { telegramAlert, telegramConfirm } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
+import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
 import { Badge, BadgeRow } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { QuickTile } from '@/components/ui/QuickTile';
@@ -81,7 +81,7 @@ export default function AcademyPage() {
 
   const { data: dynamicLessons, error: lessonsError, mutate: mutateLessons } = useSWR("/api/v1/content/lessons", fetcher);
   const { data: academyState, error: academyError, mutate: mutateAcademyState } = useSWR("/api/v1/gamification/academy/state", fetcher);
-  
+
   const unlockedLessons = academyState?.unlocked_lessons;
   const completedLessons = academyState?.completed_lessons;
   const puzzles = academyState?.puzzles;
@@ -100,21 +100,12 @@ export default function AcademyPage() {
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCompletedCat, setShowCompletedCat] = useState<Record<string, boolean>>({});
-  const { pushHide, popHide } = useNavbar();
 
 
   const triggerConfetti = () => {
     setShowConfetti(true);
     setTimeout(() => setShowConfetti(false), 4000);
   };
-
-  // Hide the global navbar when a drawer is open
-  useEffect(() => {
-    if (!showPremiumPromo && !selectedLevel) return;
-    pushHide();
-    // Cleanup on unmount or when drawer closes
-    return () => popHide();
-  }, [showPremiumPromo, selectedLevel, pushHide, popHide]);
 
   // Descriptions grouped by difficulty band for all 100 tactical levels
   const LEVEL_THEMES = [
@@ -272,65 +263,18 @@ export default function AcademyPage() {
   }
 
   if (loading) {
-    return (
-      <LayoutWrapper className="w-full ">
-        <div className="w-full app-page mx-auto animate-pulse">
-          {/* Header Skeleton */}
-          <div className="flex flex-col items-center w-full mb-4">
-            <div className="h-8 bg-brand-primary opacity-10 rounded-lg w-1/2 mb-3" />
-            <div className="h-px w-10 bg-brand-border-opacity-10 my-2" />
-            <div className="h-2 bg-brand-primary opacity-5 rounded w-1/3 mb-4" />
-            <div className="h-8 bg-brand-primary opacity-10 rounded-full w-24" />
-          </div>
-
-          {/* Daily Challenge Card Skeleton */}
-          <Card variant="glass" className="w-full p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="h-5 bg-brand-primary opacity-10 rounded-full w-24" />
-              <div className="h-4 bg-brand-primary opacity-10 rounded w-12" />
-            </div>
-            <div className="h-6 bg-brand-primary opacity-15 rounded-lg w-3/4" />
-            <div className="h-4 bg-brand-primary opacity-10 rounded w-5/6" />
-            <div className="h-10 bg-brand-primary opacity-20 rounded-xl w-full" />
-          </Card>
-
-          {/* Tactics Grid Skeleton */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 px-1">
-              <div className="w-4 h-4 bg-brand-primary opacity-10 rounded" />
-              <div className="h-3 bg-brand-primary opacity-10 rounded w-24" />
-            </div>
-            <Card variant="glass" className="p-5">
-              <div className="grid grid-cols-10 gap-2 w-full">
-                {Array.from({ length: 100 }, (_, i) => (
-                  <div key={i} className="aspect-square rounded-xl bg-brand-primary opacity-5 border border-brand-border-opacity-5" />
-                ))}
-              </div>
-            </Card>
-          </div>
-
-          {/* Mastery Tracks Skeleton */}
-          <div className="space-y-6">
-            <div className="flex items-center space-x-2 px-1">
-              <div className="w-4 h-4 bg-brand-primary opacity-10 rounded" />
-              <div className="h-3 bg-brand-primary opacity-10 rounded w-28" />
-            </div>
-            <div className="grid grid-cols-1 gap-4">
-              {[1, 2, 3].map((n) => (
-                <Card key={n} variant="glass" className="w-full p-4 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div className="h-4 bg-brand-primary opacity-15 rounded w-1/3" />
-                    <div className="h-4 bg-brand-primary opacity-10 rounded w-12" />
-                  </div>
-                  <div className="h-3 bg-brand-primary opacity-10 rounded w-2/3" />
-                  <div className="w-full h-1.5 bg-brand-primary opacity-5 rounded-full" />
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </LayoutWrapper>
-    );
+    return <LayoutWrapper className="w-full">
+      <main className="app-page">
+        <PageHeader title={t('title')} description={t('subtitle')} icon={<FaGraduationCap />} tone="info" />
+        <div className="h-[var(--size-chip)] flex gap-2"><Skeleton textRole="caption" width="7ch" /><Skeleton textRole="caption" width="12ch" /></div>
+        <AcademyProgressCard loading completedCount={0} totalCount={0} totalXp={0} streak={0} />
+        <Card variant="solid" className="w-full p-4 space-y-3" aria-busy="true">
+          <Skeleton textRole="caption" width="40%" /><Skeleton textRole="title-2" width="70%" />
+          <Skeleton textRole="body" width="90%" /><Skeleton variant="rectangular" height="var(--size-control-md)" className="rounded-control" />
+        </Card>
+        <SkeletonList count={3} />
+      </main>
+    </LayoutWrapper>;
   }
 
   return (
@@ -349,48 +293,25 @@ export default function AcademyPage() {
       <main className="w-full app-page mx-auto ">
 
         {/* Header */}
-        <header className="flex flex-col items-center w-full gap-2">
+        <div className="w-full space-y-3">
           <PageHeader title={t('title')} description={t('subtitle')} icon={<FaGraduationCap />} tone="info" />
 
           {stats && (
-            <BadgeRow className="justify-center">
+            <BadgeRow>
               {stats.is_premium && <Badge variant="purple">{t('premium')}</Badge>}
               <Badge variant="primary">{ti('level')} {stats.level}</Badge>
               <Badge variant="secondary" icon={<FaTrophy />}>{getPlayerTitle(stats.level)}</Badge>
             </BadgeRow>
           )}
-        </header>
+        </div>
 
         {/* Academy Progress Card — prominent, right below header */}
-        {stats && (
-          <AcademyProgressCard 
+        <AcademyProgressCard loading={!stats}
             completedCount={(completedLessons as string[]).filter(slug => lessonsList.some((l: any) => l.slug === slug)).length}
             totalCount={lessonsList.length}
             totalXp={stats?.xp ?? 0}
             streak={stats?.study_streak || 0}
           />
-        )}
-
-        {/* Motivational Quote */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="w-full"
-        >
-          <Card 
-            variant="solid" 
-            interactive
-            aria-label={t('next_quote')}
-            onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
-            className="w-full text-center px-4 py-3 group"
-          >
-            <p className="text-sm font-medium text-brand-primary mb-1">“{t(CHESS_QUOTES[quoteIdx].key)}”</p>
-            <p className="text-caption font-medium text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
-          </Card>
-        </motion.div>
-
-        {/* Hint of the Day */}
-        <DailyHintCard />
 
         {/* Daily Challenge Section */}
         {puzzlesList.length === 0 ? (
@@ -409,14 +330,10 @@ export default function AcademyPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="w-full"
         >
-          <Card 
-            variant="glass" 
-            className="ui-hero-card p-4 relative overflow-hidden group"
+          <Card
+            variant="glass"
+            className="w-full p-4 relative overflow-hidden group"
           >
-          {/* Neon Backlight Blurs */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-[radial-gradient(circle,var(--color-brand-primary)_0%,transparent_70%)] opacity-10 rounded-full -mr-16 -mt-16 pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[radial-gradient(circle,rgba(16,185,129,1)_0%,transparent_70%)] opacity-5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-
           <div className="relative z-10">
             <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
               <Badge variant="secondary" icon={<FaFire />}>
@@ -469,10 +386,31 @@ export default function AcademyPage() {
         </motion.div>}
 
 
+        {/* Motivational Quote */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-full"
+        >
+          <Card
+            variant="solid"
+            interactive
+            aria-label={t('next_quote')}
+            onClick={() => setQuoteIdx((quoteIdx + 1) % CHESS_QUOTES.length)}
+            className="w-full text-center px-4 py-3 group"
+          >
+            <p className="text-sm font-medium text-brand-primary mb-1">“{t(CHESS_QUOTES[quoteIdx].key)}”</p>
+            <p className="text-caption font-medium text-brand-muted">— {CHESS_QUOTES[quoteIdx].author}</p>
+          </Card>
+        </motion.div>
+
+        {/* Hint of the Day */}
+        <DailyHintCard />
+
         {/* 100 Levels Tactics Grid */}
         {puzzlesList.length > 0 && <section className="space-y-2" aria-labelledby="tactics-grid-title">
           <SectionHeader id="tactics-grid-title" title={t('tactics_grid')} />
-          <Card variant="solid" className="ui-hero-card w-full relative overflow-hidden rounded-2xl">
+          <Card variant="solid" className="w-full relative overflow-hidden rounded-2xl">
             {/* Progress Header */}
             <div className="flex flex-col px-3 py-2.5 border-b border-brand-border relative z-10">
               <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
@@ -484,7 +422,7 @@ export default function AcademyPage() {
                 </Badge>
               </div>
               <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden" role="progressbar" aria-label={t('tactics_grid')} aria-valuemin={0} aria-valuemax={puzzlesList.length} aria-valuenow={completedPuzzles.length}>
-                <div 
+                <div
                   className="h-full bg-brand-action rounded-full transition-all duration-700"
                   style={{ width: `${(completedPuzzles.length / puzzlesList.length) * 100}%` }}
                 />
@@ -605,12 +543,12 @@ export default function AcademyPage() {
                   </div>
                   {/* Category progress bar */}
                   <div className="w-full h-1 bg-brand-elevated rounded-full overflow-hidden mb-2" role="progressbar" aria-label={cat.label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={catProgress}>
-                    <div 
+                    <div
                       className={`h-full rounded-full transition-all duration-700 ${catProgress === 100 ? 'bg-brand-action' : 'bg-brand-muted'}`}
                       style={{ width: `${catProgress}%` }}
                     />
                   </div>
-                  
+
                   {/* Toggle Show Completed Button */}
                   {completedInCat > 0 && (
                     <div className="flex justify-end mb-4 px-1">
@@ -689,43 +627,9 @@ export default function AcademyPage() {
 
       </main>
 
-      {/* Premium Upgrade Promotion Drawer */}
-      {typeof document !== 'undefined' && createPortal(
-      <AnimatePresence>
-      {showPremiumPromo && (
-      <motion.div className="bottom-drawer-backdrop z-[110]">
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }} 
-        onClick={() => setShowPremiumPromo(false)}
-        className="absolute inset-0 bg-black/80" 
-        style={{ touchAction: 'none' }}
-      />
-      <motion.div 
-        initial={{ y: "100%" }} 
-        animate={{ y: 0 }} 
-        exit={{ y: "100%" }} 
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-20"
-      >
-        {/* Glowing Backlight */}
-        <div className="absolute top-0 left-1/2 w-72 h-72 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,0.15)_0%,transparent_70%)] rounded-full -translate-x-1/2 pointer-events-none" />
-
-        <div className="bottom-drawer-handle relative z-10" />
-        
-        <div className="flex flex-col items-center text-center mt-2 relative z-10">
-          <span className="ui-icon-tile ui-icon-tile--premium w-14 h-14 rounded-2xl mb-3"><FaTrophy size={22} aria-hidden="true" /></span>
-          <h2 className="text-xl font-semibold text-brand-primary mb-1">
-            {t('unlock_grid')}
-          </h2>
-          <p className="text-sm font-medium text-brand-muted mb-6">
-            {t('level_premium_req')}
-          </p>
-        </div>
-      
-        <div className="w-full bg-brand-surface rounded-2xl p-5 border border-brand-border-opacity-10 mb-4 space-y-4 shadow-premium relative z-10">
-          <p className="text-center font-semibold text-sm mb-1" style={{ color: 'var(--badge-purple-ink)' }}>{t('premium_perks')}</p>
+      <Drawer isOpen={showPremiumPromo} onClose={() => setShowPremiumPromo(false)} title={t('unlock_grid')} description={t('level_premium_req')} layer={110}
+        footer={<div className="space-y-2"><Button variant="primary" className="w-full" onClick={handleUpgradeWithBalance}>{t('buy_premium')}</Button><Button variant="secondary" className="w-full" onClick={handleUpgradeWithXp}>{t('unlock_with_xp')}</Button></div>}>
+        <h3 className="t-body font-semibold">{t('premium_perks')}</h3>
           <ul className="space-y-2.5 text-caption text-brand-muted">
             <li className="flex items-start gap-2.5">
               <span className="text-purple-400 mt-0.5 shrink-0"><FaCheckCircle size={9} /></span>
@@ -740,54 +644,9 @@ export default function AcademyPage() {
               <span className="leading-tight">{t('perk_li3')}</span>
             </li>
           </ul>
-          <div className="h-px w-full bg-brand-border-opacity-10 my-2" />
-          <div className="flex justify-between items-center text-caption text-brand-muted normal-case tracking-normal bg-brand-void/50 border border-brand-border-opacity-5 px-3 py-2 rounded-xl">
-            <span className="flex items-center gap-1"><FaTrophy className="text-emerald-500 text-caption" /> {stats?.xp || 0} XP</span>
-            <span className="flex items-center gap-1"><FaWallet className="text-brand-muted text-caption" /> {((stats?.balance || 0)/100).toFixed(2)} USDT</span>
-          </div>
-        </div>
-      
-        <div className="w-full flex flex-col gap-3 relative z-10">
-          <motion.button type="button"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleUpgradeWithXp}
-            className="ui-tap-target w-full bg-brand-void border border-brand-primary/15 hover:border-brand-primary/30 text-brand-primary py-3.5 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-sm transition-all"
-          >
-            <span className="text-sm normal-case font-semibold tracking-normal">{t('unlock_with_xp')}</span>
-            <span className="text-caption font-bold text-brand-muted">{t('free_unlock_path')}</span>
-          </motion.button>
-          
-          <motion.button type="button"
-            whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(168, 85, 247, 0.45)" }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleUpgradeWithBalance}
-            className="ui-tap-target w-full bg-purple-600 hover:bg-purple-600 text-white border border-purple-400/30 py-4 rounded-xl flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-premium relative overflow-hidden transition-colors"
-          >
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full animate-shimmer" />
-            <span className="text-sm normal-case font-semibold tracking-normal relative z-10">{t('buy_premium')}</span>
-            <span className="text-caption font-semibold normal-case tracking-normal opacity-80">{t('instant_activation')}</span>
-          </motion.button>
-    
-          <motion.button type="button"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setShowPremiumPromo(false)}
-            className="ui-tap-target w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer shadow-sm border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary transition-all"
-          >
-            <span>{t('cancel')}</span>
-          </motion.button>
-        </div>
-      </motion.div>
-      </motion.div>
-      )}
-      </AnimatePresence>,
-      document.body
-      )}
+      </Drawer>
 
       {/* Level Info Drawer — tap any grid tile to see description + CTA */}
-      {typeof document !== 'undefined' && createPortal(
-      <AnimatePresence>
       {selectedLevel && (() => {
         const { id, info } = selectedLevel;
         const band = getLevelInfo(id);
@@ -798,45 +657,8 @@ export default function AcademyPage() {
         const isPlayable  = !isSeqLocked && !isPremLocked && !isXpLocked;
         const hintsEnabled = id <= 10;
 
-        return (
-        <motion.div className="bottom-drawer-backdrop z-[110]">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedLevel(null)}
-            className="absolute inset-0 bg-black/80"
-            style={{ touchAction: 'none' }}
-          />
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-            className="bottom-drawer-sheet relative z-20"
-          >
-            {/* Glow */}
-            <div className={`absolute top-0 left-1/2 w-64 h-64 rounded-full bg-[radial-gradient(ellipse_at_top,currentColor_0%,transparent_70%)] opacity-20 -translate-x-1/2 pointer-events-none ${isCompleted ? 'text-emerald-500' : isPremLocked ? 'text-purple-500' : 'text-brand-primary'}`} />
-
-            <div className="bottom-drawer-handle relative z-10" />
-
-            <div className="relative z-10 space-y-4 px-1">
-              {/* Header */}
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="text-2xl">{band.emoji}</span>
-                  <div>
-                    <p className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-                      {isCompleted ? t('solved') : isPremLocked ? t('premium_required') : isXpLocked ? t('xp_required') : isSeqLocked ? t('sequential_lock') : t('available')}
-                    </p>
-                    <h3 className="text-lg font-semibold tracking-tight text-brand-primary normal-case leading-none">
-                      {t('level_theme', { level: id, theme: band.theme })}
-                    </h3>
-                  </div>
-                </div>
-                <Badge variant={isCompleted ? 'emerald' : 'secondary'}>#{id} / 100</Badge>
-              </div>
-
+        return <Drawer isOpen onClose={() => setSelectedLevel(null)} layer={110} title={t('level_theme', { level: id, theme: band.theme })}
+          description={isCompleted ? t('solved') : isPremLocked ? t('premium_required') : isXpLocked ? t('xp_required') : isSeqLocked ? t('sequential_lock') : t('available')}>
               {/* Mini Board Preview */}
               <div className="w-full aspect-square max-w-[200px] mx-auto mb-4 rounded-xl overflow-hidden shadow-inner-glow border border-brand-border-opacity-10 pointer-events-none opacity-80">
                 <BoardA11y><Chessboard options={{ position: band.fen, allowDragging: false, darkSquareStyle: { backgroundColor: '#2e3a4e' }, lightSquareStyle: { backgroundColor: '#cbd5e1' }, boardStyle: { borderRadius: "8px", overflow: "hidden" } }} /></BoardA11y>
@@ -874,36 +696,27 @@ export default function AcademyPage() {
                   </div>
                 )}
                 {isPremLocked && !isSeqLocked && (
-                  <motion.button type="button"
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => { setSelectedLevel(null); setShowPremiumPromo(true); }}
-                    className="ui-tap-target w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-600 text-white font-semibold normal-case tracking-normal text-caption shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-colors"
+                  <Button variant="premium" className="w-full" onClick={() => { setSelectedLevel(null); setShowPremiumPromo(true); }}
                   >
                     👑 {t('unlock_with_premium')}
-                  </motion.button>
+                  </Button>
                 )}
                 {isXpLocked && !isSeqLocked && !isPremLocked && (
-                  <motion.button type="button"
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => { setSelectedLevel(null); handlePuzzleClick(id, info); }}
+                  <Button variant="primary" onClick={() => { setSelectedLevel(null); handlePuzzleClick(id, info); }}
                     className="ui-tap-target w-full py-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-semibold normal-case tracking-normal text-caption"
                   >
                     🔓 {t('spend_unlock', { cost: info?.xp_cost ?? '—' })}
-                  </motion.button>
+                  </Button>
                 )}
                 {isPlayable && (
-                  <motion.button type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => { setSelectedLevel(null); router.push(`/${locale}/academy/puzzle?id=${id}`); }}
+                  <Button variant="primary" onClick={() => { setSelectedLevel(null); router.push(`/${locale}/academy/puzzle?id=${id}`); }}
                     className="ui-tap-target w-full py-3.5 rounded-xl bg-brand-primary text-brand-void font-semibold normal-case tracking-normal text-caption shadow-neon relative overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,var(--color-brand-border-opacity-10),transparent)] -translate-x-full animate-shimmer" />
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       <FaPlay className="text-caption" />
                       {isCompleted ? t('replay_level') : t('start_level')}
                     </span>
-                  </motion.button>
+                  </Button>
                 )}
                 <button type="button"
                   onClick={() => setSelectedLevel(null)}
@@ -912,14 +725,8 @@ export default function AcademyPage() {
                   {t('cancel')}
                 </button>
               </div>
-            </div>
-          </motion.div>
-        </motion.div>
-        );
+        </Drawer>;
       })()}
-      </AnimatePresence>,
-      document.body
-      )}
     </LayoutWrapper>
   );
 }

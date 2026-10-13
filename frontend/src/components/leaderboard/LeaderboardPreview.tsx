@@ -139,7 +139,7 @@ export default function LeaderboardPreview() {
         <div className="space-y-4">
           {attribution()}
           {tabs()}
-          <ol aria-label={t('standings')} className="max-h-[50dvh] space-y-2 overflow-y-auto pe-1" aria-live="off">{standings.map(row)}</ol>
+          <ol aria-label={t('standings')} className="space-y-2" aria-live="off">{standings.map(row)}</ol>
         </div>
       </Drawer>}
     </div>

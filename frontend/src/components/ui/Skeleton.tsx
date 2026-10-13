@@ -10,7 +10,7 @@ import React from 'react';
  * line heights from the type roles instead of guessing pixel values.
  */
 
-type TypeRole = 'display' | 'title-1' | 'title-2' | 'title-3' | 'body-lg' | 'body' | 'label' | 'caption' | 'eyebrow' | 'numeric-lg' | 'numeric' | 'numeric-sm';
+type TypeRole = 'display' | 'title-1' | 'title-2' | 'title-3' | 'body-lg' | 'body' | 'label' | 'caption' | 'eyebrow' | 'numeric-xl' | 'numeric-lg' | 'numeric' | 'numeric-sm';
 
 /** Height of one line of text in a role: font-size x line-height, from the same tokens the text uses. */
 const lineHeight = (role: TypeRole) => `calc(var(--type-${role}-size) * var(--type-${role}-leading))`;
@@ -129,10 +129,10 @@ export function GoalTilesSkeleton({ count = 3, label }: { count?: number; label?
 /** Mirrors the home/profile `.ui-hero-card`: identity row, XP track, three figures. */
 export function HeroCardSkeleton({ label }: { label?: string }) {
   return (
-    <Busy label={label} className="ui-hero-card space-y-5 p-5">
+    <Busy label={label} className="ui-hero-card space-y-3 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3.5">
-          <Skeleton variant="rectangular" className="size-avatar-lg rounded-2xl" width={52} height={52} />
+          <Skeleton variant="rectangular" className="size-avatar-lg rounded-full" width={48} height={48} />
           <div className="flex flex-col gap-2"><Skeleton textRole="numeric-lg" width={120} /><Skeleton textRole="caption" width={72} /></div>
         </div>
         <Skeleton variant="rectangular" width={92} height="var(--size-control-sm)" className="rounded-control" />

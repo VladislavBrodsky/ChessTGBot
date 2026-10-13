@@ -25,7 +25,7 @@ export default function QrClient() {
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-brand-border bg-brand-surface text-brand-action">
           <FaChessKnight size={26} aria-hidden="true" />
         </div>
-        <PageHeader title={t('invite_title')} description={t('invite_description')} />
+        <PageHeader align="center" title={t('invite_title')} description={t('invite_description')} />
         <Card variant="solid" className="p-4 sm:p-6 text-center">
           {validCode ? <>
             <div className="mx-auto w-full max-w-[244px] rounded-2xl bg-white p-3">

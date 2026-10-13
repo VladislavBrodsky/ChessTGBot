@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic, telegramAlert } from "@/lib/telegram";
 import Confetti from "react-confetti";
-import { FaCheckCircle, FaLock, FaGift, FaTimes } from "react-icons/fa";
+import { FaCheckCircle, FaLock, FaGift } from "react-icons/fa";
 import { useTranslations } from 'next-intl';
-import { useNavbar } from '@/context/NavbarContext';
 import { useUser } from '@/context/UserContext';
-import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { useAnimationsEnabled } from '@/hooks/useAnimationsEnabled';
+import { useAudio } from '@/hooks/useAudio';
 
 interface DailyStatus {
   can_claim_today: boolean;
@@ -30,7 +31,8 @@ export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = 
   const [claiming, setClaiming] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-  const { pushHide, popHide } = useNavbar();
+  const animations = useAnimationsEnabled();
+  const { play } = useAudio();
   const { syncStats } = useUser();
   const confettiTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,7 +42,6 @@ export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = 
       onClose?.();
     }
   };
-  const dialogRef = useDialogAccessibility(Boolean(isOpen && status), closeModal);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -67,14 +68,6 @@ export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = 
     fetchStatus();
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      pushHide();
-    } else {
-      popHide();
-    }
-  }, [isOpen, pushHide, popHide]);
-
   useEffect(() => () => {
     if (confettiTimer.current) clearTimeout(confettiTimer.current);
   }, []);
@@ -88,17 +81,17 @@ export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = 
       const res = await apiFetch('/api/v1/gamification/daily-checkin/claim', {
         method: 'POST'
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         // Sync stats so XP score & progress bar update immediately
         syncStats();
         telegramHaptic('success');
         setShowConfetti(true);
-        new Audio('/sounds/win.mp3').play().catch(e => console.log('Audio blocked', e));
+        play('win');
         if (confettiTimer.current) clearTimeout(confettiTimer.current);
         confettiTimer.current = setTimeout(() => setShowConfetti(false), 1800);
-        
+
         // Update local state to reflect claim
         setStatus(prev => prev ? {
           ...prev,
@@ -121,124 +114,15 @@ export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = 
 
   const currentDayIndex = status ? status.current_streak % 7 : 0;
 
-  return (
-    <AnimatePresence>
-      {isOpen && status && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-brand-void/85 backdrop-blur-xl"
-        >
-          {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={windowSize.width < 768 ? 120 : 240} />}
-          
-          <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="daily-reward-title"
-            aria-describedby="daily-reward-subtitle"
-            tabIndex={-1}
-            initial={{ scale: 0.92, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.92, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="app-premium-surface relative w-full max-w-sm overflow-hidden rounded-[2rem] border border-brand-border p-6 pb-[calc(24px+var(--app-safe-bottom))] shadow-2xl"
-          >
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
-            
-            {/* Top-right close button */}
-            <button
-              type="button"
-              onClick={closeModal}
-              disabled={claiming}
-              aria-label={tc('close')}
-              className="ui-tap-target absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-brand-surface/60 text-brand-muted hover:text-brand-primary hover:bg-brand-elevated border border-brand-border/40 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-            >
-              <FaTimes className="text-sm" />
-            </button>
-
-            <div className="relative z-10 flex flex-col items-center text-center">
-              {/* Crown/Gift Icon Header with Obsidian Emerald identity */}
-              <div className="relative mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-emerald-950 shadow-[0_0_25px_rgba(16,185,129,0.4)]">
-                <FaGift className="text-2xl text-emerald-950" />
-                <div className="absolute -inset-1 rounded-2xl bg-emerald-500/20 blur-md pointer-events-none" />
-              </div>
-
-              <h2 id="daily-reward-title" className="mb-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-primary">
-                {t('daily_reward')}
-              </h2>
-              <p id="daily-reward-subtitle" className="mb-6 max-w-[260px] text-sm font-bold normal-case tracking-normal text-brand-muted">
-                {t('daily_reward_description')}
-              </p>
-
-              {/* Day Rewards Grids */}
-              <div className="mb-3 grid w-full grid-cols-4 gap-2.5">
-                {status.rewards.slice(0, 4).map((reward, idx) => (
-                  <RewardDay 
-                    key={idx} 
-                    day={idx + 1} 
-                    reward={reward} 
-                    status={idx < currentDayIndex ? 'past' : idx === currentDayIndex ? 'current' : 'future'} 
-                  />
-                ))}
-              </div>
-              <div className="mb-6 grid w-full grid-cols-3 gap-2.5">
-                {status.rewards.slice(4, 7).map((reward, idx) => (
-                  <RewardDay 
-                    key={idx + 4} 
-                    day={idx + 5} 
-                    reward={reward} 
-                    isBig={idx === 2}
-                    status={(idx + 4) < currentDayIndex ? 'past' : (idx + 4) === currentDayIndex ? 'current' : 'future'} 
-                  />
-                ))}
-              </div>
-
-              {/* Main Action Button */}
-              <motion.button type="button"
-                whileHover={{ scale: claiming ? 1 : 1.02 }}
-                whileTap={{ scale: claiming ? 1 : 0.98 }}
-                onClick={status.can_claim_today ? handleClaim : closeModal}
-                disabled={claiming}
-                className={`ui-tap-target relative min-h-[48px] w-full overflow-hidden rounded-2xl py-3.5 text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer ${
-                  status.can_claim_today && !claiming
-                    ? "bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 text-emerald-950 shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)]"
-                    : "bg-brand-elevated border border-brand-border text-brand-primary hover:bg-brand-surface shadow-md"
-                }`}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  {claiming ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      <span>{tc('claiming')}</span>
-                    </>
-                  ) : status.can_claim_today ? (
-                    t('claim_reward')
-                  ) : (
-                    t('return_tomorrow')
-                  )}
-                </span>
-              </motion.button>
-              
-              {status.can_claim_today && (
-                <button 
-                  type="button"
-                  onClick={closeModal}
-                  className="ui-tap-target mt-3 min-h-[44px] px-4 text-sm font-bold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
-                >
-                  {t('skip_now')}
-                </button>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  if (!status) return null;
+  return <Modal isOpen={isOpen} onClose={closeModal} title={t('daily_reward')} description={t('daily_reward_description')} maxWidth="sm" layer={120}
+    footer={<div className="space-y-2"><Button variant="primary" className="w-full" onClick={status.can_claim_today ? handleClaim : closeModal} disabled={claiming} isLoading={claiming}>
+      {claiming ? tc('claiming') : status.can_claim_today ? t('claim_reward') : t('return_tomorrow')}
+    </Button>{status.can_claim_today && <Button className="w-full" variant="ghost" onClick={closeModal} disabled={claiming}>{t('skip_now')}</Button>}</div>}>
+    {showConfetti && animations && <div className="fixed inset-0 pointer-events-none"><Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={windowSize.width < 768 ? 56 : 100} /></div>}
+    <div className="grid grid-cols-4 gap-2 mb-2">{status.rewards.slice(0, 4).map((reward, idx) => <RewardDay key={idx} day={idx + 1} reward={reward} status={idx < currentDayIndex ? 'past' : idx === currentDayIndex ? 'current' : 'future'} />)}</div>
+    <div className="grid grid-cols-3 gap-2">{status.rewards.slice(4, 7).map((reward, idx) => <RewardDay key={idx + 4} day={idx + 5} reward={reward} isBig={idx === 2} status={idx + 4 < currentDayIndex ? 'past' : idx + 4 === currentDayIndex ? 'current' : 'future'} />)}</div>
+  </Modal>;
 }
 
 function RewardDay({ day, reward, status, isBig = false }: { day: number, reward: number, status: 'past' | 'current' | 'future', isBig?: boolean }) {
@@ -246,26 +130,26 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
   const isPast = status === 'past';
   const isCurrent = status === 'current';
   const isFuture = status === 'future';
-  
+
   return (
     <div className={`relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all duration-300 ${
-      isCurrent 
-        ? 'border-emerald-500/70 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.25)] scale-[1.03] z-10' 
-        : isPast 
-          ? 'border-brand-border/30 bg-brand-surface/40 opacity-70' 
+      isCurrent
+        ? 'border-emerald-500/70 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.25)] scale-[1.03] z-10'
+        : isPast
+          ? 'border-brand-border/30 bg-brand-surface/40 opacity-70'
           : 'border-brand-border/40 bg-brand-surface/70'
     } ${isBig && !isCurrent ? 'border-purple-500/40 bg-purple-500/10' : ''}`}>
-      
+
       {isCurrent && (
         <div className="absolute inset-0 bg-emerald-500/10 blur-md rounded-2xl z-0 pointer-events-none" />
       )}
-      
+
       <span className={`relative z-10 text-caption font-semibold normal-case tracking-normal mb-1 ${
         isCurrent ? 'text-emerald-400' : isPast ? 'text-brand-muted' : 'text-brand-muted'
       }`}>
         {t('reward_day', { day })}
       </span>
-      
+
       <div className="relative z-10 flex h-8 w-full flex-col items-center justify-center">
         {isPast ? (
           <FaCheckCircle className="text-emerald-500 text-lg drop-shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
@@ -277,8 +161,8 @@ function RewardDay({ day, reward, status, isBig = false }: { day: number, reward
         ) : isBig ? (
           <div className="flex flex-col items-center">
             <FaGift className={`text-2xl ${
-              isCurrent 
-                ? 'text-emerald-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.7)] animate-bounce' 
+              isCurrent
+                ? 'text-emerald-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.7)]'
                 : 'text-purple-400/80'
             }`} />
             {!isCurrent && (

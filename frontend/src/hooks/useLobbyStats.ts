@@ -17,6 +17,7 @@ export function useLobbyStats() {
   });
   return {
     loaded: Boolean(data) || Boolean(error),
+    error: Boolean(error),
     searching: Math.max(0, Number(data?.searching ?? 0)),
     games24h: Math.max(0, Number(data?.games_24h ?? 0)),
     recent: Array.isArray(data?.recent) ? data.recent.slice(0, 5) : [],

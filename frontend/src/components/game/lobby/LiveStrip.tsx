@@ -1,27 +1,20 @@
 'use client';
 
 import { useLocale } from 'next-intl';
+import { Skeleton } from '@/components/ui/Skeleton';
 
-/**
- * Honest activity strip. It shows only numbers the backend actually measured, and renders nothing when there is
- * nothing to show: a quiet lobby must look quiet, never padded with invented players.
- */
-export function LiveStrip({ searching, games24h, t }: { searching: number; games24h: number; t: (key: string) => string }) {
+/** Measured counts retain their geometry across loading, quiet, and unavailable states. */
+export function LiveStrip({ searching, games24h, loading = false, unavailable = false, t }: {
+  searching: number; games24h: number; loading?: boolean; unavailable?: boolean; t: (key: string) => string;
+}) {
   const locale = useLocale();
-  if (searching <= 0 && games24h <= 0) return null;
-  const fmt = (n: number) => n.toLocaleString(locale);
-  return (
-    <div className="lobby-live" role="status" aria-live="polite">
-      {searching > 0 && (
-        <span className="lobby-live__row">
-          <span className="lobby-live__badge ui-eyebrow">
-            <span className="lobby-live__dot fx-ring-pulse" aria-hidden="true" />
-            {t('lobby_live')}
-          </span>
-          <span><strong>{fmt(searching)}</strong> {t('lobby_waiting')}</span>
-        </span>
-      )}
-      {games24h > 0 && <span className="lobby-live__row"><strong>{fmt(games24h)}</strong> {t('lobby_games_24h')}</span>}
-    </div>
-  );
+  const counts = [{ value: searching, label: t('lobby_waiting') }, { value: games24h, label: t('lobby_games_24h') }];
+  return <dl className="lobby-live" aria-busy={loading || undefined}>
+    {counts.map(({ value, label }, index) => <div className="lobby-live__metric" key={index}>
+      <dt className="t-caption text-brand-muted">{label}</dt>
+      <dd className="t-numeric-sm text-brand-primary">
+        {loading ? <Skeleton textRole="numeric-sm" width="3ch" /> : <bdi>{unavailable || !Number.isFinite(value) ? '—' : Math.max(0, value).toLocaleString(locale)}</bdi>}
+      </dd>
+    </div>)}
+  </dl>;
 }

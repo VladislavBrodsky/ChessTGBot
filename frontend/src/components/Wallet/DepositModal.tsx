@@ -622,7 +622,7 @@ function DepositModalContent({
   }
 
   return (
-    <Drawer isOpen title={tw('deposit_invoice')} onClose={() => { if (!processing) closeDeposit(); }} maxHeight="max-h-[90dvh]">
+    <Drawer isOpen title={tw('deposit_invoice')} onClose={() => { if (!processing) closeDeposit(); }} maxHeight="90dvh">
         <div className="space-y-4">
           {chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance && (
             <div className="w-full bg-brand-void/50 rounded-2xl p-4 border border-brand-border-opacity-5 text-sm font-bold text-brand-muted leading-relaxed space-y-2.5 shadow-inner">

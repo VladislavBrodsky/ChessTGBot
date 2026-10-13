@@ -1,0 +1,255 @@
+{
+  "date": "2026-10-13",
+  "environment": "Local development with mock API; no paid matches, purchases or reward claims",
+  "routes": [
+    {
+      "dialogs": [],
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Alexandra Rivera"
+      ],
+      "height": 680,
+      "heroes": 1,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/home",
+      "width": 320
+    },
+    {
+      "dialogs": [],
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Play Chess"
+      ],
+      "height": 680,
+      "heroes": 1,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/game",
+      "width": 320
+    },
+    {
+      "dialogs": [],
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Academy"
+      ],
+      "height": 680,
+      "heroes": 1,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/academy",
+      "width": 320
+    },
+    {
+      "dialogs": [],
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Daily Tasks"
+      ],
+      "height": 680,
+      "heroes": 1,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/challenges",
+      "width": 320
+    },
+    {
+      "dialogs": [],
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Wallet"
+      ],
+      "height": 680,
+      "heroes": 1,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/wallet",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Profile"
+      ],
+      "height": 680,
+      "heroes": 1,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/profile",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Marketplace"
+      ],
+      "height": 680,
+      "heroes": 1,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/marketplace",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Settings"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/settings",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Chess Premium"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/membership",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Achievements"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 0,
+      "scrollWidth": 316,
+      "url": "/en/academy/achievements",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Board Themes"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 0,
+      "scrollWidth": 316,
+      "url": "/en/academy/themes",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Opening Principles"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/academy/lesson/piece-values",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Mate in 1"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/academy/puzzle",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Match review"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/game/review",
+      "width": 320
+    },
+    {
+      "headers": [
+        "start"
+      ],
+      "headings": [
+        "Admin"
+      ],
+      "height": 680,
+      "heroes": 0,
+      "main": 1,
+      "scrollWidth": 316,
+      "url": "/en/admin",
+      "width": 320
+    }
+  ],
+  "dialog": {
+    "bodyHeight": 608,
+    "bodyOverflow": "auto",
+    "bodyScrollHeight": 3889,
+    "close": {
+      "bottom": 219.6015625,
+      "height": 44,
+      "left": 322,
+      "right": 366,
+      "top": 175.6015625,
+      "width": 44,
+      "x": 322,
+      "y": 175.6015625
+    },
+    "name": "Top 50",
+    "rootLock": "hidden",
+    "rows": 50
+  },
+  "checks": [
+    "162 frontend tests pass",
+    "Typecheck and lint pass",
+    "1214 messages validated in all 10 locales",
+    "English mobile route structure inspected at 320px",
+    "Arabic Home, Play and Academy inspected",
+    "Light theme and app reduced motion verified; original preferences restored",
+    "One h1 and at most one hero per route",
+    "Modal root/body scroll locks and pinned close controls verified",
+    "Top 50 contains fifty rows in a single scroll container"
+  ],
+  "notes": [
+    "Achievements and themes were converted to semantic main landmarks after the first audit pass",
+    "Login and QR intentionally retain centered entry headers",
+    "Desktop browser viewport checks do not constitute physical iOS Telegram testing"
+  ]
+}

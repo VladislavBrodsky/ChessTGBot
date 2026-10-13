@@ -492,7 +492,11 @@
     "level_unlocked": "Level {level} unlocked successfully!",
     "xp_upgrade_alert": "Upgrading to Premium requires 5,000 XP. You currently have {xp} XP.",
     "upgrade_success": "Upgrade successful! You are now a Premium member.",
-    "subscription_success": "Subscription successful! You are now a Premium member."
+    "subscription_success": "Subscription successful! You are now a Premium member.",
+    "tier_label": "Tier {tier}",
+    "mastery_tiers": "Mastery tiers",
+    "share_trophy": "Share achievement",
+    "keep_playing": "Keep playing"
   },
   "Game": {
     "review_title": "Match review",
@@ -554,12 +558,12 @@
     "learn_more": "[Learn More]",
     "platform_commission": "Platform Commission (Rake)",
     "sustain_ecosystem": "How matchmaking fees sustain the ecosystem",
-    "rake_desc1": "FinChess charges a flat 3% commission (rake) on game rewards. This commission is only deducted from the winner's share.",
-    "rake_desc2": "For example, if you wager $10.00, the total pot is $20.00. The winner receives $19.40 net, while $0.60 (3%) is reserved as the platform rake.",
+    "rake_desc1": "Paid matches allocate 3% of the pot to the platform and 2% to referrals. The winner receives the remaining 95%, including their stake.",
+    "rake_desc2": "With a $10 stake from each player, the $20 pot pays $19 to the winner: $10 returned stake and $9 net gain.",
     "where_rake_goes": "Where does the rake go?",
-    "rake_li1": "Bot infrastructure & high-speed game matching servers.",
-    "rake_li2": "Liquidity pools to ensure instant payouts.",
-    "rake_li3": "Ecosystem rewards (XP rewards, referral cashback commissions).",
+    "rake_li1": "3% platform fee.",
+    "rake_li2": "2% referral allocation.",
+    "rake_li3": "The credited payout includes your original stake.",
     "got_it": "Got it",
     "double_stakes_choice": "🔥 Double Stakes (2x)",
     "double_stakes_active": "🔥 Double Stakes Active",
@@ -710,7 +714,12 @@
     "board_bb": "Black bishop",
     "board_br": "Black rook",
     "board_bq": "Black queen",
-    "board_bk": "Black king"
+    "board_bk": "Black king",
+    "lobby_setup_description": "Choose your stake and time control.",
+    "stake_returned": "Stake returned",
+    "payout_received": "Payout received",
+    "settlement_pending": "Settlement is being confirmed.",
+    "rematch_setup_description": "Choose the stake for your next match."
   },
   "Wallet": {
     "wager_stake": "Wager stake",
@@ -1025,7 +1034,8 @@
     "finished": "Finished",
     "waiting_hint": "You're in! We'll pair you automatically — each game earns points: win 3, draw 1. Keep playing until the clock runs out.",
     "pts": "pts",
-    "you": "You"
+    "you": "You",
+    "status_unavailable": "Arena status unavailable"
   },
   "Onboarding": {
     "skip": "Skip",
@@ -1254,5 +1264,9 @@
     "search_hint": "Your stake is reserved while searching and returned when you cancel.",
     "queue_error": "Could not join matchmaking. Your balance has been refreshed. Please try again.",
     "connection_error": "Connecting to the game server. Your search is restored when reconnected."
+  },
+  "Admin": {
+    "access_denied": "Access denied",
+    "restricted": "This panel is restricted to admin accounts."
   }
 }

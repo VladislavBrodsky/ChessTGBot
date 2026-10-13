@@ -8,20 +8,8 @@ jest.mock('next-intl', () => ({
     values?.name ? `${key}:${values.name}` : key,
 }));
 
-jest.mock('@/context/NavbarContext', () => ({
-  useNavbarHideWhileMounted: jest.fn(),
-}));
-
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, className, onClick, style }: React.HTMLAttributes<HTMLDivElement>) => (
-      <div className={className} onClick={onClick} style={style}>{children}</div>
-    ),
-    button: ({ children, className, onClick }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-      <button className={className} onClick={onClick}>{children}</button>
-    ),
-  },
-}));
+jest.mock('@/context/NavbarContext', () => ({ useNavbar: () => ({ pushHide: jest.fn(), popHide: jest.fn() }) }));
+jest.mock('@/hooks/useAnimationsEnabled', () => ({ useAnimationsEnabled: () => false }));
 
 describe('rematch drawers', () => {
   it('portals the revenge choices above the portalled game-over modal', () => {
@@ -38,8 +26,10 @@ describe('rematch drawers', () => {
     );
 
     const routeWrapper = screen.getByTestId('animated-route-wrapper');
-    const drawer = document.querySelector('.bottom-drawer-backdrop');
+    const drawer = document.querySelector('.ui-drawer-viewport');
     expect(drawer).not.toBeNull();
+    expect(drawer).toHaveStyle({ zIndex: 110 });
+    expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
     expect(routeWrapper).not.toContainElement(drawer as HTMLElement);
     expect(document.body).toContainElement(drawer as HTMLElement);
 
@@ -65,8 +55,10 @@ describe('rematch drawers', () => {
     );
 
     const routeWrapper = screen.getByTestId('animated-route-wrapper');
-    const drawer = document.querySelector('.modal-backdrop');
+    const drawer = document.querySelector('.ui-modal-viewport');
     expect(drawer).not.toBeNull();
+    expect(drawer).toHaveStyle({ zIndex: 110 });
+    expect(screen.getByRole('dialog')).toHaveAttribute('aria-modal', 'true');
     expect(routeWrapper).not.toContainElement(drawer as HTMLElement);
     expect(document.body).toContainElement(drawer as HTMLElement);
 

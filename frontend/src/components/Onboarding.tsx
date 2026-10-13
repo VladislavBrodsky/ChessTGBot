@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { useAnimationsEnabled } from '@/hooks/useAnimationsEnabled';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { FaChessKnight, FaCheck, FaCrown, FaShareAlt, FaWallet } from 'react-icons/fa';
 import { FiArrowLeft, FiArrowRight } from 'react-icons/fi';
@@ -25,6 +27,9 @@ const SWIPE_DISTANCE = 56;
  */
 export default function Onboarding({ onClose }: OnboardingProps) {
   const t = useTranslations('Onboarding');
+  const animations = useAnimationsEnabled();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -41,7 +46,7 @@ export default function Onboarding({ onClose }: OnboardingProps) {
     try { localStorage.setItem('onboarding_completed', 'true'); } catch { /* storage blocked: the sheet just shows again */ }
     onClose();
   }, [onClose]);
-  const dialogRef = useDialogAccessibility(true, complete);
+  const dialogRef = useDialogAccessibility(mounted, complete);
 
   const go = useCallback((target: number) => {
     const clamped = Math.max(0, Math.min(last, target));
@@ -51,13 +56,6 @@ export default function Onboarding({ onClose }: OnboardingProps) {
     telegramHaptic('selection');
   }, [index, last]);
   const next = useCallback(() => (index === last ? complete() : go(index + 1)), [index, last, complete, go]);
-
-  // Lock background scroll while the walkthrough is open.
-  useEffect(() => {
-    const { overflow } = document.body.style;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = overflow; };
-  }, []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -73,14 +71,15 @@ export default function Onboarding({ onClose }: OnboardingProps) {
     else if (offset.x > SWIPE_DISTANCE) go(index - 1);
   };
 
-  return (
+  if (!mounted) return null;
+  return createPortal(
     <motion.div
       ref={dialogRef}
       tabIndex={-1}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: animations ? 0.25 : 0 }}
       className="ob-overlay"
       data-tone={slide.tone}
       role="dialog"
@@ -114,14 +113,14 @@ export default function Onboarding({ onClose }: OnboardingProps) {
               key={slide.id}
               custom={direction}
               variants={{
-                enter: (dir: number) => ({ opacity: 0, x: dir * 32 }),
+                enter: (dir: number) => ({ opacity: 0, x: animations ? dir * 32 : 0 }),
                 center: { opacity: 1, x: 0 },
-                exit: (dir: number) => ({ opacity: 0, x: dir * -32 }),
+                exit: (dir: number) => ({ opacity: 0, x: animations ? dir * -32 : 0 }),
               }}
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: animations ? 0.28 : 0, ease: [0.16, 1, 0.3, 1] }}
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.18}
@@ -154,6 +153,6 @@ export default function Onboarding({ onClose }: OnboardingProps) {
           </Button>
         </footer>
       </div>
-    </motion.div>
+    </motion.div>, document.body
   );
 }

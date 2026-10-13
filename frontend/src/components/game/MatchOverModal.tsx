@@ -1,240 +1,34 @@
 'use client';
 
-import { createPortal } from "react-dom";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { FaRedo, FaShareAlt, FaTrophy, FaShieldAlt, FaBalanceScale } from "react-icons/fa";
-import { useLocale, useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
-import { telegramHaptic } from "@/lib/telegram";
+import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import { FaRedo, FaShareAlt } from 'react-icons/fa';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { CountUp } from '@/components/ui/CountUp';
 
 interface MatchOverModalProps {
-  matchResultLabel: string;
-  resultColor: string;
-  eloChange: string;
-  netPayout: number;
-  wagerAmount: number;
-  rematchStatus: 'idle' | 'offered_by_me' | 'waiting';
-  onShowRematchChoice: () => void;
-  onShareGame: () => void;
-  newElo?: number;
-  copied?: boolean;
-  xpGained?: number;
-  isBotGame?: boolean;
+  matchResultLabel: string; resultColor: string; eloChange?: string; netPayout: number | null; wagerAmount: number;
+  outcome?: 'win' | 'loss' | 'draw' | 'aborted'; rematchStatus: 'idle' | 'offered_by_me' | 'waiting';
+  onShowRematchChoice: () => void; onShareGame: () => void; newElo?: number; copied?: boolean; xpGained?: number; isBotGame?: boolean;
 }
-
-export default function MatchOverModal({
-  matchResultLabel,
-  eloChange,
-  netPayout,
-  wagerAmount,
-  rematchStatus,
-  onShowRematchChoice,
-  onShareGame,
-  newElo,
-  copied = false,
-  xpGained,
-  isBotGame: _isBotGame = false,
-}: MatchOverModalProps) {
-  const locale = useLocale();
-  const tg = useTranslations('Game');
-
-  const [animatedElo, setAnimatedElo] = useState<number>(0);
-  const [animatedPayout, setAnimatedPayout] = useState<number>(0);
-
-  // Extract ELO change number
-  const changeVal = parseInt(eloChange.replace('+', '')) || 0;
-  const startElo = (newElo ?? 1000) - changeVal;
-
-  useEffect(() => {
-    // ELO rollup animation
-    let eloStartTimestamp: number | null = null;
-    const duration = 1200; // 1.2s
-
-    const stepElo = (timestamp: number) => {
-      if (!eloStartTimestamp) eloStartTimestamp = timestamp;
-      const progress = Math.min((timestamp - eloStartTimestamp) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-      setAnimatedElo(Math.round(startElo + eased * changeVal));
-      if (progress < 1) {
-        requestAnimationFrame(stepElo);
-      }
-    };
-    requestAnimationFrame(stepElo);
-
-    // Payout rollup animation
-    let payoutStartTimestamp: number | null = null;
-    const stepPayout = (timestamp: number) => {
-      if (!payoutStartTimestamp) payoutStartTimestamp = timestamp;
-      const progress = Math.min((timestamp - payoutStartTimestamp) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setAnimatedPayout(eased * netPayout);
-      if (progress < 1) {
-        requestAnimationFrame(stepPayout);
-      }
-    };
-    if (netPayout > 0) {
-      requestAnimationFrame(stepPayout);
-    } else {
-      setAnimatedPayout(0);
-    }
-  }, [newElo, eloChange, netPayout, startElo, changeVal]);
-
-  // Determine game outcome type for themed styling
-  const labelLower = matchResultLabel.toLowerCase();
-  const isWin = labelLower.includes('victory') || labelLower.includes('won') || labelLower.includes('побед');
-  const isLoss = labelLower.includes('defeat') || labelLower.includes('lost') || labelLower.includes('пораж');
-
-  // Theme configuration mapping
-  const theme = isWin 
-    ? {
-        ambientGlow: "bg-[radial-gradient(circle,rgba(16,185,129,0.25)_0%,transparent_70%)]",
-        radialBorder: "border-emerald-500/30",
-        shadow: "shadow-[0_0_50px_rgba(16,185,129,0.25)]",
-        titleClass: "text-emerald-400 font-semibold tracking-normal normal-case drop-shadow-[0_2px_12px_rgba(16,185,129,0.3)]",
-        icon: <FaTrophy className="text-5xl text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)] animate-bounce mt-1" />
-      }
-    : isLoss 
-      ? {
-          ambientGlow: "bg-[radial-gradient(circle,rgba(239,68,68,0.25)_0%,transparent_70%)]",
-          radialBorder: "border-rose-500/30",
-          shadow: "shadow-[0_0_50px_rgba(239,68,68,0.25)]",
-          titleClass: "text-rose-400 font-semibold tracking-normal normal-case drop-shadow-[0_2px_12px_rgba(239,68,68,0.3)]",
-          icon: <FaShieldAlt className="text-5xl text-rose-500/70 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)] rotate-12 mt-1" />
-        }
-      : {
-          ambientGlow: "bg-[radial-gradient(circle,rgba(6,182,212,0.25)_0%,transparent_70%)]",
-          radialBorder: "border-cyan-500/30",
-          shadow: "shadow-[0_0_50px_rgba(6,182,212,0.25)]",
-          titleClass: "text-cyan-400 font-semibold tracking-normal normal-case drop-shadow-[0_2px_12px_rgba(6,182,212,0.3)]",
-          icon: <FaBalanceScale className="text-5xl text-cyan-400/80 drop-shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-1" />
-        };
-
-  // Rendered through a portal to document.body: a `fixed` overlay inside the
-  // page tree silently scopes to any transformed/filtered ancestor (the trap
-  // that once broke the leaderboard modal). Presence context crosses portals,
-  // so AnimatePresence exit animations still work.
-  if (typeof document === 'undefined') return null;
-  return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85">
-      {/* Backdrop fading in */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0" style={{ touchAction: 'none' }}
-      />
-
-      {/* Full-Screen Premium Modal container */}
-      <motion.div
-        initial={{ scale: 0.94, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.94, y: 20 }}
-        transition={{ type: "spring", duration: 0.4 }}
-        className={`relative overflow-hidden w-full max-w-[300px] bg-brand-surface border rounded-[32px] p-6 flex flex-col items-center text-center space-y-6 z-10 transform-gpu will-change-transform ${theme.radialBorder} ${theme.shadow}`}
-      >
-        {/* Ambient neon radial glows in background */}
-        <div className={`absolute -top-20 -left-20 w-44 h-44 rounded-full ${theme.ambientGlow} pointer-events-none`} />
-        <div className={`absolute -bottom-20 -right-20 w-44 h-44 rounded-full ${theme.ambientGlow} pointer-events-none`} />
-
-        {/* Visual Outcome Header */}
-        <div className="flex flex-col items-center space-y-1 relative z-10 w-full mt-2">
-          <div className="mb-2">
-            {theme.icon}
-          </div>
-          <h2 className={`text-xl ${theme.titleClass}`}>
-            {matchResultLabel}
-          </h2>
-          <p className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
-            {tg('verification_complete')}
-          </p>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="w-full bg-brand-void/40 rounded-2xl p-4.5 border border-brand-border-opacity-10 space-y-3.5 shadow-inner-glow relative z-10">
-          <div className="flex justify-between items-center">
-            <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tg('global_elo')}</span>
-            <div className="flex items-center gap-1.5 font-mono">
-              <span className="text-sm font-semibold text-brand-primary tracking-normal">{animatedElo} ELO</span>
-              <span className={`text-caption font-semibold tracking-normal ${changeVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {changeVal >= 0 ? `+${changeVal}` : changeVal}
-              </span>
-            </div>
-          </div>
-          
-          <div className="h-px w-full bg-brand-border-opacity-5" />
-          
-          <div className="flex justify-between items-center">
-            <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">{tg('net_payout')}</span>
-            <div className="flex flex-col items-end">
-              <span className={`text-sm font-semibold tracking-normal font-mono ${netPayout > 0 ? 'text-emerald-400' : 'text-brand-muted'}`}>
-                {netPayout > 0 ? `+$${animatedPayout.toFixed(2)}` : '$0.00'} USDT
-              </span>
-              {wagerAmount > 0 && isWin && (
-                <span className="text-caption text-brand-muted normal-case tracking-normal mt-0.5">
-                  {tg('platform_rake')} (3%)
-                </span>
-              )}
-            </div>
-          </div>
-
-          {xpGained !== undefined && xpGained > 0 && (
-            <>
-              <div className="h-px w-full bg-brand-border-opacity-5" />
-              <div className="flex justify-between items-center animate-fade-in">
-                <span className="text-caption font-semibold text-brand-muted normal-case tracking-normal">
-                  {tg('xp_reward')}
-                </span>
-                <span className="text-sm font-semibold text-amber-400 tracking-normal font-mono flex items-center gap-1">
-                  +{xpGained} XP ⭐
-                </span>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Buttons / Actions */}
-        <div className="w-full flex flex-col gap-2.5 relative z-10">
-          {rematchStatus === 'waiting' ? (
-            <div className="w-full bg-brand-void py-3.5 rounded-2xl flex items-center justify-center gap-3 text-caption normal-case font-semibold tracking-normal border border-brand-border text-brand-muted animate-pulse select-none">
-              <span>{tg('pending_opponent')}</span>
-            </div>
-          ) : (
-            <motion.button type="button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => { telegramHaptic('selection'); onShowRematchChoice(); }}
-              className="ui-tap-target w-full bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-sm font-semibold cursor-pointer shadow-premium transition-colors duration-200"
-            >
-              <span>{tg('revenge_match')}</span>
-            </motion.button>
-          )}
-
-          <div className="grid grid-cols-2 gap-2.5">
-            <Link href={`/${locale}/game`} className="w-full" onClick={() => telegramHaptic('selection')}>
-              <motion.button type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="ui-tap-target w-full bg-brand-surface hover:bg-brand-elevated border border-brand-border py-3 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold cursor-pointer transition-colors"
-              >
-                <FaRedo size={10} className="text-brand-muted" />
-                <span>{tg('to_lobby')}</span>
-              </motion.button>
-            </Link>
-            
-            <motion.button type="button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => { telegramHaptic('selection'); onShareGame(); }}
-              className="ui-tap-target w-full bg-brand-surface hover:bg-brand-elevated border border-brand-border py-3 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold cursor-pointer transition-colors"
-            >
-              <FaShareAlt size={10} className="text-brand-muted" />
-              <span>{copied ? tg('copied_success') : tg('share_ledger')}</span>
-            </motion.button>
-          </div>
-        </div>
-      </motion.div>
-    </div>,
-    document.body
-  );
+/** One accessible result surface; all readouts start at their confirmed value. */
+export default function MatchOverModal({ matchResultLabel, eloChange, netPayout, wagerAmount, outcome = 'draw', rematchStatus, onShowRematchChoice, onShareGame, newElo, copied = false, xpGained }: MatchOverModalProps) {
+  const locale = useLocale(), t = useTranslations('Game');
+  const router = useRouter();
+  const leave = () => router.push(`/${locale}/game`);
+  const returned = outcome === 'draw' || outcome === 'aborted';
+  return <Modal isOpen onClose={leave} title={matchResultLabel} description={t('verification_complete')} maxWidth="sm"
+    footer={<div className="space-y-3">
+      <Button variant="primary" className="w-full" disabled={rematchStatus === 'waiting'} onClick={onShowRematchChoice}>{rematchStatus === 'waiting' ? t('pending_opponent') : t('revenge_match')}</Button>
+      <div className="grid grid-cols-2 gap-2"><Button variant="secondary" leftIcon={<FaRedo />} onClick={leave}>{t('to_lobby')}</Button><Button variant="secondary" leftIcon={<FaShareAlt />} onClick={onShareGame}>{copied ? t('copied_success') : t('share_ledger')}</Button></div>
+    </div>}>
+    <dl className="result-metrics">
+      <div><dt>{t('global_elo')}</dt><dd>{newElo === undefined ? '—' : <><CountUp value={newElo} /> ELO</>}{eloChange && <span className="t-caption text-brand-muted"> ({eloChange})</span>}</dd></div>
+      <div><dt>{returned ? t('stake_returned') : t('payout_received')}</dt><dd>{netPayout === null ? '—' : <bdi>{netPayout.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT</bdi>}</dd></div>
+      {xpGained !== undefined && xpGained > 0 && <div><dt>{t('xp_reward')}</dt><dd><bdi>+{xpGained.toLocaleString(locale)} XP</bdi></dd></div>}
+    </dl>
+    {netPayout === null && <p className="t-caption text-brand-muted" role="status">{t('settlement_pending')}</p>}
+    {wagerAmount > 0 && outcome === 'win' && <p className="t-caption text-brand-muted">{t('includes_stake')} · {t('lobby_payout_note')}</p>}
+  </Modal>;
 }

@@ -3,6 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import AdminPage from '@/app/[locale]/admin/page';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 
+jest.mock('next-intl', () => ({ useTranslations: () => (key: string) => key }));
+jest.mock('@/context/NavbarContext', () => ({ useNavbar: () => ({ pushHide: jest.fn(), popHide: jest.fn() }) }));
+
 jest.mock('@/hooks/useSWRFetch', () => ({
   useSWRFetch: jest.fn(),
 }));

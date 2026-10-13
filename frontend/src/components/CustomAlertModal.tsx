@@ -1,147 +1,28 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaChessKnight } from 'react-icons/fa';
-import { telegramHaptic } from '@/lib/telegram';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useNavbar } from '@/context/NavbarContext';
-import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
-
-interface ModalState {
-  type: 'alert' | 'confirm';
-  message: string;
-  callback?: (ok: boolean) => void;
-}
-
+import { telegramHaptic } from '@/lib/telegram';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+interface ModalState { type: 'alert' | 'confirm'; message: string; callback?: (ok: boolean) => void }
 export default function CustomAlertModal() {
   const t = useTranslations('AlertModal');
   const [modal, setModal] = useState<ModalState | null>(null);
-  const { pushHide, popHide } = useNavbar();
-
   useEffect(() => {
-    if (modal) {
-      pushHide();
-      return () => popHide();
-    }
-  }, [modal, pushHide, popHide]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleAlert = (e: Event) => {
-      const customEvent = e as CustomEvent<{ message: string; callback?: () => void }>;
-      telegramHaptic('warning');
-      setModal({
-        type: 'alert',
-        message: customEvent.detail.message,
-        callback: () => {
-          if (customEvent.detail.callback) {
-            customEvent.detail.callback();
-          }
-        }
-      });
+    const alert = (event: Event) => {
+      const { message, callback } = (event as CustomEvent<{message: string; callback?: () => void}>).detail;
+      telegramHaptic('warning'); setModal({ type: 'alert', message, callback: () => callback?.() });
     };
-
-    const handleConfirm = (e: Event) => {
-      const customEvent = e as CustomEvent<{ message: string; callback: (ok: boolean) => void }>;
-      telegramHaptic('medium');
-      setModal({
-        type: 'confirm',
-        message: customEvent.detail.message,
-        callback: customEvent.detail.callback
-      });
+    const confirm = (event: Event) => {
+      telegramHaptic('medium'); setModal({ type: 'confirm', ...(event as CustomEvent<{ message: string; callback: (ok: boolean) => void }>).detail });
     };
-
-    window.addEventListener('custom-alert', handleAlert);
-    window.addEventListener('custom-confirm', handleConfirm);
-
-    return () => {
-      window.removeEventListener('custom-alert', handleAlert);
-      window.removeEventListener('custom-confirm', handleConfirm);
-    };
+    window.addEventListener('custom-alert', alert); window.addEventListener('custom-confirm', confirm);
+    return () => { window.removeEventListener('custom-alert', alert); window.removeEventListener('custom-confirm', confirm); };
   }, []);
-
-  const handleClose = (ok: boolean) => {
-    telegramHaptic('light');
-    if (modal?.callback) {
-      modal.callback(ok);
-    }
-    setModal(null);
-  };
-  const dialogRef = useDialogAccessibility(Boolean(modal), () => handleClose(modal?.type === 'alert'));
-
-  return (
-    <AnimatePresence>
-      {modal && (
-        <motion.div 
-          key="custom-alert-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[120] flex items-center justify-center px-6 pointer-events-auto modal-backdrop"
-        >
-          {/* Backdrop layer with visual overlay & scroll-lock */}
-          <div 
-            className="absolute inset-0 bg-[var(--color-brand-overlay)] backdrop-blur-md" 
-            style={{ touchAction: 'none' }} 
-            onClick={() => modal.type === 'alert' && handleClose(true)} 
-          />
-
-          <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="custom-alert-title"
-            tabIndex={-1}
-            initial={{ opacity: 0, scale: 0.9, y: 15 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 15 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-[290px] bg-brand-surface border border-brand-border-opacity-10 rounded-[24px] p-5 shadow-premium flex flex-col items-center text-center space-y-4 transform-gpu will-change-transform"
-          >
-            {/* Top Brand Circle */}
-            <div className="w-12 h-12 rounded-[16px] bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shadow-[0_2px_8px_rgba(59,130,246,0.08)]">
-              <FaChessKnight className="text-blue-500 text-xl" />
-            </div>
-
-            <div className="space-y-1.5 w-full">
-              <h3 id="custom-alert-title" className="text-caption font-semibold text-blue-500 normal-case tracking-normal">
-                {modal.type === 'confirm' ? t('confirmation') : t('system_notice')}
-              </h3>
-              <p className="text-[12px] font-semibold text-brand-primary leading-relaxed break-words px-1">
-                {modal.message}
-              </p>
-            </div>
-
-            <div className="w-full flex gap-2.5 pt-1">
-              {modal.type === 'confirm' ? (
-                <>
-                  <button type="button"
-                    onClick={() => handleClose(false)}
-                    className="ui-tap-target flex-1 py-3 rounded-[12px] border border-brand-border-opacity-10 bg-brand-bg text-brand-muted hover:bg-brand-primary/5 hover:text-brand-muted text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer"
-                  >
-                    {t('cancel')}
-                  </button>
-                  <button type="button"
-                    onClick={() => handleClose(true)}
-                    className="ui-tap-target flex-1 py-3 rounded-[12px] bg-brand-primary text-brand-void text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer shadow-md"
-                  >
-                    {t('confirm')}
-                  </button>
-                </>
-              ) : (
-                <button type="button"
-                  onClick={() => handleClose(true)}
-                  className="ui-tap-target w-full py-3 rounded-[12px] bg-brand-primary text-brand-void text-caption font-semibold normal-case tracking-normal transition-all active:scale-95 cursor-pointer shadow-md"
-                >
-                  {t('close')}
-                </button>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  const close = (ok: boolean) => { modal?.callback?.(ok); setModal(null); };
+  return <Modal isOpen={Boolean(modal)} layer={120} onClose={() => close(modal?.type === 'alert')} title={modal?.type === 'confirm' ? t('confirmation') : t('system_notice')} maxWidth="sm"
+    footer={modal?.type === 'confirm' ? <div className="grid grid-cols-2 gap-3"><Button variant="secondary" onClick={() => close(false)}>{t('cancel')}</Button><Button variant="primary" onClick={() => close(true)}>{t('confirm')}</Button></div> : <Button variant="primary" className="w-full" onClick={() => close(true)}>{t('close')}</Button>}>
+    <p className="t-body text-brand-primary break-words whitespace-pre-wrap">{modal?.message}</p>
+  </Modal>;
 }

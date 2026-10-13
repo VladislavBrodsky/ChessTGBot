@@ -95,7 +95,7 @@ export default function ThemeShopPage() {
 
   return (
     <LayoutWrapper className="">
-    <div className="w-full app-page mx-auto relative z-10 flex flex-col">
+    <main className="w-full app-page mx-auto relative z-10 flex flex-col">
       <PageHeader icon={<FiLayers />} tone="premium" title={t('section_themes')} description={t('theme_default_desc')} backHref={`/${locale}/academy`} />
       <div className="flex items-center gap-2 text-sm"><span className="text-brand-muted">{t('xp_balance')}</span><span className="font-semibold tabular-nums">{stats ? userXp.toLocaleString(locale) : '—'} XP</span></div>
 
@@ -137,7 +137,7 @@ export default function ThemeShopPage() {
           </div>
         ))}
       </div>
-    </div>
+    </main>
 
     <ThemeConfirmSheet
       isOpen={Boolean(confirmingTheme)}

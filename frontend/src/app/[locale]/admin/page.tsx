@@ -5,6 +5,10 @@ import { Badge, BadgeRow, type BadgeVariant } from '@/components/ui/Badge';
 import { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
 import { apiFetch } from '@/lib/api';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useRouter } from 'next/navigation';
@@ -314,29 +318,8 @@ type Tab = typeof TABS[number];
 // ─── Access Denied ────────────────────────────────────────────────────────────
 
 function AccessDenied() {
-  const router = useRouter();
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-brand-primary font-sans p-4">
-      
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="glass-panel p-8 text-center app-page w-full"
-      >
-        <div className="text-6xl mb-4">🚫</div>
-        <h1 className="text-2xl font-semibold mb-2 text-rose-500 shadow-neon">Access Denied</h1>
-        <p className="text-brand-muted text-sm mb-6">
-          This panel is restricted to admin accounts only.
-        </p>
-        <button type="button"
-          onClick={() => router.back()}
-          className="ui-tap-target glass-button w-full py-3 text-sm font-bold normal-case tracking-normal"
-        >
-          Go Back
-        </button>
-      </motion.div>
-    </div>
-  );
+  const router = useRouter(), t = useTranslations('Admin'), tc = useTranslations('Common');
+  return <LayoutWrapper><main className="app-page space-y-4"><PageHeader title={t('access_denied')} description={t('restricted')} /><Button variant="secondary" onClick={() => router.back()}>{tc('back')}</Button></main></LayoutWrapper>;
 }
 
 // ─── Dashboard Tab ────────────────────────────────────────────────────────────
@@ -508,45 +491,8 @@ function UsersTab() {
       <Pagination page={page} pages={pages} onPage={setPage} />
 
       {/* User Detail Modal */}
-      <AnimatePresence>
-        {selectedUser && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[var(--color-brand-overlay)] backdrop-blur-md flex items-center justify-center z-50 p-4"
-            onClick={() => { setSelectedUser(null); setUserDetail(null); }}
-          >
-            <motion.div
-              initial={{ scale: 0.92, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              onClick={e => e.stopPropagation()}
-              className="glass-panel p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto relative"
-            >
-              {/* Modal Header */}
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center text-xl font-semibold text-brand-primary">
-                    {selectedUser.first_name[0]}
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-white">{selectedUser.first_name} {selectedUser.last_name || ''}</h2>
-                    <p className="text-caption text-brand-muted">
-                      {selectedUser.username ? `@${selectedUser.username} · ` : ''}{selectedUser.telegram_id}
-                    </p>
-                  </div>
-                </div>
-                <button type="button"
-                  onClick={() => { setSelectedUser(null); setUserDetail(null); }}
-                  className="ui-tap-target w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-brand-muted hover:text-white transition-all text-lg leading-none"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Stats Grid */}
+      <Modal isOpen={Boolean(selectedUser)} onClose={() => { setSelectedUser(null); setUserDetail(null); }} maxWidth="xl" title={selectedUser ? `${selectedUser.first_name} ${selectedUser.last_name || ''}`.trim() : undefined} description={selectedUser ? `@${selectedUser.username || '—'} · ID ${selectedUser.id}` : undefined}>
+        {selectedUser && <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {[
                   { k: 'ELO', v: selectedUser.elo, color: '#8b5cf6' },
@@ -604,10 +550,8 @@ function UsersTab() {
                   </div>
                 </div>
               )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </>}
+      </Modal>
     </div>
   );
 }
@@ -1359,26 +1303,8 @@ export default function AdminPage() {
   return (
     <LayoutWrapper className="admin-command-root w-full" bgClass="admin-command-root">
     <div className="admin-command-shell relative w-full min-h-[100dvh] overflow-hidden text-brand-primary font-sans pb-[120px]">
-      {/* Ambient background glows */}
-      <div className="absolute top-[-20%] left-[-10%] w-[80%] h-[60%] bg-amber-900/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[50%] bg-white/[0.03] blur-[100px] rounded-full pointer-events-none" />
-      
-      <div className="relative z-10 w-full max-w-[1100px] mx-auto px-4 pt-8">
-
-        {/* Header & Back Button */}
-        <div className="mb-10 flex flex-col items-center text-center">
-
-          
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex flex-col items-center">
-            
-            <h1 className="text-3xl font-semibold text-white tracking-normal mb-2 drop-shadow-[0_0_15px_rgba(255,255,255,0.18)]">
-              ADMIN COMMAND
-            </h1>
-            <p className="admin-kpi-sub text-caption normal-case tracking-normal font-semibold">
-              FinChess Arena · Restricted Access
-            </p>
-          </motion.div>
-        </div>
+      <main className="relative w-full max-w-[1100px] mx-auto px-4 pt-8">
+        <PageHeader title="Admin" description="Web3Chess · Restricted access" />
 
         {/* Tab Navigation */}
         <div className="flex gap-2 justify-start md:justify-center mb-10 overflow-x-auto scrollbar-none w-full max-w-3xl mx-auto px-4">
@@ -1443,7 +1369,7 @@ export default function AdminPage() {
             ) : null}
           </motion.div>
         </AnimatePresence>
-      </div>
+      </main>
     </div>
     </LayoutWrapper>
   );

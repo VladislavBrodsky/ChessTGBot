@@ -9,15 +9,14 @@
  * route change within one visit).
  */
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { FaGlobeAmericas, FaGlobeEurope, FaGlobeAfrica, FaGlobeAsia } from 'react-icons/fa';
 
 import { useUser } from '@/context/UserContext';
 import { apiFetch } from '@/lib/api';
 import { telegramHaptic } from '@/lib/telegram';
-import { useNavbar } from '@/context/NavbarContext';
-import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
 
 const SESSION_KEY = 'region_prompt_seen';
 
@@ -37,7 +36,6 @@ export default function RegionPrompt({ onClose }: RegionPromptProps = {}) {
   const { stats, syncStats } = useUser();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
-  const { pushHide, popHide } = useNavbar();
 
   useEffect(() => {
     if (!stats) return; // wait for the synced profile
@@ -51,14 +49,6 @@ export default function RegionPrompt({ onClose }: RegionPromptProps = {}) {
     setOpen(false);
     onClose?.();
   };
-  const dialogRef = useDialogAccessibility(open, dismiss);
-
-  useEffect(() => {
-    if (!open) return;
-    pushHide();
-    return () => popHide();
-  }, [open, popHide, pushHide]);
-
   const choose = async (regionId: string) => {
     if (saving) return;
     setSaving(regionId);
@@ -79,68 +69,10 @@ export default function RegionPrompt({ onClose }: RegionPromptProps = {}) {
     }
   };
 
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-sm p-4"
-          onClick={dismiss}
-        >
-          <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="region-prompt-title"
-            tabIndex={-1}
-            initial={{ y: 24, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 24, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 34 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-3xl border border-brand-primary/15 bg-brand-surface p-5 shadow-premium"
-          >
-            <div className="text-center mb-4">
-              <span className="text-2xl">🏟️</span>
-              <h2 id="region-prompt-title" className="text-base font-semibold normal-case tracking-normal text-brand-primary mt-2">
-                {t('title')}
-              </h2>
-              <p className="text-caption font-bold text-brand-muted mt-1.5 leading-relaxed">
-                {t('subtitle')}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2.5">
-              {REGIONS.map((r) => (
-                <button type="button"
-                  key={r.id}
-                  onClick={() => choose(r.id)}
-                  disabled={!!saving}
-                  className={`ui-tap-target flex flex-col items-center gap-2 rounded-2xl border p-4 transition-all ${
-                    saving === r.id
-                      ? 'border-emerald-400/50 bg-emerald-500/10'
-                      : 'border-brand-primary/10 bg-brand-bg-opacity-5 hover:border-brand-primary/30'
-                  } ${saving && saving !== r.id ? 'opacity-40' : ''}`}
-                >
-                  <span className="text-xl text-brand-muted">{r.icon}</span>
-                  <span className="text-caption font-semibold normal-case tracking-normal text-brand-primary text-center leading-tight">
-                    {t(`region_${r.id}`)}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <button type="button"
-              onClick={dismiss}
-              className="ui-tap-target w-full mt-4 py-2.5 text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-muted transition-colors"
-            >
-              {t('skip')}
-            </button>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  return <Modal isOpen={open} onClose={dismiss} title={t('title')} description={t('subtitle')} maxWidth="sm" layer={120}
+    footer={<Button variant="ghost" className="w-full" onClick={dismiss}>{t('skip')}</Button>}>
+    <div className="grid grid-cols-2 gap-3">{REGIONS.map(r => <Button key={r.id} variant="secondary" className="flex-col min-h-24" disabled={Boolean(saving)} isLoading={saving === r.id} onClick={() => choose(r.id)}>
+      <span className="text-xl text-brand-muted" aria-hidden="true">{r.icon}</span><span className="t-caption">{t(`region_${r.id}`)}</span>
+    </Button>)}</div>
+  </Modal>;
 }

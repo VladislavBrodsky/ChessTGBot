@@ -51,7 +51,7 @@ export default function LoginPage() {
         <Card variant="solid" className="ui-backdrop-card backdrop-blur-md grid md:grid-cols-2">
           <section className="flex min-w-0 flex-col items-center justify-center gap-6 border-b border-brand-border p-5 text-center sm:p-8 md:border-b-0 md:border-e" aria-label={t('secure_web_portal')}>
             <span className="ui-icon-tile ui-icon-tile--success" aria-hidden="true"><FaChessKnight size={26} /></span>
-            <div className="w-full space-y-3"><Badge variant="secondary">{t('secure_web_portal')}</Badge><PageHeader title={t('web3chess')} /></div>
+            <div className="w-full space-y-3"><Badge variant="secondary">{t('secure_web_portal')}</Badge><PageHeader align="center" title={t('web3chess')} /></div>
             <p className="max-w-[280px] text-sm leading-relaxed text-brand-muted">{t('premium_desc')}</p>
             {!mounted || isRedirecting ? <div role="status" className="w-full space-y-2"><Skeleton height={48} /><p className="t-caption text-brand-muted">{t('authenticating')}</p></div> :
               <TelegramLoginWidget botName={bot} buttonSize="large" cornerRadius={12} onAuthCallback={handleTelegramAuth} />}

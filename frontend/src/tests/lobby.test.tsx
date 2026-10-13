@@ -95,14 +95,22 @@ describe('BetSlip', () => {
 });
 
 describe('real activity surfaces stay honest', () => {
-  it('renders nothing when there is no measured activity', () => {
-    const { container } = render(<LiveStrip searching={0} games24h={0} t={t} />);
-    expect(container).toBeEmptyDOMElement();
+  it('preserves measured zero activity rather than hiding the account metrics', () => {
+    render(<LiveStrip searching={0} games24h={0} t={t} />);
+    expect(screen.getAllByText('0')).toHaveLength(2);
+  });
+  it('keeps unavailable activity unknown and reserves its layout while loading', () => {
+    const view = render(<LiveStrip searching={3} games24h={128} t={t} loading />);
+    expect(screen.queryByText('3')).not.toBeInTheDocument();
+    expect(screen.queryByText('0')).not.toBeInTheDocument();
+    view.rerender(<LiveStrip searching={0} games24h={0} t={t} unavailable />);
+    expect(screen.getAllByText('—')).toHaveLength(2);
   });
   it('shows only the measured numbers', () => {
     render(<LiveStrip searching={3} games24h={0} t={t} />);
     expect(screen.getByText('3')).toBeInTheDocument();
-    expect(screen.queryByText('lobby_games_24h')).not.toBeInTheDocument();
+    expect(screen.getByText('lobby_games_24h')).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
   it('renders no recent-results card when there are none', () => {
     const { container } = render(<RecentResults recent={[]} t={t} />);

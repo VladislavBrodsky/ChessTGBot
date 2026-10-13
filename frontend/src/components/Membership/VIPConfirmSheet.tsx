@@ -2,10 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaCrown, FaTimes, FaCheck } from 'react-icons/fa';
-import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
+import { Drawer } from '@/components/ui/Drawer';
+import { Button } from '@/components/ui/Button';
+import { FaCheck } from 'react-icons/fa';
 
 interface VIPConfirmSheetProps {
     isOpen: boolean;
@@ -19,118 +18,13 @@ interface VIPConfirmSheetProps {
     onCancel: () => void;
 }
 
-export default function VIPConfirmSheet({
-    isOpen,
-    title,
-    description,
-    costText,
-    perks = [],
-    loading = false,
-    onConfirm,
-    onCancel,
-}: VIPConfirmSheetProps) {
-    const t = useTranslations('Membership');
-    const tc = useTranslations('Common');
-    useNavbarHideWhileMounted(isOpen);
-
-    if (!isOpen) return null;
-
-    const content = (
-        <AnimatePresence>
-            <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
-                {/* Backdrop */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={loading ? undefined : onCancel}
-                    className="absolute inset-0 bg-brand-overlay/80 backdrop-blur-md"
-                />
-
-                {/* Sheet Container */}
-                <motion.div
-                    initial={{ y: '100%', opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: '100%', opacity: 0 }}
-                    transition={{ type: 'spring', damping: 25, stiffness: 280 }}
-                    className="relative w-full max-w-md bg-brand-surface border-t sm:border border-purple-500/30 rounded-t-[32px] sm:rounded-[32px] p-6 text-center shadow-2xl overflow-hidden pointer-events-auto pb-[max(1.5rem,var(--app-safe-bottom))]"
-                >
-                    {/* Ambient Glow */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-56 h-56 bg-[radial-gradient(circle,rgba(168,85,247,0.25)_0%,transparent_70%)] rounded-full pointer-events-none" />
-
-                    {/* Close Button */}
-                    <button aria-label={tc('close_dialog')} type="button"
-                        onClick={onCancel}
-                        disabled={loading}
-                        className="ui-tap-target absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-elevated border border-brand-border-opacity-10 flex items-center justify-center text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
-                    >
-                        <FaTimes size={14} />
-                    </button>
-
-                    {/* Icon Crown Artwork */}
-                    <div className="relative mx-auto mt-2 mb-3 w-20 h-20 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shadow-[0_0_35px_rgba(168,85,247,0.3)]">
-                        <FaCrown size={36} className="drop-shadow-[0_0_12px_rgba(168,85,247,0.7)]" />
-                    </div>
-
-                    {/* Title */}
-                    <span className="text-caption font-semibold block mb-1" style={{ color: 'var(--badge-purple-ink)' }}>
-                        {t('title')}
-                    </span>
-                    <h3 className="text-xl font-semibold normal-case text-brand-primary tracking-tight">
-                        {title}
-                    </h3>
-                    <p className="mt-1 text-sm font-medium text-brand-muted max-w-xs mx-auto">
-                        {description}
-                    </p>
-
-                    {/* Perks List */}
-                    <div className="mt-4 p-3.5 rounded-2xl bg-brand-elevated border border-brand-border-opacity-10 text-start space-y-2">
-                        {perks.map((perk, i) => (
-                            <div key={i} className="flex items-center gap-2.5 text-sm font-bold text-brand-primary">
-                                <div className="w-4 h-4 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
-                                    <FaCheck size={9} />
-                                </div>
-                                <span className="break-words">{perk}</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Pricing Summary */}
-                    <div className="mt-4 p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-between">
-                        <span className="text-caption font-semibold normal-case tracking-normal text-purple-400">
-                            {t('payment_amount')}
-                        </span>
-                        <span className="text-base font-semibold text-brand-primary">
-                            {costText}
-                        </span>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="mt-5 flex flex-col gap-2.5">
-                        <button type="button"
-                            onClick={onConfirm}
-                            disabled={loading}
-                            className="ui-tap-target w-full py-4 rounded-2xl font-semibold normal-case tracking-normal text-sm bg-purple-600 hover:bg-purple-600 text-white shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                            {loading ? (
-                                <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-                            ) : (
-                                t('confirm_upgrade')
-                            )}
-                        </button>
-
-                        <button type="button"
-                            onClick={onCancel}
-                            disabled={loading}
-                            className="ui-tap-target w-full py-3.5 rounded-2xl font-semibold normal-case tracking-normal text-caption text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
-                        >
-                            {tc('cancel')}
-                        </button>
-                    </div>
-                </motion.div>
-            </div>
-        </AnimatePresence>
-    );
-
-    return typeof document !== 'undefined' ? createPortal(content, document.body) : null;
+export default function VIPConfirmSheet({ isOpen, title, description, costText, balanceText, perks = [], loading = false, onConfirm, onCancel }: VIPConfirmSheetProps) {
+  const t = useTranslations('Membership'), tc = useTranslations('Common');
+  const cancel = () => { if (!loading) onCancel(); };
+  return <Drawer isOpen={isOpen} onClose={cancel} title={title} description={description} layer={110}
+    footer={<div className="space-y-2"><Button variant="primary" className="w-full" onClick={onConfirm} disabled={loading} isLoading={loading}>{t('confirm_upgrade')}</Button><Button variant="secondary" className="w-full" onClick={cancel} disabled={loading}>{tc('cancel')}</Button></div>}>
+    {perks.length > 0 && <ul className="space-y-3">{perks.map((perk, i) => <li key={i} className="flex items-start gap-3 t-body"><FaCheck className="text-brand-success shrink-0 mt-1" aria-hidden="true" /><span>{perk}</span></li>)}</ul>}
+    <dl className="result-metrics"><div><dt>{t('payment_amount')}</dt><dd><bdi>{costText}</bdi></dd></div></dl>
+    {balanceText && <p className="t-caption text-brand-muted">{balanceText}</p>}
+  </Drawer>;
 }

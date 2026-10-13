@@ -3,7 +3,8 @@
 import { Badge, BadgeRow } from '@/components/ui/Badge';
  
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { Modal } from "@/components/ui/Modal";
+import { useAnimationsEnabled } from "@/hooks/useAnimationsEnabled";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from "@/components/LayoutWrapper";
@@ -56,12 +57,7 @@ const IconWager = () => (
     <path d="M12 18V6"/>
   </svg>
 );
-const IconCrown = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
-    <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/>
-    <path d="M3 20h18v2H3z"/>
-  </svg>
-);
+
 
 import VIPConfirmSheet from "@/components/Membership/VIPConfirmSheet";
 import { FaCrown } from 'react-icons/fa';
@@ -73,6 +69,7 @@ export default function MembershipPage() {
   const tc = useTranslations('Common');
 
   useNavbarHideWhileMounted();
+  const animations = useAnimationsEnabled();
 
   const FEATURES = [
     { icon: <IconBoost />,    title: tm('premium_boost'),   desc: tm('premium_boost_desc')   },
@@ -495,88 +492,15 @@ export default function MembershipPage() {
         </p>
       </main>
 
-      {/* ── Success modal (portaled: fixed overlays must not scope to a
-             transformed ancestor — the leaderboard-modal stacking trap) ── */}
-      {typeof document !== 'undefined' && createPortal(
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-md px-4"
-          >
-            {showConfetti && typeof window !== 'undefined' && (
-              <Confetti
-                width={windowDimensions.width} height={windowDimensions.height}
-                recycle={false} numberOfPieces={300} gravity={0.2}
-                onConfettiComplete={() => setShowConfetti(false)}
-              />
-            )}
-            <motion.div
-              initial={{ scale: 0.92, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.92, y: 20, opacity: 0 }}
-              className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
-            >
-              <div className="w-20 h-20 rounded-[24px] bg-purple-600 text-white flex items-center justify-center shadow-lg">
-                <IconCrown />
-              </div>
-              <div className="space-y-1.5">
-                <h2 className="text-xl font-semibold text-brand-primary">{stripEmojis(tm('success_title'))}</h2>
-                <p className="text-sm font-medium" style={{ color: 'var(--badge-purple-ink)' }}>{stripEmojis(tm('success_subtitle'))}</p>
-              </div>
-              <p className="text-sm text-brand-muted px-2 leading-relaxed">{stripEmojis(tm('success_desc'))}</p>
-              <Button variant="premium" size="lg" className="w-full" enableHaptic={false}
-                onClick={() => { telegramHaptic('light'); setShowSuccess(false); }}>
-                {stripEmojis(tm('success_btn'))}
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>, document.body)}
-
-      {/* ── Insufficient balance modal (portaled, same reason) ───── */}
-      {typeof document !== 'undefined' && createPortal(
-      <AnimatePresence>
-        {showInsufficient && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-brand-overlay)] backdrop-blur-md px-4"
-          >
-            <motion.div
-              initial={{ scale: 0.92, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.92, y: 20, opacity: 0 }}
-              className="w-full max-w-sm bg-brand-surface border border-brand-border-opacity-10 p-8 rounded-[32px] text-center shadow-2xl flex flex-col items-center space-y-5"
-            >
-              <div className="ui-icon-tile ui-icon-tile--premium w-20 h-20 rounded-[24px]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8">
-                  <path d="M6 3h12l4 6-10 12L2 9z"/>
-                  <path d="M2 9h20M12 3L8 9l4 12 4-12-4-6z"/>
-                </svg>
-              </div>
-              <div className="space-y-1.5">
-                <h2 className="text-lg font-semibold text-brand-primary">{stripEmojis(tm('insufficient_title'))}</h2>
-                <p className="text-sm text-brand-muted px-2 leading-relaxed">
-                  {tm('insufficient_desc', {
-                    cost: (cost / 100).toFixed(2),
-                    balance: (walletBalance / 100).toFixed(2)
-                  })}
-                </p>
-              </div>
-              <div className="w-full flex flex-col space-y-2.5">
-                <Button variant="premium" size="lg" className="w-full" enableHaptic={false}
-                  onClick={() => { telegramHaptic('light'); setShowInsufficient(false); setShowDepositModal(true); }}>
-                  {tm('insufficient_topup_btn')}
-                </Button>
-                <Button variant="secondary" className="w-full" enableHaptic={false}
-                  onClick={() => { telegramHaptic('light'); setShowInsufficient(false); }}>
-                  {tm('insufficient_cancel_btn')}
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>, document.body)}
+      <Modal isOpen={showSuccess} onClose={() => setShowSuccess(false)} maxWidth="sm" title={stripEmojis(tm('success_title'))} description={stripEmojis(tm('success_subtitle'))}
+        footer={<Button variant="primary" className="w-full" onClick={() => setShowSuccess(false)}>{stripEmojis(tm('success_btn'))}</Button>}>
+        {showConfetti && animations && <div className="fixed inset-0 pointer-events-none"><Confetti width={windowDimensions.width} height={windowDimensions.height} recycle={false} numberOfPieces={56} gravity={0.2} onConfettiComplete={() => setShowConfetti(false)} /></div>}
+        <p className="t-body text-brand-muted">{stripEmojis(tm('success_desc'))}</p>
+      </Modal>
+      <Modal isOpen={showInsufficient} onClose={() => setShowInsufficient(false)} maxWidth="sm" title={stripEmojis(tm('insufficient_title'))}
+        footer={<div className="space-y-2"><Button variant="primary" className="w-full" onClick={() => { setShowInsufficient(false); setShowDepositModal(true); }}>{tm('insufficient_topup_btn')}</Button><Button variant="secondary" className="w-full" onClick={() => setShowInsufficient(false)}>{tm('insufficient_cancel_btn')}</Button></div>}>
+        <p className="t-body text-brand-muted">{tm('insufficient_desc', { cost: (cost / 100).toFixed(2), balance: (walletBalance / 100).toFixed(2) })}</p>
+      </Modal>
 
       {/* ── Deposit modal (portals itself internally) ────────────── */}
       <AnimatePresence>

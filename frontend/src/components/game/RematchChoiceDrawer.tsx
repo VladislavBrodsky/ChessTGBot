@@ -1,97 +1,17 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { useTranslations } from 'next-intl';
+import { Drawer } from '@/components/ui/Drawer';
+import { Button } from '@/components/ui/Button';
 
-import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
-
-interface RematchChoiceDrawerProps {
-  wagerAmount: number;
-  onClose: () => void;
-  onSendRematchOffer: (doubleStakes: boolean) => void;
-}
-
-export default function RematchChoiceDrawer({
-  wagerAmount,
-  onClose,
-  onSendRematchOffer,
-}: RematchChoiceDrawerProps) {
-  const tg = useTranslations('Game');
-  const [canClose, setCanClose] = useState<boolean>(false);
-
-  // Cooldown to prevent double-clicks/mouseup race conditions on desktop from closing drawer instantly on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanClose(true);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // MatchOverModal is portalled to document.body. Keeping this fixed drawer
-  // inside the animated route wrapper traps it in that wrapper's stacking
-  // context, behind the game-over modal, regardless of its local z-index.
-  if (typeof document === 'undefined') return null;
-
-  return createPortal(
-    <div className="bottom-drawer-backdrop z-[110]">
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }} 
-        onClick={() => { if (canClose) onClose(); }}
-        className="absolute inset-0 bg-[rgba(0,0,0,0.5)]" style={{ touchAction: 'none' }}
-      />
-      <motion.div 
-        initial={{ y: "100%" }} 
-        animate={{ y: 0 }} 
-        exit={{ y: "100%" }} 
-        transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="bottom-drawer-sheet relative z-20"
-      >
-        <div className="bottom-drawer-handle" />
-        
-        <div className="flex flex-col items-center text-center mt-2">
-          <h2 className="text-xl font-semibold normal-case tracking-normal mb-1 text-brand-primary">
-            {tg('revenge_match')}
-          </h2>
-          <p className="text-caption font-bold text-brand-muted normal-case tracking-normal mb-6">
-            {tg('invite_revenge_desc')}
-          </p>
-        </div>
-        
-        <div className="w-full flex flex-col gap-3">
-          <motion.button type="button"
-            whileTap={{ scale: 0.98 }}
-            onClick={() => onSendRematchOffer(false)}
-            className="ui-tap-target w-full bg-brand-primary text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm"
-          >
-            <span className="text-sm normal-case font-semibold tracking-normal">{tg('same_stakes')}</span>
-            <span className="text-caption font-bold opacity-80">${((wagerAmount || 0) / 100).toFixed(2)} USDT</span>
-          </motion.button>
-          
-          <motion.button type="button"
-            whileTap={{ scale: 0.98 }}
-            onClick={() => onSendRematchOffer(true)}
-            className="ui-tap-target w-full bg-gradient-to-r from-amber-500 to-orange-500 text-brand-void py-4 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer shadow-sm relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)] -translate-x-full animate-shimmer" />
-            <span className="text-sm normal-case font-semibold tracking-normal flex items-center gap-1">
-              {tg('double_stakes_choice')}
-            </span>
-            <span className="text-caption font-bold opacity-90">${(((wagerAmount || 0) * 2) / 100).toFixed(2)} USDT</span>
-          </motion.button>
-
-          <motion.button type="button"
-            whileTap={{ scale: 0.98 }}
-            onClick={onClose}
-            className="ui-tap-target w-full glass-panel py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-bold tracking-normal cursor-pointer shadow-sm"
-          >
-            <span>{tg('cancel')}</span>
-          </motion.button>
-        </div>
-      </motion.div>
-    </div>,
-    document.body,
-  );
+interface RematchChoiceDrawerProps { wagerAmount: number; onClose: () => void; onSendRematchOffer: (doubleStakes: boolean) => void }
+export default function RematchChoiceDrawer({ wagerAmount, onClose, onSendRematchOffer }: RematchChoiceDrawerProps) {
+  const t = useTranslations('Game');
+  return <Drawer isOpen layer={110} onClose={onClose} title={t('revenge_match')} description={t('rematch_setup_description')}>
+    <div className="space-y-3">
+      <Button variant="primary" className="w-full flex-col" onClick={() => onSendRematchOffer(false)}><span>{t('same_stakes')}</span><bdi className="t-caption">{(wagerAmount / 100).toFixed(2)} USDT</bdi></Button>
+      <Button variant="secondary" className="w-full flex-col" onClick={() => onSendRematchOffer(true)}><span>{t('double_stakes_choice')}</span><bdi className="t-caption">{(wagerAmount * 2 / 100).toFixed(2)} USDT</bdi></Button>
+      <Button variant="ghost" className="w-full" onClick={onClose}>{t('cancel')}</Button>
+    </div>
+  </Drawer>;
 }

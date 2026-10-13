@@ -492,7 +492,11 @@
     "level_unlocked": "¡Nivel {level} desbloqueado con éxito!",
     "xp_upgrade_alert": "Mejorar a Premium requiere 5,000 XP. Actualmente tienes {xp} XP.",
     "upgrade_success": "¡Mejora exitosa! Ahora eres miembro Premium.",
-    "subscription_success": "¡Suscripción exitosa! Ahora eres miembro Premium."
+    "subscription_success": "¡Suscripción exitosa! Ahora eres miembro Premium.",
+    "tier_label": "Nivel {tier}",
+    "mastery_tiers": "Niveles de dominio",
+    "share_trophy": "Compartir logro",
+    "keep_playing": "Seguir jugando"
   },
   "Game": {
     "review_title": "Revisión de partida",
@@ -553,12 +557,12 @@
     "learn_more": "[Saber más]",
     "platform_commission": "Comisión de la plataforma",
     "sustain_ecosystem": "Cómo las tarifas de emparejamiento sostienen el ecosistema",
-    "rake_desc1": "FinChess cobra una comisión fija del 3% sobre las recompensas del juego. Esta comisión solo se deduce de la parte del ganador.",
-    "rake_desc2": "Por ejemplo, si apuestas $10.00, el bote total es $20.00. El ganador recibe $19.40 netos, mientras que $0.60 (3%) se reserva como comisión de la plataforma.",
+    "rake_desc1": "Las partidas con apuesta destinan el 3% del pozo a la plataforma y el 2% a referidos. El ganador recibe el 95% restante, incluida su apuesta.",
+    "rake_desc2": "Con $10 por jugador, el pozo de $20 paga $19 al ganador: $10 de apuesta devuelta y $9 de ganancia neta.",
     "where_rake_goes": "¿Adónde va la comisión?",
-    "rake_li1": "Infraestructura del bot y servidores de emparejamiento de alta velocidad.",
-    "rake_li2": "Fondos de liquidez para garantizar pagos instantáneos.",
-    "rake_li3": "Recompensas del ecosistema (recompensas de XP, comisiones por referidos).",
+    "rake_li1": "3% de comisión de plataforma.",
+    "rake_li2": "2% destinado a referidos.",
+    "rake_li3": "El pago abonado incluye tu apuesta original.",
     "got_it": "Entendido",
     "double_stakes_choice": "🔥 Doblar apuestas (2x)",
     "double_stakes_active": "🔥 Apuesta doble activa",
@@ -710,7 +714,12 @@
     "board_bb": "Alfil negro",
     "board_br": "Torre negra",
     "board_bq": "Dama negra",
-    "board_bk": "Rey negro"
+    "board_bk": "Rey negro",
+    "lobby_setup_description": "Elige tu apuesta y el ritmo de juego.",
+    "stake_returned": "Apuesta devuelta",
+    "payout_received": "Pago recibido",
+    "settlement_pending": "Se está confirmando la liquidación.",
+    "rematch_setup_description": "Elige la apuesta de tu próxima partida."
   },
   "Wallet": {
     "wager_stake": "Apuesta",
@@ -1025,7 +1034,8 @@
     "finished": "Terminada",
     "waiting_hint": "¡Dentro! Te emparejamos automáticamente: victoria 3 pts, tablas 1. Juega hasta que acabe el tiempo.",
     "pts": "pts",
-    "you": "Tú"
+    "you": "Tú",
+    "status_unavailable": "Estado de la Arena no disponible"
   },
   "Onboarding": {
     "skip": "Omitir",
@@ -1254,5 +1264,9 @@
     "search_hint": "Tu apuesta queda reservada durante la búsqueda y se devuelve al cancelar.",
     "queue_error": "No se pudo buscar rival. Tu saldo se ha actualizado. Inténtalo de nuevo.",
     "connection_error": "Conectando con el servidor. La búsqueda se recupera al reconectar."
+  },
+  "Admin": {
+    "access_denied": "Acceso denegado",
+    "restricted": "Este panel es exclusivo para administradores."
   }
 }

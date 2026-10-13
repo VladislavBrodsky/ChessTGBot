@@ -18,6 +18,14 @@ export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
       onClose={onClose}
       title={tg('platform_commission')}
       description={tg('sustain_ecosystem')}
+      footer={<Button
+        variant="primary"
+        size="lg"
+        onClick={onClose}
+        className="w-full normal-case font-semibold tracking-normal"
+      >
+        {tg('got_it')}
+      </Button>}
     >
       <div className="w-full bg-brand-elevated rounded-2xl p-5 border border-brand-border space-y-3 text-sm font-medium text-brand-muted leading-relaxed">
         <p>{tg('rake_desc1')}</p>
@@ -33,14 +41,7 @@ export default function RakeInfoDrawer({ onClose }: RakeInfoDrawerProps) {
         </ul>
       </div>
 
-      <Button
-        variant="primary"
-        size="lg"
-        onClick={onClose}
-        className="w-full normal-case font-semibold tracking-normal"
-      >
-        {tg('got_it')}
-      </Button>
+
     </Drawer>
   );
 }

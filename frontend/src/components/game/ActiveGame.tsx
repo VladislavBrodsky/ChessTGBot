@@ -1,3 +1,4 @@
+import { gameResultSummary } from '@/lib/gameResult';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -657,75 +658,17 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     return () => { showNavbar(); };
   }, [hideNavbar, showNavbar]);
 
-  // Match Over Logic Labels
-  let matchResultLabel = tg('protocol_draw');
-  let resultColor = "text-brand-muted"; 
-  let eloChange = "+0";
-  let netPayout = gameState?.wager_amount || 0;
-  
-  if (isGameOver && gameState) {
-    const isWinner = gameState.winner_id === userId;
-    const isDraw = !gameState.winner_id;
-    const isAborted = gameState.result_type === 'aborted';
-    const isTimeout = gameState.result_type === 'timeout';
-    
-    if (isAborted) {
-      matchResultLabel = tg('match_aborted');
-      resultColor = "text-brand-muted";
-      eloChange = "+0";
-      netPayout = gameState.wager_amount;
-    } else if (isDraw) {
-      matchResultLabel = tg('protocol_draw');
-      resultColor = "text-brand-muted";
-      
-      if (gameState.white_player_id === userId) {
-        const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
-        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
-      } else {
-        const diff = (gameState.black_elo_after ?? 1000) - (gameState.black_elo_before ?? 1000);
-        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
-      }
-      netPayout = gameState.wager_amount;
-    } else if (isWinner) {
-      if (isTimeout) {
-        matchResultLabel = tg('won_on_time');
-      } else {
-        matchResultLabel = tg('victory_secured');
-      }
-      resultColor = "text-brand-primary font-semibold";
-      
-      if (gameState.white_player_id === userId) {
-        const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
-        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
-      } else {
-        const diff = (gameState.black_elo_after ?? 1000) - (gameState.black_elo_before ?? 1000);
-        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
-      }
-      netPayout = (gameState.payout_amount !== undefined && gameState.payout_amount !== null)
-        ? gameState.payout_amount / 100
-        : (gameState.wager_amount * 2) * 0.95;
-    } else {
-      if (isTimeout) {
-        matchResultLabel = tg('lost_on_time');
-      } else {
-        matchResultLabel = tg('tactical_defeat');
-      }
-      resultColor = "text-brand-muted";
-      
-      if (gameState.white_player_id === userId) {
-        const diff = (gameState.white_elo_after ?? 1000) - (gameState.white_elo_before ?? 1000);
-        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
-      } else {
-        const diff = (gameState.black_elo_after ?? 1000) - (gameState.black_elo_before ?? 1000);
-        eloChange = diff >= 0 ? `+${diff}` : `${diff}`;
-      }
-      netPayout = 0;
-    }
-  }
-
-  const myNewElo = gameState 
-    ? (gameState.white_player_id === userId ? gameState.white_elo_after : gameState.black_elo_after)
-    : (userStats?.elo || 1000);
+  // Settlement values and styling use the structured server outcome in every locale.
+  const summary = gameState && userId !== null ? gameResultSummary(gameState, userId) : null;
+  const outcome = summary?.outcome ?? 'draw';
+  const matchResultLabel = outcome === 'aborted' ? tg('match_aborted') : outcome === 'draw' ? tg('protocol_draw')
+    : outcome === 'win' ? tg(gameState?.result_type === 'timeout' ? 'won_on_time' : 'victory_secured')
+    : tg(gameState?.result_type === 'timeout' ? 'lost_on_time' : 'tactical_defeat');
+  const resultColor = outcome === 'win' ? 'text-brand-success' : outcome === 'loss' ? 'text-brand-danger' : 'text-brand-muted';
+  const change = summary?.eloChange;
+  const eloChange = change === undefined ? undefined : `${change >= 0 ? '+' : ''}${change}`;
+  const netPayout = summary?.payout ?? null;
+  const myNewElo = summary?.newElo;
 
   if (!gameState) {
     return (
@@ -922,6 +865,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       <AnimatePresence>
         {isGameOver && (
           <MatchOverModal
+            outcome={outcome}
             matchResultLabel={matchResultLabel}
             resultColor={resultColor}
             eloChange={eloChange}

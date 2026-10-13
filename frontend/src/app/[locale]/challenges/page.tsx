@@ -18,7 +18,7 @@ import { useUser } from "@/context/UserContext";
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { SkeletonList } from '@/components/ui/Skeleton';
+import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getXPProgress } from '@/lib/xpProgress';
 import { FiTarget } from 'react-icons/fi';
@@ -183,19 +183,19 @@ export default function ChallengesPage() {
           >
             <div className="relative z-10 flex flex-col gap-3 p-4 text-start">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-border bg-brand-elevated text-lg font-semibold tabular-nums">{userLevel}</div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-border bg-brand-elevated text-lg font-semibold tabular-nums">{stats ? userLevel : <Skeleton textRole="numeric" width="2ch" />}</div>
                 <div className="min-w-0 flex-1">
                   <h2 id="level-heading" className="t-title-3 text-brand-primary header-balanced">{t('grandmaster_rising')}</h2>
-                  <p className="text-caption font-medium text-brand-muted">{t('next_level', { xp: nextLevelXp })}</p>
+                  <p className="text-caption font-medium text-brand-muted">{stats ? t('next_level', { xp: nextLevelXp }) : <Skeleton textRole="caption" width="16ch" />}</p>
                 </div>
-                <Badge variant="secondary" className="shrink-0">{`${Math.round(progressPercentage)}%`}</Badge>
+                <Badge variant="secondary" className="shrink-0">{stats ? `${Math.round(progressPercentage)}%` : '—'}</Badge>
               </div>
-              <XPProgressBar
+              {stats ? <XPProgressBar
                 xp={userXp}
                 level={stats?.level ?? 1}
                 levelLabel={ti('level')}
                 className="w-full"
-              />
+              /> : <div className="space-y-2"><Skeleton textRole="caption" width="35%" /><Skeleton variant="rectangular" height={8} width="100%" /></div>}
             </div>
           </motion.div>
         </section>

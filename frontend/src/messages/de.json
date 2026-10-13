@@ -492,7 +492,11 @@
     "level_unlocked": "Level {level} erfolgreich freigeschaltet!",
     "xp_upgrade_alert": "Das Upgrade auf Premium erfordert 5.000 XP. Du hast derzeit {xp} XP.",
     "upgrade_success": "Upgrade erfolgreich! Du bist jetzt Premium-Mitglied.",
-    "subscription_success": "Abonnement erfolgreich! Du bist jetzt Premium-Mitglied."
+    "subscription_success": "Abonnement erfolgreich! Du bist jetzt Premium-Mitglied.",
+    "tier_label": "Stufe {tier}",
+    "mastery_tiers": "Meisterschaftsstufen",
+    "share_trophy": "Erfolg teilen",
+    "keep_playing": "Weiterspielen"
   },
   "Game": {
     "review_title": "Partieanalyse",
@@ -553,12 +557,12 @@
     "learn_more": "[Mehr erfahren]",
     "platform_commission": "Plattform-Provision (Rake)",
     "sustain_ecosystem": "Wie Matchmaking-Gebühren das Ökosystem sichern",
-    "rake_desc1": "FinChess berechnet eine pauschale Provision (Rake) von 3% auf Spielbelohnungen. Diese Gebühr wird nur vom Gewinn des Siegers abgezogen.",
-    "rake_desc2": "Wenn Sie beispielsweise $10.00 setzen, beträgt der Gesamtpot $20.00. Der Gewinner erhält netto $19.40, während $0.60 (3%) als Plattformgebühr einbehalten werden.",
+    "rake_desc1": "Partien mit Einsatz teilen 3 % des Pots der Plattform und 2 % den Empfehlungen zu. Der Gewinner erhält die übrigen 95 % einschließlich seines Einsatzes.",
+    "rake_desc2": "Bei 10 $ Einsatz pro Spieler zahlt der 20-$-Pot dem Gewinner 19 $: 10 $ zurückgezahlter Einsatz und 9 $ Nettogewinn.",
     "where_rake_goes": "Wohin geht die Gebühr?",
-    "rake_li1": "Bot-Infrastruktur & Hochgeschwindigkeits-Server für die Spielpaarung.",
-    "rake_li2": "Liquiditätspools zur Gewährleistung sofortiger Auszahlungen.",
-    "rake_li3": "Ökosystem-Belohnungen (XP-Belohnungen, Empfehlungs-Cashback).",
+    "rake_li1": "3 % Plattformgebühr.",
+    "rake_li2": "2 % für Empfehlungen.",
+    "rake_li3": "Die Gutschrift enthält deinen ursprünglichen Einsatz.",
     "got_it": "Verstanden",
     "double_stakes_choice": "🔥 Doppelte Einsätze (2x)",
     "double_stakes_active": "🔥 Doppelte Einsätze aktiv",
@@ -710,7 +714,12 @@
     "board_bb": "Schwarzer Läufer",
     "board_br": "Schwarzer Turm",
     "board_bq": "Schwarze Dame",
-    "board_bk": "Schwarzer König"
+    "board_bk": "Schwarzer König",
+    "lobby_setup_description": "Wähle deinen Einsatz und die Bedenkzeit.",
+    "stake_returned": "Einsatz erstattet",
+    "payout_received": "Auszahlung erhalten",
+    "settlement_pending": "Die Abrechnung wird bestätigt.",
+    "rematch_setup_description": "Wähle den Einsatz für deine nächste Partie."
   },
   "Wallet": {
     "wager_stake": "Einsatz",
@@ -1025,7 +1034,8 @@
     "finished": "Beendet",
     "waiting_hint": "Du bist dabei! Wir paaren dich automatisch — Sieg 3 Punkte, Remis 1. Spiele bis die Zeit abläuft.",
     "pts": "Pkt",
-    "you": "Du"
+    "you": "Du",
+    "status_unavailable": "Arena-Status nicht verfügbar"
   },
   "Onboarding": {
     "skip": "Überspringen",
@@ -1254,5 +1264,9 @@
     "search_hint": "Dein Einsatz wird während der Suche reserviert und beim Abbruch zurückgegeben.",
     "queue_error": "Die Suche konnte nicht starten. Dein Guthaben wurde aktualisiert. Versuche es erneut.",
     "connection_error": "Verbindung zum Spielserver wird hergestellt. Die Suche wird danach wiederhergestellt."
+  },
+  "Admin": {
+    "access_denied": "Zugriff verweigert",
+    "restricted": "Dieser Bereich ist Administratoren vorbehalten."
   }
 }

@@ -492,7 +492,11 @@
     "level_unlocked": "Niveau {level} débloqué avec succès !",
     "xp_upgrade_alert": "Passer à Premium nécessite 5 000 XP. Vous avez actuellement {xp} XP.",
     "upgrade_success": "Amélioration réussie ! Vous êtes désormais membre Premium.",
-    "subscription_success": "Abonnement réussi ! Vous êtes désormais membre Premium."
+    "subscription_success": "Abonnement réussi ! Vous êtes désormais membre Premium.",
+    "tier_label": "Palier {tier}",
+    "mastery_tiers": "Paliers de maîtrise",
+    "share_trophy": "Partager la réussite",
+    "keep_playing": "Continuer à jouer"
   },
   "Game": {
     "review_title": "Analyse de partie",
@@ -553,12 +557,12 @@
     "learn_more": "[En savoir plus]",
     "platform_commission": "Commission de la plateforme (Rake)",
     "sustain_ecosystem": "Comment les frais de matchmaking soutiennent l'écosystème",
-    "rake_desc1": "FinChess prélève une commission fixe de 3% sur les récompenses du jeu. Cette commission est uniquement déduite de la part du gagnant.",
-    "rake_desc2": "Par exemple, si vous misez $10.00, le pot total est de $20.00. Le gagnant reçoit $19.40 net, tandis que $0.60 (3%) est réservé pour la commission de la plateforme.",
+    "rake_desc1": "Les parties avec mise attribuent 3 % du pot à la plateforme et 2 % aux parrainages. Le gagnant reçoit les 95 % restants, mise comprise.",
+    "rake_desc2": "Avec 10 $ par joueur, le pot de 20 $ verse 19 $ au gagnant : 10 $ de mise restituée et 9 $ de gain net.",
     "where_rake_goes": "Où va la commission ?",
-    "rake_li1": "Infrastructure du bot et serveurs de matchmaking à grande vitesse.",
-    "rake_li2": "Pools de liquidité pour assurer des paiements instantanés.",
-    "rake_li3": "Récompenses de l'écosystème (récompenses XP, commissions de parrainage).",
+    "rake_li1": "3 % de frais de plateforme.",
+    "rake_li2": "2 % attribués aux parrainages.",
+    "rake_li3": "Le montant crédité inclut votre mise initiale.",
     "got_it": "Compris",
     "double_stakes_choice": "🔥 Doubler la mise (2x)",
     "double_stakes_active": "🔥 Mises doubles actives",
@@ -710,7 +714,12 @@
     "board_bb": "Fou noir",
     "board_br": "Tour noire",
     "board_bq": "Dame noire",
-    "board_bk": "Roi noir"
+    "board_bk": "Roi noir",
+    "lobby_setup_description": "Choisissez votre mise et la cadence.",
+    "stake_returned": "Mise remboursée",
+    "payout_received": "Paiement reçu",
+    "settlement_pending": "Le règlement est en cours de confirmation.",
+    "rematch_setup_description": "Choisissez la mise de votre prochaine partie."
   },
   "Wallet": {
     "wager_stake": "Mise",
@@ -1025,7 +1034,8 @@
     "finished": "Terminée",
     "waiting_hint": "Vous y êtes ! Appariement automatique — victoire 3 pts, nulle 1. Jouez jusqu'à la fin du chrono.",
     "pts": "pts",
-    "you": "Vous"
+    "you": "Vous",
+    "status_unavailable": "État de l’Arène indisponible"
   },
   "Onboarding": {
     "skip": "Passer",
@@ -1254,5 +1264,9 @@
     "search_hint": "Votre mise est réservée pendant la recherche et restituée à son annulation.",
     "queue_error": "Impossible de lancer la recherche. Votre solde a été actualisé. Réessayez.",
     "connection_error": "Connexion au serveur. Votre recherche sera rétablie à la reconnexion."
+  },
+  "Admin": {
+    "access_denied": "Accès refusé",
+    "restricted": "Ce panneau est réservé aux administrateurs."
   }
 }

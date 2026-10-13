@@ -3,7 +3,8 @@
 import { Badge } from '@/components/ui/Badge';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Modal } from '@/components/ui/Modal';
+import { useTranslations } from 'next-intl';
 import { FaShieldAlt, FaStar, FaLock, FaShareAlt, FaCheck } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 import { Button } from '@/components/ui/Button';
@@ -37,17 +38,14 @@ export default function BadgeShowcaseModal({
   onClose,
   badge,
 }: BadgeShowcaseModalProps) {
+  const t = useTranslations('Academy'), tc = useTranslations('Common');
   if (!isOpen || !badge) return null;
 
-  const isUnlocked = badge.unlocked ?? true;
-  const xp = badge.xp_reward ?? 100;
-  const currentTier = badge.currentTier ?? (isUnlocked ? 2 : 1);
+  const isUnlocked = badge.unlocked ?? false;
+  const xp = badge.xp_reward ?? 0;
+  const currentTier = badge.currentTier;
 
-  const tiers: BadgeTierData[] = badge.tiers || [
-    { tier: 1, label: 'Bronze', requirement: '10 Completed Games', isUnlocked: true, xpReward: 50 },
-    { tier: 2, label: 'Silver', requirement: '50 Completed Games', isUnlocked: isUnlocked, xpReward: 150 },
-    { tier: 3, label: 'Obsidian Gold', requirement: '200 Completed Games', isUnlocked: false, xpReward: 500 },
-  ];
+  const tiers: BadgeTierData[] = badge.tiers ?? [];
 
   const handleShare = () => {
     telegramHaptic('heavy');
@@ -60,43 +58,12 @@ export default function BadgeShowcaseModal({
     onClose();
   };
 
-  return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={handleModalClose}
-          className="absolute inset-0 bg-black/80 backdrop-blur-md"
-        />
-
-        {/* Modal Window */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 320 }}
-          className="relative w-full max-w-sm rounded-3xl border border-brand-border-opacity-10 bg-brand-surface p-6 shadow-2xl overflow-hidden text-center z-10 space-y-5"
-        >
-          {/* Ambient Glow */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-[radial-gradient(circle,rgba(245,158,11,0.25)_0%,transparent_70%)] rounded-full pointer-events-none" />
-          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-48 h-48 bg-[radial-gradient(circle,rgba(16,185,129,0.2)_0%,transparent_70%)] rounded-full pointer-events-none" />
-
-          {/* Close button */}
-          <button type="button"
-            onClick={handleModalClose}
-            aria-label="Close"
-            className="ui-tap-target absolute top-4 right-4 w-8 h-8 rounded-full bg-brand-void/50 border border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary flex items-center justify-center transition-colors cursor-pointer text-sm"
-          >
-            ✕
-          </button>
-
+  return <Modal isOpen onClose={handleModalClose} title={badge.title} description={badge.description} maxWidth="sm">
+    <div className="space-y-4 text-center">
           {/* 3D Shield & Icon Showcase */}
           <div className="relative mx-auto w-28 h-28 flex items-center justify-center mt-2">
             {/* Outer ring */}
-            <div className="absolute inset-0 rounded-full border-2 border-dashed border-amber-400/40 animate-[spin_20s_linear_infinite]" />
+
             <div className="absolute inset-2 rounded-full bg-gradient-to-br from-amber-500/20 via-brand-surface to-brand-void border border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.25)] flex items-center justify-center">
               <div className="text-4xl text-amber-400 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]">
                 {isUnlocked ? <FaShieldAlt /> : <FaLock className="text-brand-muted text-3xl" />}
@@ -104,23 +71,15 @@ export default function BadgeShowcaseModal({
             </div>
 
           </div>
-          <div className="flex justify-center"><Badge variant="secondary" icon={<FaStar />}>TIER {currentTier}</Badge></div>
+          {currentTier !== undefined && <div className="flex justify-center"><Badge variant="secondary" icon={<FaStar />}>{t('tier_label', { tier: currentTier })}</Badge></div>}
 
-          {/* Badge Titles */}
-          <div className="space-y-1 relative z-10">
-            <h3 className="text-xl font-semibold normal-case text-brand-primary tracking-tight header-balanced">
-              {badge.title}
-            </h3>
-            <p className="text-sm font-medium text-brand-muted leading-relaxed text-pretty max-w-[260px] mx-auto">
-              {badge.description}
-            </p>
-          </div>
-
+          {tiers.length === 0 && xp > 0 && <p className="t-numeric-lg text-brand-gold">+{xp} XP</p>}
           {/* Tier Progress Steps */}
+          {tiers.length > 0 && <>
           <div className="w-full rounded-2xl border border-brand-border-opacity-10 bg-brand-void/50 p-3 space-y-2.5 text-left">
             <div className="flex items-center justify-between text-caption font-semibold normal-case tracking-normal text-brand-muted">
-              <span>Mastery Tiers</span>
-              <span className="text-amber-400">+{xp} Total XP</span>
+              <span>{t('mastery_tiers')}</span>
+              <span className="text-amber-400">+{xp} XP</span>
             </div>
 
             <div className="space-y-2">
@@ -161,6 +120,7 @@ export default function BadgeShowcaseModal({
             </div>
           </div>
 
+          </>}
           {/* Action Buttons */}
           <div className="flex items-center gap-2 pt-1">
             {isUnlocked && (
@@ -171,7 +131,7 @@ export default function BadgeShowcaseModal({
                 className="flex-1 text-sm"
                 leftIcon={<FaShareAlt size={12} />}
               >
-                Share Trophy
+                {t('share_trophy')}
               </Button>
             )}
             <Button
@@ -180,11 +140,9 @@ export default function BadgeShowcaseModal({
               onClick={handleModalClose}
               className={isUnlocked ? 'flex-1 text-sm' : 'w-full text-sm'}
             >
-              {isUnlocked ? 'Close' : 'Keep Playing'}
+              {isUnlocked ? tc('close') : t('keep_playing')}
             </Button>
           </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
-  );
+    </div>
+  </Modal>;
 }

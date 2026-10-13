@@ -94,11 +94,14 @@ export default function ProfilePage() {
  const { stats, statsError, syncStats } = useUser();
   const tgUser = stats || (typeof window !== 'undefined' ? (window as any).Telegram?.WebApp?.initDataUnsafe?.user : null);
 
+  const header = <PageHeader title={t('nav_profile')} icon={<FiUser />} actions={
+    <Link href={`/${locale}/settings`} aria-label={t('nav_settings')} className="ui-icon-button"><FiSettings size={20} aria-hidden="true" /></Link>
+  } />;
   if (statsError && !stats) {
     return (
       <LayoutWrapper className="w-full" hideHeaderControls>
         <main className="w-full app-page mx-auto">
-          <PageHeader title={t('nav_profile')} />
+          {header}
           <ErrorState title={t('load_failed')} message={t('load_failed')} onRetry={() => syncStats()} retryLabel={t('retry')} />
         </main>
       </LayoutWrapper>
@@ -122,9 +125,7 @@ export default function ProfilePage() {
     <LayoutWrapper className="w-full" hideHeaderControls>
       <main className="w-full app-page flex flex-col items-center mx-auto ">
 
-  <PageHeader title={t('nav_profile')} icon={<FiUser />} actions={
-    <Link href={`/${locale}/settings`} aria-label={t('nav_settings')} className="ui-icon-button"><FiSettings size={20} /></Link>
-  } />
+  {header}
   <Card variant="solid" className="ui-hero-card w-full p-4 space-y-4">
     <div className="flex items-center gap-4">
       {stats ? <Avatar className={`profile-avatar ${unlockedItems.includes('border_platinum') ? 'profile-avatar--platinum' : unlockedItems.includes('border_gold') ? 'profile-avatar--gold' : unlockedItems.includes('border_silver') ? 'profile-avatar--silver' : unlockedItems.includes('border_bronze') ? 'profile-avatar--bronze' : ''}`} size="xl" src={getFullPhotoUrl(stats.photo_url)} name={displayName} /> : <Skeleton variant="circular" width={64} height={64} className="shrink-0" />}

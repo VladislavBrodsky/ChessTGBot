@@ -25,7 +25,7 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
         <span className="ui-icon-tile ui-icon-tile--success"><FiCreditCard size={18} aria-hidden="true" /></span>
       </div>
       {loading ? (
-        <div role="status" aria-label={tw('usdt_balance')} className="space-y-2"><Skeleton width={160} height={34} /><Skeleton width={90} height={16} /></div>
+        <div role="status" aria-label={tw('usdt_balance')} className="flex min-h-11 items-baseline gap-2"><Skeleton textRole="numeric-xl" width="6ch" /><span className="t-body text-brand-muted">USDT</span></div>
       ) : balanceError ? (
         <div className="space-y-2">
           <p className="t-numeric-xl text-brand-muted">$ —</p>
@@ -40,8 +40,8 @@ export default function CyberCard({ balance, walletAddress, balanceError = false
       <GramBalances />
       <div className="flex items-start gap-3 border-t border-brand-border pt-3">
         <FiLink size={16} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
-        <div className="min-w-0">
-          {loading ? <Skeleton width={170} height={16} /> : <>
+        <div className="min-w-0 min-h-11">
+          {loading ? <div className="space-y-1"><Skeleton textRole="body" width="15ch" /><Skeleton textRole="caption" width="12ch" /></div> : <>
             <p className="text-sm font-medium">{walletAddress ? tw('connected_status') : tw('no_wallet')}</p>
             <p className="text-caption text-brand-muted break-all">{walletAddress ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}` : tw('link_wallet_hint')}</p>
           </>}

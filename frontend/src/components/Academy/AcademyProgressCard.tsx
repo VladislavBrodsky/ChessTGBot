@@ -1,85 +1,37 @@
 'use client';
 
-import React from 'react';
 import { Card } from '@/components/ui/Card';
-import { useTranslations } from 'next-intl';
-import { FaGraduationCap, FaFire, FaStar, FaBookOpen } from 'react-icons/fa';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { useLocale, useTranslations } from 'next-intl';
+import { FaGraduationCap } from 'react-icons/fa';
 
-interface AcademyProgressCardProps {
-  completedCount: number;
-  totalCount: number;
-  totalXp: number;
-  streak: number;
-}
+interface AcademyProgressCardProps { completedCount: number; totalCount: number; totalXp: number; streak: number; loading?: boolean }
 
-export default function AcademyProgressCard({ completedCount, totalCount, totalXp, streak }: AcademyProgressCardProps) {
-  const t = useTranslations('Academy');
-  const ti = useTranslations('Index');
-  // Clamp to avoid impossible numbers (e.g., 4/2 if API is stale)
-  const safeCompleted = Math.min(completedCount, totalCount);
-  const percentage = totalCount > 0 ? Math.round((safeCompleted / totalCount) * 100) : 0;
-
-  return (
-    <Card variant="solid"
-      className="ui-hero-card w-full p-5"
-    >
-
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-5">
-          <div>
-            <h2 className="text-section-title font-semibold text-brand-primary mb-0.5">
-              {t('academy_progress')}
-            </h2>
-            <p className="text-caption text-brand-muted font-medium">
-              {t('master_the_game')}
-            </p>
-          </div>
-          <span className="ui-icon-tile ui-icon-tile--success"><FaGraduationCap className="text-base" aria-hidden="true" /></span>
-        </div>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-2 mb-5">
-          {/* Completed */}
-          <div className="ui-stat items-center p-3 text-center">
-            <FaBookOpen className="text-brand-muted text-sm mb-1" aria-hidden="true" />
-            <span className="ui-stat__label">{t('completed')}</span>
-            <span className="ui-stat__value text-base">{safeCompleted}<span className="text-caption font-medium text-brand-muted">/{totalCount}</span></span>
-          </div>
-
-          {/* Verified account XP */}
-          <div className="ui-stat ui-stat--gold items-center p-3 text-center">
-            <FaStar className="text-brand-gold text-sm mb-1" aria-hidden="true" />
-            <span className="ui-stat__label">XP</span>
-            <span className="ui-stat__value text-base">{totalXp.toLocaleString()}</span>
-          </div>
-
-          {/* Streak */}
-          <div className="ui-stat ui-stat--accent items-center p-3 text-center">
-            <FaFire className="text-brand-success text-sm mb-1" aria-hidden="true" />
-            <span className="ui-stat__label">{ti('day_streak')}</span>
-            <span className="ui-stat__value text-base">{streak}</span>
-          </div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">
-              {t('course_completion')}
-            </span>
-            <span className={`text-caption font-semibold ${percentage >= 100 ? 'text-emerald-400' : 'text-brand-muted'}`}>
-              {percentage}%
-            </span>
-          </div>
-          <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden" role="progressbar" aria-label={t('course_completion')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentage}>
-            <div
-              style={{ width: `${percentage}%` }}
-              className="h-full rounded-full bg-brand-action"
-            />
-          </div>
-        </div>
+/** The initial loading state uses the exact same title, metric grid and progress geometry. */
+export default function AcademyProgressCard({ completedCount, totalCount, totalXp, streak, loading = false }: AcademyProgressCardProps) {
+  const t = useTranslations('Academy'), ti = useTranslations('Index');
+  const locale = useLocale();
+  const completed = Math.max(0, Math.min(completedCount, totalCount));
+  const percentage = totalCount > 0 ? Math.round(completed / totalCount * 100) : 0;
+  const fmt = (value: number) => value.toLocaleString(locale);
+  return <Card variant="solid" className="ui-hero-card w-full p-5 space-y-4" aria-busy={loading || undefined}>
+    <div className="flex items-center justify-between gap-3">
+      <div className="min-w-0 space-y-1">
+        <h2 className="t-title-2 text-brand-primary">{t('academy_progress')}</h2>
+        <p className="t-caption text-brand-muted">{t('master_the_game')}</p>
       </div>
-    </Card>
-  );
+      <span className="ui-icon-tile ui-icon-tile--info shrink-0"><FaGraduationCap aria-hidden="true" /></span>
+    </div>
+    <dl className="hero-metrics">
+      <div><dt className="t-caption text-brand-muted">{t('completed')}</dt><dd className="t-numeric text-brand-primary">{loading ? <Skeleton textRole="numeric" width="4ch" /> : <><bdi>{fmt(completed)}</bdi><span className="t-caption text-brand-muted">/{fmt(totalCount)}</span></>}</dd></div>
+      <div><dt className="t-caption text-brand-muted">XP</dt><dd className="t-numeric text-brand-primary">{loading ? <Skeleton textRole="numeric" width="4ch" /> : <bdi>{fmt(totalXp)}</bdi>}</dd></div>
+      <div><dt className="t-caption text-brand-muted">{ti('day_streak')}</dt><dd className="t-numeric text-brand-primary">{loading ? <Skeleton textRole="numeric" width="3ch" /> : <bdi>{fmt(streak)}</bdi>}</dd></div>
+    </dl>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3 t-caption text-brand-muted"><span>{t('course_completion')}</span>{loading ? <Skeleton textRole="caption" width="3ch" /> : <bdi>{fmt(percentage)}%</bdi>}</div>
+      <div className="h-2 rounded-full overflow-hidden bg-brand-elevated" role={loading ? undefined : 'progressbar'} aria-label={t('course_completion')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={loading ? undefined : percentage}>
+        {loading ? <Skeleton variant="rectangular" height="100%" /> : <div style={{ width: `${percentage}%` }} className="h-full rounded-full bg-brand-action" />}
+      </div>
+    </div>
+  </Card>;
 }

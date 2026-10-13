@@ -27,7 +27,7 @@ frontend/src/styles/{theme,tokens,themes,base,components,overlays,features,motio
 
 Tailwind 4 only reads `@theme` (see `styles/theme.css`); `tailwind.config.js` no longer exists. Declare new utilities there.
 
-**Colour values** (dark default / light): canvas `#05070B`/`#F3F6FA`, surface `#0B0E14`/`#FFFFFF`, elevated `#121620`/`#EEF2F7`, border `#1E2430`, text `#F5F7FA`/`#0F172A`, muted `#9AA3B2`/`#556275`, action `#34D399`/`#10B981`, gold `#F5C451`/`#B8860B`, danger `#FB7185`/`#BE123C`. Full table in the brand guide.
+**Colour values** (dark default / light): canvas `#000000`/`#F3F6FA`, surface `#0A0A0A`/`#FFFFFF`, elevated `#121620`/`#EEF2F7`, border `#1F1F1F`, text `#F5F7FA`/`#0F172A`, muted `#9AA3B2`/`#556275`, action `#34D399`/`#10B981`, gold `#F5C451`/`#B8860B`, danger `#FB7185`/`#BE123C`. Full table in the brand guide.
 
 ---
 
@@ -205,3 +205,13 @@ Use `frontend/src/components/ui/Badge.tsx` and `BadgeRow` for passive metadata a
 Native GRAM wallet values keep two concepts separate: available USDT principal has an informational GRAM estimate from cached TonAPI native-coin and USDT rates; earned GRAM uses the exact, once-per-source server ledger in nano units. Never credit an estimate, fabricate a fallback price, label balances as profit, or add sample profiles to verified account rankings. Quotes expire after 15 minutes and update independently of balances. GRAM reward credits currently have no withdrawal path; the wallet explains this. Real GRAM rankings are opt-in, default off, and expose aggregate estimated value only. Subscription prizes require live Telegram membership proof. Referral GRAM requires a confirmed USDT deposit and three completed human wager games after attribution, with the configured minimum move count. Credit notifications are delivered after commit through a leased outbox; unknown delivery is never blindly retried. The shared GramAmount uses the official local mark, localized exact amounts, bidi isolation and one brief transform/opacity pulse for a confirmed increase, respecting reduced motion.
 
 Quick Match uses the shared Drawer `footer` slot for a fixed action below an independently scrolling body. Keep the header reachable, honor `--app-safe-bottom`, and cover the bottom navbar with the body portal. The shared dialog hook owns stack-aware root/body scroll locks and returns focus without scrolling. Drawer entrances and exits become immediate with reduced motion. Wager badges stay in flow on $10; no Free stake appears here. Paid starts use acknowledged server matchmaking, cancellation releases the reserved stake, and deposit verification never starts a paid search automatically. Do not substitute a generated identity for an AI opponent or introduce fake search delays.
+
+## Shared header and overlay anatomy
+
+Dashboard `PageHeader` uses logical start alignment, with one h1 and a purpose beneath it; the icon, back link and utilities stay in normal flow. Login and QR entry screens explicitly opt into `align="center"`. Play uses one `LobbyHero` for its balance and two live activity metrics. Academy uses one progression hero; challenge and tactics cards are supporting surfaces.
+
+`Modal` and `Drawer` share `DialogHeader`: a named h2, optional purpose and a 44px close control. Header and optional `footer` never scroll; only `.ui-dialog-body` owns vertical scrolling. Avoid additional height-capped scrolling lists inside it. Both portal to the body, clamp to the safe viewport and use the same `useDialog` stack for focus, Escape, background scroll locks and focus restoration. `Drawer.maxHeight` accepts a CSS length (default `85dvh`), not a utility class. Use `layer={110}` for a nested rematch or checkout and `120` for system/reward notices. Pending transactions may keep dismissal inactive until the response resolves.
+
+Skeletons reuse loaded geometry and typography roles; missing values remain unknown. Finished-game money arrives in cents and is converted once for USDT readouts. Draws/aborts show a returned stake; wins show the confirmed credited payout, including stake, with no guessed ELO or payout. Custom-stake previews mirror the backend’s separately rounded 3% and 2% fee allocation.
+
+Full-screen onboarding is the walkthrough exception: body portal, the same dialog stack, pinned steps/actions and a scrollable middle stage. Critical game failures use `Modal role="alertdialog"` with one reload action.

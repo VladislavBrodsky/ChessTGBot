@@ -2,9 +2,8 @@ import { Badge } from '@/components/ui/Badge';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBell, FaChessKnight, FaWallet, FaShareAlt } from 'react-icons/fa';
+import { FaBell, FaChessKnight, FaShareAlt } from 'react-icons/fa';
 import { GameHistoryList } from './GameHistoryList';
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
@@ -15,7 +14,7 @@ import { copyToClipboard } from '@/lib/clipboard';
 import { logTelemetryEvent } from '@/lib/telemetry';
 
 import { BetSlip } from './lobby/BetSlip';
-import { LiveStrip } from './lobby/LiveStrip';
+import { LobbyHero } from './lobby/LobbyHero';
 import { DailyGoal } from './lobby/DailyGoal';
 import { RecentResults } from './lobby/RecentResults';
 import { useLobbyStats } from '@/hooks/useLobbyStats';
@@ -476,47 +475,16 @@ export default function PlayLobby() {
   };
   
   const lobby = useLobbyStats();
-  const idle = matchmakingState === 'idle';
-  const balanceLabel = balanceError || loadingBalance ? '$ —' : formatUsd(walletBalance);
   const slipValid = Number.isFinite(chosenWager) && chosenWager >= 100;
 
   return (
     <LayoutWrapper className="justify-start ">
-      <div className="w-full app-page flex flex-col items-center mx-auto ">
-
-        <PageHeader
-          align="start"
-          title={t('play')}
-          icon={<FaChessKnight />}
-          actions={
-            <div className="lobby-balance">
-              <Link
-                href={`/${locale}/wallet`}
-                className="lobby-balance__amount"
-                aria-label={`${tg('cyber_balance')}: ${balanceLabel}`}
-                onClick={() => telegramHaptic('selection')}
-              >
-                <FaWallet size={12} className={balanceError ? 'text-amber-500' : 'text-brand-success'} aria-hidden="true" />
-                <span>{balanceLabel}</span>
-              </Link>
-              <div className="lobby-balance__add">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="arena-topup-button"
-                  leftIcon={<FaWallet aria-hidden="true" />}
-                  onClick={() => setShowDepositDrawer(true)}
-                >
-                  <span className="arena-topup-label">{tw('top_up')}</span>
-                </Button>
-              </div>
-            </div>
-          }
-        />
-
+      <main className="app-page">
+        <PageHeader title={t('play')} description={tg('lobby_setup_description')} icon={<FaChessKnight />} />
+        <LobbyHero balance={walletBalance} balanceLoading={loadingBalance} balanceError={Boolean(balanceError)}
+          activityLoading={!lobby.loaded} activityError={lobby.error} searching={lobby.searching} games24h={lobby.games24h}
+          onTopUp={() => setShowDepositDrawer(true)} onRetry={() => { void syncBalance(); }} />
         <div className="lobby-stack">
-          {idle && <LiveStrip searching={lobby.searching} games24h={lobby.games24h} t={tg} />}
-
           <AnimatePresence mode="wait" initial={false}>
           {matchmakingState === 'matched' ? (
             <motion.div
@@ -633,7 +601,7 @@ export default function PlayLobby() {
                 <span className="text-caption text-brand-muted">{tg('lobby_search_hint')}</span>
                 <span className="text-caption text-brand-muted">
                   <strong className="font-bold text-emerald-400 tabular-nums">
-                    {(lobby.searching > 0 ? lobby.searching : 24).toLocaleString(locale)}
+                    {lobby.searching.toLocaleString(locale)}
                   </strong> {tg('lobby_waiting')}
                 </span>
               </div>
@@ -772,7 +740,7 @@ export default function PlayLobby() {
           )}
         </AnimatePresence>
 
-      </div>
+      </main>
     </LayoutWrapper>
   );
 }

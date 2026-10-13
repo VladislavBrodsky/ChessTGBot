@@ -1,193 +1,40 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { FiGift, FiAward, FiZap, FiCheck, FiStar, FiRefreshCw } from 'react-icons/fi';
 import { telegramHaptic } from '@/lib/telegram';
-import { useNavbar } from '@/context/NavbarContext';
-import { useDialogAccessibility } from '@/hooks/useDialogAccessibility';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { useAnimationsEnabled } from '@/hooks/useAnimationsEnabled';
 import { BOX_CONFIG, type BoxTier, type DropRarity } from './boxConfig';
-
-interface UnboxingModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    tier: BoxTier | null;
-    prizeName: string | null;
-    prizeType: string | null;
-}
-
-const KIND_ICON: Record<string, React.ReactNode> = {
-    refund: <FiRefreshCw size={30} />,
-    boost: <FiZap size={30} />,
-    cosmetic: <FiAward size={30} />,
-    premium: <FiStar size={30} />,
-};
-
-// Rarity → celebration intensity. Higher tiers get confetti + longer glow.
-const INTENSITY: Record<BoxTier, number> = { common: 0, rare: 1, epic: 2, legendary: 3, seasonal: 2 };
-
+interface UnboxingModalProps { isOpen: boolean; onClose: () => void; tier: BoxTier | null; prizeName: string | null; prizeType: string | null }
+const ICONS: Record<string, React.ReactNode> = { refund: <FiRefreshCw />, boost: <FiZap />, cosmetic: <FiAward />, premium: <FiStar /> };
 export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeType }: UnboxingModalProps) {
-    const t = useTranslations('Marketplace');
-    const [state, setState] = useState<'shaking' | 'flash' | 'reveal'>('shaking');
-    const { pushHide, popHide } = useNavbar();
-    const dialogRef = useDialogAccessibility(isOpen, onClose);
-
-    useEffect(() => {
-        if (!isOpen) return;
-        pushHide();
-        return () => popHide();
-    }, [isOpen, popHide, pushHide]);
-
-    useEffect(() => {
-        if (isOpen && tier && prizeName && prizeType) {
-            setState('shaking');
-            telegramHaptic('medium');
-            const shake = setTimeout(() => {
-                setState('flash');
-                // Rarity-scaled haptic on reveal.
-                telegramHaptic(INTENSITY[tier] >= 2 ? 'success' : 'light');
-            }, 760);
-            const flash = setTimeout(() => setState('reveal'), 980);
-            return () => {
-                clearTimeout(shake);
-                clearTimeout(flash);
-            };
-        }
-    }, [isOpen, tier, prizeName, prizeType]);
-
-    const cfg = tier ? BOX_CONFIG[tier] : null;
-    const intensity = tier ? INTENSITY[tier] : 0;
-    const icon = KIND_ICON[prizeType || ''] || <FiGift size={30} />;
-
-    // Pre-compute confetti particles (only for higher rarities).
-    const confetti = useMemo(() => {
-        if (!cfg || intensity < 2) return [];
-        const colors = [cfg.theme.accent, cfg.theme.glow, '#ffffff'];
-        return Array.from({ length: intensity >= 3 ? 40 : 24 }, (_, i) => ({
-            id: i,
-            x: (Math.random() - 0.5) * 360,
-            y: -(Math.random() * 300 + 120),
-            rotate: Math.random() * 360,
-            delay: Math.random() * 0.25,
-            color: colors[i % colors.length],
-            size: 5 + Math.random() * 6,
-        }));
-    }, [cfg, intensity]);
-
-    if (!cfg) return null;
-
-    const KNOWN_KINDS: DropRarity[] = ['refund', 'boost', 'cosmetic', 'premium'];
-    const kindLabel = KNOWN_KINDS.includes(prizeType as DropRarity)
-        ? t(`prize_kind_${prizeType}` as 'prize_kind_refund' | 'prize_kind_boost' | 'prize_kind_cosmetic' | 'prize_kind_premium')
-        : (prizeType || t('reward'));
-
-    return (
-        <AnimatePresence>
-            {isOpen && tier && (
-                <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[var(--color-brand-overlay)] backdrop-blur-xl"
-                >
-                    {/* Tier ambient glow */}
-                    <div className="absolute inset-0 pointer-events-none"
-                        style={{ background: `radial-gradient(circle at 50% 45%, rgba(${cfg.theme.rgb},${0.05 + intensity * 0.04}), transparent 60%)` }} />
-
-                    <div
-                        ref={dialogRef}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="unboxing-title"
-                        tabIndex={-1}
-                        className="relative flex h-[500px] w-full max-w-sm flex-col items-center justify-center p-6 text-center"
-                    >
-
-                        {state === 'shaking' && (
-                            <div className="space-y-8 flex flex-col items-center">
-                                <span id="unboxing-title" role="status" aria-live="polite" className="text-caption font-semibold normal-case tracking-normal text-brand-muted">{t('unboxing')}</span>
-                                <motion.div
-                                    animate={{ x: [-8, 8, -8, 8, 0], y: [-4, 4, -4, 4, 0], rotate: [-3, 3, -3, 3, 0], scale: [1, 1.05, 1] }}
-                                    transition={{ duration: 0.55, repeat: 1, ease: 'easeInOut' }}
-                                    className="w-36 h-36 rounded-3xl border flex items-center justify-center shadow-2xl relative"
-                                    style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.25), rgba(11,15,23,0.9))`, borderColor: `rgba(${cfg.theme.rgb},0.4)` }}
-                                >
-                                    <span className="text-5xl font-semibold font-serif" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
-                                </motion.div>
-                                <div className="h-6" />
-                            </div>
-                        )}
-
-                        {state === 'flash' && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1.05 }}
-                                transition={{ duration: 0.2 }}
-                                className="w-36 h-36 rounded-3xl border flex items-center justify-center shadow-2xl"
-                                style={{ background: `linear-gradient(160deg, rgba(${cfg.theme.rgb},0.4), rgba(11,15,23,0.95))`, borderColor: cfg.theme.accent }}
-                            >
-                                <span className="text-5xl font-semibold font-serif animate-ping" style={{ color: cfg.theme.accent }}>{cfg.glyph}</span>
-                            </motion.div>
-                        )}
-
-                        {state === 'reveal' && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.85 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-                                className="space-y-6 flex flex-col items-center w-full relative z-10"
-                            >
-                                {/* Confetti particles */}
-                                {confetti.map((c) => (
-                                    <motion.span
-                                        key={c.id}
-                                        initial={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
-                                        animate={{ opacity: 0, x: c.x, y: c.y, rotate: c.rotate }}
-                                        transition={{ duration: 1.4, delay: c.delay, ease: 'easeOut' }}
-                                        className="absolute left-1/2 top-1/3 rounded-sm pointer-events-none"
-                                        style={{ width: c.size, height: c.size, background: c.color }}
-                                    />
-                                ))}
-
-                                <span className="text-caption font-semibold normal-case tracking-normal drop-shadow" style={{ color: cfg.theme.accent }}>
-                                    {t('you_unlocked')}
-                                </span>
-
-                                <motion.div
-                                    className="w-48 h-48 rounded-[32px] border flex flex-col items-center justify-center p-4 relative overflow-hidden shadow-2xl"
-                                    style={{
-                                        background: `linear-gradient(180deg, rgba(${cfg.theme.rgb},0.2), rgba(11,15,23,0.95))`,
-                                        borderColor: `rgba(${cfg.theme.rgb},0.4)`,
-                                        boxShadow: `0 0 40px rgba(${cfg.theme.rgb},0.25)`,
-                                    }}
-                                >
-                                    <div className="w-16 h-16 rounded-2xl bg-brand-surface opacity-95 border border-white/10 flex items-center justify-center mb-3 shadow-inner" style={{ color: cfg.theme.accent }}>
-                                        {icon}
-                                    </div>
-                                    <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted">{kindLabel}</span>
-                                </motion.div>
-
-                                <div className="space-y-1">
-                                    <h2 id="unboxing-title" className="text-xl font-semibold normal-case tracking-normal text-brand-primary leading-tight">
-                                        {prizeName}
-                                    </h2>
-                                    <p className="text-sm text-brand-muted font-medium">{t('added_to_inventory')}</p>
-                                </div>
-
-                                <motion.button type="button"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={onClose}
-                                    className="ui-tap-target px-8 py-3 rounded-full text-slate-950 text-sm font-semibold normal-case tracking-normal shadow-premium cursor-pointer flex items-center gap-2"
-                                    style={{ background: `linear-gradient(90deg, ${cfg.theme.accent}, ${cfg.theme.glow})` }}
-                                >
-                                    <FiCheck size={14} />
-                                    {t('awesome')}
-                                </motion.button>
-                            </motion.div>
-                        )}
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
+  const t = useTranslations('Marketplace');
+  const animations = useAnimationsEnabled();
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => {
+    if (!isOpen || !prizeName || !prizeType) return;
+    setRevealed(!animations);
+    if (!animations) return;
+    const timer = setTimeout(() => { setRevealed(true); telegramHaptic('success'); }, 980);
+    return () => clearTimeout(timer);
+  }, [isOpen, prizeName, prizeType, animations]);
+  const cfg = tier ? BOX_CONFIG[tier] : null;
+  if (!cfg || !prizeName || !prizeType) return null;
+  const known: DropRarity[] = ['refund', 'boost', 'cosmetic', 'premium'];
+  const kind = known.includes(prizeType as DropRarity) ? t(`prize_kind_${prizeType}` as 'prize_kind_refund') : t('reward');
+  return <Modal isOpen={isOpen} onClose={onClose} maxWidth="sm" title={revealed ? prizeName : t('unboxing')} description={revealed ? t('added_to_inventory') : undefined}
+    footer={revealed && <Button variant="primary" className="w-full" onClick={onClose} leftIcon={<FiCheck />}>{t('awesome')}</Button>}>
+    <div className="min-h-48 flex flex-col items-center justify-center gap-4 text-center">
+      <motion.div initial={false} animate={!revealed && animations ? { rotate: [-3, 3, -3, 3, 0] } : { rotate: 0 }} transition={{ duration: 0.55, repeat: 1 }}
+        className="w-28 h-28 rounded-3xl border border-brand-border bg-brand-elevated flex items-center justify-center text-4xl" style={{ color: cfg.theme.accent }}>
+        {revealed ? ICONS[prizeType] ?? <FiGift /> : <FiGift />}
+      </motion.div>
+      {revealed && <Badge variant="purple">{kind}</Badge>}
+    </div>
+  </Modal>;
 }

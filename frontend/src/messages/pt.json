@@ -492,7 +492,11 @@
     "level_unlocked": "Nível {level} desbloqueado com sucesso!",
     "xp_upgrade_alert": "O upgrade para Premium requer 5.000 XP. Você possui atualmente {xp} XP.",
     "upgrade_success": "Upgrade realizado com sucesso! Você agora é membro Premium.",
-    "subscription_success": "Assinatura realizada com sucesso! Você agora é membro Premium."
+    "subscription_success": "Assinatura realizada com sucesso! Você agora é membro Premium.",
+    "tier_label": "Nível {tier}",
+    "mastery_tiers": "Níveis de domínio",
+    "share_trophy": "Compartilhar conquista",
+    "keep_playing": "Continuar jogando"
   },
   "Game": {
     "review_title": "Análise da partida",
@@ -553,12 +557,12 @@
     "learn_more": "[Saber mais]",
     "platform_commission": "Comissão da plataforma (Rake)",
     "sustain_ecosystem": "Como as taxas de pareamento sustentam o ecossistema",
-    "rake_desc1": "FinChess cobra uma comissão fixa de 3% (rake) sobre as recompensas do jogo. Esta comissão é deduzida apenas da parte do vencedor.",
-    "rake_desc2": "Por exemplo, si você apostar $10.00, o pote total é $20.00. O vencedor recebe $19.40 líquidos, enquanto $0.60 (3%) é reservado como taxa da plataforma.",
+    "rake_desc1": "Partidas com aposta destinam 3% do prêmio à plataforma e 2% às indicações. O vencedor recebe os 95% restantes, incluindo sua aposta.",
+    "rake_desc2": "Com $10 por jogador, o total de $20 paga $19 ao vencedor: $10 de aposta devolvida e $9 de ganho líquido.",
     "where_rake_goes": "Para onde vai a taxa?",
-    "rake_li1": "Infraestrutura do bot e servidores de pareamento de alta velocidade.",
-    "rake_li2": "Pools de liquidez para garantir pagamentos instantâneos.",
-    "rake_li3": "Recompensas do ecossistema (recompensas de XP, comissões de cashback de indicação).",
+    "rake_li1": "3% de taxa da plataforma.",
+    "rake_li2": "2% para indicações.",
+    "rake_li3": "O pagamento creditado inclui sua aposta original.",
     "got_it": "Entendi",
     "double_stakes_choice": "🔥 Dobrar apostas (2x)",
     "double_stakes_active": "🔥 Apuesta dupla ativa",
@@ -710,7 +714,12 @@
     "board_bb": "Bispo preto",
     "board_br": "Torre preta",
     "board_bq": "Dama preta",
-    "board_bk": "Rei preto"
+    "board_bk": "Rei preto",
+    "lobby_setup_description": "Escolha a aposta e o ritmo de jogo.",
+    "stake_returned": "Aposta devolvida",
+    "payout_received": "Pagamento recebido",
+    "settlement_pending": "A liquidação está sendo confirmada.",
+    "rematch_setup_description": "Escolha a aposta da próxima partida."
   },
   "Wallet": {
     "wager_stake": "Aposta",
@@ -1025,7 +1034,8 @@
     "finished": "Encerrada",
     "waiting_hint": "Você está dentro! Pareamento automático — vitória 3 pts, empate 1. Jogue até o fim do tempo.",
     "pts": "pts",
-    "you": "Você"
+    "you": "Você",
+    "status_unavailable": "Status da Arena indisponível"
   },
   "Onboarding": {
     "skip": "Pular",
@@ -1254,5 +1264,9 @@
     "search_hint": "Sua aposta fica reservada durante a busca e é devolvida ao cancelar.",
     "queue_error": "Não foi possível iniciar a busca. Seu saldo foi atualizado. Tente novamente.",
     "connection_error": "Conectando ao servidor. A busca será restaurada ao reconectar."
+  },
+  "Admin": {
+    "access_denied": "Acesso negado",
+    "restricted": "Este painel é exclusivo para administradores."
   }
 }

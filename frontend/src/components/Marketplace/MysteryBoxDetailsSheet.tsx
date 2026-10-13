@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { FiLock, FiX } from 'react-icons/fi';
+import React from 'react';
+import { Drawer } from '@/components/ui/Drawer';
+import { Button } from '@/components/ui/Button';
+import { FiLock } from 'react-icons/fi';
 import { useTranslations } from 'next-intl';
-import { useNavbarHideWhileMounted } from '@/context/NavbarContext';
 import { DROP_KIND_COLOR, BOX_CONFIG, type BoxTier } from './boxConfig';
 
 interface MysteryBoxDetailsSheetProps {
@@ -15,125 +15,16 @@ interface MysteryBoxDetailsSheetProps {
     onUnbox: () => void;
 }
 
-export default function MysteryBoxDetailsSheet({
-    tier,
-    userXP,
-    disabled,
-    onClose,
-    onUnbox,
-}: MysteryBoxDetailsSheetProps) {
-    useNavbarHideWhileMounted();
-    const t = useTranslations('Marketplace');
-    const dialogRef = useRef<HTMLDivElement>(null);
-    const cfg = BOX_CONFIG[tier];
-    const affordable = userXP >= cfg.costXP;
-    const shortfall = cfg.costXP - userXP;
-    const locked = disabled || !affordable;
-
-    useEffect(() => {
-        dialogRef.current?.focus();
-        const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                onClose();
-                return;
-            }
-
-            if (event.key !== 'Tab' || !dialogRef.current) return;
-            const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(
-                'button:not([disabled]), [href], input:not([disabled])'
-            ));
-            if (!focusable.length) return;
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first.focus();
-            }
-        };
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
-    }, [onClose]);
-
-    const content = (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-[var(--color-brand-overlay)] p-3 backdrop-blur-sm">
-            <button
-                type="button"
-                aria-label={t('back')}
-                className="ui-tap-target absolute inset-0 cursor-default"
-                onClick={onClose}
-            />
-            <div
-                ref={dialogRef}
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby={`box-details-title-${tier}`}
-                tabIndex={-1}
-                className="relative z-10 w-full max-w-md rounded-3xl border border-brand-border-opacity-20 bg-brand-surface p-5 pb-[calc(20px+var(--app-safe-bottom))] shadow-premium"
-            >
-                <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-brand-border-opacity-20" />
-                <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                        <p className="text-caption font-semibold normal-case tracking-normal" style={{ color: `color-mix(in srgb, ${cfg.theme.accent} 38%, var(--text-primary))` }}>
-                            {cfg.metal} · {cfg.piece}
-                        </p>
-                        <h2 id={`box-details-title-${tier}`} className="mt-1 text-xl font-semibold text-brand-primary">
-                            {cfg.name}
-                        </h2>
-                        <p className="mt-1 text-sm leading-5 text-brand-muted">{cfg.tagline}</p>
-                    </div>
-                    <button
-                        type="button"
-                        aria-label={t('back')}
-                        onClick={onClose}
-                        className="ui-tap-target flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-brand-border-opacity-10 text-brand-muted transition-colors hover:text-brand-primary"
-                    >
-                        <FiX size={18} />
-                    </button>
-                </div>
-
-                <div className="mt-5 rounded-2xl border border-brand-border-opacity-10 bg-brand-void/60 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-caption font-semibold normal-case tracking-normal text-brand-primary">
-                            {t('whats_inside')}
-                        </h3>
-                        <span className="text-caption font-semibold tabular-nums text-purple-500">{cfg.costXP.toLocaleString()} XP</span>
-                    </div>
-                    <ul className="mt-3 space-y-2.5">
-                        {cfg.drops.map((drop) => (
-                            <li key={drop.label} className="flex items-center justify-between gap-4 text-sm">
-                                <span className="flex min-w-0 items-center gap-2 text-brand-muted">
-                                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: DROP_KIND_COLOR[drop.kind] }} />
-                                    <span>{drop.label}</span>
-                                </span>
-                                <span className="shrink-0 font-semibold tabular-nums text-brand-primary">{drop.chance}%</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <button
-                    type="button"
-                    disabled={locked}
-                    onClick={() => {
-                        onClose();
-                        onUnbox();
-                    }}
-                    className={`ui-tap-target mt-4 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-2xl text-sm font-semibold normal-case tracking-normal transition-all ${
-                        locked
-                            ? 'cursor-not-allowed border border-brand-border-opacity-10 bg-brand-bg-opacity-5 text-brand-muted'
-                            : 'bg-purple-500 text-brand-void active:scale-[0.98]'
-                    }`}
-                >
-                    {locked && <FiLock size={14} />}
-                    {disabled ? t('unavailable') : affordable ? `${t('unbox')} · ${cfg.costXP.toLocaleString()} XP` : t('need_more_xp', { amount: shortfall.toLocaleString() })}
-                </button>
-            </div>
-        </div>
-    );
-
-    return typeof document === 'undefined' ? null : createPortal(content, document.body);
+export default function MysteryBoxDetailsSheet({ tier, userXP, disabled, onClose, onUnbox }: MysteryBoxDetailsSheetProps) {
+  const t = useTranslations('Marketplace');
+  const cfg = BOX_CONFIG[tier], affordable = userXP >= cfg.costXP, locked = disabled || !affordable;
+  return <Drawer isOpen onClose={onClose} title={cfg.name} description={cfg.tagline}
+    footer={<Button variant="primary" className="w-full" disabled={locked} leftIcon={locked ? <FiLock /> : undefined} onClick={() => { onClose(); onUnbox(); }}>
+      {disabled ? t('unavailable') : affordable ? `${t('unbox')} · ${cfg.costXP.toLocaleString()} XP` : t('need_more_xp', { amount: (cfg.costXP - userXP).toLocaleString() })}
+    </Button>}>
+    <h3 className="t-body font-semibold">{t('whats_inside')}</h3>
+    <ul className="space-y-3">{cfg.drops.map(drop => <li key={drop.label} className="flex justify-between gap-3 t-body">
+      <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full shrink-0" style={{ background: DROP_KIND_COLOR[drop.kind] }} aria-hidden="true" />{drop.label}</span><bdi className="tabular-nums">{drop.chance}%</bdi>
+    </li>)}</ul>
+  </Drawer>;
 }

@@ -218,7 +218,7 @@ Compose with the shared primitives: `PageHeader`/`SectionHeader`/`ActionLink`/`P
 
 Order: **title → live account/game state → one next action → progress → supporting/editorial**. Nothing critical hides behind decorative graphics.
 
-- Dashboard `PageHeader` backgrounds stay quiet: no grid, glow or animated backdrop behind headings. Side space is reserved only when a leading control or utility action exists; simple headers use the full available width at 320px.
+- Dashboard `PageHeader` uses logical start alignment with the title/purpose in one group; icons, back links and utilities remain in normal flow. Entry screens may explicitly center. Backgrounds stay quiet: no grid, glow or animated backdrop behind headings. Side space is reserved only when a leading control or utility action exists; simple headers use the full available width at 320px.
 - Document typography defaults belong in `@layer base` so `truncate`, `nowrap` and line-clamp utilities remain effective. Quick-tile counters use a reserved row beside the icon, never over its bounds.
 - Profile identity uses one avatar/name group and one level/XP progress block. Rating belongs in the statistics group; do not repeat the same level or rating as extra hero badges. `Avatar` falls back to initials when an image fails to load.
 - Play and Profile share `GameHistoryList`: the row opens the review, and sharing is a separate labelled action. Results include a written outcome as well as colour.
@@ -406,3 +406,7 @@ Native GRAM wallet values keep two concepts separate: available USDT principal h
 Quick Match offers paid stakes only ($1, $3, $5, $10, $25); the Popular badge sits in flow on $10. Use the shared Drawer with its optional `footer`: the header and safe-area action stay visible while only the body scrolls. The portal covers the dashboard navbar at overlay level 100; do not hide that navbar. `useDialog` locks both document and body scrolling, restores their previous inline styles after the final dialog closes, and focuses without moving the page. Drawer motion also honors the OS and in-app reduced-motion preferences.
 
 A paid Quick Match joins the real server queue once per explicit action. Never create an AI game with a generated human identity or add artificial matchmaking delays. Closing a pending join requests cancellation after the server acknowledges its stake reservation; closing a confirmed search waits for cancellation acknowledgement. A confirmed match opens immediately. Top Up opens a separate sheet and refreshes the balance without starting a paid search. Unknown balances cannot be used to enter a queue. Payout copy includes the stake and states the 95% pot share; it is not net profit.
+
+### Shared dialog structure
+
+`DialogHeader` pins the named h2, purpose and 44px close control above `.ui-dialog-body`. Optional primary/secondary actions belong in the pinned `footer`; only the body scrolls. Keep lists inside the body in normal flow. `Modal` and `Drawer` share the global `useDialog` stack, portal to `document.body`, clamp to the Telegram safe viewport, and respect app/OS reduced motion. `Drawer.maxHeight` is a CSS length, default `85dvh`; nested dialogs explicitly use layer 110, system/reward notices layer 120. Closing restores focus without scrolling the page. Loading, retry and confirmed states retain the same title and geometry.
