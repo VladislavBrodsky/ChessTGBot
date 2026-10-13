@@ -28,9 +28,18 @@ const ChessEcosystemOrbit = dynamic(
     ),
   {
     loading: () => (
-      <div className="relative flex flex-col items-center justify-center w-full py-2 min-h-[350px] sm:min-h-[420px]">
-        <div className="size-16 sm:size-20 rounded-2xl bg-surface border border-line/40 opacity-50 animate-pulse" />
-        <div className="absolute size-56 sm:size-72 rounded-full border border-dashed border-line/30 opacity-40 animate-pulse pointer-events-none" />
+      <div className="relative flex flex-col items-center justify-center w-full py-2 min-h-[410px] sm:min-h-[490px]">
+        <div className="h-8 w-60 max-w-[75vw] rounded-full bg-surface/70 border border-line/40 mb-3 opacity-60 animate-pulse" />
+        <div className="relative flex h-[350px] sm:h-[420px] w-full items-center justify-center">
+          <div className="size-16 sm:size-20 rounded-2xl bg-surface border border-line/40 opacity-60 animate-pulse" />
+          <div className="absolute size-44 sm:size-52 rounded-full border border-dashed border-line/30 opacity-40 animate-pulse pointer-events-none" />
+          <div className="absolute size-64 sm:size-80 rounded-full border border-dashed border-line/20 opacity-30 animate-pulse pointer-events-none" />
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
+          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
+          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
+          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
+        </div>
       </div>
     ),
   },
@@ -40,8 +49,12 @@ const GlobeShowcase = dynamic(
   () => import("@/components/GlobeShowcase").then((m) => m.GlobeShowcase),
   {
     loading: () => (
-      <div className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[420px] sm:min-h-[460px]">
-        <div className="size-64 sm:size-80 rounded-full bg-surface border border-line/40 opacity-40 animate-pulse max-w-[80vw] max-h-[80vw]" />
+      <div className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[430px] sm:min-h-[470px]">
+        <div className="h-11 w-full max-w-[460px] rounded-2xl bg-surface/70 border border-line/40 mb-3 opacity-60 animate-pulse" />
+        <div className="relative mx-auto aspect-square w-full max-w-[460px] flex items-center justify-center">
+          <div className="size-56 sm:size-72 rounded-full bg-surface/50 border border-line/40 opacity-40 animate-pulse" />
+        </div>
+        <div className="h-5 w-48 rounded-full bg-surface/40 mt-3 opacity-50 animate-pulse" />
       </div>
     ),
   },
@@ -71,7 +84,7 @@ export const metadata = pageMetadata(
 );
 
 // Re-render regularly so newly scheduled articles reach the home page on time.
-export const revalidate = 600;
+export const revalidate = 60;
 
 export default function HomePage() {
   const structuredData = {
@@ -368,42 +381,48 @@ export default function HomePage() {
                 Stake USDT with confidence. Automated escrow locks both deposits until checkmate, with Stockfish 16 move telemetry and millisecond FIDE clock sync.
               </p>
 
-              {/* ── 3 Sleek Compact Security Pillars (Horizontal 3-column, zero carditis) ── */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                <div className="rounded-2xl border border-line bg-surface p-4 transition-all hover:bg-surface-inset/60 shadow-2xs">
-                  <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 mb-2.5">
-                    <Icon name="lock" size={16} />
+              {/* ── 3 Sleek Compact Security Pillars ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
+                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
+                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 sm:mb-2.5">
+                    <Icon name="lock" size={15} />
                   </div>
-                  <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
-                    Instant Escrow
-                  </h3>
-                  <p className="text-[12px] text-fg-muted mt-1 leading-relaxed">
-                    Stakes lock at move 1. 95% pot released automatically upon checkmate.
-                  </p>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
+                      Instant Escrow
+                    </h3>
+                    <p className="text-[11px] sm:text-[12px] text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
+                      Stakes lock at move 1. 95% pot released automatically upon checkmate.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="rounded-2xl border border-line bg-surface p-4 transition-all hover:bg-surface-inset/60 shadow-2xs">
-                  <div className="flex size-8 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 mb-2.5">
-                    <Icon name="shield-check" size={16} />
+                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
+                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 sm:mb-2.5">
+                    <Icon name="shield-check" size={15} />
                   </div>
-                  <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
-                    Anti-Cheat Engine
-                  </h3>
-                  <p className="text-[12px] text-fg-muted mt-1 leading-relaxed">
-                    Stockfish 16 audits move timing and correlation. Instant refund on foul play.
-                  </p>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
+                      Anti-Cheat Engine
+                    </h3>
+                    <p className="text-[11px] sm:text-[12px] text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
+                      Stockfish 16 audits move timing and correlation. Instant refund on foul play.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="rounded-2xl border border-line bg-surface p-4 transition-all hover:bg-surface-inset/60 shadow-2xs">
-                  <div className="flex size-8 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 mb-2.5">
-                    <Icon name="lightning" size={16} />
+                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
+                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 sm:mb-2.5">
+                    <Icon name="lightning" size={15} />
                   </div>
-                  <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
-                    FIDE Server Clocks
-                  </h3>
-                  <p className="text-[12px] text-fg-muted mt-1 leading-relaxed">
-                    Authoritative server timestamps with lag compensation. Zero ping abuse.
-                  </p>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-fg-default text-[13px] leading-snug">
+                      FIDE Server Clocks
+                    </h3>
+                    <p className="text-[11px] sm:text-[12px] text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
+                      Authoritative server timestamps with lag compensation. Zero ping abuse.
+                    </p>
+                  </div>
                 </div>
               </div>
 
