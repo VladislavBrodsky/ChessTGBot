@@ -67,9 +67,8 @@ function LeaderboardScore({ entry, unit, locale, reduceMotion, gainLabel, podium
         <span aria-hidden="true">{prefix}<CountUp key={unit} value={entry.score} duration={reduceMotion ? 0 : 0.42} format={value => value.toLocaleString(locale)} /> {unit}</span>
       </bdi>
       <motion.span key={entry.score} initial={reduceMotion ? false : { opacity: 0.6, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: reduceMotion ? 0 : 0.24 }} className={`leaderboard-daily-badge ${isHot ? 'leaderboard-daily-badge--hot' : ''}`} data-preview-daily-gain={entry.dailyGain}>
-        <span className="leaderboard-daily-dot" aria-hidden="true" />
-        <span>{gainLabel}</span>
+        transition={{ duration: reduceMotion ? 0 : 0.24 }} className={`leaderboard-preview-gain ${isHot ? 'leaderboard-preview-gain--hot' : ''} block t-caption`} data-preview-daily-gain={entry.dailyGain}>
+        {gainLabel}
       </motion.span>
     </div>
   );

@@ -639,81 +639,34 @@
   }
 }
 
-.leaderboard-daily-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 5px;
-  padding: 1.5px 7px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: var(--font-mono, monospace);
-  line-height: 14px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
+.leaderboard-preview-gain {
   color: #34d399;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.22), inset 0 0 6px rgba(16, 185, 129, 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s ease;
+  font-weight: 650;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.45);
+  letter-spacing: -0.01em;
 }
 
-.leaderboard-daily-badge--hot {
-  background: rgba(16, 185, 129, 0.18);
-  border-color: rgba(52, 211, 153, 0.55);
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35), inset 0 0 8px rgba(52, 211, 153, 0.2);
+.leaderboard-preview-gain--hot {
   color: #6ee7b7;
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.75), 0 0 18px rgba(16, 185, 129, 0.4);
+  animation: gain-neon-pulse 2.5s ease-in-out infinite alternate;
 }
 
-.leaderboard-daily-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 9999px;
-  background-color: #34d399;
-  box-shadow: 0 0 8px #10b981;
-  animation: live-dot-radar 1.6s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
-@keyframes live-dot-radar {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 8px #10b981;
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(0.7);
-    box-shadow: 0 0 2px #10b981;
-  }
-}
-
-.leaderboard-daily-badge::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-  animation: badge-light-sweep 3.6s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes badge-light-sweep {
-  0%, 65% {
-    left: -100%;
+@keyframes gain-neon-pulse {
+  0% {
+    text-shadow: 0 0 6px rgba(52, 211, 153, 0.45), 0 0 12px rgba(16, 185, 129, 0.2);
+    opacity: 0.92;
   }
   100% {
-    left: 200%;
+    text-shadow: 0 0 11px rgba(52, 211, 153, 0.85), 0 0 20px rgba(16, 185, 129, 0.5);
+    opacity: 1;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .leaderboard-preview-coin,
-  .leaderboard-daily-dot,
-  .leaderboard-daily-badge::after {
+  .leaderboard-preview-gain--hot {
     animation: none !important;
   }
 }
