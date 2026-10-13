@@ -133,27 +133,27 @@ export default function EngagementQuest() {
 
       <p className="t-body text-brand-muted">{t('description')}</p>
       
-      <div className="space-y-2 rounded-2xl bg-brand-elevated/40 border border-brand-border/60 p-3">
-        <div className="flex items-center justify-between gap-2">
-          <span className="t-caption font-medium text-brand-muted" aria-live="polite">
-            {busy ? t('loading') : data.state === 'claimed' && data.reward_key ? rewardLabel(data.reward_key) : data.state === 'active' ? t('remaining', { count: data.target - data.progress }) : t('qualification')}
-          </span>
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-3" role="progressbar" aria-label={t('progress', { count: data.progress, total: data.target })} aria-valuemin={0} aria-valuemax={data.target} aria-valuenow={data.progress}>
+          <div className="grid flex-1 grid-cols-3 gap-2" aria-hidden="true">
+            {Array.from({ length: data.target }, (_, i) => (
+              <span
+                key={i}
+                className={`h-2 rounded-pill transition-all duration-300 ${
+                  i < data.progress
+                    ? 'bg-brand-action shadow-xs'
+                    : 'bg-brand-elevated border border-brand-border/80'
+                }`}
+              />
+            ))}
+          </div>
           <span className="t-numeric-sm tabular-nums font-bold text-white shrink-0">
             {data.progress}/{data.target}
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-2" role="progressbar" aria-label={t('progress', { count: data.progress, total: data.target })} aria-valuemin={0} aria-valuemax={data.target} aria-valuenow={data.progress}>
-          {Array.from({ length: data.target }, (_, i) => (
-            <span
-              key={i}
-              className={`h-2 rounded-pill transition-all duration-300 ${
-                i < data.progress
-                  ? 'bg-brand-action shadow-xs'
-                  : 'bg-brand-elevated border border-brand-border/80'
-              }`}
-            />
-          ))}
-        </div>
+        <p className="t-caption text-brand-muted text-right font-medium" aria-live="polite">
+          {busy ? t('loading') : data.state === 'claimed' && data.reward_key ? rewardLabel(data.reward_key) : data.state === 'active' ? t('remaining', { count: data.target - data.progress }) : t('qualification')}
+        </p>
       </div>
 
       <Button
