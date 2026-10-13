@@ -133,7 +133,7 @@ export default function EngagementQuest() {
 
       <p className="t-body text-brand-muted">{t('description')}</p>
       
-      <div className="space-y-1.5">
+      <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">
         <div className="flex items-center gap-3" role="progressbar" aria-label={t('progress', { count: data.progress, total: data.target })} aria-valuemin={0} aria-valuemax={data.target} aria-valuenow={data.progress}>
           <div className="grid flex-1 grid-cols-3 gap-2" aria-hidden="true">
             {Array.from({ length: data.target }, (_, i) => (

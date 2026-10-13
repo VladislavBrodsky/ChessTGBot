@@ -42,7 +42,10 @@ export function GramVaultPreview() {
 
       <p className="t-body text-brand-muted">{t('summary')}</p>
 
-      <p className="t-caption text-brand-muted text-right font-medium">{t('current_box')}</p>
+      <div className="flex items-center gap-2 rounded-xl border border-brand-border/60 bg-brand-elevated/40 px-3.5 py-2.5 text-caption text-brand-muted">
+        <FiInfo size={14} className="shrink-0 text-brand-muted" aria-hidden="true" />
+        <span>{t('current_box')}</span>
+      </div>
     </Card>
 
     <Modal isOpen={open} onClose={() => setOpen(false)} title={t('title')} description={t('status')}>
