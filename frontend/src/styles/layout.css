@@ -420,7 +420,7 @@
 .hero-metrics dt { min-height: calc(var(--type-caption-size) * var(--type-caption-leading)); overflow-wrap: anywhere; }
 .hero-metrics dd { font-weight: 650; font-variant-numeric: tabular-nums; }
 
-.result-metrics { display: flex; flex-direction: column; gap: var(--space-gap-card); padding: var(--pad-md); border: 1px solid var(--border-muted); border-radius: var(--radius-row); background: var(--bg-elevated); }
+.result-metrics { display: flex; flex-direction: column; gap: var(--space-gap-card); padding: var(--space-pad-md); border: 1px solid var(--border-muted); border-radius: var(--radius-row); background: var(--bg-elevated); }
 .result-metrics > div { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--space-gap-inline); }
 .result-metrics dt { color: var(--text-muted); font-size: var(--type-caption-size); }
 .result-metrics dd { color: var(--text-primary); font-size: var(--type-body-size); font-weight: 650; font-variant-numeric: tabular-nums; }

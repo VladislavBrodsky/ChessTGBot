@@ -3,10 +3,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BetSlip, type BetSlipProps } from '../components/game/lobby/BetSlip';
 import { LiveStrip } from '../components/game/lobby/LiveStrip';
+import { LobbyHero } from '../components/game/lobby/LobbyHero';
 import { RecentResults } from '../components/game/lobby/RecentResults';
 import { winnerCents, formatUsd } from '../lib/settlement';
 
-jest.mock('next-intl', () => ({ useLocale: () => 'en' }));
+jest.mock('next-intl', () => ({ useLocale: () => 'en', useTranslations: () => (key: string) => key }));
 jest.mock('../lib/telegram', () => ({ telegramHaptic: jest.fn() }));
 
 beforeAll(() => {
@@ -117,3 +118,67 @@ describe('real activity surfaces stay honest', () => {
     expect(container).toBeEmptyDOMElement();
   });
 });
+
+describe('LobbyHero account and activity hero', () => {
+  it('renders available balance and currency badge', () => {
+    const onTopUp = jest.fn();
+    const onRetry = jest.fn();
+    render(
+      <LobbyHero
+        balance={280}
+        balanceLoading={false}
+        balanceError={false}
+        activityLoading={false}
+        searching={0}
+        games24h={0}
+        onTopUp={onTopUp}
+        onRetry={onRetry}
+      />
+    );
+    expect(screen.getByText('available_balance')).toBeInTheDocument();
+    expect(screen.getByText('$2.80')).toBeInTheDocument();
+    expect(screen.getByText('USDT')).toBeInTheDocument();
+    expect(screen.getByText('top_up')).toBeInTheDocument();
+  });
+
+  it('triggers top up callback when button clicked', () => {
+    const onTopUp = jest.fn();
+    const onRetry = jest.fn();
+    render(
+      <LobbyHero
+        balance={500}
+        balanceLoading={false}
+        balanceError={false}
+        activityLoading={false}
+        searching={2}
+        games24h={15}
+        onTopUp={onTopUp}
+        onRetry={onRetry}
+      />
+    );
+    fireEvent.click(screen.getByText('top_up'));
+    expect(onTopUp).toHaveBeenCalled();
+  });
+
+  it('renders retry button and calls onRetry when balance error occurs', () => {
+    const onTopUp = jest.fn();
+    const onRetry = jest.fn();
+    render(
+      <LobbyHero
+        balance={0}
+        balanceLoading={false}
+        balanceError={true}
+        activityLoading={false}
+        searching={0}
+        games24h={0}
+        onTopUp={onTopUp}
+        onRetry={onRetry}
+      />
+    );
+    const retryBtn = screen.getByText('retry_btn');
+    expect(retryBtn).toBeInTheDocument();
+    fireEvent.click(retryBtn);
+    expect(onRetry).toHaveBeenCalled();
+  });
+});
+

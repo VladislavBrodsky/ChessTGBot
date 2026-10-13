@@ -2,17 +2,69 @@
 .lobby-stack { display: flex; width: 100%; flex-direction: column; gap: var(--space-gap-card); }
 
 /* A single, compact hero: account balance/actions followed by measured activity. */
-.lobby-hero { display: flex; flex-direction: column; gap: var(--space-gap-stack); padding: var(--pad-md); }
-.lobby-hero__balance { display: flex; align-items: center; justify-content: space-between; gap: var(--space-gap-card); }
-.lobby-hero__amount { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-gap-inline); min-height: var(--size-control-sm); border-radius: var(--radius-control); }
-.lobby-live { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-gap-card); padding-block-start: var(--space-gap-stack); border-block-start: 1px solid var(--border-muted); }
-.lobby-live__metric { display: flex; min-width: 0; align-items: baseline; flex-wrap: wrap; gap: var(--space-gap-inline); }
-.lobby-live__metric dd { flex: none; font-weight: 650; font-variant-numeric: tabular-nums; }
+.lobby-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-gap-card, 16px);
+  padding: var(--space-pad-lg, 16px);
+}
+.lobby-hero__balance {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-gap-card);
+}
+.lobby-hero__amount {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-gap-inline);
+  min-height: var(--size-control-sm);
+  border-radius: var(--radius-control);
+}
+.lobby-live {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2, 8px);
+  padding-block-start: var(--space-3, 12px);
+  border-block-start: 1px solid var(--border-muted);
+}
+.lobby-live__metric {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 8px);
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--bg-elevated) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-muted) 80%, transparent);
+  border-radius: var(--radius-control, 12px);
+}
+.lobby-live__metric dd {
+  flex: none;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
 @media (min-width: 640px) {
-  .lobby-hero { flex-direction: row; align-items: center; gap: var(--space-gap-section); }
-  .lobby-hero__balance { flex: 1; min-width: 0; }
-  .lobby-live { flex: 1; min-width: 0; padding-block-start: 0; border-block-start: 0; border-inline-start: 1px solid var(--border-muted); padding-inline-start: var(--space-gap-section); }
-  .lobby-live__metric { flex-direction: column; gap: var(--space-1); }
+  .lobby-hero {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-gap-section);
+  }
+  .lobby-hero__balance {
+    flex: 1;
+    min-width: 0;
+  }
+  .lobby-live {
+    flex: none;
+    min-width: 320px;
+    padding-block-start: 0;
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--border-muted);
+    padding-inline-start: var(--space-gap-section);
+  }
 }
 
 /* The slip */

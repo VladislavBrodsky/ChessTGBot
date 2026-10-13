@@ -16,19 +16,42 @@ export function LobbyHero({ balance, balanceLoading, balanceError, activityLoadi
 }) {
   const tw = useTranslations('Wallet'), tg = useTranslations('Game');
   const locale = useLocale();
-  return <Card variant="solid" className="ui-hero-card lobby-hero w-full">
-    <div className="lobby-hero__balance">
-      <div className="min-w-0 space-y-1">
-        <h2 className="t-caption text-brand-muted">{tw('available_balance')}</h2>
-        <Link href={`/${locale}/wallet`} className="lobby-hero__amount" aria-label={tw('available_balance')} onClick={() => telegramHaptic('selection')}>
-          {balanceLoading ? <Skeleton textRole="numeric-lg" width="var(--size-stat-min)" /> : <bdi className="t-numeric-lg">{balanceError || !Number.isFinite(balance) ? '—' : `$${(balance / 100).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</bdi>}
-          <span className="t-caption text-brand-muted">USDT</span>
-        </Link>
+  return (
+    <Card variant="solid" className="ui-hero-card lobby-hero w-full p-4 sm:p-5">
+      <div className="lobby-hero__balance">
+        <div className="min-w-0 space-y-1">
+          <h2 className="t-caption uppercase tracking-wider text-brand-muted">{tw('available_balance')}</h2>
+          <Link
+            href={`/${locale}/wallet`}
+            className="lobby-hero__amount group inline-flex items-baseline gap-2 transition-opacity hover:opacity-90 active:scale-[0.99]"
+            aria-label={tw('available_balance')}
+            onClick={() => telegramHaptic('selection')}
+          >
+            {balanceLoading ? (
+              <Skeleton textRole="numeric-lg" width="var(--size-stat-min)" />
+            ) : (
+              <bdi className="t-numeric-lg text-brand-primary">
+                {balanceError || !Number.isFinite(balance)
+                  ? '—'
+                  : `$${(balance / 100).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              </bdi>
+            )}
+            <span className="inline-flex items-center rounded-md border border-brand-border/60 bg-brand-elevated px-1.5 py-0.5 text-caption font-bold text-brand-muted">
+              USDT
+            </span>
+          </Link>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon={<FaWallet className="text-emerald-400" />}
+          className="shrink-0 font-semibold hover:border-brand-primary/40 active:scale-95"
+          onClick={balanceError ? onRetry : onTopUp}
+        >
+          {balanceError ? tw('retry_btn') : tw('top_up')}
+        </Button>
       </div>
-      <Button variant="secondary" leftIcon={<FaWallet />} onClick={balanceError ? onRetry : onTopUp}>
-        {balanceError ? tw('retry_btn') : tw('top_up')}
-      </Button>
-    </div>
-    <LiveStrip searching={searching} games24h={games24h} loading={activityLoading} unavailable={activityError} t={tg} />
-  </Card>;
+      <LiveStrip searching={searching} games24h={games24h} loading={activityLoading} unavailable={activityError} t={tg} />
+    </Card>
+  );
 }
