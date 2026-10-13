@@ -54,10 +54,11 @@ function LeaderboardScore({ entry, unit, locale, reduceMotion, gainLabel, podium
   entry: LeaderboardEntry; unit: 'GRAM' | 'XP'; locale: string; reduceMotion: boolean; gainLabel: string; podium?: boolean;
 }) {
   const prefix = unit === 'GRAM' ? '+' : '';
+  const isHot = entry.dailyGain >= 30;
   return (
     <div className={`leaderboard-preview-metric ${podium ? 'leaderboard-preview-metric--podium' : ''}`}>
       <bdi dir="ltr" data-preview-score={entry.score} aria-label={`${prefix}${entry.score.toLocaleString(locale)} ${unit}`}
-        className={`leaderboard-preview-value ${podium ? 'podium__score' : 't-numeric-sm text-brand-primary'}`}>
+        className={`leaderboard-preview-value ${unit === 'GRAM' ? 'leaderboard-preview-value--gram' : 'leaderboard-preview-value--xp'} ${podium ? 'podium__score' : 't-numeric-sm'}`}>
         {unit === 'GRAM' && (
           // Official vector mark, served locally at its original colors.
           // eslint-disable-next-line @next/next/no-img-element
@@ -66,8 +67,9 @@ function LeaderboardScore({ entry, unit, locale, reduceMotion, gainLabel, podium
         <span aria-hidden="true">{prefix}<CountUp key={unit} value={entry.score} duration={reduceMotion ? 0 : 0.42} format={value => value.toLocaleString(locale)} /> {unit}</span>
       </bdi>
       <motion.span key={entry.score} initial={reduceMotion ? false : { opacity: 0.6, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: reduceMotion ? 0 : 0.24 }} className="block t-caption text-brand-success" data-preview-daily-gain={entry.dailyGain}>
-        {gainLabel}
+        transition={{ duration: reduceMotion ? 0 : 0.24 }} className={`leaderboard-daily-badge ${isHot ? 'leaderboard-daily-badge--hot' : ''}`} data-preview-daily-gain={entry.dailyGain}>
+        <span className="leaderboard-daily-dot" aria-hidden="true" />
+        <span>{gainLabel}</span>
       </motion.span>
     </div>
   );
