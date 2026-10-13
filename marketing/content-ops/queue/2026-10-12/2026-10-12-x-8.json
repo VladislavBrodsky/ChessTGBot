@@ -4,7 +4,7 @@
   "date": "2026-10-12",
   "category": "Engineering",
   "hook": "Why did we build speed chess as a Telegram Mini App",
-  "text": "Why did we build speed chess as a Telegram Mini App\n\nOpening a desktop browser and typing logins takes 3 minutes.\nIn Telegram, challenging a friend takes 1 tap.\n\nSub-100ms WebSockets. Zero app store downloads. Pure blitz.",
+  "text": "Why did we build speed chess as a Telegram Mini App\n\nOpening a desktop browser and typing logins takes 3 minutes.\nIn Telegram, challenging a friend takes 1 tap.\n\nSub-100ms WebSockets. Zero app store downloads. Pure blitz.\n\n#TelegramGaming #TON",
   "status": "approved",
   "sources": [
     {

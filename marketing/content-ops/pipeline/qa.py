@@ -193,8 +193,8 @@ def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
     if hook.rstrip().endswith("."):
         issues.append("hook must not end with a period (kill-switch on curiosity/momentum)")
     hashtags = re.findall(r"#\w+", text)
-    if len(hashtags) > 1:
-        issues.append("more than 1 hashtag; X algorithm penalizes multi-hashtag clutter")
+    if len(hashtags) > 3:
+        issues.append("more than 3 hashtags; X algorithm penalizes multi-hashtag clutter (keep 2-3 max)")
     issues += tone(text, max_emoji=2)
 
     docked = post.get("docked_reply")
@@ -243,8 +243,8 @@ def check_x_thread(thread: dict, corpus: list[str] | None = None) -> dict:
         if len(t_body) > 280:
             issues.append(f"tweet #{idx} is {len(t_body)} chars; limit 280")
         hashtags = re.findall(r"#\w+", t_text)
-        if len(hashtags) > 1:
-            issues.append(f"tweet #{idx} has more than 1 hashtag")
+        if len(hashtags) > 3:
+            issues.append(f"tweet #{idx} has more than 3 hashtags")
         issues += tone(t_text, max_emoji=2)
         issues += compliance(t_text)
         links = re.findall(r"https?://[^\s]+", t_text)

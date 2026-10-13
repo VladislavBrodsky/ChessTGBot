@@ -625,19 +625,14 @@ function DepositModalContent({
     <Drawer isOpen title={tw('deposit_invoice')} onClose={() => { if (!processing) closeDeposit(); }} maxHeight="90dvh">
         <div className="space-y-4">
           {chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance && (
-            <div className="w-full bg-brand-surface rounded-2xl p-3.5 border border-brand-border text-caption font-semibold text-brand-muted space-y-2 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span>{tw('wager_stake')}</span>
-                <span className="text-brand-primary font-bold">${(chosenWager / 100).toFixed(2)} USDT</span>
+            <div className="w-full bg-brand-surface rounded-xl px-3.5 py-2.5 border border-brand-border flex items-center justify-between text-caption shadow-xs">
+              <div className="flex items-center gap-1.5 text-brand-muted">
+                <span>{tw('your_balance')}:</span>
+                <span className="font-semibold text-brand-primary">${(walletBalance / 100).toFixed(2)} USDT</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span>{tw('your_balance')}</span>
-                <span className="text-brand-muted font-bold">${(walletBalance / 100).toFixed(2)} USDT</span>
-              </div>
-              <div className="h-px bg-brand-border/80 my-0.5" />
-              <div className="flex items-center justify-between text-caption font-bold">
-                <span className="text-brand-muted">{tw('deficit_needed')}</span>
-                <span className="text-emerald-400 font-bold">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-brand-muted">{tw('deficit_needed')}:</span>
+                <span className="font-bold text-emerald-400">${((chosenWager - walletBalance) / 100).toFixed(2)} USDT</span>
               </div>
             </div>
           )}

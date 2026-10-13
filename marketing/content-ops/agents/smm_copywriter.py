@@ -382,7 +382,33 @@ class SmmCopywriterAgent:
         # Strictly enforce 1:1 format ("square": 1080x1080) for X posts
         canvas_size = "square"
         clean_hook = hook.strip().rstrip(".")
-        post_text = f"{clean_hook}\n\n{body.strip()}".strip()
+        
+        # Inject 2-3 targeted algorithmic hashtags based on category
+        hashtags_to_add = []
+        if "#" not in body:
+            cat_key = category.lower()
+            if "tactic" in cat_key:
+                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("tactics", ["#Chess", "#SpeedChess"])
+            elif "culture" in cat_key or "news" in cat_key:
+                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("culture", ["#Chess", "#BlitzChess"])
+            elif "psycholog" in cat_key:
+                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("psychology", ["#Chess", "#MentalStamina"])
+            elif "debate" in cat_key:
+                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("debate", ["#Chess", "#SpeedChess"])
+            elif "engineer" in cat_key:
+                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("engineering", ["#TelegramMiniApp", "#WebSockets"])
+            elif "product" in cat_key or "arena" in cat_key or "rule" in cat_key:
+                hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("telegram", ["#Chess", "#TelegramGaming", "#TON"])
+            else:
+                hashtags_to_add = ["#Chess", "#SpeedChess"]
+
+        tag_str = " ".join(hashtags_to_add[:3])
+        if tag_str and tag_str not in body:
+            body_with_tags = f"{body.strip()}\n\n{tag_str}".strip()
+        else:
+            body_with_tags = body.strip()
+
+        post_text = f"{clean_hook}\n\n{body_with_tags}".strip()
         post: Dict[str, Any] = {
             "id": slot_id,
             "kind": "x_post",

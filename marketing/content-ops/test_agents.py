@@ -144,7 +144,16 @@ class TestAgents(unittest.TestCase):
         }
         qa_res = self.orchestrator.qa.inspect_x_post(post)
         self.assertFalse(qa_res["passed"])
-        self.assertTrue(any("more than 1 hashtag" in i for i in qa_res["issues"]))
+        self.assertTrue(any("more than 3 hashtags" in i for i in qa_res["issues"]))
+
+        # 2-3 hashtags should pass
+        valid_post = {
+            "hook": "Clean hashtags",
+            "text": "White to move under 5 seconds #Chess #SpeedChess",
+            "category": "Tactics",
+        }
+        valid_qa = self.orchestrator.qa.inspect_x_post(valid_post)
+        self.assertTrue(valid_qa["passed"])
 
     def test_x_thread_and_qa(self):
         res = self.orchestrator.create_flagship_x_thread()

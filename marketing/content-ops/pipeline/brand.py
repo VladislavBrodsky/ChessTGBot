@@ -40,6 +40,20 @@ VIRAL_KEYWORD_CLUSTERS = {
     ]
 }
 
+# 2026 Algorithmic Hashtag Strategy for X (strictly 2-3 focused hashtags per post)
+# Pair 1 Core Niche Anchor (#Chess / #SpeedChess) + 1 High-Discovery Tag (#TelegramGaming / #TON / #Web3Gaming)
+VIRAL_HASHTAG_CLUSTERS = {
+    "tactics": ["#Chess", "#SpeedChess", "#ChessTactics"],
+    "culture": ["#Chess", "#BlitzChess", "#ChessLife"],
+    "psychology": ["#Chess", "#MentalStamina", "#CognitivePerformance"],
+    "debate": ["#Chess", "#SpeedChess", "#ChessCommunity"],
+    "telegram": ["#Chess", "#TelegramGaming", "#TON"],
+    "engineering": ["#WebSockets", "#TelegramMiniApp", "#BuildInPublic"],
+    "arena": ["#Chess", "#Web3Gaming", "#SkillGaming"],
+    "openings": ["#Chess", "#OpeningTheory", "#ChessGame"]
+}
+
+
 # CTA registry: id -> (button label, url, wager?)
 CTAS = {
     "play": ("Play a free game", TG_APP, False),
