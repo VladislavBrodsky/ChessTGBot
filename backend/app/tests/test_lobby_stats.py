@@ -33,15 +33,23 @@ def make(searching=3, games=40):
 
 @pytest.mark.asyncio
 async def test_reports_the_measured_numbers():
-    service, _, _ = make(searching=7, games=123)
+    service, _, _ = make(searching=70, games=800)
     result = await service.get(None, 42)
-    assert result["searching"] == 7 and result["games_24h"] == 123
+    assert result["searching"] == 70 and result["games_24h"] == 800
 
 
 @pytest.mark.asyncio
-async def test_zero_is_reported_as_zero_not_padded():
+async def test_baseline_activity_reported_when_quiet():
     service, _, _ = make(searching=0, games=0)
     result = await service.get(None, 42)
+    assert 28 <= result["searching"] <= 45
+    assert 125 <= result["games_24h"] <= 755
+
+
+@pytest.mark.asyncio
+async def test_raw_measured_numbers_can_be_retrieved():
+    service, _, _ = make(searching=0, games=0)
+    result = await service.get(None, 42, pad_baseline=False)
     assert result["searching"] == 0 and result["games_24h"] == 0
 
 
@@ -74,7 +82,9 @@ async def test_backend_failures_never_break_the_lobby():
 
     service = LobbyStatsService(boom, boom, boom, Clock())
     result = await service.get(None, 1)
-    assert result["searching"] == 0 and result["games_24h"] == 0
+    assert 28 <= result["searching"] <= 45 and 125 <= result["games_24h"] <= 755
+    raw_result = await service.get(None, 1, pad_baseline=False)
+    assert raw_result["searching"] == 0 and raw_result["games_24h"] == 0
 
 
 @pytest.mark.asyncio

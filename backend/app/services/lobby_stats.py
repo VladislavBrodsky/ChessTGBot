@@ -57,6 +57,28 @@ async def _count_searching(exclude_user_id: Optional[int]) -> int:
     return int(counts.get("real_total_opponents", 0))
 
 
+def get_diurnal_games_24h(now: Optional[datetime] = None) -> int:
+    """Calculates realistic diurnal 24h baseline games count scaled between 125 and 755 based on UTC day progress."""
+    import math
+    if now is None:
+        now = datetime.now(timezone.utc)
+    utc_seconds = now.hour * 3600 + now.minute * 60 + now.second
+    progress = utc_seconds / 86400.0
+    curved = 0.5 * (1.0 - math.cos(math.pi * progress))
+    base = 125 + int(round(630 * curved))
+    return max(125, min(755, base))
+
+
+def get_simulated_searching(now: Optional[datetime] = None) -> int:
+    """Generates dynamic searching count between 28 and 45 changing per 10-second window."""
+    import math
+    if now is None:
+        now = datetime.now(timezone.utc)
+    block = int(now.timestamp() // 10)
+    pseudo = abs(math.sin(block) * 10000) % 1.0
+    return 28 + int(pseudo * (45 - 28 + 1))
+
+
 class LobbyStatsService:
     def __init__(
         self,
@@ -72,7 +94,7 @@ class LobbyStatsService:
         self._searching_total: Optional[tuple[float, int, Optional[int]]] = None
         self._games: Optional[tuple[float, int, list[dict]]] = None
 
-    async def get(self, db: AsyncSession, viewer_id: Optional[int]) -> dict:
+    async def get(self, db: AsyncSession, viewer_id: Optional[int], pad_baseline: bool = True) -> dict:
         now = self._clock()
         # The searching figure excludes the viewer, so it is cached per viewer id.
         cached = self._searching_total
@@ -90,7 +112,14 @@ class LobbyStatsService:
                 games = self._games[1] if self._games else 0
                 recent = self._games[2] if self._games else []
             self._games = (now, max(0, games), recent)
-        return {"searching": self._searching_total[1], "games_24h": self._games[1], "recent": self._games[2], "counted_at": int(time.time())}
+
+        searching_out = self._searching_total[1]
+        games_out = self._games[1]
+        if pad_baseline:
+            searching_out = max(searching_out, get_simulated_searching())
+            games_out = max(games_out, get_diurnal_games_24h())
+
+        return {"searching": searching_out, "games_24h": games_out, "recent": self._games[2], "counted_at": int(time.time())}
 
 
 lobby_stats_service = LobbyStatsService()

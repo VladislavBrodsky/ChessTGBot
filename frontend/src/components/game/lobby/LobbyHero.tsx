@@ -20,7 +20,7 @@ export function LobbyHero({ balance, balanceLoading, balanceError, activityLoadi
     <Card variant="solid" className="ui-hero-card lobby-hero w-full p-4 sm:p-5">
       <div className="lobby-hero__balance">
         <div className="min-w-0 space-y-1">
-          <h2 className="t-caption uppercase tracking-wider text-brand-muted">{tw('available_balance')}</h2>
+          <h2 className="ui-eyebrow text-brand-muted">{tw('available_balance')}</h2>
           <Link
             href={`/${locale}/wallet`}
             className="lobby-hero__amount group inline-flex items-baseline gap-2 transition-opacity hover:opacity-90 active:scale-[0.99]"

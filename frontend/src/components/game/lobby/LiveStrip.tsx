@@ -39,7 +39,7 @@ export function LiveStrip({ searching, games24h, loading = false, unavailable = 
             {loading ? (
               <Skeleton textRole="numeric-sm" width="3ch" />
             ) : (
-              <bdi>{unavailable || !Number.isFinite(value) ? '—' : Math.max(0, value).toLocaleString(locale)}</bdi>
+              <bdi suppressHydrationWarning>{unavailable || !Number.isFinite(value) ? '—' : Math.max(0, value).toLocaleString(locale)}</bdi>
             )}
           </dd>
         </div>

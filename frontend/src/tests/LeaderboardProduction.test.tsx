@@ -86,7 +86,7 @@ describe('Production Unified Leaderboard (Marketing & Real Player Sync)', () => 
 
     const podiumSlot = screen.getByText('Grand Master').closest('.podium__slot');
     expect(podiumSlot).toBeInTheDocument();
-    expect(within(podiumSlot!).getByLabelText('Simulated rank 1')).toBeInTheDocument();
+    expect(within(podiumSlot as HTMLElement).getByLabelText('Simulated rank 1')).toBeInTheDocument();
   });
 
   it('slots real players with intermediate stats in their rightful rank among demo players', () => {
@@ -128,7 +128,7 @@ describe('Production Unified Leaderboard (Marketing & Real Player Sync)', () => 
 
     const podiumSlot = screen.getByText('Scholar Pro').closest('.podium__slot');
     expect(podiumSlot).toBeInTheDocument();
-    expect(within(podiumSlot!).getByLabelText('Simulated rank 1')).toBeInTheDocument();
+    expect(within(podiumSlot as HTMLElement).getByLabelText('Simulated rank 1')).toBeInTheDocument();
   });
 
   it('opens Top 50 drawer containing mixed real and demo contenders', () => {

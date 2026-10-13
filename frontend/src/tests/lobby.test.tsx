@@ -6,6 +6,7 @@ import { LiveStrip } from '../components/game/lobby/LiveStrip';
 import { LobbyHero } from '../components/game/lobby/LobbyHero';
 import { RecentResults } from '../components/game/lobby/RecentResults';
 import { winnerCents, formatUsd } from '../lib/settlement';
+import { getDiurnalGames24h, getInitialWaiting, getNextWaiting } from '../hooks/useLobbyStats';
 
 jest.mock('next-intl', () => ({ useLocale: () => 'en', useTranslations: () => (key: string) => key }));
 jest.mock('../lib/telegram', () => ({ telegramHaptic: jest.fn() }));
@@ -179,6 +180,35 @@ describe('LobbyHero account and activity hero', () => {
     expect(retryBtn).toBeInTheDocument();
     fireEvent.click(retryBtn);
     expect(onRetry).toHaveBeenCalled();
+  });
+});
+
+describe('dynamic lobby activity metrics', () => {
+  it('keeps waiting count strictly within [28, 45]', () => {
+    for (let i = 0; i < 50; i++) {
+      const initial = getInitialWaiting(new Date(Date.now() + i * 15000));
+      expect(initial).toBeGreaterThanOrEqual(28);
+      expect(initial).toBeLessThanOrEqual(45);
+
+      const next = getNextWaiting(initial);
+      expect(next).toBeGreaterThanOrEqual(28);
+      expect(next).toBeLessThanOrEqual(45);
+    }
+  });
+
+  it('calculates games in 24h between 125 and 755 across the UTC day', () => {
+    const midnight = new Date('2026-10-13T00:00:00Z');
+    const noon = new Date('2026-10-13T12:00:00Z');
+    const endOfDay = new Date('2026-10-13T23:59:59Z');
+
+    const midnightGames = getDiurnalGames24h(midnight);
+    const noonGames = getDiurnalGames24h(noon);
+    const endGames = getDiurnalGames24h(endOfDay);
+
+    expect(midnightGames).toBe(125);
+    expect(noonGames).toBeGreaterThan(midnightGames);
+    expect(endGames).toBe(755);
+    expect(noonGames).toBeLessThan(endGames);
   });
 });
 
