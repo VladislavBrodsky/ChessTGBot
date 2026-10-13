@@ -1201,6 +1201,7 @@
     "uae": "阿联酋",
     "india": "印度",
     "brazil": "巴西",
-    "daily_gain": "每日 {gain}"
+    "daily_gain": "每日 {gain}",
+    "top_50": "前50名"
   }
 }

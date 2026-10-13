@@ -1201,6 +1201,7 @@
     "uae": "ОАЭ",
     "india": "Индия",
     "brazil": "Бразилия",
-    "daily_gain": "В день {gain}"
+    "daily_gain": "В день {gain}",
+    "top_50": "Топ-50"
   }
 }

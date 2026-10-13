@@ -1,10 +1,10 @@
-import { PREVIEW_PROFILES, PREVIEW_FRAMES_PER_DAY, previewDailyXP, previewDailyGRAM, previewStandings } from '@/lib/leaderboardPreview';
+import { PREVIEW_PROFILES, PREVIEW_PORTRAIT_IDS, PREVIEW_FRAMES_PER_DAY, previewDailyXP, previewDailyGRAM, previewStandings } from '@/lib/leaderboardPreview';
 import fs from 'fs';
 import path from 'path';
 
 describe('fictional leaderboard simulation', () => {
-  it('keeps ten stable fictional identities with Arabic, Japanese, Cyrillic and Latin names', () => {
-    expect(new Set(PREVIEW_PROFILES.map(profile => profile.id)).size).toBe(10);
+  it('keeps fifty stable fictional identities with Arabic, Japanese, Cyrillic and Latin names', () => {
+    expect(new Set(PREVIEW_PROFILES.map(profile => profile.id)).size).toBe(50);
     const names = PREVIEW_PROFILES.map(profile => profile.name).join(' ');
     for (const alphabet of [/[\u0600-\u06ff]/, /[\u4e00-\u9fff]/, /[\u0400-\u04ff]/, /[a-z]/i]) expect(names).toMatch(alphabet);
   });
@@ -16,8 +16,8 @@ describe('fictional leaderboard simulation', () => {
     let changed = false;
     for (let frame = 0; frame < 120; frame++) {
       const standings = previewStandings(frame, 'arena');
-      expect(standings).toHaveLength(10);
-      expect(standings.map(entry => entry.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      expect(standings).toHaveLength(50);
+      expect(standings.map(entry => entry.rank)).toEqual(Array.from({ length: 50 }, (_, index) => index + 1));
       expect(new Set(standings.map(entry => entry.profile.id))).toEqual(new Set(starting));
       expect(standings.every(entry => entry.score >= previous.get(entry.profile.id)!)).toBe(true);
       previous = new Map(standings.map(entry => [entry.profile.id, entry.score]));
@@ -71,7 +71,8 @@ describe('fictional leaderboard simulation', () => {
   it('ships every original portrait as a small local WebP asset', () => {
     const directory = path.join(__dirname, '../../public/images/leaderboard-preview');
     let totalBytes = 0;
-    for (const profile of PREVIEW_PROFILES) {
+    expect(PREVIEW_PORTRAIT_IDS.size).toBe(10);
+    for (const profile of PREVIEW_PROFILES.filter(profile => PREVIEW_PORTRAIT_IDS.has(profile.id))) {
       const image = fs.readFileSync(path.join(directory, `${profile.id}.webp`));
       expect(image.subarray(0, 4).toString()).toBe('RIFF');
       expect(image.subarray(8, 12).toString()).toBe('WEBP');

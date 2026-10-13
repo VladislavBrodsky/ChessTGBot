@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import LeaderboardPreview from '@/components/leaderboard/LeaderboardPreview';
 import { PREVIEW_FRAME_INTERVAL_MS } from '@/lib/leaderboardPreview';
@@ -7,6 +7,7 @@ import mockEnglishMessages from '@/messages/en.json';
 let mockReducedMotion = false;
 let mockOSReducedMotion = false;
 jest.mock('@/context/ReducedMotionContext', () => ({ useReducedMotionPreference: () => ({ reducedMotion: mockReducedMotion }) }));
+jest.mock('@/components/ui/Drawer', () => ({ Drawer: ({ isOpen, children, title, onClose }: any) => isOpen ? <div role="dialog" aria-label={title}><button onClick={onClose}>Close</button>{children}</div> : null }));
 jest.mock('next-intl', () => ({
   useLocale: () => 'en',
   useTranslations: (namespace: string) => {
@@ -40,7 +41,10 @@ describe('LeaderboardPreview presentation and timing', () => {
     render(<LeaderboardPreview />);
     expect(screen.getByText('Demo')).toBeVisible();
     expect(screen.getByText('Generated profiles and GRAM/XP figures.')).toBeVisible();
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Show Top 50' })).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Advance one day' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Reset' })).not.toBeInTheDocument();
     expect(screen.queryByText(/one minute simulates one day|Simulated day|starting at/)).not.toBeInTheDocument();
     expect(rows()).toHaveLength(10);
     expect(new Set(rows().map(row => row.id)).size).toBe(10);
@@ -52,6 +56,26 @@ describe('LeaderboardPreview presentation and timing', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Scholars · XP' }));
     expect(rows().every(row => row.text?.includes('XP'))).toBe(true);
     expect(document.querySelector('img[src$="gram.svg"]')).not.toBeInTheDocument();
+  });
+
+  it('opens fifty ordered profiles, switches the full list to XP and closes without expanding the Home list', () => {
+    render(<LeaderboardPreview />);
+    expect(screen.getByText('Showing 10 of 50 players')).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Show Top 50' }));
+    const dialog = screen.getByRole('dialog');
+    const entries = Array.from(dialog.querySelectorAll('[data-preview-profile]'));
+    expect(entries).toHaveLength(50);
+    expect(new Set(entries.map(entry => entry.getAttribute('data-preview-profile'))).size).toBe(50);
+    expect(within(dialog).getByText('Demo')).toBeVisible();
+    expect(within(dialog).getByText('Generated profiles and GRAM/XP figures.')).toBeVisible();
+    expect(dialog.querySelectorAll('img[src$=".webp"]')).toHaveLength(10);
+    expect(within(dialog).getByText('Lucas Pereira')).toBeVisible();
+    fireEvent.click(within(dialog).getByRole('tab', { name: 'Scholars · XP' }));
+    expect(entries.every(entry => entry.textContent?.includes('XP'))).toBe(true);
+    expect(dialog.querySelector('img[src$="gram.svg"]')).not.toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(rows()).toHaveLength(10);
   });
 
   it('keeps totals stable for twenty minutes and updates within the requested thirty-minute window', () => {

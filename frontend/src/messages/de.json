@@ -1201,6 +1201,7 @@
     "uae": "Vereinigte Arabische Emirate",
     "india": "Indien",
     "brazil": "Brasilien",
-    "daily_gain": "Täglich {gain}"
+    "daily_gain": "Täglich {gain}",
+    "top_50": "Top 50"
   }
 }

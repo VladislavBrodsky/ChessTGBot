@@ -14,7 +14,49 @@ export const PREVIEW_PROFILES = [
   { id: 'omar', name: 'عمر حسن', country: 'uae', gram: 540, xp: 4_180 },
   { id: 'maya', name: 'Maya Patel', country: 'india', gram: 427, xp: 3_980 },
   { id: 'gabriel', name: 'Gabriel Costa', country: 'brazil', gram: 319, xp: 3_820 },
+  { id: 'nour', name: 'نور إبراهيم', country: 'egypt', gram: 318, xp: 3_740 },
+  { id: 'sora', name: '田中 空', country: 'japan', gram: 316, xp: 3_695 },
+  { id: 'dmitri', name: 'Дмитрий Орлов', country: 'russia', gram: 314, xp: 3_650 },
+  { id: 'isabella', name: 'Isabella Reed', country: 'usa', gram: 312, xp: 3_605 },
+  { id: 'youssef', name: 'يوسف بن علي', country: 'morocco', gram: 310, xp: 3_560 },
+  { id: 'akira', name: '鈴木 明', country: 'japan', gram: 308, xp: 3_515 },
+  { id: 'sofia', name: 'Sofia Wagner', country: 'germany', gram: 306, xp: 3_470 },
+  { id: 'khalid', name: 'خالد سالم', country: 'uae', gram: 304, xp: 3_425 },
+  { id: 'arjun', name: 'Arjun Shah', country: 'india', gram: 302, xp: 3_380 },
+  { id: 'beatriz', name: 'Beatriz Lima', country: 'brazil', gram: 300, xp: 3_335 },
+  { id: 'salma', name: 'سلمى عادل', country: 'egypt', gram: 298, xp: 3_290 },
+  { id: 'aoi', name: '山本 葵', country: 'japan', gram: 296, xp: 3_245 },
+  { id: 'nikita', name: 'Никита Морозов', country: 'russia', gram: 294, xp: 3_200 },
+  { id: 'ethan', name: 'Ethan Parker', country: 'usa', gram: 292, xp: 3_155 },
+  { id: 'mariam', name: 'مريم الكتاني', country: 'morocco', gram: 290, xp: 3_110 },
+  { id: 'ren', name: '中村 蓮', country: 'japan', gram: 288, xp: 3_065 },
+  { id: 'jonas', name: 'Jonas Becker', country: 'germany', gram: 286, xp: 3_020 },
+  { id: 'fatima', name: 'فاطمة ناصر', country: 'uae', gram: 284, xp: 2_975 },
+  { id: 'priya', name: 'Priya Mehta', country: 'india', gram: 282, xp: 2_930 },
+  { id: 'rafael', name: 'Rafael Oliveira', country: 'brazil', gram: 280, xp: 2_885 },
+  { id: 'hassan', name: 'حسن مصطفى', country: 'egypt', gram: 278, xp: 2_840 },
+  { id: 'yui', name: '小林 結衣', country: 'japan', gram: 276, xp: 2_795 },
+  { id: 'irina', name: 'Ирина Белова', country: 'russia', gram: 274, xp: 2_750 },
+  { id: 'olivia', name: 'Olivia Morgan', country: 'usa', gram: 272, xp: 2_705 },
+  { id: 'mehdi', name: 'مهدي العلوي', country: 'morocco', gram: 270, xp: 2_660 },
+  { id: 'daichi', name: '伊藤 大地', country: 'japan', gram: 268, xp: 2_615 },
+  { id: 'lena', name: 'Lena Fischer', country: 'germany', gram: 266, xp: 2_570 },
+  { id: 'rashid', name: 'راشد المنصوري', country: 'uae', gram: 264, xp: 2_525 },
+  { id: 'rohan', name: 'Rohan Desai', country: 'india', gram: 262, xp: 2_480 },
+  { id: 'camila', name: 'Camila Santos', country: 'brazil', gram: 260, xp: 2_435 },
+  { id: 'dalia', name: 'داليا محمود', country: 'egypt', gram: 258, xp: 2_390 },
+  { id: 'kaito', name: '渡辺 海斗', country: 'japan', gram: 256, xp: 2_345 },
+  { id: 'sergei', name: 'Сергей Козлов', country: 'russia', gram: 254, xp: 2_300 },
+  { id: 'noah', name: 'Noah Bennett', country: 'usa', gram: 252, xp: 2_255 },
+  { id: 'hind', name: 'هند الإدريسي', country: 'morocco', gram: 250, xp: 2_210 },
+  { id: 'misaki', name: '加藤 美咲', country: 'japan', gram: 248, xp: 2_165 },
+  { id: 'felix', name: 'Felix Schneider', country: 'germany', gram: 246, xp: 2_120 },
+  { id: 'shamsa', name: 'شمسة الكعبي', country: 'uae', gram: 244, xp: 2_075 },
+  { id: 'ananya', name: 'Ananya Rao', country: 'india', gram: 242, xp: 2_030 },
+  { id: 'lucas', name: 'Lucas Pereira', country: 'brazil', gram: 240, xp: 1_985 },
 ] as const;
+
+export const PREVIEW_PORTRAIT_IDS = new Set(PREVIEW_PROFILES.slice(0, 10).map(profile => profile.id));
 
 type PreviewProfile = (typeof PREVIEW_PROFILES)[number];
 export interface PreviewStanding {
@@ -41,7 +83,11 @@ const budgets = {
   academy: PREVIEW_PROFILES.map((_, index) => Array.from({ length: 401 }, (_, day) => previewDailyXP(index, day))),
 };
 const totals = Object.fromEntries(Object.entries(budgets).map(([ladder, profiles]) => [ladder,
-  profiles.map(days => days.reduce<number[]>((sum, gain) => [...sum, sum[sum.length - 1] + gain], [0])),
+  profiles.map(days => {
+    const sum = [0];
+    for (const gain of days) sum.push(sum[sum.length - 1] + gain);
+    return sum;
+  }),
 ])) as Record<PreviewLadder, number[][]>;
 
 function normalizedFrame(frame: number): number {

@@ -1,0 +1,28 @@
+{
+  "mode": "local development",
+  "mainProfiles": 10,
+  "top50Profiles": 50,
+  "originalPortraits": 10,
+  "additionalProfiles": "shared initials avatars",
+  "drawerXPSwitch": true,
+  "focusReturnsToTrigger": true,
+  "listScrollsInsideDrawer": true,
+  "arabicReflow": {
+    "viewportWidth": 320,
+    "width": 316,
+    "scrollWidth": 316,
+    "rows": 50
+  },
+  "updateMinutes": 30,
+  "disclosureRetained": true,
+  "productionUsesAPIOnly": true,
+  "realGramSource": "pending backend wallet/reward work",
+  "checks": {
+    "tests": 143,
+    "coldTypecheck": "passed",
+    "lint": "zero warnings",
+    "translationMessages": 1157,
+    "locales": 10,
+    "staticPages": 213
+  }
+}
