@@ -47,12 +47,12 @@ const ROADMAP_TRACKS: RoadmapTrack[] = [
     icon: "graduation-cap",
     color: {
       primary: "#3b82f6",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/25",
-      text: "text-blue-600 dark:text-blue-400",
-      badgeBg: "bg-blue-500/10",
-      badgeBorder: "border-blue-500/25",
-      badgeText: "text-blue-700 dark:text-blue-400",
+      bg: "bg-inset",
+      border: "border-line",
+      text: "text-fg text-fg",
+      badgeBg: "bg-inset",
+      badgeBorder: "border-line",
+      badgeText: "text-fg text-fg",
       glow: "shadow-[0_0_15px_rgba(59,130,246,0.18)]",
       beamFrom: "#3b82f6",
       beamTo: "#06b6d4",
@@ -75,12 +75,12 @@ const ROADMAP_TRACKS: RoadmapTrack[] = [
     icon: "strategy",
     color: {
       primary: "#10b981",
-      bg: "bg-emerald-500/10",
-      border: "border-emerald-500/25",
-      text: "text-emerald-600 dark:text-emerald-400",
-      badgeBg: "bg-emerald-500/10",
-      badgeBorder: "border-emerald-500/25",
-      badgeText: "text-emerald-700 dark:text-emerald-400",
+      bg: "bg-inset",
+      border: "border-line",
+      text: "text-fg text-fg",
+      badgeBg: "bg-inset",
+      badgeBorder: "border-line",
+      badgeText: "text-fg text-fg",
       glow: "shadow-[0_0_15px_rgba(16,185,129,0.18)]",
       beamFrom: "#10b981",
       beamTo: "#3b82f6",
@@ -103,12 +103,12 @@ const ROADMAP_TRACKS: RoadmapTrack[] = [
     icon: "lightning",
     color: {
       primary: "#f59e0b",
-      bg: "bg-amber-500/10",
-      border: "border-amber-500/25",
-      text: "text-amber-600 dark:text-amber-400",
-      badgeBg: "bg-amber-500/10",
-      badgeBorder: "border-amber-500/25",
-      badgeText: "text-amber-700 dark:text-amber-400",
+      bg: "bg-inset",
+      border: "border-line",
+      text: "text-fg text-fg",
+      badgeBg: "bg-inset",
+      badgeBorder: "border-line",
+      badgeText: "text-fg text-fg",
       glow: "shadow-[0_0_15px_rgba(245,158,11,0.18)]",
       beamFrom: "#f59e0b",
       beamTo: "#10b981",
@@ -131,12 +131,12 @@ const ROADMAP_TRACKS: RoadmapTrack[] = [
     icon: "crown-simple",
     color: {
       primary: "#8b5cf6",
-      bg: "bg-purple-500/10",
-      border: "border-purple-500/25",
-      text: "text-purple-600 dark:text-purple-400",
-      badgeBg: "bg-purple-500/10",
-      badgeBorder: "border-purple-500/25",
-      badgeText: "text-purple-700 dark:text-purple-400",
+      bg: "bg-inset",
+      border: "border-line",
+      text: "text-fg text-fg",
+      badgeBg: "bg-inset",
+      badgeBorder: "border-line",
+      badgeText: "text-fg text-fg",
       glow: "shadow-[0_0_15px_rgba(139,92,246,0.18)]",
       beamFrom: "#8b5cf6",
       beamTo: "#ec4899",
@@ -158,12 +158,12 @@ export function AcademyRoadmap() {
         {/* Progress Bar Header Info */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-5">
           <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-mono text-[11px] sm:text-[12px] font-bold text-fg-default tracking-wide uppercase">
+            <span className="size-2 rounded-full bg-inset animate-pulse" />
+            <span className="font-mono text-caption font-bold text-fg-default tracking-wide uppercase">
               100-Level Tactical Academy Pipeline
             </span>
           </div>
-          <span className="font-mono text-[11px] text-fg-muted font-medium">
+          <span className="font-mono text-caption text-fg-muted font-medium">
             4 Sequential Mastery Milestones · Stockfish 17 Engine
           </span>
         </div>
@@ -184,6 +184,9 @@ export function AcademyRoadmap() {
                   key={track.id}
                   type="button"
                   onClick={() => setSelectedTrack(track.id)}
+              onKeyDown={(event) => { if (event.target === event.currentTarget && ["Enter", " "].includes(event.key)) { event.preventDefault(); setSelectedTrack(track.id); } }}
+              tabIndex={0}
+              aria-label={track.title}
                   className={`group relative flex flex-col items-start p-2.5 sm:p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
                     isSelected
                       ? "bg-surface border-fg-muted/40 shadow-xs ring-1 ring-fg-muted/20"
@@ -193,7 +196,7 @@ export function AcademyRoadmap() {
                   <div className="flex items-center justify-between w-full mb-2">
                     {/* Number Node with Pulsing Active Glow */}
                     <div
-                      className={`flex size-7 sm:size-8 items-center justify-center rounded-full font-mono text-[11px] sm:text-[12px] font-bold border transition-all ${
+                      className={`flex size-7 sm:size-8 items-center justify-center rounded-full font-mono text-caption text-caption font-bold border transition-all ${
                         isSelected
                           ? `${track.color.bg} ${track.color.border} ${track.color.text} shadow-sm`
                           : "bg-inset border-line text-fg-muted group-hover:text-fg-default"
@@ -203,15 +206,15 @@ export function AcademyRoadmap() {
                     </div>
 
                     {/* Progress percentage pill */}
-                    <span className="font-mono text-[10px] font-semibold text-fg-muted">
+                    <span className="font-mono text-caption font-semibold text-fg-muted">
                       {track.progressPercent}%
                     </span>
                   </div>
 
-                  <span className="font-semibold text-fg-default text-[12px] sm:text-[13px] leading-tight">
+                  <span className="font-semibold text-fg-default text-caption leading-tight">
                     {track.stageName}
                   </span>
-                  <span className="font-mono text-[10px] sm:text-[11px] text-fg-muted mt-0.5">
+                  <span className="font-mono text-caption text-fg-muted mt-0.5">
                     {track.levels}
                   </span>
                 </button>
@@ -222,13 +225,16 @@ export function AcademyRoadmap() {
       </div>
 
       {/* ── 2. THE 4 CONNECTED MASTERY ROADMAP CARDS (Balanced 4-Col Pipeline) ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
         {ROADMAP_TRACKS.map((track) => {
           const isSelected = selectedTrack === track.id;
           return (
             <div
               key={track.id}
               onClick={() => setSelectedTrack(track.id)}
+              onKeyDown={(event) => { if (event.target === event.currentTarget && ["Enter", " "].includes(event.key)) { event.preventDefault(); setSelectedTrack(track.id); } }}
+              tabIndex={0}
+              aria-label={track.title}
               className={`relative flex flex-col justify-between rounded-2xl border bg-surface p-5 sm:p-5.5 transition-all duration-300 cursor-pointer shadow-xs ${
                 isSelected
                   ? "border-fg-muted/50 shadow-md ring-1 ring-fg-muted/25"
@@ -247,24 +253,24 @@ export function AcademyRoadmap() {
 
               <div className="space-y-4 relative z-10">
                 {/* ── CARD HEADER: Step Pill + Status Chip ── */}
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`flex size-6.5 items-center justify-center rounded-lg font-mono text-[11px] font-bold border ${track.color.bg} ${track.color.border} ${track.color.text}`}
+                      className={`flex size-6.5 items-center justify-center rounded-lg font-mono text-caption font-bold border ${track.color.bg} ${track.color.border} ${track.color.text}`}
                     >
                       {track.step}
                     </span>
-                    <span className="font-mono text-[10.5px] font-bold text-fg-muted uppercase tracking-wider">
+                    <span className="font-mono text-caption font-bold text-fg-muted uppercase tracking-wider">
                       {track.levels}
                     </span>
                   </div>
 
                   {/* Eye-catching Status Badge */}
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${track.color.badgeBg} ${track.color.badgeBorder} ${track.color.badgeText}`}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-mono font-semibold border ${track.color.badgeBg} ${track.color.badgeBorder} ${track.color.badgeText}`}
                   >
                     {track.statusType === "start" && (
-                      <span className="size-1.5 rounded-full bg-blue-500 animate-ping" />
+                      <span className="size-1.5 rounded-full bg-inset animate-ping" />
                     )}
                     {track.status}
                   </span>
@@ -283,22 +289,22 @@ export function AcademyRoadmap() {
                 </div>
 
                 {/* ── Authoritative Description ── */}
-                <p className="text-[12.5px] sm:text-[13px] text-fg-muted leading-relaxed line-clamp-3">
+                <p className="text-caption text-fg-muted leading-relaxed">
                   {track.description}
                 </p>
 
                 {/* ── Key Concepts Checklist Chips ── */}
                 <div className="pt-1">
-                  <span className="block font-mono text-[10px] uppercase font-bold text-fg-muted/80 mb-2">
+                  <span className="block font-mono text-caption uppercase font-bold text-fg-muted/80 mb-2">
                     Core Repertoire:
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {track.concepts.map((concept, cIdx) => (
                       <span
                         key={cIdx}
-                        className="inline-flex items-center gap-1 rounded-md bg-inset/60 border border-line/60 px-2 py-0.5 font-mono text-[10px] text-fg-default"
+                        className="inline-flex items-center gap-1 rounded-md bg-inset/60 border border-line/60 px-2 py-0.5 font-mono text-caption text-fg-default"
                       >
-                        <span className="text-emerald-500 font-bold">✓</span>
+                        <span className="text-fg font-bold">✓</span>
                         <span>{concept}</span>
                       </span>
                     ))}
@@ -310,7 +316,7 @@ export function AcademyRoadmap() {
               <div className="pt-4 mt-4 border-t border-line space-y-3 relative z-10">
                 {/* Milestone Progress Bar */}
                 <div>
-                  <div className="flex items-center justify-between text-[10.5px] font-mono mb-1.5">
+                  <div className="flex items-center justify-between text-caption font-mono mb-1.5">
                     <span className="text-fg-muted">Milestone Depth</span>
                     <span className="font-semibold text-fg-default">
                       {track.lessonsCount} Lv · {track.drillsCount} Drills
@@ -332,7 +338,7 @@ export function AcademyRoadmap() {
                   href={telegramLink()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between w-full py-1.5 px-3 rounded-lg bg-inset hover:bg-line/40 transition-colors text-[11.5px] font-semibold text-fg-default group/link"
+                  className="flex items-center justify-between w-full py-1.5 px-3 rounded-lg bg-inset hover:bg-line/40 transition-colors text-caption font-semibold text-fg-default group/link"
                 >
                   <span>Practice Track {track.step}</span>
                   <span className="text-fg-muted group-hover/link:translate-x-0.5 transition-transform">
@@ -347,9 +353,9 @@ export function AcademyRoadmap() {
 
       {/* ── 3. BOTTOM CURRICULUM SUMMARY HUD ── */}
       <div className="rounded-2xl border border-line bg-surface/60 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 sm:divide-x divide-line w-full md:w-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 sm:divide-x divide-line w-full md:w-auto">
           <div className="space-y-0.5">
-            <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
+            <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Total Levels
             </span>
             <div className="font-mono text-heading-xs font-bold text-fg-default">
@@ -357,26 +363,26 @@ export function AcademyRoadmap() {
             </div>
           </div>
           <div className="space-y-0.5 sm:pl-6">
-            <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
+            <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Puzzles &amp; Drills
             </span>
-            <div className="font-mono text-heading-xs font-bold text-emerald-600">
+            <div className="font-mono text-heading-xs font-bold text-fg">
               275+ Tactical Drills
             </div>
           </div>
           <div className="space-y-0.5 sm:pl-6">
-            <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
+            <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Neural Engine
             </span>
-            <div className="font-mono text-heading-xs font-bold text-blue-600">
+            <div className="font-mono text-heading-xs font-bold text-fg">
               Stockfish 17 (800–2800)
             </div>
           </div>
           <div className="space-y-0.5 sm:pl-6">
-            <span className="font-mono text-[10px] uppercase font-bold text-fg-muted">
+            <span className="font-mono text-caption uppercase font-bold text-fg-muted">
               Entry Cost
             </span>
-            <div className="font-mono text-heading-xs font-bold text-purple-600">
+            <div className="font-mono text-heading-xs font-bold text-fg">
               100% Free Practice
             </div>
           </div>

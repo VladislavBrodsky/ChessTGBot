@@ -1214,7 +1214,9 @@
     "india": "الهند",
     "brazil": "البرازيل",
     "daily_gain": "يومياً {gain}",
-    "top_50": "أفضل 50"
+    "top_50": "أفضل 50",
+    "live_view": "الترتيب الفعلي",
+    "back_to_preview": "العودة إلى المعاينة"
   },
   "Gram": {
     "equivalent": "القيمة التقديرية لـ USDT بوحدة GRAM",

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, type MotionValue, useReducedMotion } from "framer-motion";
 
 interface DockContextValue {
   mouseX: MotionValue<number>;
@@ -39,7 +39,7 @@ export function Dock({
         ref={containerRef}
         onMouseMove={(e) => mouseX.set(e.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className={`inline-flex items-center gap-2 rounded-2xl border border-line bg-surface/85 px-3 py-2 shadow-sm backdrop-blur-md ${className}`}
+        className={`site-dock max-w-full rounded-2xl border border-line bg-surface/85 shadow-sm backdrop-blur-md ${className}`}
         role="toolbar"
         aria-label="Application dock"
       >
@@ -61,12 +61,13 @@ export interface DockIconProps {
 export function DockIcon({
   className = "",
   children,
-  size = 40,
+  size = 44,
   onClick,
   title,
   "aria-label": ariaLabel,
 }: DockIconProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
   const context = useContext(DockContext);
 
   const defaultMouseX = useMotionValue(Infinity);
@@ -82,10 +83,10 @@ export function DockIcon({
   const widthSync = useTransform(
     distanceCalc,
     [-distance, 0, distance],
-    [size, magnification, size]
+    [1, magnification / size, 1]
   );
 
-  const width = useSpring(widthSync, {
+  const scale = useSpring(widthSync, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,
@@ -94,8 +95,9 @@ export function DockIcon({
   return (
     <motion.div
       ref={ref}
-      style={{ width, height: width }}
+      style={{ width: size, height: size, scale: reduced ? 1 : scale }}
       onClick={onClick}
+      onKeyDown={(event) => { if (onClick && ["Enter", " "].includes(event.key)) { event.preventDefault(); onClick(); } }}
       title={title}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -107,7 +109,7 @@ export function DockIcon({
       </div>
 
       {title && (
-        <span className="pointer-events-none absolute -top-8 whitespace-nowrap rounded-md border border-line bg-surface px-2 py-0.5 font-mono text-[11px] font-semibold text-fg-default opacity-0 shadow-xs transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">
+        <span className="pointer-events-none absolute -top-8 whitespace-nowrap rounded-md border border-line bg-surface px-2 py-0.5 font-mono text-caption font-semibold text-fg-default opacity-0 shadow-xs transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">
           {title}
         </span>
       )}

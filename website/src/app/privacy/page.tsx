@@ -1,9 +1,9 @@
+import { QrDock } from "@/components/QrDock";
 import { Eyebrow } from "@/components/ui/Badge";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE } from "@/lib/config";
 import { Icon } from "@/icons";
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Header */}
-        <section className="space-y-4">
+        <section className="legal-page-heading space-y-4">
           <Eyebrow>Data Protection</Eyebrow>
           <h1 className="poster text-heading-xl text-fg">Privacy Policy</h1>
           <p className="text-body sm:text-lead text-fg-muted">

@@ -1214,7 +1214,9 @@
     "india": "भारत",
     "brazil": "ब्राज़ील",
     "daily_gain": "रोज़ {gain}",
-    "top_50": "शीर्ष 50"
+    "top_50": "शीर्ष 50",
+    "live_view": "वास्तविक रैंकिंग",
+    "back_to_preview": "पूर्वावलोकन पर लौटें"
   },
   "Gram": {
     "equivalent": "GRAM में USDT का अनुमानित मूल्य",

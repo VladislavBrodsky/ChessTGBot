@@ -360,7 +360,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                         key={i}
                         className="flex items-start gap-3.5 text-body text-fg-muted"
                       >
-                        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-inset font-mono text-[11px] font-bold text-fg mt-0.5">
+                        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-inset font-mono text-overline font-bold text-fg mt-0.5">
                           {i + 1}
                         </span>
                         <span>{item}</span>

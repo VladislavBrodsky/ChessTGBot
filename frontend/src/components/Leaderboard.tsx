@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useState, useEffect, useMemo, useId } from 'react';
 import { FaTrophy, FaMedal, FaCrown, FaChessKnight, FaGamepad, FaBook } from 'react-icons/fa';
 import { FiChevronRight } from 'react-icons/fi';
 import { validGramQuote } from '@/lib/gram';
@@ -17,16 +16,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { PodiumSkeleton } from '@/components/ui/Skeleton';
 import { Avatar } from '@/components/ui/Avatar';
 import { useTelemetry } from '@/hooks/useTelemetry';
-import { isLeaderboardPreviewAllowed } from '@/lib/leaderboardPreviewAccess';
-
-const LeaderboardPreview = dynamic(() => import('@/components/leaderboard/LeaderboardPreview'), {
-  ssr: false,
-  loading: () => <PodiumSkeleton />,
-});
-const subscribePreviewAccess = () => () => {};
-const previewAccessSnapshot = () => isLeaderboardPreviewAllowed(process.env.NODE_ENV, window.location.hostname) ? 'preview' : 'api';
-// Reserve the leaderboard space until a development browser supplies its hostname.
-const serverPreviewAccessSnapshot = () => process.env.NODE_ENV === 'development' ? 'loading' : 'api';
+import LeaderboardPreview from '@/components/leaderboard/LeaderboardPreview';
 
 interface LeaderboardItem {
   telegram_id: number;
@@ -43,10 +33,20 @@ interface LeaderboardItem {
 }
 
 export default function Leaderboard() {
-  const mode = useSyncExternalStore(subscribePreviewAccess, previewAccessSnapshot, serverPreviewAccessSnapshot);
-  if (mode === 'loading') return <PodiumSkeleton />;
-  if (mode === 'preview') return <LeaderboardPreview />;
-  return <PlayerLeaderboard />;
+  const t = useTranslations('LeaderboardPreview');
+  const [showLive, setShowLive] = useState(false);
+  const liveId = useId();
+  return <div className="w-full space-y-3">
+    <div className="flex justify-end">
+      <Button variant="outline" size="sm" aria-expanded={showLive} aria-controls={liveId} onClick={() => setShowLive(value => !value)}>
+        {showLive ? t('back_to_preview') : t('live_view')}
+      </Button>
+    </div>
+    {/* The disclosed preview is available on every host and keeps its state when switching views.
+        It never fetches account balances or merges fictional figures into live standings. */}
+    <div hidden={showLive}><LeaderboardPreview /></div>
+    <div id={liveId} hidden={!showLive}>{showLive && <PlayerLeaderboard />}</div>
+  </div>;
 }
 
 function PlayerLeaderboard() {

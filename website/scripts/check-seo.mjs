@@ -41,6 +41,10 @@ for (const file of pages) {
   assert.equal(canonicalTags.length, 1, `${route || "/"}: expected one canonical`);
   assert.equal(attribute(canonicalTags[0], "href"), url, `${route || "/"}: canonical mismatch`);
   assert.equal(h1Count, 1, `${route || "/"}: expected one H1, found ${h1Count}`);
+  for (const heading of html.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi)) {
+    const text = heading[2].replace(/<[^>]*>/g, "").trim();
+    assert(!text.endsWith("."), `${route || "/"}: titles must not end with a full stop: ${text}`);
+  }
   assert(sitemapUrls.has(url), `${route || "/"}: missing from sitemap`);
 }
 

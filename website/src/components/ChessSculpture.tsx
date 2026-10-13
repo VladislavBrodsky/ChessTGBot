@@ -19,22 +19,16 @@ export function ChessSculpture({
           src={`/illustrations/${art.file}.webp`}
           width={1000}
           height={1000}
-          sizes="(max-width: 639px) 208px, (max-width: 767px) 280px, (max-width: 1023px) 340px, 448px"
+          sizes="(max-width: 333px) 180px, (max-width: 414px) 54vw, (max-width: 639px) 224px, (max-width: 767px) 280px, (max-width: 1023px) 340px, 448px"
           alt={art.alt}
           className="chess-sculpture relative z-10 h-auto w-full"
-          priority={variant === "home"}
+          loading="eager"
           fetchPriority="high"
         />
       </SculptureMotion>
-      {footer ? (
-        <div className="stage-caption relative z-10 text-caption text-fg-muted">
-          {footer}
-        </div>
-      ) : (
-        <figcaption className="stage-caption relative z-10 text-caption text-fg-muted">
-          {art.title}
-        </figcaption>
-      )}
+      <figcaption className="stage-caption relative z-10 text-caption text-fg-muted">
+        {footer ?? art.title}
+      </figcaption>
     </figure>
   );
 }

@@ -1,30 +1,75 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/Badge";
+import { Badge, HeroContext } from "@/components/ui/Badge";
 import { Nav } from "@/components/Nav";
 import { PlayButton } from "@/components/PlayButton";
 import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
+import { HeroPaymentCaption } from "@/components/HeroPaymentCaption";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { BlogCard } from "@/components/BlogCard";
 import { Faq } from "@/components/Faq";
+import dynamic from "next/dynamic";
 import { Footer } from "@/components/Footer";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
+import { Marquee } from "@/components/magicui/marquee";
+import { NumberTicker } from "@/components/magicui/number-ticker";
+import { socialProofSnapshot } from "@/lib/social-proof";
+import { LiveSocialProof } from "@/components/LiveSocialProof";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
 
 import { RewardsBento } from "@/components/RewardsBento";
+import { FirstThreeChallenge } from "@/components/FirstThreeChallenge";
 
+const ChessEcosystemOrbit = dynamic(
+  () =>
+    import("@/components/ChessEcosystemOrbit").then(
+      (m) => m.ChessEcosystemOrbit,
+    ),
+  {
+    loading: () => (
+      <div className="relative flex flex-col items-center justify-center w-full py-2 min-h-[410px] sm:min-h-[490px]">
+        <div className="h-8 w-60 max-w-[75vw] rounded-full bg-surface/70 border border-line/40 mb-3 opacity-60 animate-pulse" />
+        <div className="relative flex h-[350px] sm:h-[420px] w-full items-center justify-center">
+          <div className="size-16 sm:size-20 rounded-2xl bg-surface border border-line/40 opacity-60 animate-pulse" />
+          <div className="absolute size-44 sm:size-52 rounded-full border border-dashed border-line/30 opacity-40 animate-pulse pointer-events-none" />
+          <div className="absolute size-64 sm:size-80 rounded-full border border-dashed border-line/20 opacity-30 animate-pulse pointer-events-none" />
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
+          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
+          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
+          <div className="h-6 w-24 rounded-full bg-surface/60 border border-line/40 opacity-50 animate-pulse" />
+        </div>
+      </div>
+    ),
+  },
+);
+
+const GlobeShowcase = dynamic(
+  () => import("@/components/GlobeShowcase").then((m) => m.GlobeShowcase),
+  {
+    loading: () => (
+      <div className="relative flex flex-col items-center justify-center select-none w-full py-2 min-h-[430px] sm:min-h-[470px]">
+        <div className="h-11 w-full max-w-[460px] rounded-2xl bg-surface/70 border border-line/40 mb-3 opacity-60 animate-pulse" />
+        <div className="relative mx-auto aspect-square w-full max-w-[460px] flex items-center justify-center">
+          <div className="size-56 sm:size-72 rounded-full bg-surface/50 border border-line/40 opacity-40 animate-pulse" />
+        </div>
+        <div className="h-5 w-48 rounded-full bg-surface/40 mt-3 opacity-50 animate-pulse" />
+      </div>
+    ),
+  },
+);
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
 import { SITE, SETTLEMENT } from "@/lib/config";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
-  "Play Chess in Telegram | Free AI & Player Matches",
-  "Play chess in Telegram: start free against the AI, unlock a mystery box after three qualifying games, and explore optional USDT-staked player matches.",
+  "Play Chess Online in Telegram & Win Real Crypto",
+  "Play chess inside Telegram with Web3Chess. Challenge players worldwide in the #1 Telegram chess bot: free Stockfish A.I. practice, 100 tactical puzzles, and real USDT cash duels.",
   "",
   [
     "telegram chess bot",
@@ -105,21 +150,26 @@ export default function HomePage() {
       <Nav />
       <main id="main" className="home-main">
         <section className="shell-wide hero-section" aria-labelledby="home-title">
+          <div className="home-hero-context">
+            <HeroContext tone="accent" icon="telegram-logo">Telegram Chess Bot · Live PvP Arena · Real Crypto Stakes</HeroContext>
+          </div>
+          <div className="hero-visual">
+            <ChessSculpture footer={<HeroPaymentCaption />} />
+          </div>
           <div className="hero-copy">
             <div className="hero-intro">
-              <Badge tone="accent" icon="telegram-logo">Telegram Chess Bot · Live PvP Arena · Real Crypto Stakes</Badge>
               <h1 id="home-title" className="poster hero-title">
                 <span className="block whitespace-normal sm:whitespace-nowrap">
-                  Play chess in Telegram
+                  Play chess
                 </span>
                 <span className="block whitespace-normal sm:whitespace-nowrap">
                   <span className="hero-emphasis inline-block">
-                    Unlock a free box
+                    Win real crypto
                   </span>
                 </span>
               </h1>
               <p className="hero-lead max-w-[42ch] text-fg-muted">
-                Start with free AI chess in Telegram. Join the first-three challenge, finish three qualifying games, and open one in-app mystery box. If you choose a USDT-staked player match, review the pot and fees before you play.
+                Challenge rivals worldwide inside Telegram with the #1 Telegram chess bot. Stake USDT, outplay your opponent, and take 95% of the pot. Free Stockfish A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 GRAM in prizes.
               </p>
             </div>
             <div className="hero-details space-y-4">
@@ -134,29 +184,73 @@ export default function HomePage() {
                 </ButtonLink>
               </div>
 
-              <p className="text-body-sm text-fg-muted">Free AI practice · one box per account · reward odds shown in the app</p>
+              {/* ── Real-time Social Proof & Match Activity ── */}
+              <LiveSocialProof initial={socialProofSnapshot()} />
             </div>
           </div>
-          <div className="hero-visual">
-            <ChessSculpture
-              footer={<p className="hero-support text-center text-body-sm text-fg-muted">Free AI practice · Optional USDT-staked matches · No download required</p>}
-            />
+        </section>
+
+        {/* ── MAGIC UI MARQUEE: Live Crypto Match Wins & Vault Drops ── */}
+        <section className="shell-wide my-3" aria-label="Live PvP match activity">
+          <div className="relative rounded-full border border-line bg-surface/70 py-2 px-3 overflow-hidden shadow-2xs backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
+            {/* Smooth optical edge fades */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-4 sm:w-16 bg-gradient-to-r from-surface via-surface/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-4 sm:w-16 bg-gradient-to-l from-surface via-surface/80 to-transparent z-10" />
+
+            <Marquee duration={35} pauseOnHover>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <strong className="text-emerald-600 font-bold">+$47.50 USDT</strong>
+                <span className="text-fg-muted">·</span>
+                <span>GM_Morphy won 3+2 Blitz duel</span>
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-amber-500" />
+                <strong className="text-amber-600 font-bold">1,000 GRAM</strong>
+                <span className="text-fg-muted">·</span>
+                <span>King’s Dominion Mystery Jackpot unlocked</span>
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <strong className="text-emerald-600 font-bold">+$95.00 USDT</strong>
+                <span className="text-fg-muted">·</span>
+                <span>Magnus_99 won 5+3 Rapid table</span>
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-blue-500" />
+                <strong className="text-blue-600 font-bold">2.0% Rake</strong>
+                <span className="text-fg-muted">·</span>
+                <span>6-Tier Affiliate passive commissions credited</span>
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-purple-500" />
+                <strong className="text-purple-600 font-bold">95 USDT</strong>
+                <span className="text-fg-muted">·</span>
+                <span>@gm_vlad on-chain withdrawal settled (3.8s)</span>
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg-default shadow-2xs shrink-0 mx-1">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <strong className="text-emerald-600 font-bold">+$190.00 USDT</strong>
+                <span className="text-fg-muted">·</span>
+                <span>Kasparov_X won 10+0 Classical match</span>
+              </span>
+            </Marquee>
           </div>
         </section>
 
         <section id="rewards" className="shell-wide home-section" aria-labelledby="rewards-heading">
           <div className="section-index">
             <span>01 / Why players choose Web3Chess</span>
-            <span>Free practice · Clear fees</span>
+            <span>Real rewards · Zero house edge</span>
           </div>
 
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
             <div>
               <h2 id="rewards-heading" className="editorial-title">
-                Start free. Make every game count.
+                Turn your chess rating into real crypto: 95% pot payouts
               </h2>
               <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
-                Choose free AI practice and earn one in-app mystery box after three qualifying games. USDT-staked player matches are optional, with terms shown before you enter.
+                Traditional chess pays you in pixels and points. Web3Chess rewards every tactical win with instant USDT payouts, 1,000 GRAM mystery jackpots, and 6-tier passive match rake.
               </p>
             </div>
             <ButtonLink href="/how-it-works" variant="secondary">
@@ -165,6 +259,7 @@ export default function HomePage() {
             </ButtonLink>
           </div>
 
+          <FirstThreeChallenge />
           <RewardsBento />
         </section>
 
@@ -178,34 +273,34 @@ export default function HomePage() {
               <div className="fact-item">
                 <dt className="text-caption text-fg-muted">Winner pot payout</dt>
                 <dd className="fact-value flex items-baseline gap-1.5">
-                  <span className="poster text-stat tabular-nums">
-                    {SETTLEMENT.winnerPercent}%
+                  <span className="poster fact-figure tabular-nums">
+                    <NumberTicker value={SETTLEMENT.winnerPercent} suffix="%" />
                   </span>
                 </dd>
               </div>
               <div className="fact-item">
                 <dt className="text-caption text-fg-muted">Starting stake</dt>
                 <dd className="fact-value flex items-baseline gap-1.5">
-                  <span className="poster text-stat tabular-nums">
-                    1
+                  <span className="poster fact-figure tabular-nums">
+                    <NumberTicker value={1} />
                   </span>
                   <span className="text-label font-semibold">USDT</span>
                 </dd>
               </div>
               <div className="fact-item">
-                <dt className="text-caption text-fg-muted">Free box unlock</dt>
+                <dt className="text-caption text-fg-muted">Top mystery prize</dt>
                 <dd className="fact-value flex items-baseline gap-1.5">
-                  <span className="poster text-stat tabular-nums">
-                    3
+                  <span className="poster fact-figure tabular-nums">
+                    <NumberTicker value={1000} />
                   </span>
-                  <span className="text-label font-semibold">AI games</span>
+                  <span className="text-label font-semibold">GRAM</span>
                 </dd>
               </div>
               <div className="fact-item">
                 <dt className="text-caption text-fg-muted">Tactics Academy &amp; AI</dt>
                 <dd className="fact-value flex items-baseline gap-1.5">
-                  <span className="poster text-stat tabular-nums">
-                    100
+                  <span className="poster fact-figure tabular-nums">
+                    <NumberTicker value={100} />
                   </span>
                   <span className="text-label font-semibold">Levels</span>
                 </dd>
@@ -225,6 +320,209 @@ export default function HomePage() {
           </Card>
         </section>
 
+        <section id="play" className="shell-wide home-section" aria-labelledby="play-heading">
+          <div className="section-index">
+            <span>02 / Worldwide live matchmaking</span>
+            <span>120+ countries · Sub-second pairing</span>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_1.1fr] lg:items-center">
+            <div className="space-y-6">
+              {/* Refined Eyebrow */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Badge tone="accent" icon="lightning">
+                  Global Arena
+                </Badge>
+                <span className="font-mono text-caption text-emerald-700 font-semibold flex items-center gap-1.5">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Sub-second pairing across 120+ nations
+                </span>
+              </div>
+
+              {/* Headline */}
+              <h2 id="play-heading" className="editorial-title">
+                Challenge rivals worldwide<br />
+                <span className="text-fg-muted font-normal">Matched in seconds</span>
+              </h2>
+
+              {/* Punchy Value Prop Lead */}
+              <p className="max-w-[48ch] text-body text-fg-muted">
+                Stake USDT with confidence. Automated escrow locks both deposits until checkmate, with Stockfish 16 move telemetry and millisecond FIDE clock sync.
+              </p>
+
+              {/* ── 3 Sleek Compact Security Pillars ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
+                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
+                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 sm:mb-2.5">
+                    <Icon name="lock" size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-fg-default text-caption leading-snug">
+                      Instant Escrow
+                    </h3>
+                    <p className="text-caption text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
+                      Stakes lock at move 1. 95% pot released automatically upon checkmate.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
+                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 sm:mb-2.5">
+                    <Icon name="shield-check" size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-fg-default text-caption leading-snug">
+                      Anti-Cheat Engine
+                    </h3>
+                    <p className="text-caption text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
+                      Stockfish 16 audits move timing and correlation. Instant refund on foul play.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl sm:rounded-2xl border border-line bg-surface p-3 sm:p-4 transition-all hover:bg-surface-inset/60 shadow-2xs flex sm:flex-col items-start gap-3 sm:gap-2.5">
+                  <div className="flex size-7 sm:size-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 sm:mb-2.5">
+                    <Icon name="lightning" size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-fg-default text-caption leading-snug">
+                      FIDE Server Clocks
+                    </h3>
+                    <p className="text-caption text-fg-muted mt-0.5 sm:mt-1 leading-relaxed">
+                      Authoritative server timestamps with lag compensation. Zero ping abuse.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Airy Proof Metrics Bar (Inline, borderless) ── */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6 pt-2 font-mono text-caption text-fg-muted border-t border-line/60">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="poster text-heading-xs text-fg-default font-bold">3,840+</span>
+                  <span className="text-caption text-fg-muted">in duels</span>
+                </div>
+                <div className="hidden sm:block h-4 w-px bg-line" aria-hidden="true" />
+                <div className="flex items-center gap-1.5">
+                  <span className="poster text-heading-xs text-fg-default font-bold">&lt; 2.4s</span>
+                  <span className="text-caption text-fg-muted">avg queue</span>
+                </div>
+                <div className="hidden sm:block h-4 w-px bg-line" aria-hidden="true" />
+                <div className="flex items-center gap-1.5">
+                  <span className="poster text-heading-xs text-fg-default font-bold">120+</span>
+                  <span className="text-caption text-fg-muted">countries</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <PlayButton size="md" pulsating trackingLocation="facts_banner" />
+                <ButtonLink href="/how-it-works" variant="secondary">
+                  How matchmaking works
+                  <Icon name="arrow-right" size={18} />
+                </ButtonLink>
+              </div>
+            </div>
+
+            {/* ── 3D INTERACTIVE GLOBE & LIVE DUEL ARENA HUD ── */}
+            <GlobeShowcase />
+          </div>
+        </section>
+
+
+        {/* ── 3D WEB3 & GRAM ECOSYSTEM CLOUD ── */}
+        <section id="infrastructure" className="shell-wide home-section" aria-labelledby="infrastructure-heading">
+          <div className="section-index">
+            <span>03 / Web3 &amp; GRAM infrastructure</span>
+            <span>Zero friction · Instant on-chain rails</span>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Badge tone="accent" icon="cpu">
+                  Direct Telegram Rails
+                </Badge>
+                <span className="font-mono text-caption text-fg-muted font-medium">
+                  Sub-second finality
+                </span>
+              </div>
+
+              <h2 id="infrastructure-heading" className="editorial-title">
+                Play seamlessly with GRAM and USDT
+              </h2>
+
+              <p className="max-w-[44ch] section-lead text-fg-muted">
+                No seed phrases to export, no browser extensions. Web3Chess launches with one tap directly inside Telegram, connects to your GRAM wallet, and settles match pots directly to your balance.
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <div className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface/90 p-3.5 shadow-2xs transition-all hover:border-emerald-500/40 hover:shadow-xs">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                    <Icon name="lightning" size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-caption">USDT on GRAM Rail</span>
+                      <span className="font-mono text-caption font-bold text-emerald-700 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        &lt; 3.2s · $0.005 Gas
+                      </span>
+                    </div>
+                    <p className="text-body-xs text-fg-muted mt-1 leading-relaxed">
+                      Instant non-custodial deposits and automated match pot escrow with sub-cent network fees on GRAM blockchain.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface/90 p-3.5 shadow-2xs transition-all hover:border-blue-500/40 hover:shadow-xs">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 border border-blue-500/20">
+                    <Icon name="telegram-logo" size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-caption">Native Telegram App</span>
+                      <span className="font-mono text-caption font-bold text-blue-700 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">
+                        Zero Passwords
+                      </span>
+                    </div>
+                    <p className="text-body-xs text-fg-muted mt-1 leading-relaxed">
+                      Launch in 1 tap from any Telegram chat. Zero registration friction, no seed phrase backups, no browser extensions.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5 rounded-2xl border border-line bg-surface/90 p-3.5 shadow-2xs transition-all hover:border-purple-500/40 hover:shadow-xs">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 border border-purple-500/20">
+                    <Icon name="shield-check" size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-fg-default text-caption">HMAC-Secured Payouts</span>
+                      <span className="font-mono text-caption font-bold text-purple-700 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                        Instant On-Chain
+                      </span>
+                    </div>
+                    <p className="text-body-xs text-fg-muted mt-1 leading-relaxed">
+                      Withdraw directly to your personal wallet in seconds, authenticated with 1-tap HMAC nonces inside Telegram bot chat.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-3">
+                <PlayButton size="md" pulsating trackingLocation="infrastructure" />
+                <ButtonLink href="/how-it-works" variant="secondary">
+                  See how it works
+                  <Icon name="arrow-right" size={18} />
+                </ButtonLink>
+              </div>
+            </div>
+
+            {/* Frameless Chess & Crypto Ecosystem Orbit Showcase */}
+            <ChessEcosystemOrbit />
+          </div>
+        </section>
+
         <section className="shell-wide home-section" aria-labelledby="fair-heading">
           <div data-surface="ink" className="statement-panel relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
             {/* Ambient atmospheric lighting */}
@@ -232,7 +530,7 @@ export default function HomePage() {
             <div className="pointer-events-none absolute -bottom-20 -left-20 size-80 rounded-full bg-blue-500/10 blur-3xl" aria-hidden="true" />
 
             <div className="relative z-10 section-index">
-              <span>02 / Pure skill. Zero pay-to-win</span>
+              <span>04 / Pure skill. Zero pay-to-win</span>
               <Icon name="shield-check" size={20} />
             </div>
             <div className="relative z-10 grid gap-8 md:grid-cols-[1.15fr_1fr] md:items-end">
@@ -244,7 +542,7 @@ export default function HomePage() {
                 Every piece follows identical rules. No pay-to-win cards, no unfair boosts. Only your preparation, your clock management, and your board vision determine who takes the pot.
               </p>
             </div>
-            <div className="relative z-10 mt-6 grid gap-4 border-t border-line/40 pt-6 md:mt-10 md:pt-8 md:grid-cols-3">
+            <div className="relative z-10 mt-6 grid gap-4 border-t border-line/40 pt-6 md:mt-10 md:pt-8 lg:grid-cols-3">
               {[
                 {
                   icon: "cpu" as const,
@@ -275,7 +573,7 @@ export default function HomePage() {
                   <div className="space-y-3.5">
                     {/* Top Eyebrow Badge with Glowing Live Dot */}
                     <div>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-mono font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-mono font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
                         <span className="relative flex size-1.5">
                           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                           <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
@@ -289,7 +587,7 @@ export default function HomePage() {
                       <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.12)]">
                         <Icon name={item.icon} size={20} />
                       </div>
-                      <h3 className="text-[17px] font-semibold text-white tracking-tight leading-snug">
+                      <h3 className="text-heading-xs font-semibold text-white tracking-tight leading-snug">
                         {item.title}
                       </h3>
                     </div>
@@ -301,7 +599,7 @@ export default function HomePage() {
                   </div>
 
                   {/* Footer Guarantee */}
-                  <div className="pt-3 border-t border-white/10 font-mono text-[11px] text-stone-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <div className="pt-3 border-t border-white/10 font-mono text-caption text-stone-400 flex flex-col xl:flex-row xl:items-center justify-between gap-2">
                     <span className="flex items-center gap-1.5 text-stone-400">
                       <Icon name="shield-check" size={13} className="text-emerald-400 shrink-0" />
                       Guarantee:
@@ -322,7 +620,7 @@ export default function HomePage() {
 
         <section id="academy" className="shell-wide home-section" aria-labelledby="academy-heading">
           <div className="section-index">
-            <span>03 / Master your game</span>
+            <span>05 / Master your game</span>
             <span>Practice is 100% free</span>
           </div>
           <div className="section-split">
@@ -349,7 +647,7 @@ export default function HomePage() {
                     100% Free
                   </span>
                 </div>
-                <span className="font-mono text-[11px] sm:text-caption text-fg-muted">
+                <span className="font-mono text-caption sm:text-caption text-fg-muted">
                   Stockfish 16 Engine
                 </span>
               </div>
@@ -398,22 +696,22 @@ export default function HomePage() {
                         <Icon name={track.icon} size={16} />
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className="font-semibold text-fg-default text-[13px] truncate">
+                        <span className="font-semibold text-fg-default text-caption truncate">
                           {track.name}
                         </span>
-                        <span className="text-[11px] text-fg-muted font-mono truncate">
+                        <span className="text-caption text-fg-muted font-mono truncate">
                           {track.desc}
                         </span>
                       </div>
                     </div>
-                    <span className="shrink-0 font-mono text-[11px] font-semibold text-fg-muted bg-surface border border-line px-2 py-0.5 rounded-full">
+                    <span className="shrink-0 font-mono text-caption font-semibold text-fg-muted bg-surface border border-line px-2 py-0.5 rounded-full">
                       {track.tag}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-4 mt-4 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-caption font-mono text-fg-muted">
+              <div className="pt-4 mt-4 border-t border-line flex flex-col xl:flex-row xl:items-center justify-between gap-2 text-caption font-mono text-fg-muted">
                 <span>Stockfish A.I. Practice · Unlimited games</span>
                 <span className="text-emerald-600 font-semibold">Zero stake needed</span>
               </div>
@@ -423,7 +721,7 @@ export default function HomePage() {
 
         <section id="wagers" className="shell-wide home-section" aria-labelledby="wagers-heading">
           <div className="section-index">
-            <span>04 / Real-stakes PvP payouts</span>
+            <span>06 / Real-stakes PvP payouts</span>
             <span>95% winner pot · 18+</span>
           </div>
 
@@ -473,18 +771,18 @@ export default function HomePage() {
                     <span className="text-caption font-semibold text-fg-default">
                       Popular Stakes &amp; Payouts
                     </span>
-                    <span className="flex items-center gap-1 font-mono text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    <span className="flex items-center gap-1 font-mono text-caption font-semibold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
                       <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       Live Pools
                     </span>
                   </div>
-                  <span className="font-mono text-[11px] sm:text-caption text-emerald-600 font-medium">
+                  <span className="font-mono text-caption sm:text-caption text-emerald-600 font-medium">
                     +90% Net ROI on win
                   </span>
                 </div>
 
                 {/* AnimatedList stream of diverse stakes & prizes */}
-                <div className="relative z-10 w-full h-[276px] overflow-hidden">
+                <div className="home-payout-stream relative z-10 w-full">
                   <AnimatedList delay={2200} maxItems={4}>
                     {[
                       {
@@ -561,37 +859,37 @@ export default function HomePage() {
                           </div>
                           <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-semibold text-fg-default text-[13px]">
+                              <span className="font-semibold text-fg-default text-caption">
                                 ${item.stake} USDT
                               </span>
-                              <span className="text-fg-muted text-[12px] hidden sm:inline">
+                              <span className="text-fg-muted text-caption hidden sm:inline">
                                 ({item.tier})
                               </span>
-                              <span className={`rounded-full border px-1.5 py-0.2 text-[10px] font-semibold ${item.tagColor}`}>
+                              <span className={`rounded-full border px-1.5 py-0.2 text-caption font-semibold ${item.tagColor}`}>
                                 {item.tag}
                               </span>
                             </div>
-                            <span className="font-mono text-[11px] text-fg-muted">
+                            <span className="font-mono text-caption text-fg-muted">
                               Pace: {item.pace}
                             </span>
                           </div>
                         </div>
 
                         <div className="text-right shrink-0 ps-2">
-                          <span className="font-mono font-bold text-emerald-600 block text-[13px]">
+                          <span className="font-mono font-bold text-emerald-600 block text-caption">
                             ${item.win.toFixed(2)} USDT
                           </span>
-                          <span className="text-[11px] font-mono text-fg-muted">
+                          <span className="text-caption font-mono text-fg-muted">
                             Net: {item.net}
                           </span>
                         </div>
                       </div>
                     ))}
                   </AnimatedList>
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-inset to-transparent z-20" />
+
                 </div>
 
-                <div className="relative z-10 flex items-center justify-between border-t border-line pt-3 text-caption text-fg-muted font-mono">
+                <div className="relative z-10 flex flex-wrap gap-3 items-center justify-between border-t border-line pt-3 text-caption text-fg-muted font-mono">
                   <span>Fee split: 3% platform · 2% affiliate</span>
                   <Link href="/wagers" className="text-fg-link hover:underline inline-flex items-center gap-1 font-sans font-semibold">
                     Full math breakdown
@@ -605,7 +903,7 @@ export default function HomePage() {
 
         <section id="blog" className="shell-wide home-section" aria-labelledby="journal-heading">
           <div className="section-index">
-            <span>05 / Grandmaster tactics</span>
+            <span>07 / Grandmaster tactics</span>
             <span>Read. Think. Win</span>
           </div>
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
@@ -646,7 +944,7 @@ export default function HomePage() {
                   className="group flex flex-col justify-between p-3.5 rounded-xl border border-line bg-inset/50 hover:bg-surface hover:border-line-strong transition-all"
                 >
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[11px] font-mono text-fg-muted uppercase tracking-wider">{item.cat}</span>
+                    <span className="text-caption font-mono text-fg-muted uppercase tracking-wider">{item.cat}</span>
                     <Icon name="arrow-up-right" size={14} className="text-fg-muted group-hover:text-fg transition-colors" />
                   </div>
                   <span className="text-body-sm font-medium text-fg group-hover:text-fg-link transition-colors line-clamp-1">

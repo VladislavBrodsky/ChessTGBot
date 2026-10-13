@@ -1214,7 +1214,9 @@
     "india": "インド",
     "brazil": "ブラジル",
     "daily_gain": "1日 {gain}",
-    "top_50": "トップ50"
+    "top_50": "トップ50",
+    "live_view": "実際のランキング",
+    "back_to_preview": "プレビューに戻る"
   },
   "Gram": {
     "equivalent": "USDTの推定GRAM換算額",

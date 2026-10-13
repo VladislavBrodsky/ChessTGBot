@@ -2,8 +2,8 @@ import { qrSvg } from "@/lib/qr";
 import { telegramLink } from "@/lib/config";
 
 /**
- * Fixed bottom-start QR dock. Compact, centered, and unobtrusive.
- * Shown at 1480px+ where the shell leaves a clear side gutter.
+ * Fixed bottom-end QR dock. Compact, centered, and unobtrusive.
+ * Shown at 1600px+ where the shell leaves a clear side gutter.
  * At narrower widths the footer still provides a desktop QR.
  */
 export async function QrDock() {
@@ -11,7 +11,7 @@ export async function QrDock() {
   return (
     <aside
       aria-label="Scan to play in Telegram"
-      className="fixed bottom-5 start-5 z-50 hidden flex-col items-center justify-center rounded-media border border-line bg-surface p-2.5 min-[1480px]:flex"
+      className="fixed bottom-5 end-5 z-50 hidden flex-col items-center justify-center rounded-media border border-line bg-surface p-2.5 min-[1600px]:flex"
     >
       <div
         className="mx-auto flex size-20 items-center justify-center rounded-control bg-white p-1 [&_svg]:block [&_svg]:size-full"

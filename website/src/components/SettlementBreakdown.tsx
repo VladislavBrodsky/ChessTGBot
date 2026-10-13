@@ -8,9 +8,9 @@ const parts = [
     percent: SETTLEMENT.winnerPercent,
     name: "Winner’s payout",
     tag: "Instant Credit",
-    tagColor: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
-    badgeStyle: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600",
-    barColor: "bg-emerald-500",
+    tagColor: "text-fg bg-inset border-line",
+    badgeStyle: "border-line bg-inset text-fg",
+    barColor: "bg-inset",
     body: "95% of the total pot deposits straight to your balance the moment checkmate, resignation, or clock flag is verified.",
   },
   {
@@ -26,9 +26,9 @@ const parts = [
     percent: SETTLEMENT.referralFeePercent,
     name: "Referral community pool",
     tag: "6-Tier Network",
-    tagColor: "text-blue-600 bg-blue-500/10 border-blue-500/20",
-    badgeStyle: "border-blue-500/30 bg-blue-500/10 text-blue-600",
-    barColor: "bg-blue-500",
+    tagColor: "text-fg bg-inset border-line",
+    badgeStyle: "border-line bg-inset text-fg",
+    barColor: "bg-inset",
     body: "2% of every pot distributes to the player’s affiliate network across 6 tiers in lifetime passive rewards.",
   },
 ];
@@ -38,11 +38,11 @@ export function SettlementBreakdown() {
     <Card className="flex flex-col justify-between p-6 sm:p-7 bg-surface border border-line rounded-2xl relative overflow-hidden h-full">
       <div className="space-y-4">
         {/* Card Header */}
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <Badge tone="neutral" icon="scales">
             Pot Allocation Architecture
           </Badge>
-          <span className="font-mono text-[11px] font-semibold text-fg-muted bg-inset border border-line px-2.5 py-0.5 rounded-full">
+          <span className="font-mono text-caption font-semibold text-fg-muted bg-inset border border-line px-2.5 py-0.5 rounded-full">
             Decided Matches
           </span>
         </div>
@@ -58,7 +58,7 @@ export function SettlementBreakdown() {
 
         {/* Visual Allocation Proportion Bar */}
         <div className="space-y-1.5">
-          <div className="flex justify-between text-[11px] font-mono text-fg-muted">
+          <div className="flex justify-between text-caption font-mono text-fg-muted">
             <span>Combined Pot Distribution</span>
             <span className="text-fg-default font-semibold">100% Accounted</span>
           </div>
@@ -92,7 +92,7 @@ export function SettlementBreakdown() {
                 <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
                   <h4 className="text-body font-medium text-fg-default">{part.name}</h4>
                   <span
-                    className={`font-mono text-[10px] font-semibold px-2 py-0.5 rounded-full border ${part.tagColor}`}
+                    className={`font-mono text-caption font-semibold px-2 py-0.5 rounded-full border ${part.tagColor}`}
                   >
                     {part.tag}
                   </span>
@@ -107,8 +107,8 @@ export function SettlementBreakdown() {
       </div>
 
       {/* Footer Status Bar */}
-      <div className="mt-5 pt-3.5 border-t border-line flex items-center justify-between text-caption font-mono text-fg-muted">
-        <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
+      <div className="mt-5 pt-3.5 border-t border-line flex flex-wrap gap-2 items-center justify-between text-caption font-mono text-fg-muted">
+        <span className="flex items-center gap-1.5 text-fg font-semibold">
           <Icon name="shield-check" size={14} />
           Automated match escrow
         </span>

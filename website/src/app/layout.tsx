@@ -100,6 +100,7 @@ export default function RootLayout({
 }) {
   return (
     <html
+      data-scroll-behavior="smooth"
       lang="en"
       dir="ltr"
       className={`${onest.variable} ${condensed.variable}`}

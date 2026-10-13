@@ -1,10 +1,10 @@
+import { QrDock } from "@/components/QrDock";
 import { Eyebrow } from "@/components/ui/Badge";
 import { getPublishedPosts } from "@/content/blog";
 import { BlogCard } from "@/components/BlogCard";
 import { BlogFeed } from "@/components/BlogFeed";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { QrDock } from "@/components/QrDock";
 import { MobileCta } from "@/components/MobileCta";
 import { Card } from "@/components/ui/Card";
 import { buttonClass } from "@/components/ui/button-styles";
@@ -31,7 +31,7 @@ export const metadata = pageMetadata(
     "web3 chess blog",
   ],
 );
-export const revalidate = 600;
+export const revalidate = 60;
 
 export default function BlogHubPage() {
   const BLOG_POSTS = getPublishedPosts();

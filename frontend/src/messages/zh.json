@@ -1214,7 +1214,9 @@
     "india": "印度",
     "brazil": "巴西",
     "daily_gain": "每日 {gain}",
-    "top_50": "前50名"
+    "top_50": "前50名",
+    "live_view": "实际排名",
+    "back_to_preview": "返回预览"
   },
   "Gram": {
     "equivalent": "USDT的GRAM估算价值",

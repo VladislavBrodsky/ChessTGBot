@@ -200,7 +200,7 @@ export default function FairPlayPage() {
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>A clear distinction</Eyebrow>
           <h2 className="poster mt-5 text-heading-xl">
-            Legal moves.
+            Legal moves
             <br />
             Honest play
           </h2>

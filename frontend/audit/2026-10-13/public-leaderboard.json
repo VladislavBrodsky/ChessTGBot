@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-13",
+  "environment": "Local disposable preview; no production transaction executed",
+  "behavior": "Disclosed portrait preview is the default Home view on every host. Live opted-in standings are separate and requested only when opened.",
+  "checks": {
+    "inline_profiles": 10,
+    "top_50_profiles": 50,
+    "preview_available_without_API": true,
+    "preview_in_initial_render": true,
+    "live_and_demo_figures_separate": true,
+    "preview_state_retained_when_switching": true,
+    "cadence_minutes": 30,
+    "disclosure_visible": true
+  },
+  "validation": {
+    "frontend_tests": 154,
+    "suites": 37,
+    "typecheck": "passed",
+    "lint": "passed",
+    "messages": 1202,
+    "locales": 10,
+    "design_ratchet": "passed",
+    "static_build": "passed"
+  },
+  "proofs": [
+    "public-leaderboard-home.png",
+    "public-leaderboard-top50.png"
+  ]
+}

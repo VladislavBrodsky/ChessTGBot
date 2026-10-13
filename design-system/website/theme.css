@@ -371,7 +371,7 @@
 /* ───────────────────────────── 4. Utilities ───────────────────────────── */
 
 @utility shell-* {
-  width: min(100% - 2 * var(--spacing-gutter), --value(--container-*));
+  width: min(100% - 2 * var(--site-safe-gutter, var(--spacing-gutter)), --value(--container-*));
   margin-inline: auto;
 }
 

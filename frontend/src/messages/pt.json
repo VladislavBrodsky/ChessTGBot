@@ -1214,7 +1214,9 @@
     "india": "Índia",
     "brazil": "Brasil",
     "daily_gain": "Diário {gain}",
-    "top_50": "Top 50"
+    "top_50": "Top 50",
+    "live_view": "Classificação real",
+    "back_to_preview": "Voltar à prévia"
   },
   "Gram": {
     "equivalent": "Valor estimado de USDT em GRAM",

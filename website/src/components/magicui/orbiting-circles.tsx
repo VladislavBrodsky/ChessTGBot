@@ -50,6 +50,7 @@ export function OrbitingCircles({
         return (
           <div
             key={index}
+            data-ring={radius >= 100 ? "outer" : "inner"}
             style={
               {
                 "--radius": radius,
@@ -59,7 +60,7 @@ export function OrbitingCircles({
                 animationDelay: `-${(delay / Math.max(1, count)) * index}s`,
               } as React.CSSProperties
             }
-            className={`absolute flex size-[var(--icon-size)] items-center justify-center rounded-full animate-[orbit_var(--duration)_linear_infinite] ${
+            className={`orbit-item absolute flex size-[var(--icon-size)] items-center justify-center rounded-full animate-[orbit_var(--duration)_linear_infinite] ${
               reverse ? "[animation-direction:reverse]" : ""
             } ${className}`}
           >
