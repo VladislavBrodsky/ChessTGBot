@@ -5,7 +5,7 @@
   "category": "Chess Culture",
   "hook": "4 seconds left on the clock. Up a full queen",
   "text": "4 seconds left on the clock. Up a full queen\n\nBlack premoves into a back-rank mate.\n\nThe clock does not care about your theoretical rating. Under 5 seconds, calculation collapses into survival.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -47,5 +47,12 @@
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "x_receipt": {
+    "success": true,
+    "root_id": "2109834432915857574",
+    "reply_id": "2109834435252088969",
+    "root_url": "https://x.com/defi_ambassador/status/2109834432915857574"
+  },
+  "updated_at": "2026-10-13T02:31:43Z"
 }

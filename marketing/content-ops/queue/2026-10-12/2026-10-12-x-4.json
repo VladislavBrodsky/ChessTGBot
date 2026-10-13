@@ -5,7 +5,7 @@
   "category": "Chess Debate",
   "hook": "Rapid chess is dead. Intuition beats memory",
   "text": "Rapid chess is dead. Intuition beats memory\n\nIf you cannot calculate under 180 seconds with 0 increment, your rating is artificial.\n\nAre you a pure calculation player or do you hide behind opening memorization? ♟️",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -46,5 +46,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-13T22:13:56Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110131949893271673",
+    "reply_id": "2110131952103690676",
+    "root_url": "https://x.com/defi_ambassador/status/2110131949893271673"
+  },
+  "published": {
+    "root_id": "2110131949893271673",
+    "at": "2026-10-13T22:13:56Z"
   }
 }

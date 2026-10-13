@@ -19,9 +19,17 @@ from agents import (
 
 
 class TestAgents(unittest.TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        from pipeline import queue
+        import shutil
+        test_dir = queue.QUEUE / "2099-01-01"
+        if test_dir.exists():
+            shutil.rmtree(test_dir, ignore_errors=True)
+
     def setUp(self):
         self.orchestrator = ContentEngineOrchestrator(
-            plan_date=date(2026, 10, 11),
+            plan_date=date(2099, 1, 1),
             primary_domain="web3chess.online"
         )
 

@@ -171,3 +171,47 @@ async def test_reconcile_aged_open_stripe_deposit(db, monkeypatch):
     await db.refresh(pending_tx)
     assert pending_tx.status == "failed"
 
+
+@pytest.mark.asyncio
+async def test_reconcile_recent_open_stripe_deposit_does_not_alert(db, monkeypatch):
+    settings = get_settings()
+    monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
+
+    user = User(telegram_id=1004, first_name="TestUser4", balance=0, elo=1000)
+    # Open for 35 minutes (between 15 min eligible threshold and 1 hour expiry threshold)
+    recent_time = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=35)
+
+    pending_tx = Transaction(
+        id=504,
+        user_id=1004,
+        type="deposit",
+        amount=950,
+        fee=50,
+        status="pending",
+        reference_id="cs_test_open_recent",
+        created_at=recent_time
+    )
+
+    db.add(user)
+    db.add(pending_tx)
+    await db.commit()
+
+    mock_session = MagicMock()
+    mock_session.status = "open"
+    mock_session.payment_status = "unpaid"
+
+    with patch("stripe.checkout.Session.retrieve", return_value=mock_session), \
+         patch("app.core.alerts.send_alert_with_redis_rate_limit") as mock_alert, \
+         patch("stripe.checkout.Session.expire") as mock_expire:
+        stats = await reconcile_stripe_deposits(db)
+
+    assert stats["open"] == 1
+    assert stats["expired"] == 0
+    assert stats["errors"] == 0
+    mock_alert.assert_not_called()
+    mock_expire.assert_not_called()
+
+    await db.refresh(pending_tx)
+    assert pending_tx.status == "pending"
+
+

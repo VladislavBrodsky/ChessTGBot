@@ -1,18 +1,20 @@
 /* Play lobby: compact bet slip. Tokens only; every colour comes from the theme layer. */
 .lobby-stack { display: flex; width: 100%; flex-direction: column; gap: var(--space-gap-card); }
 
-/* A single, compact hero: account balance/actions followed by measured activity. */
+/* A single, compact hero: account balance, live activity, and top up action. */
 .lobby-hero {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-gap-card, 16px);
-  padding: var(--space-pad-lg, 16px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "balance action"
+    "live    live";
+  row-gap: var(--space-gap-card, 16px);
+  column-gap: var(--space-gap-card, 16px);
+  align-items: center;
 }
 .lobby-hero__balance {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-gap-card);
+  grid-area: balance;
+  min-width: 0;
 }
 .lobby-hero__amount {
   display: inline-flex;
@@ -22,48 +24,108 @@
   min-height: var(--size-control-sm);
   border-radius: var(--radius-control);
 }
+.lobby-hero__action {
+  grid-area: action;
+  justify-self: end;
+  align-self: center;
+}
+.lobby-hero__live {
+  grid-area: live;
+  min-width: 0;
+  border-block-start: 1px solid var(--border-muted);
+  padding-block-start: var(--space-gap-stack, 12px);
+}
 .lobby-live {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2, 8px);
-  padding-block-start: var(--space-3, 12px);
-  border-block-start: 1px solid var(--border-muted);
+  gap: var(--space-gap-card, 16px);
+  width: 100%;
 }
 .lobby-live__metric {
   display: flex;
   min-width: 0;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2, 8px);
-  padding: 8px 12px;
-  background: color-mix(in srgb, var(--bg-elevated) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border-muted) 80%, transparent);
-  border-radius: var(--radius-control, 12px);
+  gap: var(--space-gap-inline, 8px);
 }
 .lobby-live__metric dd {
   flex: none;
-  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--text-primary);
 }
+.lobby-live__val--live {
+  color: var(--action-bg, #34d399);
+  font-weight: 700;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--action-bg, #34d399) 65%, transparent),
+               0 0 16px color-mix(in srgb, var(--action-bg, #34d399) 25%, transparent);
+  animation: lobby-live-pulse 2.8s ease-in-out infinite;
+  display: inline-block;
+}
+.lobby-live__val--games {
+  color: var(--text-primary);
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+  display: inline-block;
+}
+
+@keyframes lobby-live-pulse {
+  0%, 100% {
+    text-shadow: 0 0 6px color-mix(in srgb, var(--action-bg, #34d399) 50%, transparent),
+                 0 0 12px color-mix(in srgb, var(--action-bg, #34d399) 20%, transparent);
+    opacity: 0.95;
+  }
+  50% {
+    text-shadow: 0 0 12px color-mix(in srgb, var(--action-bg, #34d399) 90%, transparent),
+                 0 0 22px color-mix(in srgb, var(--action-bg, #34d399) 45%, transparent);
+    opacity: 1;
+  }
+}
+
+[data-theme='light'] .lobby-live__val--live {
+  text-shadow: 0 0 4px rgba(16, 185, 129, 0.35);
+}
+[data-theme='light'] .lobby-live__val--games {
+  text-shadow: none;
+}
+
 @media (min-width: 640px) {
   .lobby-hero {
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-gap-section);
+    gap: var(--space-gap-section, 24px);
   }
   .lobby-hero__balance {
-    flex: 1;
+    flex: 0 0 auto;
     min-width: 0;
   }
-  .lobby-live {
-    flex: none;
-    min-width: 320px;
-    padding-block-start: 0;
+  .lobby-hero__live {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
     border-block-start: 0;
-    border-inline-start: 1px solid var(--border-muted);
-    padding-inline-start: var(--space-gap-section);
+    padding-block-start: 0;
+  }
+  .lobby-live {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-gap-section, 24px);
+    width: auto;
+    padding-inline: var(--space-gap-card, 16px);
+    border-inline: 1px solid var(--border-muted);
+  }
+  .lobby-live__metric {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lobby-hero__action {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
   }
 }
 

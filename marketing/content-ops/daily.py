@@ -118,7 +118,13 @@ def cmd_publish_x(args):
     from agents.publisher import PublisherAgent
     agent = PublisherAgent()
     day = _day(args).isoformat() if getattr(args, "date", None) else None
-    res = agent.dispatch_x_posts(day=day, post_id=getattr(args, "id", None), dry_run=args.dry_run)
+    res = agent.dispatch_x_posts(
+        day=day,
+        post_id=getattr(args, "id", None),
+        dry_run=args.dry_run,
+        due_only=getattr(args, "due_only", False),
+        limit=getattr(args, "limit", None),
+    )
     print(json.dumps(res, indent=2))
 
 def cmd_cmo_report(args):
@@ -144,6 +150,8 @@ def main():
     p_x.add_argument("--date")
     p_x.add_argument("--id")
     p_x.add_argument("--dry-run", action="store_true")
+    p_x.add_argument("--due-only", action="store_true")
+    p_x.add_argument("--limit", type=int, default=None)
     p_x.set_defaults(run=cmd_publish_x)
     p = sub.add_parser("submit"); p.add_argument("id"); p.add_argument("file"); p.set_defaults(run=cmd_submit)
     for name in ("approve", "reject"):

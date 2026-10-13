@@ -10,7 +10,7 @@
     "passed": true,
     "issues": [],
     "gate_summary": "Passed all deterministic Article gates",
-    "checked_at": "2026-10-12T20:02:45Z"
+    "checked_at": "2026-10-13T22:14:27Z"
   },
   "brief": {
     "slot": {
@@ -293,7 +293,7 @@
       "href": "/academy"
     }
   },
-  "updated_at": "2026-10-12T20:02:45Z",
+  "updated_at": "2026-10-13T22:14:27Z",
   "approved_by": "cmo_orchestrator",
   "staged_path": "website/src/content/articles/smothered-mate-king-boxed-in-by-its-own-pieces.json"
 }

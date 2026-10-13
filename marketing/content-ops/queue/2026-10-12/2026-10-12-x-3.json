@@ -5,7 +5,7 @@
   "category": "Product",
   "hook": "The 20:00 UTC Arena Vault opens in 15 minutes",
   "text": "The 20:00 UTC Arena Vault opens in 15 minutes\n\n$500 Prize Vault. Once the round timer starts, brackets lock.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -41,5 +41,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-13T22:05:30Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110129827852279849",
+    "reply_id": "2110129831081853301",
+    "root_url": "https://x.com/defi_ambassador/status/2110129827852279849"
+  },
+  "published": {
+    "root_id": "2110129827852279849",
+    "at": "2026-10-13T22:05:30Z"
   }
 }

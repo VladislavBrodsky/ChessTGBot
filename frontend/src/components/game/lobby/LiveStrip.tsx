@@ -16,26 +16,28 @@ export function LiveStrip({ searching, games24h, loading = false, unavailable = 
       icon: (
         <span className="relative flex h-2 w-2 shrink-0" aria-hidden="true">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
         </span>
       ),
+      isLive: true,
     },
     {
       value: games24h,
       label: t('lobby_games_24h'),
       icon: <FaChessKnight className="text-brand-muted shrink-0 text-xs" aria-hidden="true" />,
+      isLive: false,
     },
   ];
 
   return (
     <dl className="lobby-live" aria-busy={loading || undefined}>
-      {counts.map(({ value, label, icon }, index) => (
+      {counts.map(({ value, label, icon, isLive }, index) => (
         <div className="lobby-live__metric" key={index}>
           <div className="flex items-center gap-1.5 min-w-0">
             {icon}
             <dt className="t-caption text-brand-muted truncate">{label}</dt>
           </div>
-          <dd className="t-numeric-sm text-brand-primary">
+          <dd className={`t-numeric-sm ${isLive ? 'lobby-live__val--live' : 'lobby-live__val--games'}`}>
             {loading ? (
               <Skeleton textRole="numeric-sm" width="3ch" />
             ) : (

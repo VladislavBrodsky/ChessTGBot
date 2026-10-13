@@ -59,7 +59,6 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
     stripe.api_key = settings.STRIPE_SECRET_KEY
     now = _now_naive_utc()
     eligible_before = now - timedelta(minutes=15)
-    alert_before = now - timedelta(minutes=30)
     owns_session = db is None
 
     async def run(session):
@@ -123,18 +122,11 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
                                 summary["expired"] += 1
                         continue
 
-                    # If open for between 30 mins and 1 hour, send a single alert (rate-limited for 24h)
-                    if tx.created_at and tx.created_at <= alert_before:
-                        from app.core.alerts import send_alert_with_redis_rate_limit
-                        await send_alert_with_redis_rate_limit(
-                            f"stripe_open_checkout:{tx.id}",
-                            "<b>Stripe Checkout session remains open</b>\n\n"
-                            f"• <b>Transaction:</b> #{tx.id}\n"
-                            f"• <b>User:</b> <code>{tx.user_id}</code>\n"
-                            f"• <b>Session:</b> <code>{session_id}</code>",
-                            system="treasury",
-                            ttl_seconds=86400,
-                        )
+                    logger.debug(
+                        "Stripe Checkout session %s for transaction #%s is still open awaiting payment.",
+                        session_id,
+                        tx.id,
+                    )
             except Exception as exc:
                 summary["errors"] += 1
                 logger.error("Stripe reconciliation failed for transaction #%s: %s", tx.id, exc, exc_info=True)

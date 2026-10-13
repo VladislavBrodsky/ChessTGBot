@@ -11,7 +11,7 @@
     "avatar": "",
     "kind": "Organization"
   },
-  "publishedAt": "2026-10-11",
+  "publishedAt": "2099-01-01",
   "readingTime": "4 min read",
   "takeaways": [
     "List every check first. Here, the knight has exactly one, and it is mate.",
@@ -72,10 +72,6 @@
       "text": "A king in the corner has only three neighbouring squares. When friendly pieces fill all three, the king has no flight square, and the attacker needs just one check that cannot be captured or blocked. Knights are ideal for the job because they jump the wall. The mate has a name that explains itself: smothered, because the king is smothered by its own army."
     },
     {
-      "type": "paragraph",
-      "text": "You can scan for it with three quick questions."
-    },
-    {
       "type": "list",
       "items": [
         "Is the enemy king on the edge, ideally in a corner, with three or fewer neighbouring squares?",
@@ -116,10 +112,6 @@
       "initialFen": "5r1k/4N1pp/8/6N1/8/1Q6/8/6K1 w - - 0 1"
     },
     {
-      "type": "paragraph",
-      "text": "Notice how White thought. White did not search for a square to check from. White looked for a way to make Black's own piece occupy the last empty neighbour of the king. A queen sacrifice is cheap when the reply is forced and the follow-up is mate. This is a simplified relative of the combination known as Philidor's legacy, where the queen is also given up to drag a rook beside the king before a knight delivers mate."
-    },
-    {
       "type": "heading",
       "text": "Practise it"
     },
@@ -137,9 +129,8 @@
     }
   ],
   "relatedSlugs": [
-    "arabian-mate-rook-and-knight-coordination",
-    "the-art-of-the-in-between-move-zwischenzug",
-    "how-to-calculate-candidate-moves-in-30-seconds"
+    "opening-mastery-tactics",
+    "the-3-minute-blitz-blueprint-tactics-time-management"
   ],
   "sources": [
     {
@@ -155,5 +146,5 @@
     "label": "Practise tactics in the Academy",
     "href": "/academy"
   },
-  "publishAt": "2026-10-11T05:00:00Z"
+  "publishAt": "2099-01-01T05:00:00Z"
 }

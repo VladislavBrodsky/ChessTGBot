@@ -10,7 +10,7 @@
     "passed": true,
     "issues": [],
     "gate_summary": "Passed all deterministic Telegram gates",
-    "checked_at": "2026-10-12T20:02:45Z"
+    "checked_at": "2026-10-13T22:14:27Z"
   },
   "brief": {
     "slot": {
@@ -158,7 +158,7 @@
       "url": "https://web3chess.online"
     }
   ],
-  "updated_at": "2026-10-12T20:02:45Z",
+  "updated_at": "2026-10-13T22:14:27Z",
   "image": "marketing/content-ops/queue/2026-10-11/2026-10-11-tg-1.png",
   "render": {
     "ok": true,

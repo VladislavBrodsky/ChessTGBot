@@ -41,6 +41,11 @@ export function LobbyHero({ balance, balanceLoading, balanceError, activityLoadi
             </span>
           </Link>
         </div>
+      </div>
+      <div className="lobby-hero__live">
+        <LiveStrip searching={searching} games24h={games24h} loading={activityLoading} unavailable={activityError} t={tg} />
+      </div>
+      <div className="lobby-hero__action">
         <Button
           variant="secondary"
           size="sm"
@@ -51,7 +56,6 @@ export function LobbyHero({ balance, balanceLoading, balanceError, activityLoadi
           {balanceError ? tw('retry_btn') : tw('top_up')}
         </Button>
       </div>
-      <LiveStrip searching={searching} games24h={games24h} loading={activityLoading} unavailable={activityError} t={tg} />
     </Card>
   );
 }

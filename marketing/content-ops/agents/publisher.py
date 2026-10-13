@@ -61,14 +61,31 @@ class PublisherAgent:
             "reveals_dispatched": reveals,
         }
 
-    def dispatch_x_posts(self, day: Optional[str] = None, post_id: Optional[str] = None, dry_run: bool = True) -> Dict[str, Any]:
+    def dispatch_x_posts(
+        self,
+        day: Optional[str] = None,
+        post_id: Optional[str] = None,
+        dry_run: bool = True,
+        due_only: bool = False,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """Dispatches or dry-run previews approved X (Twitter) posts and threads."""
         entries = []
+        now_iso = queue.iso(queue.utcnow())
         for entry in queue.all_entries(day=day):
-            if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") in {"approved", "published"}:
-                if post_id and entry.get("id") != post_id:
+            if entry.get("kind") not in ("x_post", "x_thread"):
+                continue
+            if post_id:
+                if entry.get("id") != post_id:
                     continue
-                entries.append(entry)
+            else:
+                if entry.get("status") != "approved":
+                    continue
+                if due_only and entry.get("scheduled_at") and entry["scheduled_at"] > now_iso:
+                    continue
+            entries.append(entry)
+            if limit and len(entries) >= limit:
+                break
 
         dispatched = []
         for e in entries:
@@ -81,6 +98,13 @@ class PublisherAgent:
                     cand = queue.QUEUE / e["date"] / f"{eid}.png"
                     if cand.exists():
                         img_path = str(cand)
+                if img_path:
+                    p = Path(img_path)
+                    if not p.is_absolute():
+                        if (queue.ROOT / p).exists():
+                            img_path = str(queue.ROOT / p)
+                        elif (queue.HERE / p).exists():
+                            img_path = str(queue.HERE / p)
 
                 item = {
                     "id": eid,
@@ -94,6 +118,7 @@ class PublisherAgent:
                 }
 
                 if not dry_run:
+                    queue.set_status(e, "publishing")
                     try:
                         from pipeline import x_publisher
                         docked_text = (e.get("docked_reply") or {}).get("text")
@@ -111,11 +136,11 @@ class PublisherAgent:
                         item["receipt"] = res
                         item["status"] = "published"
                         e["x_receipt"] = res
-                        queue.set_status(e, "published")
-                        queue.save(e)
+                        queue.set_status(e, "published", published={"root_id": res.get("root_id"), "at": queue.iso(queue.utcnow())})
                     except Exception as err:
                         item["status"] = "failed"
                         item["error"] = str(err)
+                        queue.set_status(e, "approved", last_error=str(err)[:200])
             else:
                 item = {
                     "id": eid,
@@ -127,6 +152,7 @@ class PublisherAgent:
                 }
 
                 if not dry_run:
+                    queue.set_status(e, "publishing")
                     try:
                         from pipeline import x_publisher
                         tweet_texts = [t.get("text") for t in e.get("tweets", [])]
@@ -134,11 +160,11 @@ class PublisherAgent:
                         item["receipt"] = res
                         item["status"] = "published"
                         e["x_receipt"] = res
-                        queue.set_status(e, "published")
-                        queue.save(e)
+                        queue.set_status(e, "published", published={"root_id": res.get("root_id"), "at": queue.iso(queue.utcnow())})
                     except Exception as err:
                         item["status"] = "failed"
                         item["error"] = str(err)
+                        queue.set_status(e, "approved", last_error=str(err)[:200])
 
             dispatched.append(item)
 
