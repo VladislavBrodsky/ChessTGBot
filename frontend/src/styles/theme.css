@@ -66,6 +66,8 @@
   --shadow-neon: var(--shadow-neon);
   --shadow-premium: var(--shadow-premium);
   --shadow-inner-glow: var(--shadow-inner-glow);
+
+  --radius-pill: var(--radius-pill);
 }
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *, [data-theme='nebula'], [data-theme='nebula'] *));

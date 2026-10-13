@@ -32,7 +32,7 @@ export function GramVaultPreview() {
             telegramHaptic('selection');
             setOpen(true);
           }}
-          className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-pill bg-purple-500/15 border border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-400/50 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
+          className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 hover:text-white hover:border-purple-400/50 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
           aria-label={t('details')}
         >
           <FiInfo size={13} className="text-purple-400" aria-hidden="true" />

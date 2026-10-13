@@ -123,7 +123,7 @@ export default function EngagementQuest() {
             telegramHaptic('selection');
             setDetails(true);
           }}
-          className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-pill bg-brand-elevated/80 border border-brand-border text-brand-muted hover:text-white hover:border-brand-action/40 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
+          className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-elevated/80 border border-brand-border text-brand-muted hover:text-white hover:border-brand-action/40 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
           aria-label={t('odds')}
         >
           <FiInfo size={13} className="text-brand-action" aria-hidden="true" />
@@ -139,7 +139,7 @@ export default function EngagementQuest() {
             {Array.from({ length: data.target }, (_, i) => (
               <span
                 key={i}
-                className={`h-2 rounded-pill transition-all duration-300 ${
+                className={`h-2 rounded-full transition-all duration-300 ${
                   i < data.progress
                     ? 'bg-brand-action shadow-xs'
                     : 'bg-brand-elevated border border-brand-border/80'
