@@ -13,14 +13,16 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { PodiumSkeleton } from '@/components/ui/Skeleton';
 import { Avatar } from '@/components/ui/Avatar';
 import { useTelemetry } from '@/hooks/useTelemetry';
-import { Button } from '@/components/ui/Button';
-import { Badge, BadgeRow } from '@/components/ui/Badge';
 import { isLeaderboardPreviewAllowed } from '@/lib/leaderboardPreviewAccess';
 
-const LeaderboardPreview = dynamic(() => import('@/components/leaderboard/LeaderboardPreview'), { ssr: false });
+const LeaderboardPreview = dynamic(() => import('@/components/leaderboard/LeaderboardPreview'), {
+  ssr: false,
+  loading: () => <PodiumSkeleton />,
+});
 const subscribePreviewAccess = () => () => {};
-const previewAccessSnapshot = () => isLeaderboardPreviewAllowed(process.env.NODE_ENV, window.location.hostname);
-const serverPreviewAccessSnapshot = () => false;
+const previewAccessSnapshot = () => isLeaderboardPreviewAllowed(process.env.NODE_ENV, window.location.hostname) ? 'preview' : 'api';
+// Reserve the leaderboard space until a development browser supplies its hostname.
+const serverPreviewAccessSnapshot = () => process.env.NODE_ENV === 'development' ? 'loading' : 'api';
 
 interface LeaderboardItem {
   telegram_id: number;
@@ -36,9 +38,15 @@ interface LeaderboardItem {
 }
 
 export default function Leaderboard() {
+  const mode = useSyncExternalStore(subscribePreviewAccess, previewAccessSnapshot, serverPreviewAccessSnapshot);
+  if (mode === 'loading') return <PodiumSkeleton />;
+  if (mode === 'preview') return <LeaderboardPreview />;
+  return <PlayerLeaderboard />;
+}
+
+function PlayerLeaderboard() {
   const t = useTranslations('Index');
   const tc = useTranslations('Common');
-  const tp = useTranslations('LeaderboardPreview');
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState<'arena' | 'academy'>('arena');
   const { data: arenaData, isLoading: loadingArena } = useSWRFetch('/api/v1/users/leaderboard');
@@ -51,8 +59,6 @@ export default function Leaderboard() {
 
   const loading = activeTab === 'arena' ? loadingArena : loadingAcademy;
   const [showModal, setShowModal] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const previewAllowed = useSyncExternalStore(subscribePreviewAccess, previewAccessSnapshot, serverPreviewAccessSnapshot);
   const { trackEvent } = useTelemetry();
 
   useEffect(() => {
@@ -248,17 +254,6 @@ export default function Leaderboard() {
           </div>
         )}
       </Card>
-
-      {previewAllowed && (
-        <Button variant="ghost" className="w-full" onClick={() => setShowPreview(true)}>{tp('open')}</Button>
-      )}
-
-      {previewAllowed && showPreview && (
-        <Drawer isOpen onClose={() => setShowPreview(false)}
-          title={<BadgeRow><span>{tp('title')}</span><Badge variant="amber">{tp('badge')}</Badge></BadgeRow>}>
-          <LeaderboardPreview />
-        </Drawer>
-      )}
 
       {/* Full Standings Drawer */}
       <Drawer

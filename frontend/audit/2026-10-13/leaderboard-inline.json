@@ -1,0 +1,19 @@
+{
+  "mode": "local development",
+  "profiles": 10,
+  "gramLogos": 10,
+  "apiLadderRendered": false,
+  "apiRequestsInPreview": false,
+  "horizontalOverflow": false,
+  "scholarsSwitchVerified": true,
+  "runningRankChangesVerified": true,
+  "disclosureRetained": true,
+  "productionUsesAPIOnly": true,
+  "checks": {
+    "tests": 142,
+    "coldTypecheck": "passed",
+    "lint": "zero warnings",
+    "staticPages": 213,
+    "locales": 10
+  }
+}

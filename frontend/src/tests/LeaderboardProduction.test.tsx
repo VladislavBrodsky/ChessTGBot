@@ -5,6 +5,7 @@ import mockMessages from '@/messages/en.json';
 
 let mockPreviewAllowed = false;
 const mockTrackEvent = jest.fn();
+const mockAPIReads = jest.fn();
 jest.mock('@/lib/leaderboardPreviewAccess', () => ({ isLeaderboardPreviewAllowed: () => mockPreviewAllowed }));
 jest.mock('next-intl', () => ({
   useLocale: () => 'en',
@@ -13,11 +14,13 @@ jest.mock('next-intl', () => ({
     return text.replace(/\{(\w+)\}/g, (_match: string, name: string) => String(values[name] ?? name));
   },
 }));
-jest.mock('@/hooks/useSWRFetch', () => ({ useSWRFetch: (url: string) => ({
+jest.mock('@/hooks/useSWRFetch', () => ({ useSWRFetch: (url: string) => {
+  mockAPIReads(url);
+  return {
   isLoading: false,
   data: [{ telegram_id: 42, first_name: 'API player', elo: 1425, xp: 600, rank: 1, games_played: 10, win_rate: 60, study_streak: 2 }],
   endpoint: url,
-}) }));
+}; } }));
 jest.mock('@/hooks/useTelemetry', () => ({ useTelemetry: () => ({ trackEvent: mockTrackEvent }) }));
 jest.mock('@/lib/api', () => ({ getFullPhotoUrl: (src: string) => src }));
 jest.mock('next/dynamic', () => ({ __esModule: true, default: () => function Preview() { return <p>Sample preview content</p>; } }));
@@ -27,6 +30,7 @@ jest.mock('@/components/ui/Button', () => ({ Button: ({ children, onClick }: any
 jest.mock('@/components/ui/SegmentedControl', () => ({ SegmentedControl: ({ options, onChange }: any) => <div>{options.map((option: any) => <button key={option.value} onClick={() => onChange(option.value)}>{option.label}</button>)}</div> }));
 
 describe('Production leaderboard presentation', () => {
+  beforeEach(() => mockAPIReads.mockClear());
   it('keeps API standings and has no sample entry or Drawer when access is denied', () => {
     mockPreviewAllowed = false;
     render(<Leaderboard />);
@@ -41,12 +45,13 @@ describe('Production leaderboard presentation', () => {
     expect(screen.getByText('XP')).toBeVisible();
   });
 
-  it('requires opt-in before displaying the labeled local preview', () => {
+  it('shows the local preview directly without rendering or fetching API standings', () => {
     mockPreviewAllowed = true;
     render(<Leaderboard />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: mockMessages.LeaderboardPreview.open }));
-    expect(screen.getByRole('dialog')).toHaveTextContent(mockMessages.LeaderboardPreview.badge);
-    expect(screen.getByRole('dialog')).toHaveTextContent('Sample preview content');
+    expect(screen.getByText('Sample preview content')).toBeVisible();
+    expect(screen.queryByText('API player')).not.toBeInTheDocument();
+    expect(screen.queryByText('ELO')).not.toBeInTheDocument();
+    expect(mockAPIReads).not.toHaveBeenCalled();
   });
 });
