@@ -45,7 +45,7 @@ async def _make_user(db_session: AsyncSession, telegram_id: int, balance: int) -
     return user
 
 
-async def _make_held_tx(db_session: AsyncSession, telegram_id: int, amount: int, fee: int = 20,
+async def _make_held_tx(db_session: AsyncSession, telegram_id: int, amount: int, fee: int = 150,
                         created_at: datetime = None) -> Transaction:
     tx = Transaction(
         user_id=telegram_id,
@@ -241,7 +241,7 @@ async def test_double_confirm_pays_only_once(db_session: AsyncSession, monkeypat
     assert done1 and done2
     assert "Withdrawal Confirmed" in message1
     assert "already" in message2
-    mock_pay.assert_awaited_once_with(DEST_ADDRESS, 980)   # 1000 - 20 fee, exactly once
+    mock_pay.assert_awaited_once_with(DEST_ADDRESS, 850)   # 1000 - 150 fee, exactly once
 
     tx = await _get_tx(db_session, tx.id)
     assert tx.status == "pending"                          # real payout → on-chain pending

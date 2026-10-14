@@ -39,7 +39,7 @@ async def _create_review_tx(db: AsyncSession, user_id: int = 880001) -> Transact
         user_id=user_id,
         type="withdrawal",
         amount=-1_000,
-        fee=20,
+        fee=150,
         status=PENDING_REVIEW_STATUS,
         reference_id=f"{REVIEW_REFERENCE_PREFIX}{DESTINATION}",
     )
@@ -75,13 +75,13 @@ async def test_twenty_concurrent_approval_attempts_claim_and_pay_once(tmp_path):
             async with sessions() as db:
                 claimed, _ = await claim_payout(db, tx_id, ADMIN_ID)
                 if claimed:
-                    await payout(DESTINATION, 980)
+                    await payout(DESTINATION, 850)
                 return claimed
 
         results = await asyncio.gather(*(approve_attempt(index) for index in range(20)))
 
         assert sum(results) == 1
-        payout.assert_awaited_once_with(DESTINATION, 980)
+        payout.assert_awaited_once_with(DESTINATION, 850)
 
         async with sessions() as db:
             tx = (await db.execute(select(Transaction).where(Transaction.id == tx_id))).scalars().one()

@@ -434,8 +434,8 @@ async def withdraw_funds(
     except Exception:
         pass
 
-    # Flat $0.20 fee if amount is 20 cents or more; otherwise 0 fee to allow small test withdrawals
-    fee = 20 if request.amount >= 20 else 0
+    # Flat withdrawal fee ($1.50 / 150 cents)
+    fee = settings.WITHDRAWAL_FEE_CENTS if request.amount >= settings.WITHDRAWAL_FEE_CENTS else 0
     transfer_amount_cents = request.amount - fee
 
     from app.services.withdrawal_policy import needs_manual_review

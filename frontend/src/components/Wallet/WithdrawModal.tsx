@@ -161,12 +161,12 @@ export default function WithdrawModal({
             </div>
             <div className="flex justify-between text-rose-400">
               <span>{tw('withdraw_fee')}</span>
-              <span className="font-mono font-bold">-$0.20</span>
+              <span className="font-mono font-bold">-$1.50</span>
             </div>
             <div className="flex justify-between border-t border-brand-border pt-2 mt-1 font-bold text-brand-primary">
               <span>{tw('you_receive')}</span>
               <span className="font-mono text-emerald-400">
-                ${Math.max(0, parseFloat(withdrawAmount) - 0.20).toFixed(2)}
+                ${Math.max(0, parseFloat(withdrawAmount) - 1.50).toFixed(2)}
               </span>
             </div>
           </div>

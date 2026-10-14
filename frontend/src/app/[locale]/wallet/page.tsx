@@ -101,7 +101,7 @@ export default function WalletPage() {
           <Button variant="secondary" className="w-full" leftIcon={<FaWallet />} onClick={() => setActiveModal('connect')}>{tw('link_ton')}</Button>
           <dl className="grid grid-cols-2 gap-3 text-caption">
             <div><dt className="text-brand-muted">{tw('deposit_fee')}</dt><dd className="text-sm font-semibold text-brand-primary">5%</dd></div>
-            <div><dt className="text-brand-muted">{tw('withdraw_fee')}</dt><dd className="text-sm font-semibold text-brand-primary">$0.20</dd></div>
+            <div><dt className="text-brand-muted">{tw('withdraw_fee')}</dt><dd className="text-sm font-semibold text-brand-primary">$1.50</dd></div>
           </dl>
         </Card>
 

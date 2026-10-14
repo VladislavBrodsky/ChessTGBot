@@ -165,6 +165,7 @@ class Settings(BaseSettings):
     # review threshold are held for manual admin approval instead of auto-paid.
     WITHDRAWAL_DAILY_CAP_CENTS: int = 100000            # $1,000 per user per rolling 24h
     WITHDRAWAL_REVIEW_THRESHOLD_CENTS: int = 50000      # hold withdrawals >= $500 for admin review
+    WITHDRAWAL_FEE_CENTS: int = int(os.getenv("WITHDRAWAL_FEE_CENTS", "150"))  # $1.50 flat fee per withdrawal
 
     # Per-withdrawal owner confirmation (second factor). Below-review-threshold
     # withdrawals are debited and HELD until the owner taps Confirm on a bot DM
