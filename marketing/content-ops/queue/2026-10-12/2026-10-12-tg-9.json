@@ -1,0 +1,43 @@
+{
+  "id": "2026-10-12-tg-9",
+  "kind": "telegram",
+  "date": "2026-10-12",
+  "category": "Product",
+  "format": "product",
+  "hook": "Arena Alert: Midnight Blitz Vault ( USDT) locks in 15 minutes",
+  "cta": "arena",
+  "text": "⚡ <b>The 02:00 UTC Arena countdown is live.</b>\n\n3-Minute Blitz • Double-elimination bracket • Instant TON settlement.\nFree spectator lounge open for all community members.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.\nRegistration locks the second the round clock starts.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/wagers"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Daily Arena",
+    "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
+    "subhead": "02:00 UTC • Instant PvP Matchmaking",
+    "cta_label": "Enter Arena",
+    "steps": [
+      "Open Mini App",
+      "Choose stake tier",
+      "Win 95% of the pot"
+    ],
+    "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+  },
+  "scheduled_at": "2026-10-13T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-14T00:06:40Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-9.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

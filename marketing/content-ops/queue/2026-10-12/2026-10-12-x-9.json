@@ -1,0 +1,48 @@
+{
+  "id": "2026-10-12-x-9",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Tactics",
+  "hook": "White to move. The knight seals g8 and defends h7. Spot the mate",
+  "text": "White to move. The knight seals g8 and defends h7. Spot the mate\n\nBlack king is trapped on h8 with zero flight squares.\n\nOnly one rook move cuts through and delivers immediate checkmate.\n\nCan you calculate the Arabian net under 5s? ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+    "solution": [
+      "Rh7#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+    "tag": "Mate In 1",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Can you spot the tactical finish?",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Rh7# (The Arabian Mate).\nThe knight on f6 covers g8 and protects h7.\n\nMaster 50+ calculation motifs:\nhttps://web3chess.online/academy?utm_source=x&utm_medium=docked_reply&utm_campaign=arabian_mate&utm_content=2026-10-12-x-9",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-12T23:15:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-14T00:06:38Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-9.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

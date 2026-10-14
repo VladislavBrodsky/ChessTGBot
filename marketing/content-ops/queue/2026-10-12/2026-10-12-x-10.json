@@ -1,0 +1,51 @@
+{
+  "id": "2026-10-12-x-10",
+  "kind": "x_post",
+  "date": "2026-10-12",
+  "category": "Psychology",
+  "hook": "The 3-second panic: Why 1800+ players blunder winning endgames",
+  "text": "The 3-second panic: Why 1800+ players blunder winning endgames\n\nUnder 5 seconds on the clock, working memory collapses.\n\nYou stop checking opponent threats.\nYou premove captures out of reflex.\nYou throw +6 advantages into stalemate.\n\n#Chess #MentalStamina #CognitivePerformance",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Neuro Performance",
+    "headline": "THE 6-SECOND TILT\n*ADRENALINE OVERLOAD*",
+    "subhead": "How tunnel vision destroys calculation in speed chess",
+    "cta_label": "Test Instincts",
+    "panels": [
+      {
+        "label": "State 1",
+        "text": "Calculation collapses",
+        "piece": "N"
+      },
+      {
+        "label": "State 2",
+        "text": "Subconscious instinct takes over",
+        "piece": "R"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Train your tactical reflexes in 3-minute blitz duels on Telegram:\nhttps://t.me/chess_matbot/Web3Chess",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-12T23:45:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-14T00:06:39Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-10.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}
