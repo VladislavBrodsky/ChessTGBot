@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/api";
 import { Drawer } from "@/components/ui/Drawer";
 import { Button } from "@/components/ui/Button";
 import { telegramHaptic } from "@/lib/telegram";
+import { FiLink } from "react-icons/fi";
 
 interface WithdrawModalProps {
   onClose: () => void;
@@ -23,7 +24,7 @@ export default function WithdrawModal({
 }: WithdrawModalProps) {
   const tw = useTranslations('Wallet');
   const [withdrawAmount, setWithdrawAmount] = useState<string>("10");
-  const [withdrawAddress, setWithdrawAddress] = useState<string>(initialWithdrawAddress);
+  const [withdrawAddress, setWithdrawAddress] = useState<string>("");
   const [processing, setProcessing] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [pendingConfirmation, setPendingConfirmation] = useState<boolean>(false);
@@ -118,37 +119,72 @@ export default function WithdrawModal({
           onChange={(event) => setWithdrawAmount(event.target.value)} min="10" step="0.01" dir="ltr"
           helperText={tw('withdraw_minimum', { amount: '$10.00' })} placeholder={tw('amount_placeholder')} />
         <div>
-          <Input type="text" label={tw('target_address')} value={withdrawAddress} dir="ltr"
-            onChange={(event) => setWithdrawAddress(event.target.value)} placeholder={tw('target_placeholder')} />
-          {initialWithdrawAddress && (
-            <div className="flex items-center justify-between gap-2 pt-1.5 px-0.5 text-caption">
-              {withdrawAddress === initialWithdrawAddress ? (
-                <>
-                  <span className="flex items-center gap-1.5 text-brand-muted truncate">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" aria-hidden="true" />
-                    <span>Prefilled from connected TON wallet</span>
+          <Input
+            type="text"
+            label={tw('target_address')}
+            value={withdrawAddress}
+            dir="ltr"
+            onChange={(event) => setWithdrawAddress(event.target.value)}
+            placeholder="Paste TON wallet address (EQ... or UQ...)"
+          />
+          {initialWithdrawAddress ? (
+            !withdrawAddress ? (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWithdrawAddress(initialWithdrawAddress);
+                    telegramHaptic('selection');
+                  }}
+                  className="ui-tap-target w-full flex items-center justify-between p-2.5 rounded-xl bg-brand-surface border border-brand-border hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.99] transition-all cursor-pointer group text-start"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FiLink className="text-emerald-400 shrink-0" size={14} aria-hidden="true" />
+                    <span className="text-caption font-semibold text-brand-primary group-hover:text-emerald-400 transition-colors">
+                      Use Connected Wallet
+                    </span>
+                  </div>
+                  <span className="font-mono text-caption text-brand-muted select-none shrink-0" dir="ltr">
+                    {initialWithdrawAddress.slice(0, 6)}…{initialWithdrawAddress.slice(-4)}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setWithdrawAddress('')}
-                    className="text-brand-muted hover:text-brand-primary font-semibold text-caption shrink-0 transition-colors cursor-pointer"
-                  >
-                    Clear
-                  </button>
-                </>
-              ) : (
-                <>
-                  <span className="text-brand-muted truncate">Enter receiving TON wallet</span>
-                  <button
-                    type="button"
-                    onClick={() => setWithdrawAddress(initialWithdrawAddress)}
-                    className="text-emerald-400 hover:text-emerald-300 font-semibold text-caption shrink-0 flex items-center gap-1 transition-colors cursor-pointer"
-                  >
-                    <span>Use connected wallet ({initialWithdrawAddress.slice(0, 4)}…{initialWithdrawAddress.slice(-3)})</span>
-                  </button>
-                </>
-              )}
-            </div>
+                </button>
+              </div>
+            ) : withdrawAddress === initialWithdrawAddress ? (
+              <div className="pt-1.5 flex items-center justify-between px-1 text-caption">
+                <span className="flex items-center gap-1.5 text-brand-muted truncate">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" aria-hidden="true" />
+                  <span>Using connected TON wallet</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWithdrawAddress('');
+                    telegramHaptic('light');
+                  }}
+                  className="text-brand-muted hover:text-brand-primary font-semibold text-caption shrink-0 transition-colors cursor-pointer"
+                >
+                  Clear
+                </button>
+              </div>
+            ) : (
+              <div className="pt-1.5 flex items-center justify-between px-1 text-caption">
+                <span className="text-brand-muted truncate">Custom destination address</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWithdrawAddress(initialWithdrawAddress);
+                    telegramHaptic('selection');
+                  }}
+                  className="text-emerald-400 hover:text-emerald-300 font-semibold text-caption shrink-0 flex items-center gap-1 transition-colors cursor-pointer"
+                >
+                  <span>Use connected wallet</span>
+                </button>
+              </div>
+            )
+          ) : (
+            <p className="pt-1.5 px-0.5 text-caption text-brand-muted">
+              Ensure the address is on the TON network (Jetton USDT).
+            </p>
           )}
         </div>
 
