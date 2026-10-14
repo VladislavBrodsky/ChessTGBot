@@ -7,15 +7,15 @@
   "tweets": [
     {
       "number": 1,
-      "text": "1/5 Tap-to-earn was an illusion.\n\nMillions clicked digital coins for months, only to receive dust tokens and inflation.\n\nThe next phase of Web3 gaming is not clicking — it is intellectual mastery and skill-based PvP. Here is why speed chess is taking over: 🧵\n\n#Web3Gaming #Chess"
+      "text": "1/5 Tap-to-earn was an illusion.\n\nMillions clicked digital coins for months, only to receive dust tokens and inflation.\n\nThe next phase of Web3 gaming is not clicking \u2014 it is intellectual mastery and skill-based PvP. Here is why speed chess is taking over: \ud83e\uddf5\n\n#Web3Gaming #Chess"
     },
     {
       "number": 2,
-      "text": "2/5 In classical crypto games, token emissions dilute value.\n\nIn pure speed chess, value is zero-sum and skill-gated:\n• No bots running scripts\n• No fake grinding loops\n• Every victory is calculated under a 3-minute clock\n\nRating cannot be bought."
+      "text": "2/5 In classical crypto games, token emissions dilute value.\n\nIn pure speed chess, value is zero-sum and skill-gated:\n\u2022 No bots running scripts\n\u2022 No fake grinding loops\n\u2022 Every victory is calculated under a 3-minute clock\n\nRating cannot be bought."
     },
     {
       "number": 3,
-      "text": "3/5 The real bottleneck on Telegram wasn't interest — it was latency.\n\nClassical Web3 chess forced on-chain transactions per move, destroying blitz flow.\n\nWe solved this with hybrid architecture:\n• Sub-100ms state updates via WebSockets\n• Instant matchmaking in Telegram Bot API 8.0"
+      "text": "3/5 The real bottleneck on Telegram wasn't interest \u2014 it was latency.\n\nClassical Web3 chess forced on-chain transactions per move, destroying blitz flow.\n\nWe solved this with hybrid architecture:\n\u2022 Sub-100ms state updates via WebSockets\n\u2022 Instant matchmaking in Telegram Bot API 8.0"
     },
     {
       "number": 4,
@@ -26,7 +26,7 @@
       "text": "5/5 Whether you want free daily grandmaster tactical drills or competitive blitz matches, the board is waiting.\n\nPlay free on web or launch inside Telegram in one tap:\n\nhttps://web3chess.online"
     }
   ],
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -39,6 +39,17 @@
     "gate_summary": "Passed all deterministic X thread gates",
     "checked_at": "2026-10-12T18:49:14Z"
   },
-  "updated_at": "2026-10-14T14:24:23Z",
-  "last_error": "403 Client Error: Forbidden for url: https://api.x.com/2/tweets"
+  "updated_at": "2026-10-14T15:06:57Z",
+  "published": {
+    "root_id": "2110197941268861213",
+    "all_ids": [
+      "2110197941268861213",
+      "2110197943571542017",
+      "2110382157721907480",
+      "2110384168727130350",
+      "2110386193409921102"
+    ],
+    "url": "https://x.com/defi_ambassador/status/2110197941268861213",
+    "at": "2026-10-14T09:04:12Z"
+  }
 }

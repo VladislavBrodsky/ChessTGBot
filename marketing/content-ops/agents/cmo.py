@@ -119,10 +119,19 @@ class CmoAgent:
 
         if kind in ("x_post", "x_thread"):
             # X Specific Golden Rules
-            if kind == "x_post" and "http" in text:
-                issues.append("Root tweet violates Docked Link Law; outbound URLs belong in docked reply")
-            if kind == "x_post" and len(text) > 280:
-                issues.append(f"Tweet exceeds 280-char limit ({len(text)} chars)")
+            if kind == "x_post":
+                if "http" in text:
+                    issues.append("Root tweet violates Docked Link Law; outbound URLs belong in docked reply")
+                if len(text) > 280:
+                    issues.append(f"Tweet exceeds 280-char limit ({len(text)} chars)")
+            elif kind == "x_thread":
+                tweets = entry.get("tweets", [])
+                if not tweets:
+                    issues.append("Thread must have at least 1 tweet")
+                for idx, t in enumerate(tweets, start=1):
+                    t_text = t.get("text", "")
+                    if len(t_text) > 265:
+                        issues.append(f"Thread tweet {idx}/{len(tweets)} exceeds safe 265-char limit ({len(t_text)} chars)")
             creative = entry.get("creative")
             if creative and creative.get("size") != "square":
                 issues.append(f"X creative must use 1:1 format (size='square'); got '{creative.get('size')}'")

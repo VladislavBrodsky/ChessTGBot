@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import os
 import json
+import time
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -147,16 +148,40 @@ def post_tweet_with_docked_reply(
     }
 
 
-def post_thread(tweets: List[str]) -> Dict[str, Any]:
-    """Publishes a chained thread of tweets in sequence."""
+def post_thread(
+    tweets: List[str],
+    image_path: Optional[str | Path] = None,
+    attach_to: str = "first",
+    existing_ids: Optional[List[str]] = None,
+    delay_seconds: float = 2.5,
+) -> Dict[str, Any]:
+    """Publishes a chained thread of tweets in sequence with optional image attachment and resumption."""
     if not tweets:
         raise ValueError("Thread must contain at least 1 tweet.")
 
-    published_ids: List[str] = []
-    parent_id: Optional[str] = None
+    published_ids: List[str] = list(existing_ids or [])
+    parent_id: Optional[str] = published_ids[-1] if published_ids else None
+    uploaded_media_id: Optional[str] = None
 
-    for idx, text in enumerate(tweets, start=1):
-        res = post_tweet(text, reply_to_id=parent_id)
+    if image_path:
+        uploaded_media_id = upload_media(image_path)
+
+    start_idx = len(published_ids)
+    for idx in range(start_idx, len(tweets)):
+        text = tweets[idx]
+        media_ids = None
+
+        # Determine if image should be attached to this tweet
+        if uploaded_media_id:
+            if attach_to == "first" and idx == 0:
+                media_ids = [uploaded_media_id]
+            elif attach_to == "last" and idx == len(tweets) - 1:
+                media_ids = [uploaded_media_id]
+
+        if idx > 0 and delay_seconds > 0:
+            time.sleep(delay_seconds)
+
+        res = post_tweet(text, reply_to_id=parent_id, media_ids=media_ids)
         tweet_id = res["data"]["id"]
         published_ids.append(tweet_id)
         parent_id = tweet_id
@@ -168,3 +193,4 @@ def post_thread(tweets: List[str]) -> Dict[str, Any]:
         "all_ids": published_ids,
         "url": f"https://x.com/defi_ambassador/status/{root_id}",
     }
+

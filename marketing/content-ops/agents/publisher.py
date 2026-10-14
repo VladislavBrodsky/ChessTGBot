@@ -152,15 +152,33 @@ class PublisherAgent:
                 }
 
                 if not dry_run:
+                    img_path = e.get("image")
+                    if not img_path and e.get("creative"):
+                        cand = queue.QUEUE / e.get("date", eid[:10]) / f"{eid}.png"
+                        if cand.exists():
+                            img_path = str(cand)
+                    if img_path:
+                        p = Path(img_path)
+                        if not p.is_absolute():
+                            if (queue.ROOT / p).exists():
+                                img_path = str(queue.ROOT / p)
+                            elif (queue.HERE / p).exists():
+                                img_path = str(queue.HERE / p)
+
                     queue.set_status(e, "publishing")
                     try:
                         from pipeline import x_publisher
                         tweet_texts = [t.get("text") for t in e.get("tweets", [])]
-                        res = x_publisher.post_thread(tweet_texts)
+                        existing_ids = e.get("published_tweet_ids") or (e.get("published") or {}).get("all_ids")
+                        res = x_publisher.post_thread(
+                            tweet_texts,
+                            image_path=img_path,
+                            existing_ids=existing_ids,
+                        )
                         item["receipt"] = res
                         item["status"] = "published"
                         e["x_receipt"] = res
-                        queue.set_status(e, "published", published={"root_id": res.get("root_id"), "at": queue.iso(queue.utcnow())})
+                        queue.set_status(e, "published", published={"root_id": res.get("root_id"), "all_ids": res.get("all_ids"), "at": queue.iso(queue.utcnow())})
                     except Exception as err:
                         item["status"] = "failed"
                         item["error"] = str(err)
