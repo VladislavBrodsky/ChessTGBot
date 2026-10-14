@@ -148,6 +148,13 @@ def post_tweet_with_docked_reply(
     }
 
 
+class ThreadPublishError(RuntimeError):
+    """Raised when a thread publication fails midway, preserving already published IDs."""
+    def __init__(self, message: str, published_ids: List[str]):
+        super().__init__(message)
+        self.published_ids = published_ids
+
+
 def post_thread(
     tweets: List[str],
     image_path: Optional[str | Path] = None,
@@ -181,10 +188,17 @@ def post_thread(
         if idx > 0 and delay_seconds > 0:
             time.sleep(delay_seconds)
 
-        res = post_tweet(text, reply_to_id=parent_id, media_ids=media_ids)
-        tweet_id = res["data"]["id"]
-        published_ids.append(tweet_id)
-        parent_id = tweet_id
+        try:
+            res = post_tweet(text, reply_to_id=parent_id, media_ids=media_ids)
+            tweet_id = res["data"]["id"]
+            published_ids.append(tweet_id)
+            parent_id = tweet_id
+        except Exception as err:
+            logger.error(f"Thread publication halted at tweet {idx+1}/{len(tweets)}: {err}")
+            raise ThreadPublishError(
+                f"Thread failed at tweet {idx+1}/{len(tweets)}: {err}",
+                published_ids=published_ids,
+            ) from err
 
     root_id = published_ids[0]
     return {
@@ -193,4 +207,5 @@ def post_thread(
         "all_ids": published_ids,
         "url": f"https://x.com/defi_ambassador/status/{root_id}",
     }
+
 

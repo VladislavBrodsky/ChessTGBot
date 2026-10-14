@@ -87,25 +87,25 @@ When defining a campaign object for `W3Renderer.scene(campaign, format)`:
 const speedChessCampaign = {
   id: 'tempo',
   number: '05',
-  name: 'Speed Chess & Crypto Gains',
-  purpose: 'Community & Wagers',
-  icon: 'clock',
+  name: 'Speed Chess & USDT Stakes',
+  purpose: 'Speed & Wagers',
+  icon: 'lightning',
   theme: 'canvas',                         // Light warm-canvas background
-  art: 'clock',                           // Official 3D sculpture key
-  tag: 'Community & Crypto',               // Mint pill badge
-  headline: 'SPEED CHESS\nCRYPTO GAINS',   // 2-line punchy Barlow headline (no periods)
-  body: '60s blitz · Instant USDT payouts · The arena is live', // Viral & FOMO subtitle
-  cta: 'Join the community',               // Action verb in CTA bar
+  art: 'sculpture',                        // Official 3D porcelain knight sculpture
+  tag: 'Speed & Stakes',                   // Mint pill badge
+  headline: 'SPEED CHESS\nREAL USDT STAKES', // 2-line punchy Barlow headline (no periods)
+  body: 'Fast 60s blitz · Equal stakes · Instant settlement', // Single-line subtitle
+  cta: 'Enter the arena',                  // Action verb in CTA bar
   note: 'USDT matches · 18+ where permitted · Telegram @chesshub_chat', // Single-line disclaimer
   proof: [
     '1+0 Bullet & 3+2 Blitz',              // Item 1: Speed time controls
     'Equal USDT stakes',                   // Item 2: Crypto gains & wager
-    'Community @chesshub_chat'             // Item 3: Telegram handle
+    'Instant on-chain payouts'             // Item 3: Direct wallet settlement
   ],
   proofIcons: [
     'lightning',                           // ⚡ Speed chess
     'coins',                               // 🪙 Crypto & USDT stakes
-    'telegram-logo'                        // ✈️ Telegram channel
+    'wallet'                               // 👛 On-chain payout
   ]
 };
 ```

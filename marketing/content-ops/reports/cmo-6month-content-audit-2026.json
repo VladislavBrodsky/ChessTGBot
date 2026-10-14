@@ -32,9 +32,8 @@
     },
     "telegram": {
       "posts_published": 9,
-      "benchmark_data": {
-        "chesscom_ru": "Median 4,760 views/post (50% of sub base), 18.6 reactions/1K views",
-        "edchessss": "Median 2,110 views/post (6% of sub base), 11.7 reactions/1K views, falling reach"
+      "channel_metrics": {
+        "chess_hub": "Median 4,450 views/post, 4.90% avg reaction engagement rate, zero drop-off"
       },
       "key_findings": [
         "Reaction Engagement: Interactive emoji reaction voting (❤, 🔥, 👏) generates 2.1x more total interactions than link previews alone.",

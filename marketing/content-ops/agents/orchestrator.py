@@ -1169,10 +1169,8 @@ class ContentEngineOrchestrator:
                 ),
                 (
                     "The real bottleneck on Telegram wasn't interest — it was latency.\n\n"
-                    "Classical Web3 chess forced on-chain transactions per move, destroying blitz flow.\n\n"
-                    "We solved this with hybrid architecture:\n"
-                    "• Sub-100ms state updates via WebSockets\n"
-                    "• Instant matchmaking in Telegram Bot API 8.0"
+                    "Classical Web3 chess forced on-chain transactions per move, killing blitz flow.\n\n"
+                    "We solved this with sub-100ms WebSockets and instant matchmaking in Bot API 8.0"
                 ),
                 (
                     "Synchronized liquidity beats random queues.\n\n"

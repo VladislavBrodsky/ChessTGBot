@@ -2,5 +2,5 @@
 2:I[597,["6711","static/chunks/8e1d74a4-c937ad2621392ad2.js","844","static/chunks/ee560e2c-dfb9ec75951e953f.js","7012","static/chunks/7012-b79da9b1dc2f7c7a.js","8500","static/chunks/8500-f62a38ff68ab7f42.js","9840","static/chunks/9840-e88c3de14bc24e79.js","4798","static/chunks/4798-ad13ee3665d46f35.js","8476","static/chunks/8476-7c83ef26dcc67ff8.js","3977","static/chunks/3977-a6485812a6cddb8f.js","597","static/chunks/597-c562038aff5f8f29.js","6707","static/chunks/app/%5Blocale%5D/game/review/%5BgameId%5D/page-6599c4aaf283e84a.js"],"default"]
 3:I[90484,[],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"gameId":"placeholder"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"FXkgowF1ly_t6RLqk5liz"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"gameId":"placeholder"}],null,["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"s-DqcCTdI-d77NQVzTZuN"}
 5:null

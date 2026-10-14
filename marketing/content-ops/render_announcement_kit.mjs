@@ -21,18 +21,18 @@ async function main() {
   const campaign = {
     id: 'tempo',
     number: '05',
-    name: 'Speed Chess & Crypto Gains',
-    purpose: 'Community & Wagers',
-    icon: 'clock',
+    name: 'Speed Chess & USDT Stakes',
+    purpose: 'Speed & Wagers',
+    icon: 'lightning',
     theme: 'canvas',
-    art: 'clock',
-    tag: 'Community & Crypto',
-    headline: 'SPEED CHESS\nCRYPTO GAINS',
-    body: '60s blitz · Instant USDT payouts · The arena is live',
-    cta: 'Join the community',
+    art: 'sculpture',
+    tag: 'Speed & Stakes',
+    headline: 'SPEED CHESS\nREAL USDT STAKES',
+    body: 'Fast 60s blitz · Equal stakes · Instant settlement',
+    cta: 'Enter the arena',
     note: 'USDT matches · 18+ where permitted · Telegram @chesshub_chat',
-    proof: ['1+0 Bullet & 3+2 Blitz', 'Equal USDT stakes', 'Community @chesshub_chat'],
-    proofIcons: ['lightning', 'coins', 'telegram-logo']
+    proof: ['1+0 Bullet & 3+2 Blitz', 'Equal USDT stakes', 'Instant on-chain payouts'],
+    proofIcons: ['lightning', 'coins', 'wallet']
   };
 
   const queueDir = path.resolve(repo, 'marketing/content-ops/queue/2026-10-14');

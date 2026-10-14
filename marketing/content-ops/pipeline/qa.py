@@ -176,15 +176,27 @@ def check_article(article: dict, corpus: list[str] | None = None, references: li
     return {"passed": not issues, "issues": issues}
 
 
+def twitter_length(text: str) -> int:
+    """Calculates Twitter API v2 weighted character count according to standard rules."""
+    clean_text = re.sub(r"https?://[^\s]+", "A" * 23, text)
+    count = 0
+    for char in clean_text:
+        if ord(char) < 0x1100 and not EMOJI.match(char):
+            count += 1
+        else:
+            count += 2
+    return count
+
+
 def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
     """Validates single X (Twitter) post against 2026 algorithmic and compliance standards."""
     issues: list[str] = []
     text = post.get("text", "")
     if not text.strip():
         issues.append("empty text")
-    body = plain(text)
-    if len(body) > 280:
-        issues.append(f"tweet text is {len(body)} chars; limit 280")
+    t_len = twitter_length(text)
+    if t_len > 270 or len(text) > 280:
+        issues.append(f"tweet text is {t_len} weighted chars ({len(text)} raw); limit 280")
     if re.search(r"https?://", text):
         issues.append("root tweet must not contain outbound links to avoid algorithmic reach penalties; use docked_reply instead")
     hook = plain(post.get("hook", "") or text.split("\n")[0])
@@ -200,9 +212,9 @@ def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
     docked = post.get("docked_reply")
     if docked:
         docked_text = docked.get("text", "") if isinstance(docked, dict) else str(docked)
-        docked_body = plain(docked_text)
-        if len(docked_body) > 280:
-            issues.append(f"docked reply text is {len(docked_body)} chars; limit 280")
+        d_len = twitter_length(docked_text)
+        if d_len > 270 or len(docked_text) > 280:
+            issues.append(f"docked reply text is {d_len} weighted chars ({len(docked_text)} raw); limit 280")
         links = re.findall(r"https?://[^\s]+", docked_text)
         for url in links:
             issues += check_link(url)
@@ -239,9 +251,9 @@ def check_x_thread(thread: dict, corpus: list[str] | None = None) -> dict:
     has_allowed_link = False
     for idx, t in enumerate(tweets, start=1):
         t_text = t.get("text", "")
-        t_body = plain(t_text)
-        if len(t_body) > 280:
-            issues.append(f"tweet #{idx} is {len(t_body)} chars; limit 280")
+        t_len = twitter_length(t_text)
+        if t_len > 265 or len(t_text) > 270:
+            issues.append(f"tweet #{idx} is {t_len} weighted chars ({len(t_text)} raw); limit 280 (safe limit 265)")
         hashtags = re.findall(r"#\w+", t_text)
         if len(hashtags) > 3:
             issues.append(f"tweet #{idx} has more than 3 hashtags")

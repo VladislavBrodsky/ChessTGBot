@@ -179,6 +179,11 @@ class PublisherAgent:
                         item["status"] = "published"
                         e["x_receipt"] = res
                         queue.set_status(e, "published", published={"root_id": res.get("root_id"), "all_ids": res.get("all_ids"), "at": queue.iso(queue.utcnow())})
+                    except x_publisher.ThreadPublishError as t_err:
+                        item["status"] = "partially_published"
+                        item["error"] = str(t_err)
+                        e["published_tweet_ids"] = t_err.published_ids
+                        queue.set_status(e, "approved", published_tweet_ids=t_err.published_ids, last_error=str(t_err)[:200])
                     except Exception as err:
                         item["status"] = "failed"
                         item["error"] = str(err)
