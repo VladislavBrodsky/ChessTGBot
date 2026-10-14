@@ -6,21 +6,26 @@ export default {
   id: 'product',
   defaults: { theme: 'ink', tag: 'Play' },
   required: ['steps'],
+  extraFields: ['art'],
 
   validate(spec) {
     if (!Array.isArray(spec.steps) || spec.steps.length !== 3) throw new Error('product `steps` needs exactly 3 short step titles');
     for (const st of spec.steps) if (typeof st !== 'string' || !st.trim() || st.length > 40) throw new Error(`product step must be 1-40 characters: "${st}"`);
+    if (spec.art && !['sculpture', 'clock', 'stakes', 'fairPlay', 'academy'].includes(spec.art)) {
+      throw new Error(`product \`art\` must be one of: sculpture, clock, stakes, fairPlay, academy`);
+    }
   },
 
   build(spec, { size }) {
-    const { sculpture } = loadAssets();
+    const assets = loadAssets();
+    const sculptureSrc = (spec.art && assets.illustrations?.[spec.art]) || assets.sculpture;
     const split = size.mode === 'split';
     const steps = `<ol class="psteps" data-qa="steps">${spec.steps
       .map(
         (t, i) => `<li class="pstep" data-safe><span class="pnum" data-nowrap>${i + 1}</span><span class="ptitle" data-qa="step" data-fit data-fit-fill data-fit-max="${Math.round(size.sub * 1.15)}" data-fit-min="${size.subMin}" data-fit-lines="${split ? 1 : 3}">${esc(t)}</span></li>`,
       )
       .join('')}</ol>`;
-    const art = `<div class="pglow" data-bleed></div><img class="sculpt" data-safe alt="" src="${sculpture}">`;
+    const art = `<div class="pglow" data-bleed></div><img class="sculpt" data-safe alt="" src="${sculptureSrc}">`;
     const lead = split
       ? `${h1(spec.headline, size, { lines: 2, max: size.h1Max * 0.72 })}${subhead(spec.subhead, size, { lines: 1 })}`
       : `${h1(spec.headline, size, { lines: 3, max: size.h1Max * 0.86 })}${subhead(spec.subhead, size, { lines: 2 })}`;

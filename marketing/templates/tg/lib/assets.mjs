@@ -52,6 +52,13 @@ export function loadAssets() {
     },
     // Contextual 3D sculpture used on the website (knight / rook / pawn on a board).
     sculpture: `data:image/webp;base64,${b64(path.join(PUBLIC, 'illustrations/chess-sculpture.webp'))}`, // 1000px, alpha
+    illustrations: {
+      sculpture: `data:image/webp;base64,${b64(path.join(PUBLIC, 'illustrations/chess-sculpture.webp'))}`,
+      clock: `data:image/webp;base64,${b64(path.join(PUBLIC, 'illustrations/chess-clock.webp'))}`,
+      stakes: `data:image/webp;base64,${b64(path.join(PUBLIC, 'illustrations/chess-stakes.webp'))}`,
+      fairPlay: `data:image/webp;base64,${b64(path.join(PUBLIC, 'illustrations/chess-fair-play.webp'))}`,
+      academy: `data:image/webp;base64,${b64(path.join(PUBLIC, 'illustrations/chess-academy.webp'))}`,
+    },
   };
   return cache;
 }
