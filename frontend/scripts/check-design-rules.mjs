@@ -32,6 +32,7 @@ const RAW_COLOUR_ALLOW = [
   /src\/app\/global-error\.tsx$/, // renders outside the theme provider
   /src\/components\/Marketplace\/boxConfig\.ts$/, // tier artwork palette
   /src\/components\/ui\/NoiseGradient\.tsx$/, // canvas gradient stops
+  /src\/components\/ui\/Confetti\.tsx$/, // canvas confetti particle colors
 ];
 
 const RULES = [

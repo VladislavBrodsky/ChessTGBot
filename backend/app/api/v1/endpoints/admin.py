@@ -939,7 +939,7 @@ def _broadcast_summary(b: Broadcast) -> dict:
 # ---------------------------------------------------------------------------
 
 async def _resolve_audience(db: AsyncSession, audience: str) -> list[int]:
-    """Return a list of telegram_ids for the given audience segment."""
+    """Return a list of telegram_ids for the given audience segment, excluding blocked users."""
     now = _now_utc()
 
     if audience in ("joined_24h", "joined_7d", "joined_30d"):
@@ -953,10 +953,14 @@ async def _resolve_audience(db: AsyncSession, audience: str) -> list[int]:
         )
         white_ids = [_extract_id(v) for v in white_res.scalars().all()]
         black_ids = [_extract_id(v) for v in black_res.scalars().all()]
-        return [v for v in set(white_ids + black_ids) if v is not None]
+        raw_ids = [v for v in set(white_ids + black_ids) if v is not None]
+        if not raw_ids:
+            return []
+        res = await db.execute(select(User.telegram_id).where(User.telegram_id.in_(raw_ids), ~User.is_blocked))
+        return [_extract_id(v) for v in res.scalars().all() if _extract_id(v) is not None]
 
     # all | premium | standard
-    q = select(User.telegram_id)
+    q = select(User.telegram_id).where(~User.is_blocked)
     if audience == "premium":
         q = q.where(User.is_premium)
     elif audience == "standard":
@@ -984,12 +988,32 @@ def _extract_id(value) -> int | None:
 async def _run_broadcast(broadcast_id: int, user_ids: list[int], message: str) -> None:
     """
     Background coroutine: sends the message to every user in the list,
-    rate-limited to ~28 messages/sec (35 ms delay) to stay under Telegram's
-    30 msgs/sec global limit.  Periodically updates progress in the database.
+    rate-limited to ~25 messages/sec (40 ms delay) to stay comfortably under
+    Telegram's 30 msgs/sec global limit. Gracefully handles rate limits (RetryAfter),
+    unreachable users, entity fallbacks, and persists live delivery progress in the database.
     """
     from app.services.telegram_bot import TelegramService
+    from app.core.config import get_settings
+    from telegram import Bot
+    from telegram.error import Forbidden, BadRequest, RetryAfter
 
-    DELAY_SECS = 0.035      # ~28/sec
+    settings = get_settings()
+    bot = TelegramService.application.bot if (TelegramService.application and TelegramService.application.bot) else None
+    if not bot and settings.TELEGRAM_BOT_TOKEN:
+        bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+
+    if not bot:
+        logger.error(f"[Broadcast {broadcast_id}] No Telegram bot available. Aborting broadcast.")
+        async with AsyncSessionLocal() as db:
+            res = await db.execute(select(Broadcast).where(Broadcast.id == broadcast_id))
+            bc = res.scalars().first()
+            if bc:
+                bc.status = "failed"
+                bc.completed_at = _now_utc()
+                await db.commit()
+        return
+
+    DELAY_SECS = 0.040      # ~25/sec safe pacing
     BATCH_SIZE = 50         # flush DB progress every N messages
 
     sent = 0
@@ -1005,7 +1029,7 @@ async def _run_broadcast(broadcast_id: int, user_ids: list[int], message: str) -
         await db.commit()
 
         for i, telegram_id in enumerate(user_ids):
-            # Check for cancellation
+            # Check for cancellation or periodic DB progress flush
             if i % BATCH_SIZE == 0 and i > 0:
                 await db.refresh(bc)
                 if bc.status == "cancelled":
@@ -1016,8 +1040,41 @@ async def _run_broadcast(broadcast_id: int, user_ids: list[int], message: str) -
                 await db.commit()
 
             try:
-                await TelegramService.send_notification(telegram_id, message)
+                await bot.send_message(chat_id=telegram_id, text=message, parse_mode="HTML")
                 sent += 1
+            except RetryAfter as ra:
+                logger.warning(f"[Broadcast {broadcast_id}] Rate-limited on {telegram_id}. Waiting {ra.retry_after}s.")
+                await asyncio.sleep(ra.retry_after + 1)
+                try:
+                    await bot.send_message(chat_id=telegram_id, text=message, parse_mode="HTML")
+                    sent += 1
+                except Exception as retry_err:
+                    logger.warning(f"[Broadcast {broadcast_id}] Retry failed for {telegram_id}: {retry_err}")
+                    failed += 1
+            except Forbidden:
+                logger.info(f"[Broadcast {broadcast_id}] User {telegram_id} blocked the bot.")
+                await TelegramService.mark_user_blocked(telegram_id)
+                failed += 1
+            except BadRequest as bre:
+                msg = str(bre).lower()
+                if "can't parse entities" in msg:
+                    try:
+                        await bot.send_message(chat_id=telegram_id, text=message, parse_mode=None)
+                        sent += 1
+                    except Exception:
+                        failed += 1
+                elif (
+                    "chat not found" in msg
+                    or "user is deactivated" in msg
+                    or "bot can't initiate conversation" in msg
+                    or "bot was blocked by the user" in msg
+                ):
+                    logger.info(f"[Broadcast {broadcast_id}] User {telegram_id} unreachable: {bre}")
+                    await TelegramService.mark_user_blocked(telegram_id)
+                    failed += 1
+                else:
+                    logger.warning(f"[Broadcast {broadcast_id}] BadRequest for {telegram_id}: {bre}")
+                    failed += 1
             except Exception as exc:
                 logger.warning(f"[Broadcast {broadcast_id}] Failed for {telegram_id}: {exc}")
                 failed += 1

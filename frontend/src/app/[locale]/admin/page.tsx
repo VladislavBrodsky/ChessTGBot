@@ -699,8 +699,11 @@ function UsersTab() {
         {search && (
           <button type="button"
             onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}
-            className="ui-tap-target px-4 py-2.5 text-sm font-bold rounded-xl bg-brand-elevated border border-brand-border text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
-          >✕ Clear</button>
+            className="ui-tap-target px-4 py-2.5 text-sm font-bold rounded-xl bg-brand-elevated border border-brand-border text-brand-muted hover:text-brand-primary transition-colors cursor-pointer flex items-center gap-1.5"
+          >
+            <FaBan className="text-xs" />
+            <span>Clear</span>
+          </button>
         )}
       </div>
 
@@ -782,7 +785,7 @@ function UsersTab() {
                 { k: 'Balance', v: cents(selectedUser.balance_cents), color: '#22c55e' },
                 { k: 'Games', v: fmt(selectedUser.games_played), color: '#3b82f6' },
                 { k: 'Record', v: `${selectedUser.wins}W/${selectedUser.losses}L/${selectedUser.draws}D`, color: '#ec4899' },
-                { k: 'Status', v: selectedUser.is_premium ? `⭐ ${selectedUser.premium_tier || 'PRO'}` : 'Standard', color: '#f59e0b' },
+                { k: 'Status', v: selectedUser.is_premium ? (selectedUser.premium_tier || 'PRO') : 'Standard', color: '#f59e0b' },
                 { k: 'Referrals', v: userDetail ? fmt(userDetail.referral_count) : '…', color: '#14b8a6' },
               ].map(({ k, v, color }) => (
                 <div key={k} className="rounded-xl p-3 border border-brand-border bg-brand-surface" style={{ borderColor: `${color}30` }}>
@@ -956,16 +959,16 @@ function TransactionsTab() {
                   <button type="button"
                     onClick={() => handleWithdrawalAction(pw.id, 'approve')}
                     disabled={actionLoading === pw.id}
-                    className="ui-tap-target px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-400 text-caption font-semibold normal-case tracking-normal transition-all disabled:opacity-50 cursor-pointer"
+                    className="ui-tap-target px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-400 text-caption font-semibold normal-case tracking-normal transition-all disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
                   >
-                    {actionLoading === pw.id ? 'Processing…' : '✓ Approve'}
+                    {actionLoading === pw.id ? 'Processing…' : <><FaCheck className="text-xs" /> Approve</>}
                   </button>
                   <button type="button"
                     onClick={() => handleWithdrawalAction(pw.id, 'reject')}
                     disabled={actionLoading === pw.id}
-                    className="ui-tap-target px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-400 text-caption font-semibold normal-case tracking-normal transition-all disabled:opacity-50 cursor-pointer"
+                    className="ui-tap-target px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-400 text-caption font-semibold normal-case tracking-normal transition-all disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
                   >
-                    {actionLoading === pw.id ? 'Processing…' : '✕ Reject'}
+                    {actionLoading === pw.id ? 'Processing…' : <><FaBan className="text-xs" /> Reject</>}
                   </button>
                 </div>
               </div>
@@ -1162,7 +1165,7 @@ function GamesTab() {
                   <span className={`text-caption font-bold ${
                     !g.winner ? 'text-blue-400' : g.winner === 'w' ? 'text-brand-primary' : 'text-brand-muted'
                   }`}>
-                    {!g.winner ? '🤝 Draw' : g.winner === 'w' ? '⬜ White' : '⬛ Black'}
+                    {!g.winner ? 'Draw' : g.winner === 'w' ? 'White' : 'Black'}
                   </span>
                   {g.result_type && <div className="text-caption text-brand-muted capitalize mt-0.5">{g.result_type.replace('_', ' ')}</div>}
                 </td>
@@ -1216,12 +1219,12 @@ function BroadcastsTab() {
     });
     if (res.ok) {
       const respData = await res.json();
-      setSuccessMsg(`✅ Broadcast #${respData.id} launched to ${fmt(respData.total_count)} users!`);
+      setSuccessMsg(`Broadcast #${respData.id} launched to ${fmt(respData.total_count)} users`);
       setMessage('');
       await loadBroadcasts();
     } else {
       const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
-      setErrorMsg(`❌ ${err.detail}`);
+      setErrorMsg(err.detail || 'Failed to send broadcast');
     }
     setSending(false);
   };
@@ -1231,13 +1234,13 @@ function BroadcastsTab() {
     if (res.ok) await loadBroadcasts();
   };
 
-  const AUDIENCES = [
-    { value: 'all', label: '👥 All Users' },
-    { value: 'premium', label: '⭐ Premium Users' },
-    { value: 'standard', label: '🔹 Standard Users' },
-    { value: 'joined_24h', label: '⚡ Active Last 24h' },
-    { value: 'joined_7d', label: '📆 Active Last 7 Days' },
-    { value: 'joined_30d', label: '📅 Active Last 30 Days' },
+  const AUDIENCES: { value: string; label: string; icon: React.ReactNode }[] = [
+    { value: 'all', label: 'All Users', icon: <FaUsers className="text-xs" /> },
+    { value: 'premium', label: 'Premium Users', icon: <FaStar className="text-xs text-amber-400" /> },
+    { value: 'standard', label: 'Standard Users', icon: <FaChessKnight className="text-xs" /> },
+    { value: 'joined_24h', label: 'Active Last 24h', icon: <FaBolt className="text-xs text-brand-primary" /> },
+    { value: 'joined_7d', label: 'Active Last 7 Days', icon: <FaCalendarWeek className="text-xs" /> },
+    { value: 'joined_30d', label: 'Active Last 30 Days', icon: <FaCalendarDays className="text-xs" /> },
   ];
 
   return (
@@ -1258,13 +1261,14 @@ function BroadcastsTab() {
               <button type="button"
                 key={a.value}
                 onClick={() => setAudience(a.value)}
-                className={`ui-tap-target px-4 py-2 rounded-xl text-caption font-semibold transition-all cursor-pointer ${
+                className={`ui-tap-target px-4 py-2 rounded-xl text-caption font-semibold transition-all cursor-pointer flex items-center gap-2 ${
                   audience === a.value 
                     ? 'bg-brand-primary text-black font-bold' 
                     : 'bg-brand-elevated border border-brand-border text-brand-muted hover:text-brand-primary'
                 }`}
               >
-                {a.label}
+                {a.icon}
+                <span>{a.label}</span>
               </button>
             ))}
           </div>
@@ -1323,13 +1327,23 @@ function BroadcastsTab() {
         <button type="button"
           onClick={sendBroadcast}
           disabled={sending || !message.trim()}
-          className={`ui-tap-target px-8 py-3 rounded-xl text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer ${
+          className={`ui-tap-target px-8 py-3 rounded-xl text-sm font-semibold normal-case tracking-normal transition-all cursor-pointer flex items-center justify-center gap-2 ${
             sending || !message.trim() 
               ? 'bg-brand-elevated border border-brand-border text-brand-muted cursor-not-allowed opacity-50' 
               : 'bg-brand-primary text-black font-bold hover:opacity-90'
           }`}
         >
-          {sending ? 'Launching…' : '🚀 Send Broadcast'}
+          {sending ? (
+            <>
+              <FaGear className="animate-spin text-sm" />
+              <span>Launching…</span>
+            </>
+          ) : (
+            <>
+              <FaPaperPlane className="text-sm" />
+              <span>Send Broadcast</span>
+            </>
+          )}
         </button>
       </div>
 
@@ -1376,10 +1390,10 @@ function BroadcastsTab() {
                 background: STATUS_COLORS[b.status] || '#6b7280',
               }} className="h-full rounded transition-all duration-500" />
             </div>
-            <div className="flex gap-4 text-caption text-brand-muted">
-              <span>✅ {fmt(b.sent_count)} sent</span>
-              <span>❌ {fmt(b.failed_count)} failed</span>
-              <span>👥 {fmt(b.total_count)} total</span>
+            <div className="flex flex-wrap items-center gap-4 text-caption text-brand-muted">
+              <span className="flex items-center gap-1.5"><FaCircleCheck className="text-emerald-400 text-xs" /> {fmt(b.sent_count)} sent</span>
+              <span className="flex items-center gap-1.5"><FaCircleXmark className="text-rose-400 text-xs" /> {fmt(b.failed_count)} failed</span>
+              <span className="flex items-center gap-1.5"><FaUsers className="text-brand-muted text-xs" /> {fmt(b.total_count)} total</span>
               <span className="ml-auto font-bold text-brand-primary">{b.progress_pct.toFixed(1)}%</span>
             </div>
           </div>
@@ -1457,12 +1471,12 @@ function SystemTab() {
       const res = await apiFetch('/api/v1/admin/benchmark', { method: 'POST' });
       if (res.ok) {
         const d = await res.json();
-        setBenchmarkResult(`✅ Engine Depth 8: ${d.benchmarks?.engine?.depth_8?.starting_pos || 'OK'}ms | DB Latency: ${d.benchmarks?.database_ms?.average || '0.7'}ms`);
+        setBenchmarkResult(`Engine Depth 8: ${d.benchmarks?.engine?.depth_8?.starting_pos || 'OK'}ms | DB Latency: ${d.benchmarks?.database_ms?.average || '0.7'}ms`);
       } else {
-        setBenchmarkResult('❌ Benchmark call failed');
+        setBenchmarkResult('Benchmark call failed');
       }
     } catch {
-      setBenchmarkResult('❌ Benchmark network error');
+      setBenchmarkResult('Benchmark network error');
     } finally {
       setBenchmarking(false);
     }
@@ -1499,8 +1513,9 @@ function SystemTab() {
       </div>
 
       {benchmarkResult && (
-        <div className="p-3.5 rounded-xl bg-brand-surface border border-emerald-500/30 text-caption font-mono text-emerald-400">
-          {benchmarkResult}
+        <div className="p-3.5 rounded-xl bg-brand-surface border border-emerald-500/30 text-caption font-mono text-emerald-400 flex items-center gap-2">
+          <FaCircleCheck className="text-emerald-400 shrink-0 text-xs" />
+          <span>{benchmarkResult}</span>
         </div>
       )}
 
@@ -1542,7 +1557,14 @@ function SystemTab() {
             latency={sys.telegram_bot?.latency_ms}
             rows={[
               { label: 'Bot', value: sys.telegram_bot?.bot_username ?? '—' },
-              { label: 'Leader Instance', value: sys.telegram_bot?.is_leader ? '✅ Yes' : '⬜ No (Passive)' },
+              { 
+                label: 'Leader Instance', 
+                value: sys.telegram_bot?.is_leader ? (
+                  <span className="flex items-center gap-1 text-emerald-400 justify-end"><FaCircleCheck className="text-xs" /> Yes</span>
+                ) : (
+                  <span className="text-brand-muted">No (Passive)</span>
+                )
+              },
               { label: 'Receiver', value: sys.telegram_bot?.receiver_active ? `Active (${sys.telegram_bot.receiver_type ?? 'polling'})` : 'Inactive' },
               { label: 'Detail', value: sys.telegram_bot?.detail ?? '—' },
             ]}
@@ -1553,12 +1575,25 @@ function SystemTab() {
             title="Web3 / Payments"
             status={sys.web3?.status ?? 'unknown'}
             rows={[
-              { label: 'TON API', value: sys.web3?.ton_api_configured ? '✅ Configured' : '❌ Missing' },
+              { 
+                label: 'TON API', 
+                value: sys.web3?.ton_api_configured ? (
+                  <span className="flex items-center gap-1 text-emerald-400 justify-end"><FaCircleCheck className="text-xs" /> Configured</span>
+                ) : (
+                  <span className="flex items-center gap-1 text-rose-400 justify-end"><FaCircleXmark className="text-xs" /> Missing</span>
+                )
+              },
               {
                 label: 'Payout readiness',
-                value: sys.web3?.payout_ready
-                  ? (sys.web3?.payout_mode === 'mock' ? '⚠ Mock (dev/test)' : '✅ Ready')
-                  : `❌ ${sys.web3?.payout_unavailable_reason ?? 'Unavailable'}`,
+                value: sys.web3?.payout_ready ? (
+                  sys.web3?.payout_mode === 'mock' ? (
+                    <span className="flex items-center gap-1 text-amber-400 justify-end"><FaTriangleExclamation className="text-xs" /> Mock (dev/test)</span>
+                  ) : (
+                    <span className="flex items-center gap-1 text-emerald-400 justify-end"><FaCircleCheck className="text-xs" /> Ready</span>
+                  )
+                ) : (
+                  <span className="flex items-center gap-1 text-rose-400 justify-end"><FaCircleXmark className="text-xs" /> {sys.web3?.payout_unavailable_reason ?? 'Unavailable'}</span>
+                ),
               },
               { label: 'Deposit Pool Balance', value: sys.web3?.master_wallet_balance_ton != null ? `${sys.web3.master_wallet_balance_ton} TON` : 'N/A' },
               { label: 'Master Wallet', value: sys.web3?.master_wallet_address ? `${sys.web3.master_wallet_address.slice(0, 12)}…` : '—' },
@@ -1592,7 +1627,14 @@ function SystemTab() {
             title="Ledger Reconciliation"
             status={sys.ledger_audit?.status ?? 'unknown'}
             rows={[
-              { label: 'Audit Status', value: sys.ledger_audit?.status === 'online' ? '✅ Healthy (0 Mismatches)' : '⚠️ Anomaly Detected' },
+              { 
+                label: 'Audit Status', 
+                value: sys.ledger_audit?.status === 'online' ? (
+                  <span className="flex items-center gap-1 text-emerald-400 justify-end"><FaCircleCheck className="text-xs" /> Healthy (0 Mismatches)</span>
+                ) : (
+                  <span className="flex items-center gap-1 text-amber-400 justify-end"><FaTriangleExclamation className="text-xs" /> Anomaly Detected</span>
+                )
+              },
               { label: 'Mismatches Count', value: sys.ledger_audit?.mismatches_count != null ? sys.ledger_audit.mismatches_count.toString() : '—' },
               { label: 'Detail', value: sys.ledger_audit?.detail ?? '—' },
             ]}
@@ -1603,7 +1645,8 @@ function SystemTab() {
       {sys?.ledger_audit?.mismatches && sys.ledger_audit.mismatches.length > 0 && (
         <div className="p-6 rounded-3xl border border-amber-500/30 bg-amber-950/10 mt-6">
           <h3 className="text-sm font-semibold mb-4 normal-case tracking-normal text-amber-400 flex items-center gap-2">
-            ⚠️ Ledger Anomalies Details
+            <FaTriangleExclamation className="text-amber-400" />
+            <span>Ledger Anomalies Details</span>
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left border-collapse">
@@ -1711,7 +1754,9 @@ export default function AdminPage() {
                 <DashboardTab stats={stats} />
               ) : activeTab === 'Dashboard' && error ? (
                 <div className="p-8 text-center max-w-lg mx-auto my-8 rounded-2xl border border-red-500/20 bg-red-500/5">
-                  <div className="text-4xl mb-3">⚠️</div>
+                  <div className="text-4xl mb-3 flex justify-center text-amber-400">
+                    <FaTriangleExclamation />
+                  </div>
                   <h3 className="text-lg font-semibold text-brand-primary mb-2">Couldn&apos;t load metrics</h3>
                   <p className="text-sm text-brand-muted mb-4">
                     {error.info?.message || error.message || 'An error occurred while connecting to the admin stats API.'}
