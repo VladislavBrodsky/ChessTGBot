@@ -57,6 +57,9 @@ def main():
     parser.add_argument("--x-sniper", action="store_true", help="Generate targeted high-leverage Reply Sniper scripts for top chess & TON accounts")
     parser.add_argument("--x-status", action="store_true", help="Display status of queued X (Twitter) posts and threads")
     parser.add_argument("--x-publish", action="store_true", help="Dispatch or dry-run export approved X (Twitter) posts and threads")
+    parser.add_argument("--spotlight", action="store_true", help="Generate and queue high-FOMO Player Spotlight campaign across Telegram and X")
+    parser.add_argument("--player", default="@grandmaestro", help="Player handle for spotlight (default: @grandmaestro)")
+    parser.add_argument("--streak", type=int, default=9, help="Win streak count for spotlight (default: 9)")
 
     args = parser.parse_args()
     orchestrator = ContentEngineOrchestrator(primary_domain=args.domain)
@@ -116,6 +119,15 @@ def main():
     elif args.x_sniper:
         print("\n🎯 Generating High-Leverage Reply Sniper Kit for Top Accounts...")
         res = orchestrator.generate_x_reply_sniper_kit()
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+
+    elif args.spotlight:
+        print(f"\n🏆 Generating Player Spotlight Campaign for {args.player} (Streak: {args.streak})...")
+        res = orchestrator.generate_player_spotlight_batch(
+            player_name=args.player,
+            streak_count=args.streak,
+        )
+        print("\n✅ Successfully generated, QA-validated, rendered, and queued Player Spotlight:")
         print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.run_strategy:

@@ -1,0 +1,48 @@
+{
+  "id": "2026-10-14-x-spotlight",
+  "kind": "x_post",
+  "date": "2026-10-14",
+  "category": "Player Spotlight",
+  "hook": "Player Spotlight: How @grandmaestro scored a 9-game streak in the Blitz Arena (+65 ELO)",
+  "text": "Player Spotlight: How @grandmaestro scored a 9-game streak in the Blitz Arena (+65 ELO)\n\n@grandmaestro went on a 9-game heater in today's Blitz Arena (+65 ELO).\n\nHere is the move 23 tactic that cracked open Black's defense 👇\n\n#SpeedChess #ChessTactics #Web3Gaming",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/leaderboard"
+    }
+  ],
+  "chess": {
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "solution": [
+      "Ra8#"
+    ],
+    "claim": "decisive_strike"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "tag": "9-Win Streak",
+    "headline": "@GRANDMAESTRO\n*ARENA CHAMPION*",
+    "subhead": "+65 ELO • $190 USDT Payout",
+    "cta_label": "Play in Arena",
+    "footer": "18+ only · You can lose your stake · web3chess.online"
+  },
+  "docked_reply": {
+    "text": "Can you break their streak? Jump into today's open Blitz Arena: https://app.web3chess.online\n\n18+ only | Skill-based matches | You can lose your stake",
+    "link": "https://app.web3chess.online"
+  },
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-14T00:33:00Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-14/2026-10-14-x-spotlight.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}
