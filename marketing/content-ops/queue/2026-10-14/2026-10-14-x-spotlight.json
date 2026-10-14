@@ -5,7 +5,7 @@
   "category": "Player Spotlight",
   "hook": "Player Spotlight: How @grandmaestro scored a 9-game streak in the Blitz Arena (+65 ELO)",
   "text": "Player Spotlight: How @grandmaestro scored a 9-game streak in the Blitz Arena (+65 ELO)\n\n@grandmaestro went on a 9-game heater in today's Blitz Arena (+65 ELO).\n\nHere is the move 23 tactic that cracked open Black's defense 👇\n\n#SpeedChess #ChessTactics #Web3Gaming",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -44,5 +44,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-14T15:08:00Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110387147777651013",
+    "reply_id": "2110387150441128224",
+    "root_url": "https://x.com/defi_ambassador/status/2110387147777651013"
+  },
+  "published": {
+    "root_id": "2110387147777651013",
+    "at": "2026-10-14T15:08:00Z"
   }
 }
