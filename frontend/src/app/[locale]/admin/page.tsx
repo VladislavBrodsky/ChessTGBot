@@ -147,6 +147,14 @@ interface MarketingData {
     total_posts_monitored: number;
     total_views_evaluated: number;
     total_own_published_assets: number;
+    our_published_assets?: number;
+    our_total_impressions?: number;
+    our_total_reach?: number;
+    our_avg_engagement_rate?: string;
+    our_mini_app_funnel_ctr?: string;
+    competitor_posts_audited?: number;
+    competitor_views_evaluated?: number;
+    competitor_median_engagement?: string;
     top_performing_format: string;
     highest_retention_channel: string;
     highest_seo_dwell_time: string;
@@ -447,27 +455,27 @@ function MarketingTab() {
         </button>
       </div>
 
-      {/* Top 4 KPI Cards */}
+      {/* Top 4 KPI Cards - OUR OWN VERIFIED PERFORMANCE */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KpiCard
-          label="Total Monitored Views"
-          value="2.32M+"
-          sub="655 benchmarked posts"
-          icon={<FaGlobe />}
-          accent="blue"
-        />
-        <KpiCard
-          label="Owned Content Reach"
-          value="64.5K"
-          sub="21 live verified assets"
-          icon={<FaBullhorn />}
+          label="Our Content Impressions"
+          value="93.4K"
+          sub="Across 24 published assets"
+          icon={<FaChartLine />}
           accent="emerald"
         />
         <KpiCard
-          label="Avg Engagement Rate"
+          label="Our Audience Reach"
+          value="64.5K"
+          sub="X, Telegram & SEO guides"
+          icon={<FaBullhorn />}
+          accent="blue"
+        />
+        <KpiCard
+          label="Our Avg Engagement"
           value="4.72%"
           sub="2.4x vs competitor median (1.98%)"
-          icon={<FaChartLine />}
+          icon={<FaStar />}
           accent="violet"
         />
         <KpiCard
@@ -477,6 +485,26 @@ function MarketingTab() {
           icon={<FaBolt />}
           accent="gold"
         />
+      </div>
+
+      {/* Market Research & Ecosystem Benchmark Baseline */}
+      <div className="p-4 rounded-2xl bg-brand-surface border border-brand-border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-base shrink-0">
+            <FaScaleBalanced />
+          </div>
+          <div>
+            <span className="font-bold text-brand-primary block">Market Research &amp; Competitor Benchmark Baseline</span>
+            <span className="text-caption text-brand-muted">
+              655 competitor posts &amp; 2.15M ecosystem views audited in the 6-month CMO study to benchmark engagement formulas.
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 text-caption text-brand-muted shrink-0">
+          <div><strong className="text-brand-primary">655</strong> Competitor Posts</div>
+          <div><strong className="text-brand-primary">2.15M</strong> Ecosystem Views</div>
+          <div><strong className="text-brand-primary">1.98%</strong> Competitor Median</div>
+        </div>
       </div>
 
       {/* Cross-Platform Channel Scorecard */}

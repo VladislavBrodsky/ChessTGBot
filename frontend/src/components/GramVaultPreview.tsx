@@ -40,8 +40,6 @@ export function GramVaultPreview() {
         </button>
       </div>
 
-      <p className="t-body text-brand-muted">{t('summary')}</p>
-
       <div className="flex items-center gap-2 rounded-xl border border-brand-border/60 bg-brand-elevated/40 px-3.5 py-2.5 text-caption text-brand-muted">
         <FiInfo size={14} className="shrink-0 text-brand-muted" aria-hidden="true" />
         <span>{t('current_box')}</span>
@@ -56,7 +54,6 @@ export function GramVaultPreview() {
           <li className="ui-list-row p-3">{t('phase_two')}</li>
         </ol>
         <p className="t-body text-brand-muted">{t('chance')}</p>
-        <p className="t-caption text-brand-muted">{t('current_box')}</p>
         <Button variant="secondary" className="w-full" onClick={() => setOpen(false)}>{t('close')}</Button>
       </div>
     </Modal>

@@ -131,8 +131,6 @@ export default function EngagementQuest() {
         </button>
       </div>
 
-      <p className="t-body text-brand-muted">{t('description')}</p>
-      
       <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">
         <div className="flex items-center gap-3" role="progressbar" aria-label={t('progress', { count: data.progress, total: data.target })} aria-valuemin={0} aria-valuemax={data.target} aria-valuenow={data.progress}>
           <div className="grid flex-1 grid-cols-3 gap-2" aria-hidden="true">
@@ -186,7 +184,7 @@ export default function EngagementQuest() {
     </Card>
 
     {/* Odds, Prizes & Rules Modal */}
-    <Modal isOpen={details || revealed} onClose={() => { setDetails(false); setRevealed(false); }} title={revealed ? t('revealed') : t('title')} description={t('virtual_only')}>
+    <Modal isOpen={details || revealed} onClose={() => { setDetails(false); setRevealed(false); }} title={revealed ? t('revealed') : t('title')} description={!revealed ? t('description') : undefined}>
       <div className="space-y-4">
         {revealed && data.reward_key && (
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-center space-y-1">
