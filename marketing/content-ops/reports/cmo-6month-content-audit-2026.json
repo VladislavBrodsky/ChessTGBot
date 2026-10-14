@@ -1,10 +1,10 @@
 {
   "audit_period": "2026-05-01 to 2026-10-13 (Last 6 Months)",
-  "generated_at": "2026-10-14T02:06:36.517116+00:00",
+  "generated_at": "2026-10-14T02:18:50.715917+00:00",
   "executive_summary": {
     "total_posts_monitored": 655,
     "total_views_evaluated": 2323529,
-    "total_own_published_assets": 24,
+    "total_own_published_assets": 25,
     "top_performing_format": "Emoji-as-Answer Tactical Position & Interactive Reveal",
     "highest_retention_channel": "Telegram Mini App (startapp attribution: 42% click-to-game)",
     "highest_seo_dwell_time": "Long-form Tactical Anatomy & Gambits (avg dwell: 3m 48s)"
@@ -31,7 +31,7 @@
       ]
     },
     "telegram": {
-      "posts_published": 8,
+      "posts_published": 9,
       "benchmark_data": {
         "chesscom_ru": "Median 4,760 views/post (50% of sub base), 18.6 reactions/1K views",
         "edchessss": "Median 2,110 views/post (6% of sub base), 11.7 reactions/1K views, falling reach"

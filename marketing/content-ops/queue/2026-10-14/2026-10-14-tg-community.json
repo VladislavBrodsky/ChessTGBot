@@ -1,0 +1,56 @@
+{
+  "id": "2026-10-14-tg-community",
+  "kind": "telegram",
+  "date": "2026-10-14",
+  "category": "Chess Culture",
+  "format": "news",
+  "hook": "Building the future of speed chess together: Welcome to Web3Chess",
+  "cta": "chat",
+  "extra_buttons": [
+    "play"
+  ],
+  "text": "<b>Building the future of speed chess together: Welcome to Web3Chess</b>\n\nEvery great community starts with a shared passion. For us, it is the raw intensity of 3-minute blitz, calculating under pressure, and fair play on mobile.\n\nWhether you just played your first match, solved today's tactical puzzle, or climbed the blitz leaderboard, we want to hear from you:\n\n1. How is your latency and board feel?\n2. Which time controls and openings do you want to see next?\n3. What features would make your speed chess sessions even better?\n\nJoin our community at <a href=\"https://t.me/chesshub_chat\">@chesshub_chat</a> to share your feedback, analyse positions with fellow blitz players, and chat directly with the team.\n\nFor tournament announcements, tactical breakdowns, and engineering releases, stay tuned to <a href=\"https://t.me/chess_hub\">@chess_hub</a> and explore our guides at <a href=\"https://web3chess.online\">web3chess.online</a>.\n\nSee you on the board.",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Community & Voice",
+    "headline": "SPEED CHESS COMMUNITY\n*SHAPE THE BOARD*",
+    "subhead": "Join the discussion at @chesshub_chat • web3chess.online",
+    "cta_label": "Join the Chat",
+    "panels": [
+      {
+        "label": "Voice",
+        "text": "Share your match experience & feedback",
+        "piece": "Q"
+      },
+      {
+        "label": "Updates",
+        "text": "Tournaments, tactics & live releases",
+        "piece": "K"
+      }
+    ]
+  },
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates"
+  },
+  "image": "marketing/content-ops/queue/2026-10-14/2026-10-14-tg-community.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "updated_at": "2026-10-14T02:18:30Z",
+  "published": {
+    "message_id": 22,
+    "at": "2026-10-14T02:18:30Z"
+  }
+}

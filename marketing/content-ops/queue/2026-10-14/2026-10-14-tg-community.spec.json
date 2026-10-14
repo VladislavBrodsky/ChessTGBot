@@ -1,0 +1,20 @@
+{
+  "template": "culture",
+  "size": "square",
+  "tag": "Community & Voice",
+  "headline": "SPEED CHESS COMMUNITY\n*SHAPE THE BOARD*",
+  "subhead": "Join the discussion at @chesshub_chat • web3chess.online",
+  "cta_label": "Join the Chat",
+  "panels": [
+    {
+      "label": "Voice",
+      "text": "Share your match experience & feedback",
+      "piece": "Q"
+    },
+    {
+      "label": "Updates",
+      "text": "Tournaments, tactics & live releases",
+      "piece": "K"
+    }
+  ]
+}
