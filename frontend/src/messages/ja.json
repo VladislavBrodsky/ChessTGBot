@@ -380,7 +380,7 @@
     "show_hint": "ヒントを表示",
     "show_solution": "解答を表示",
     "illegal_move": "無効な手",
-    "hints_available": "レベル1〜10ではヒントを利用できます",
+    "hints_available": "コーチのヒントを利用できます",
     "coach_hint": "コーチのヒント",
     "explanation": "解説",
     "daily_cue": "今日のチェスのヒント",

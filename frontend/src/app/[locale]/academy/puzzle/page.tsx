@@ -40,6 +40,7 @@ interface Puzzle {
   coach_theory?: string;
   fen: string;
   xp_reward?: number;
+  hints_allowed?: boolean;
 }
 
 interface VerifiedPuzzle {
@@ -121,7 +122,9 @@ function PuzzleContent() {
     void syncStats();
   };
 
-  const isHintsAllowed = puzzle ? puzzle.id <= 10 || Boolean(stats?.is_premium) : false;
+  const isHintsAllowed = puzzle
+    ? (puzzle.hints_allowed ?? (puzzle.id <= 20 || Boolean(stats?.is_premium)))
+    : false;
 
   return (
     <LayoutWrapper>

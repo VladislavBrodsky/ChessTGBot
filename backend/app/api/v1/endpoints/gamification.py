@@ -482,7 +482,7 @@ async def get_puzzle_hint(
     from app.core.puzzles import CHESS_PUZZLES
     from sqlalchemy import select, and_
     
-    if puzzle_id > 10 and not current_user.is_premium_active:
+    if puzzle_id > 20 and not current_user.is_premium_active:
         from app.models.gamification import UnlockedPuzzle
         unlocked_check = await db.execute(
             select(UnlockedPuzzle).where(

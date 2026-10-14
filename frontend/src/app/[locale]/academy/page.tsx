@@ -780,7 +780,7 @@ export default function AcademyPage() {
         const isPremLocked = info ? info.is_premium_locked : id > 30;
         const isXpLocked  = info ? info.is_xp_locked : (id >= 11 && id <= 29);
         const isPlayable  = !isSeqLocked && !isPremLocked && !isXpLocked;
-        const hintsEnabled = id <= 10;
+        const hintsEnabled = id <= 20 || Boolean(stats?.is_premium) || (info && !info.is_xp_locked && !info.is_premium_locked);
 
         return <Drawer isOpen onClose={() => setSelectedLevel(null)} layer={110} title={t('level_theme', { level: id, theme: band.theme })}
           description={isCompleted ? t('solved') : isPremLocked ? t('premium_required') : isXpLocked ? t('xp_required') : isSeqLocked ? t('sequential_lock') : t('available')}>
@@ -794,7 +794,7 @@ export default function AcademyPage() {
                 {band.desc}
               </p>
 
-              {/* Hint badge — only levels 1-10 */}
+              {/* Hint badge */}
               {hintsEnabled && (
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
                   <span className="text-emerald-400 text-lg">💡</span>
