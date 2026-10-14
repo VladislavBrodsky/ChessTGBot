@@ -1119,15 +1119,19 @@
     "brief": "Info"
   },
   "GramVaultPreview": {
-    "badge": "Planeado",
-    "title": "Bóveda de 100 GRAM",
-    "summary": "Temporada futura: un premio de 100 GRAM entre 1.000 cajas",
-    "status": "Solo vista previa",
-    "current_box": "Tu caja gratuita actual no puede otorgar GRAM",
-    "phase_one": "Cajas 1–800: sin premio GRAM",
-    "phase_two": "Cajas 801–1.000: una caja ganadora elegida al azar",
-    "chance": "Cada una de las últimas 200 posiciones empieza con una probabilidad de 1 entre 200. La probabilidad de la siguiente caja aumenta tras cada caja sin premio",
-    "details": "Ver reglas previstas",
+    "badge": "Evento Activo",
+    "title": "Gran Bóveda 100 GRAM",
+    "summary": "Abre cofres Silver, Gold, Platinum o de temporada. ¡En cada ciclo de 1,000 aperturas, un cofre afortunado acredita 100 GRAM directamente a tu balance!",
+    "status": "Nivel Silver y superior",
+    "current_box": "Los cofres gratuitos de Peón están excluidos del bote de 100 GRAM.",
+    "phase_one_title": "Aperturas 1–800 · Carga de la Bóveda",
+    "phase_one": "La comunidad abre cofres, reclama recompensas y carga el pozo acumulado de 100 GRAM.",
+    "phase_two_title": "Aperturas 801–1,000 · Zona Caliente 🔥",
+    "phase_two": "¡El bote se desbloquea! Exactamente 1 cofre aleatorio en esta ventana de 200 aperturas contiene el premio de 100 GRAM.",
+    "chance": "Las probabilidades inician en 1 de 200 en la apertura 801 y suben con cada cofre no premiado (1/199, 1/198...) ¡hasta que se gana!",
+    "eligible_tiers": "Cofres participantes: Silver, Gold, Platinum y Ruby",
+    "details": "Reglas del evento",
+    "cta": "Abrir cofres misteriosos",
     "close": "Cerrar"
   },
   "Common": {

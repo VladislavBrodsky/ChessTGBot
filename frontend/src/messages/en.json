@@ -1119,15 +1119,19 @@
     "brief": "Brief"
   },
   "GramVaultPreview": {
-    "badge": "Planned",
-    "title": "100 GRAM Vault",
-    "summary": "Future season: one 100 GRAM prize across 1,000 boxes",
-    "status": "Preview only",
-    "current_box": "Your current free box cannot award GRAM",
-    "phase_one": "Boxes 1–800: no GRAM prize",
-    "phase_two": "Boxes 801–1,000: one randomly chosen winning box",
-    "chance": "Each of the final 200 positions starts with a 1-in-200 chance. The chance for the next box rises after each non-winning box",
-    "details": "See planned rules",
+    "badge": "Hot Event",
+    "title": "100 GRAM Grand Vault",
+    "summary": "Unbox Silver, Gold, Platinum, or Seasonal Mystery Boxes. In every 1,000-draw cycle, one lucky box triggers the 100 GRAM Grand Prize credited directly to your balance!",
+    "status": "Silver Tier & Above",
+    "current_box": "Free Pawn crates are excluded from the 100 GRAM Grand Vault.",
+    "phase_one_title": "Draws 1–800 · Vault Charging",
+    "phase_one": "Community opens boxes, claims guaranteed tier rewards, and charges the 100 GRAM jackpot pool.",
+    "phase_two_title": "Draws 801–1,000 · The Hot Zone 🔥",
+    "phase_two": "Jackpot unlocks! Exactly 1 randomly chosen box in this 200-box window triggers the 100 GRAM prize.",
+    "chance": "Odds start at 1-in-200 at draw 801 and climb with every non-winning box opened (1/199, 1/198...) until the 100 GRAM is claimed!",
+    "eligible_tiers": "Eligible Tiers: Silver, Gold, Platinum & Ruby Boxes",
+    "details": "Event Rules",
+    "cta": "Open Mystery Boxes",
     "close": "Close"
   },
   "Common": {

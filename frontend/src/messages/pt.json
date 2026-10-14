@@ -1119,15 +1119,19 @@
     "brief": "Info"
   },
   "GramVaultPreview": {
-    "badge": "Planejado",
-    "title": "Cofre de 100 GRAM",
-    "summary": "Temporada futura: um prêmio de 100 GRAM entre 1.000 caixas",
-    "status": "Apenas prévia",
-    "current_box": "Sua caixa gratuita atual não pode conceder GRAM",
-    "phase_one": "Caixas 1–800: sem prêmio de GRAM",
-    "phase_two": "Caixas 801–1.000: uma caixa vencedora escolhida ao acaso",
-    "chance": "Cada uma das últimas 200 posições começa com chance de 1 em 200. A chance da próxima caixa aumenta após cada caixa sem prêmio",
-    "details": "Ver regras planejadas",
+    "badge": "Evento Quente",
+    "title": "Grande Cofre 100 GRAM",
+    "summary": "Abra Caixas Misteriosas Silver, Gold, Platinum ou da Temporada. A cada ciclo de 1.000 aberturas, uma caixa sortuda deposita 100 GRAM direto no seu saldo!",
+    "status": "Nível Silver e acima",
+    "current_box": "Caixas gratuitas de Peão não participam do prêmio de 100 GRAM.",
+    "phase_one_title": "Aberturas 1–800 · Carga do Cofre",
+    "phase_one": "A comunidade abre caixas, garante recompensas de nível e carrega o jackpot de 100 GRAM.",
+    "phase_two_title": "Aberturas 801–1.000 · Zona Quente 🔥",
+    "phase_two": "Jackpot liberado! Exatamente 1 caixa aleatória nesta janela de 200 aberturas concede os 100 GRAM.",
+    "chance": "A chance começa em 1 em 200 na 801ª abertura e sobe a cada caixa sem prêmio (1/199, 1/198...) até sair o vencedor!",
+    "eligible_tiers": "Caixas participantes: Silver, Gold, Platinum e Ruby",
+    "details": "Regras do Evento",
+    "cta": "Abrir Caixas Misteriosas",
     "close": "Fechar"
   },
   "Common": {

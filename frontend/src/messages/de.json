@@ -1119,15 +1119,19 @@
     "brief": "Info"
   },
   "GramVaultPreview": {
-    "badge": "Geplant",
-    "title": "100-GRAM-Tresor",
-    "summary": "Künftige Saison: ein Preis von 100 GRAM unter 1.000 Boxen",
-    "status": "Nur Vorschau",
-    "current_box": "Deine aktuelle Gratis-Box kann keine GRAM vergeben",
-    "phase_one": "Boxen 1–800: kein GRAM-Preis",
-    "phase_two": "Boxen 801–1.000: eine zufällig bestimmte Gewinnerbox",
-    "chance": "Jede der letzten 200 Positionen hat anfangs eine Chance von 1 zu 200. Die Chance für die nächste Box steigt nach jeder Niete",
-    "details": "Geplante Regeln ansehen",
+    "badge": "Top-Event",
+    "title": "100 GRAM Grand Tresor",
+    "summary": "Öffne Mystery-Boxen ab Silber-Stufe. In jedem Zyklus von 1.000 Boxen schüttet eine glückliche Box 100 GRAM direkt auf dein Guthaben aus!",
+    "status": "Ab Silber-Stufe",
+    "current_box": "Kostenlose Bauern-Kisten sind vom 100 GRAM Tresor ausgeschlossen.",
+    "phase_one_title": "Boxen 1–800 · Tresor-Aufladung",
+    "phase_one": "Die Community öffnet Kisten, sichert sich Belohnungen und lädt den 100 GRAM Jackpot-Pool auf.",
+    "phase_two_title": "Boxen 801–1.000 · Die Hot Zone 🔥",
+    "phase_two": "Der Jackpot ist scharf! Genau 1 zufällige Box in diesem 200er-Fenster schüttet den 100 GRAM Hauptgewinn aus.",
+    "chance": "Die Chance startet bei 1 zu 200 ab Box 801 und steigt mit jeder nieten Box (1/199, 1/198...) bis der Jackpot fällt!",
+    "eligible_tiers": "Gültige Stufen: Silber-, Gold-, Platin- & Rubin-Boxen",
+    "details": "Event-Regeln",
+    "cta": "Mystery-Boxen öffnen",
     "close": "Schließen"
   },
   "Common": {

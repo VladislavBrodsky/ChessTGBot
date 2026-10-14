@@ -1119,15 +1119,19 @@
     "brief": "Info"
   },
   "GramVaultPreview": {
-    "badge": "Prévu",
-    "title": "Coffre de 100 GRAM",
-    "summary": "Saison future : un prix de 100 GRAM parmi 1 000 boîtes",
-    "status": "Aperçu uniquement",
-    "current_box": "Votre boîte gratuite actuelle ne peut pas donner de GRAM",
-    "phase_one": "Boîtes 1 à 800 : aucun prix GRAM",
-    "phase_two": "Boîtes 801 à 1 000 : une boîte gagnante choisie au hasard",
-    "chance": "Chacune des 200 dernières positions a d’abord une chance sur 200. La chance de la boîte suivante augmente après chaque boîte non gagnante",
-    "details": "Voir les règles prévues",
+    "badge": "Événement Chaud",
+    "title": "Grand Coffre 100 GRAM",
+    "summary": "Ouvrez des coffres mystères Silver, Gold, Platinum ou saisonniers. Dans chaque cycle de 1 000 ouvertures, un coffre chanceux verse 100 GRAM directement sur votre solde !",
+    "status": "Niveau Silver et supérieur",
+    "current_box": "Les coffres gratuits de Pion sont exclus du jackpot 100 GRAM.",
+    "phase_one_title": "Ouvertures 1–800 · Chargement du Coffre",
+    "phase_one": "La communauté ouvre des coffres, récupère ses récompenses et charge la cagnotte de 100 GRAM.",
+    "phase_two_title": "Ouvertures 801–1 000 · Zone Brûlante 🔥",
+    "phase_two": "Le jackpot est débloqué ! Exactement 1 coffre aléatoire dans cette fenêtre de 200 ouvertures contient les 100 GRAM.",
+    "chance": "La chance commence à 1 sur 200 dès la 801e ouverture et grimpe après chaque coffre non gagnant (1/199, 1/198...) jusqu'à la victoire !",
+    "eligible_tiers": "Coffres éligibles : Silver, Gold, Platinum et Ruby",
+    "details": "Règles de l'événement",
+    "cta": "Ouvrir des coffres",
     "close": "Fermer"
   },
   "Common": {
