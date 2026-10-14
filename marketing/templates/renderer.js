@@ -118,7 +118,7 @@
     let badge,hy;
     if(wide){
       meter.font=face('body',badgeSpec.font,500);const desired=Math.ceil(meter.measureText(tag).width)+90;
-      badge=pill(tag,x+textW-desired,top+(spec.brand-badgeSpec.minHeight)/2,desired);
+      badge=pill(tag,x+w-desired,top+(spec.brand-badgeSpec.minHeight)/2,desired);
       hy=top+spec.brand+spec.headGap;
     } else {
       const tagW=w-logoW-48;meter.font=face('body',badgeSpec.font,500);const desired=Math.ceil(meter.measureText(tag).width)+90;
