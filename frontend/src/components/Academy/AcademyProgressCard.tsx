@@ -34,27 +34,32 @@ export default function AcademyProgressCard({
   const fmt = (value: number) => value.toLocaleString(locale);
   return <Card variant="solid" className="ui-hero-card w-full p-5 space-y-4" aria-busy={loading || undefined}>
     <div className="flex items-start justify-between gap-3">
-      <div className="min-w-0 space-y-1.5">
+      <div className="min-w-0 space-y-1">
+        <h2 className="t-title-2 text-brand-primary">{t('academy_progress')}</h2>
+        <p className="t-caption text-brand-muted">{t('master_the_game')}</p>
+      </div>
+
+      <div className="flex items-center gap-2.5 shrink-0">
         {loading ? (
-          <div className="flex items-center gap-1.5 mb-1">
-            <Skeleton textRole="caption" width="8ch" />
-            <Skeleton textRole="caption" width="14ch" />
+          <div className="flex items-center gap-1.5">
+            <Skeleton textRole="caption" width="6ch" />
+            <Skeleton textRole="caption" width="12ch" />
           </div>
         ) : (
           (level != null || playerTitle || isPremium) && (
-            <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+            <div className="flex flex-wrap items-center justify-end gap-1.5 max-w-[220px] sm:max-w-none">
               {isPremium && (
-                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30 whitespace-nowrap">
                   {t('premium')}
                 </span>
               )}
               {level != null && (
-                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-brand-action/15 text-brand-action border border-brand-action/30">
+                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-brand-action/15 text-brand-action border border-brand-action/30 whitespace-nowrap">
                   {ti('level')} {level}
                 </span>
               )}
               {playerTitle && (
-                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-brand-elevated text-brand-primary border border-brand-border flex items-center gap-1.5 shadow-sm">
+                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-brand-elevated text-brand-primary border border-brand-border flex items-center gap-1.5 shadow-sm whitespace-nowrap">
                   <FaTrophy className="text-amber-400 text-xs shrink-0" aria-hidden="true" />
                   <span>{playerTitle}</span>
                 </span>
@@ -62,12 +67,10 @@ export default function AcademyProgressCard({
             </div>
           )
         )}
-        <div>
-          <h2 className="t-title-2 text-brand-primary">{t('academy_progress')}</h2>
-          <p className="t-caption text-brand-muted">{t('master_the_game')}</p>
-        </div>
+        <span className="ui-icon-tile ui-icon-tile--info shrink-0">
+          <FaGraduationCap aria-hidden="true" />
+        </span>
       </div>
-      <span className="ui-icon-tile ui-icon-tile--info shrink-0 mt-1"><FaGraduationCap aria-hidden="true" /></span>
     </div>
     <dl className="hero-metrics">
       <div><dt className="t-caption text-brand-muted">{t('completed')}</dt><dd className="t-numeric text-brand-primary">{loading ? <Skeleton textRole="numeric" width="4ch" /> : <><bdi>{fmt(completed)}</bdi><span className="t-caption text-brand-muted">/{fmt(totalCount)}</span></>}</dd></div>
