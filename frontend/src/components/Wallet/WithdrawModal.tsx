@@ -16,6 +16,16 @@ interface WithdrawModalProps {
   initialWithdrawAddress: string;
 }
 
+export function isValidTonAddress(addr: string): boolean {
+  const clean = addr.trim();
+  if (!clean) return false;
+  // User-friendly (48 chars, Base64 or Base64url)
+  if (/^[A-Za-z0-9_+/-]{48}$/.test(clean)) return true;
+  // Raw hex format (workchain:64 hex chars)
+  if (/^(-1|0):[0-9a-fA-F]{64}$/.test(clean)) return true;
+  return false;
+}
+
 export default function WithdrawModal({
   onClose,
   onSuccess,
@@ -32,9 +42,15 @@ export default function WithdrawModal({
   const [checked1, setChecked1] = useState<boolean>(false);
   const [checked2, setChecked2] = useState<boolean>(false);
 
+  const amt = parseFloat(withdrawAmount);
+  const isAmountValid = !isNaN(amt) && amt >= 10;
+  const isInsufficient = !isNaN(amt) && Math.round(amt * 100) > balance;
+  const hasEnteredAddress = Boolean(withdrawAddress.trim());
+  const isInvalidAddressFormat = hasEnteredAddress && !isValidTonAddress(withdrawAddress);
+  const isFormValid = !isInsufficient && !isInvalidAddressFormat && hasEnteredAddress && isAmountValid && checked1 && checked2;
+
   // Withdrawal Submission
   const handleWithdrawSubmit = async () => {
-    const amt = parseFloat(withdrawAmount);
     if (isNaN(amt) || amt < 10) {
       telegramHaptic('warning');
       setErrorMessage(tw('withdraw_minimum', { amount: '$10.00' }));
@@ -50,6 +66,12 @@ export default function WithdrawModal({
     if (!withdrawAddress.trim()) {
       telegramHaptic('warning');
       setErrorMessage(tw('specify_target_address'));
+      return;
+    }
+
+    if (!isValidTonAddress(withdrawAddress)) {
+      telegramHaptic('warning');
+      setErrorMessage(tw('invalid_address'));
       return;
     }
 
@@ -69,8 +91,8 @@ export default function WithdrawModal({
         method: "POST",
         body: JSON.stringify({
           amount: Math.round(amt * 100),
-          address: withdrawAddress
-        })
+          address: withdrawAddress.trim(),
+        }),
       });
 
       if (res.ok) {
@@ -92,9 +114,9 @@ export default function WithdrawModal({
           }, 3000);
         }
       } else {
-        const _errData = await res.json().catch(() => ({}));
+        const errData = await res.json().catch(() => null);
         telegramHaptic('error');
-        setErrorMessage(tw('withdraw_failed'));
+        setErrorMessage(errData?.detail || tw('withdraw_failed'));
       }
     } catch (_err) {
       telegramHaptic('error');
@@ -104,9 +126,6 @@ export default function WithdrawModal({
     }
   };
 
-  const isInsufficient = parseFloat(withdrawAmount) * 100 > balance;
-  const isFormValid = !isInsufficient && checked1 && checked2 && !isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) >= 10;
-
   return (
     <Drawer
       isOpen={true}
@@ -115,16 +134,47 @@ export default function WithdrawModal({
       description={<>{tw('available_balance')}: <bdi>${(balance / 100).toFixed(2)} USDT</bdi></>}
     >
       <div className="space-y-4">
-        <Input type="number" label={tw('withdraw_amount')} value={withdrawAmount}
-          onChange={(event) => setWithdrawAmount(event.target.value)} min="10" step="0.01" dir="ltr"
-          helperText={tw('withdraw_minimum', { amount: '$10.00' })} placeholder={tw('amount_placeholder')} />
+        <Input
+          type="number"
+          label={tw('withdraw_amount')}
+          value={withdrawAmount}
+          onChange={(event) => {
+            setWithdrawAmount(event.target.value);
+            if (errorMessage) setErrorMessage('');
+          }}
+          min="10"
+          step="0.01"
+          dir="ltr"
+          error={isInsufficient ? tw('insufficient_balance') : undefined}
+          helperText={!isInsufficient ? tw('withdraw_minimum', { amount: '$10.00' }) : undefined}
+          placeholder={tw('amount_placeholder')}
+          rightIcon={
+            balance >= 1000 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setWithdrawAmount((balance / 100).toFixed(2));
+                  telegramHaptic('selection');
+                }}
+                className="ui-tap-target px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-surface border border-brand-border text-brand-primary hover:text-emerald-400 hover:border-emerald-500/40 active:scale-95 transition-all cursor-pointer"
+                aria-label="Set maximum withdrawal amount"
+              >
+                MAX
+              </button>
+            ) : undefined
+          }
+        />
         <div>
           <Input
             type="text"
             label={tw('target_address')}
             value={withdrawAddress}
             dir="ltr"
-            onChange={(event) => setWithdrawAddress(event.target.value)}
+            onChange={(event) => {
+              setWithdrawAddress(event.target.value);
+              if (errorMessage) setErrorMessage('');
+            }}
+            error={isInvalidAddressFormat ? tw('invalid_address') : undefined}
             placeholder="Paste TON wallet address (EQ... or UQ...)"
           />
           {initialWithdrawAddress ? (
@@ -230,13 +280,6 @@ export default function WithdrawModal({
           </label>
         </div>
 
-        {/* Insufficient Funds Trigger */}
-        {isInsufficient && (
-          <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm font-bold text-center">
-            {tw('insufficient_balance')}
-          </div>
-        )}
-
         {pendingConfirmation && (
           <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-center space-y-1.5 shadow-sm">
             <div className="text-emerald-400 text-sm font-semibold normal-case tracking-normal">{tw('confirmation_sent')}</div>
@@ -266,7 +309,13 @@ export default function WithdrawModal({
           onClick={handleWithdrawSubmit}
           className="w-full normal-case font-semibold tracking-normal"
         >
-          {processing ? tw('signing_tx') : tw('request_withdraw')}
+          {processing
+            ? tw('signing_tx')
+            : isInsufficient
+            ? tw('insufficient_balance')
+            : isInvalidAddressFormat
+            ? tw('invalid_address')
+            : tw('request_withdraw')}
         </Button>
       </div>
     </Drawer>

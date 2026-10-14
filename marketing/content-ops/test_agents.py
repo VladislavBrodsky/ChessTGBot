@@ -312,8 +312,36 @@ class TestAgents(unittest.TestCase):
             hook="How we eliminated board lag on Telegram with sub-100ms sync",
             body="FastAPI + Socket.IO real-time engine built for zero-latency blitz PvP on Bot API 8.0.",
         )
-        res_eng = qa.inspect_x_post(eng)
-        self.assertTrue(res_eng["passed"], res_eng["issues"])
+        # 5. Player spotlight post (Telegram and X)
+        spot_tg = cw.draft_player_spotlight_post(
+            slot_id="2026-10-12-tg-spotlight",
+            player_name="grandmaestro",
+            streak_count=9,
+            rating_gain=65,
+            winnings_usdt=190.0,
+            fen="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+            solution=["Ra8#"],
+            time_control="3+0 Blitz",
+            platform="telegram",
+        )
+        res_spot_tg = qa.inspect_telegram_post(spot_tg)
+        self.assertTrue(res_spot_tg["passed"], res_spot_tg["issues"])
+        self.assertEqual(spot_tg["category"], "Player Spotlight")
+
+        spot_x = cw.draft_player_spotlight_post(
+            slot_id="2026-10-12-x-spotlight",
+            player_name="grandmaestro",
+            streak_count=9,
+            rating_gain=65,
+            winnings_usdt=190.0,
+            fen="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+            solution=["Ra8#"],
+            time_control="3+0 Blitz",
+            platform="x",
+        )
+        res_spot_x = qa.inspect_x_post(spot_x)
+        self.assertTrue(res_spot_x["passed"], res_spot_x["issues"])
+        self.assertIn("#SpeedChess", spot_x["text"])
 
 
 if __name__ == "__main__":

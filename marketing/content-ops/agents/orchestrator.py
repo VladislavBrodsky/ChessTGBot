@@ -1261,4 +1261,79 @@ class ContentEngineOrchestrator:
             "targets": kit,
         }
 
+    def generate_player_spotlight_batch(
+        self,
+        target_date: Optional[date] = None,
+        player_name: str = "@grandmaestro",
+        streak_count: int = 9,
+        rating_gain: int = 65,
+        winnings_usdt: float = 190.0,
+        fen: Optional[str] = None,
+        solution: Optional[List[str]] = None,
+        time_control: str = "3+0 Blitz",
+        render_images: bool = True,
+    ) -> Dict[str, Any]:
+        """Generates, QA-gates, renders creatives, and queues a multi-platform Player Spotlight campaign."""
+        d = target_date or self.plan_date
+        d_str = d.isoformat()
+        clean_fen = fen or "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1"
+        clean_sol = solution or ["Ra8#"]
+
+        # 1. Telegram Spotlight Post
+        tg_slot = f"{d_str}-tg-spotlight"
+        tg_post = self.copywriter.draft_player_spotlight_post(
+            slot_id=tg_slot,
+            player_name=player_name,
+            streak_count=streak_count,
+            rating_gain=rating_gain,
+            winnings_usdt=winnings_usdt,
+            fen=clean_fen,
+            solution=clean_sol,
+            time_control=time_control,
+            platform="telegram",
+        )
+        tg_qa = self.qa.inspect_telegram_post(tg_post)
+        if not tg_qa["passed"]:
+            raise RuntimeError(f"Telegram Spotlight QA failed: {tg_qa['issues']}")
+        tg_post["qa"] = {**tg_qa, "checked_at": queue.iso(queue.utcnow())}
+        tg_post["status"] = "approved"
+
+        if render_images:
+            renderer.render(tg_post)
+        queue.save(tg_post)
+
+        # 2. X Spotlight Post
+        x_slot = f"{d_str}-x-spotlight"
+        x_post = self.copywriter.draft_player_spotlight_post(
+            slot_id=x_slot,
+            player_name=player_name,
+            streak_count=streak_count,
+            rating_gain=rating_gain,
+            winnings_usdt=winnings_usdt,
+            fen=clean_fen,
+            solution=clean_sol,
+            time_control=time_control,
+            platform="x",
+        )
+        x_qa = self.qa.inspect_x_post(x_post)
+        if not x_qa["passed"]:
+            raise RuntimeError(f"X Spotlight QA failed: {x_qa['issues']}")
+        x_post["qa"] = {**x_qa, "checked_at": queue.iso(queue.utcnow())}
+        x_post["status"] = "approved"
+
+        if render_images:
+            renderer.render(x_post)
+        queue.save(x_post)
+
+        return {
+            "status": "success",
+            "campaign": "Player Spotlight",
+            "player": player_name,
+            "streak": streak_count,
+            "rating_gain": rating_gain,
+            "telegram_post_id": tg_slot,
+            "x_post_id": x_slot,
+        }
+
+
 

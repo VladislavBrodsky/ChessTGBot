@@ -16,7 +16,8 @@ CHAT = "https://t.me/chesshub_chat"
 
 CATEGORIES = [
     "Tactics", "Openings", "Academy", "Chess News", "Chess Culture",
-    "Product", "Match Rules", "Chess Debate", "Psychology", "Engineering", "Tactical Matrix"
+    "Product", "Match Rules", "Chess Debate", "Psychology", "Engineering", "Tactical Matrix",
+    "Player Spotlight", "Leaderboard"
 ]
 
 VIRAL_KEYWORD_CLUSTERS = {
@@ -80,6 +81,8 @@ AUDIENCE_TAG_PRESETS = {
     "Product": ["#TelegramGaming", "#TON", "#Web3Gaming"],
     "Match Rules": ["#SkillGaming", "#iGaming", "#PvP"],
     "Arena": ["#SkillGaming", "#iGaming", "#PvP"],
+    "Player Spotlight": ["#SpeedChess", "#ChessTactics", "#Web3Gaming"],
+    "Leaderboard": ["#SpeedChess", "#Web3Gaming", "#ChessLife"],
 }
 
 

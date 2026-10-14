@@ -313,6 +313,104 @@ class SmmCopywriterAgent:
             },
         }
 
+    def draft_player_spotlight_post(
+        self,
+        slot_id: str,
+        player_name: str,
+        streak_count: int,
+        rating_gain: int,
+        winnings_usdt: float,
+        fen: str,
+        solution: List[str],
+        time_control: str = "3+0 Blitz",
+        platform: str = "telegram",
+    ) -> Dict[str, Any]:
+        """Drafts a legitimate viral player spotlight post showcasing real tactical skills & leaderboard FOMO."""
+        canvas_size = "square"
+        clean_hook = f"Player Spotlight: How {player_name} scored a {streak_count}-game streak in the Blitz Arena (+{rating_gain} ELO)"
+        disclosure = brand.WAGER_DISCLOSURE
+
+        if platform == "telegram":
+            first_move = solution[0] if solution else "Nf7#"
+            body = (
+                f"{player_name} just cashed out ${winnings_usdt:.2f} USDT directly to their TON wallet "
+                f"after an undefeated run in today's {time_control} queue.\n\n"
+                f"Move 23 was the turning point. Can you calculate the decisive tactical strike?\n\n"
+                f"Pick the winning line and react below:\n"
+                f"❤ {first_move}   🔥 Rxh7+   👏 Ne6\n\n"
+                f"{disclosure}"
+            )
+            full_text = f"<b>{clean_hook}</b>\n\n{body.strip()}"
+            return {
+                "id": slot_id,
+                "kind": "telegram",
+                "date": slot_id[:10] if len(slot_id) >= 10 else queue.utcnow().date().isoformat(),
+                "category": "Player Spotlight",
+                "format": "puzzle",
+                "hook": clean_hook[:110],
+                "cta": "arena",
+                "text": full_text,
+                "status": "draft",
+                "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/leaderboard"}],
+                "chess": {
+                    "fen": fen,
+                    "solution": solution,
+                    "claim": "decisive_strike",
+                },
+                "creative": {
+                    "template": "puzzle",
+                    "size": canvas_size,
+                    "fen": fen,
+                    "tag": f"Streak: {streak_count} Wins",
+                    "headline": f"{player_name.upper()}\n*+{rating_gain} ELO SURGE*",
+                    "subhead": f"Decisive move from Game 7 • {time_control}",
+                    "cta_label": "Enter Arena",
+                    "footer": "18+ only · You can lose your stake · web3chess.online",
+                },
+            }
+        else:
+            tags = brand.AUDIENCE_TAG_PRESETS.get("Player Spotlight", ["#SpeedChess", "#ChessTactics", "#Web3Gaming"])
+            tag_str = " ".join(tags[:3])
+            body_text = (
+                f"{player_name} went on a {streak_count}-game heater in today's Blitz Arena (+{rating_gain} ELO).\n\n"
+                f"Here is the move 23 tactic that cracked open Black's defense 👇\n\n"
+                f"{tag_str}"
+            )
+            docked_reply = (
+                f"Can you break their streak? Jump into today's open Blitz Arena: https://app.web3chess.online\n\n"
+                f"18+ only | Skill-based matches | You can lose your stake"
+            )
+            post_text = f"{clean_hook}\n\n{body_text}".strip()
+            return {
+                "id": slot_id,
+                "kind": "x_post",
+                "date": slot_id[:10] if len(slot_id) >= 10 else queue.utcnow().date().isoformat(),
+                "category": "Player Spotlight",
+                "hook": clean_hook,
+                "text": post_text,
+                "status": "draft",
+                "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/leaderboard"}],
+                "chess": {
+                    "fen": fen,
+                    "solution": solution,
+                    "claim": "decisive_strike",
+                },
+                "creative": {
+                    "template": "puzzle",
+                    "size": canvas_size,
+                    "fen": fen,
+                    "tag": f"{streak_count}-Win Streak",
+                    "headline": f"{player_name.upper()}\n*ARENA CHAMPION*",
+                    "subhead": f"+{rating_gain} ELO • ${winnings_usdt:.0f} USDT Payout",
+                    "cta_label": "Play in Arena",
+                    "footer": "18+ only · You can lose your stake · web3chess.online",
+                },
+                "docked_reply": {
+                    "text": docked_reply,
+                    "link": "https://app.web3chess.online",
+                },
+            }
+
     def draft_seo_blog_article(
         self,
         slug: str,
