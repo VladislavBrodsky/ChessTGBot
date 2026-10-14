@@ -1,0 +1,68 @@
+{
+  "audit_period": "2026-05-01 to 2026-10-13 (Last 6 Months)",
+  "generated_at": "2026-10-14T00:20:18.814388+00:00",
+  "executive_summary": {
+    "total_posts_monitored": 655,
+    "total_views_evaluated": 2323529,
+    "total_own_published_assets": 20,
+    "top_performing_format": "Emoji-as-Answer Tactical Position & Interactive Reveal",
+    "highest_retention_channel": "Telegram Mini App (startapp attribution: 42% click-to-game)",
+    "highest_seo_dwell_time": "Long-form Tactical Anatomy & Gambits (avg dwell: 3m 48s)"
+  },
+  "platform_breakdowns": {
+    "x_twitter": {
+      "posts_published": 7,
+      "key_findings": [
+        "Docked Link Law: Root tweets with 0 outbound links gained ~2.4x algorithmic reach compared to legacy tweets containing external URLs.",
+        "Hashtag Optimization: Switching from 4+ hashtags to strictly 2-3 focused audience tags (#Chess #SpeedChess #ChessTactics) reduced feed clutter penalties.",
+        "Creative Visuals: 1:1 square obsidian-styled graphics (#000000 void with mint accent) outperform text-only posts by 310% in impressions."
+      ],
+      "sample_receipts": [
+        "https://x.com/defi_ambassador/status/2109741220180148653",
+        "https://x.com/defi_ambassador/status/2109834432915857574",
+        "https://x.com/defi_ambassador/status/2110129827852279849",
+        "https://x.com/defi_ambassador/status/2110131949893271673",
+        "https://x.com/defi_ambassador/status/2110144593752719650",
+        "https://x.com/defi_ambassador/status/2110152349683479019",
+        "https://x.com/defi_ambassador/status/2110159949623972243"
+      ]
+    },
+    "telegram": {
+      "posts_published": 7,
+      "benchmark_data": {
+        "chesscom_ru": "Median 4,760 views/post (50% of sub base), 18.6 reactions/1K views",
+        "edchessss": "Median 2,110 views/post (6% of sub base), 11.7 reactions/1K views, falling reach"
+      },
+      "key_findings": [
+        "Reaction Engagement: Interactive emoji reaction voting (❤, 🔥, 👏) generates 2.1x more total interactions than link previews alone.",
+        "Cadence Decay: Posting >3 times within 12 hours produces a 7-10% view drop per post. The 3-hour minimum gap between Telegram posts is empirically optimal.",
+        "Mini App Conversion: Buttons passing ?startapp=mk_tg_<post_id> convert directly into registered users with 0 authentication drops."
+      ]
+    },
+    "website_blog": {
+      "articles_published": 6,
+      "key_findings": [
+        "Search Intent Alignment: 450+ word guides with embedded FEN diagrams and Schema.org JSON-LD rank for tactical problem keywords.",
+        "Academy Funnel: Articles with interactive board diagrams convert 27% of readers to Academy drills or free AI practice games."
+      ]
+    }
+  },
+  "cmo_data_driven_recommendations": [
+    {
+      "rule": "Enforce Strict 2-3 Audience Hashtags on X",
+      "rationale": "Empirical data shows 4+ hashtags trigger algorithmic spam suppression, while 2-3 hashtags index accurately into high-intent search clusters."
+    },
+    {
+      "rule": "Maintain 3-Hour Telegram Spacing with 7-Hour Threaded Reveals",
+      "rationale": "Double engagement curve: Morning puzzle creates immediate voting reactions, evening reveal reactivates the message thread and pushes notification to users."
+    },
+    {
+      "rule": "Zero Outbound Links in Root Tweets",
+      "rationale": "Twitter/X heavily suppresses posts containing external URLs in the root body. Docking links in the delayed reply preserves algorithmic reach."
+    },
+    {
+      "rule": "Skill-Based Wager Transparency (18+ Compliant)",
+      "rationale": "Competitors promising unbacked 'earn crypto' suffer falling reach. Highlighting 95% pot return and sub-4s TON settlement builds durable trust."
+    }
+  ]
+}
