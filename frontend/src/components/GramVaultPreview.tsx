@@ -14,7 +14,7 @@ export function GramVaultPreview() {
   const [open, setOpen] = useState(false);
 
   return <>
-    <Card variant="solid" className="space-y-3 p-4" aria-labelledby="gram-vault-preview-title">
+    <Card variant="solid" className="p-4" aria-labelledby="gram-vault-preview-title">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <span className="ui-icon-tile ui-icon-tile--premium shrink-0">
@@ -38,11 +38,6 @@ export function GramVaultPreview() {
           <FiInfo size={13} className="text-purple-400" aria-hidden="true" />
           <span>{t('badge')}</span>
         </button>
-      </div>
-
-      <div className="flex items-center gap-2 rounded-xl border border-brand-border/60 bg-brand-elevated/40 px-3.5 py-2.5 text-caption text-brand-muted">
-        <FiInfo size={14} className="shrink-0 text-brand-muted" aria-hidden="true" />
-        <span>{t('current_box')}</span>
       </div>
     </Card>
 
