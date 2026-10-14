@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "White to move. 94% of club players calculate for 30 seconds when the mate is in 1",
   "text": "White to move. 94% of club players calculate for 30 seconds when the mate is in 1\n\nBlack forgot to create luft on the kingside.\n\nCan you spot the decisive back-rank finish in under 3 seconds? ♟️\n\n#Chess #SpeedChess",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -43,5 +43,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-14T00:05:12Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110159949623972243",
+    "reply_id": "2110159952266281180",
+    "root_url": "https://x.com/defi_ambassador/status/2110159949623972243"
+  },
+  "published": {
+    "root_id": "2110159949623972243",
+    "at": "2026-10-14T00:05:12Z"
   }
 }

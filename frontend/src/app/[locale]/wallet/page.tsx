@@ -79,7 +79,14 @@ export default function WalletPage() {
         {/* HOLOGRAPHIC CYBER-CARD */}
         <section aria-labelledby="wallet-balance-heading" className="w-full">
           <h2 id="wallet-balance-heading" className="sr-only">{tw('usdt_balance')}</h2>
-          <CyberCard balance={balance} walletAddress={walletAddress} balanceError={balanceError} loading={loadingBalance} onRetry={refreshWalletData} />
+          <CyberCard
+            balance={balance}
+            walletAddress={walletAddress}
+            balanceError={balanceError}
+            loading={loadingBalance}
+            onRetry={refreshWalletData}
+            onConnect={() => setActiveModal('connect')}
+          />
         </section>
 
         <div className="grid w-full grid-cols-2 gap-2">

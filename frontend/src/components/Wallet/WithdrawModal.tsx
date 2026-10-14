@@ -117,8 +117,40 @@ export default function WithdrawModal({
         <Input type="number" label={tw('withdraw_amount')} value={withdrawAmount}
           onChange={(event) => setWithdrawAmount(event.target.value)} min="10" step="0.01" dir="ltr"
           helperText={tw('withdraw_minimum', { amount: '$10.00' })} placeholder={tw('amount_placeholder')} />
-        <Input type="text" label={tw('target_address')} value={withdrawAddress} dir="ltr"
-          onChange={(event) => setWithdrawAddress(event.target.value)} placeholder={tw('target_placeholder')} />
+        <div>
+          <Input type="text" label={tw('target_address')} value={withdrawAddress} dir="ltr"
+            onChange={(event) => setWithdrawAddress(event.target.value)} placeholder={tw('target_placeholder')} />
+          {initialWithdrawAddress && (
+            <div className="flex items-center justify-between gap-2 pt-1.5 px-0.5 text-caption">
+              {withdrawAddress === initialWithdrawAddress ? (
+                <>
+                  <span className="flex items-center gap-1.5 text-brand-muted truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" aria-hidden="true" />
+                    <span>Prefilled from connected TON wallet</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setWithdrawAddress('')}
+                    className="text-brand-muted hover:text-brand-primary font-semibold text-caption shrink-0 transition-colors cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span className="text-brand-muted truncate">Enter receiving TON wallet</span>
+                  <button
+                    type="button"
+                    onClick={() => setWithdrawAddress(initialWithdrawAddress)}
+                    className="text-emerald-400 hover:text-emerald-300 font-semibold text-caption shrink-0 flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <span>Use connected wallet ({initialWithdrawAddress.slice(0, 4)}…{initialWithdrawAddress.slice(-3)})</span>
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Fee Breakdown Display */}
         {!isNaN(parseFloat(withdrawAmount)) && parseFloat(withdrawAmount) > 0 && (
