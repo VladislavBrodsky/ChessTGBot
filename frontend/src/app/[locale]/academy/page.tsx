@@ -293,7 +293,6 @@ export default function AcademyPage() {
     return <LayoutWrapper className="w-full">
       <main className="app-page">
         <PageHeader title={t('title')} description={t('subtitle')} icon={<FaGraduationCap />} tone="info" />
-        <div className="h-[var(--size-chip)] flex gap-2"><Skeleton textRole="caption" width="7ch" /><Skeleton textRole="caption" width="12ch" /></div>
         <AcademyProgressCard loading completedCount={0} totalCount={0} totalXp={0} streak={0} />
         <Card variant="solid" className="w-full p-4 space-y-3" aria-busy="true">
           <Skeleton textRole="caption" width="40%" /><Skeleton textRole="title-2" width="70%" />
@@ -320,25 +319,19 @@ export default function AcademyPage() {
       <main className="w-full app-page mx-auto ">
 
         {/* Header */}
-        <div className="w-full space-y-3">
-          <PageHeader title={t('title')} description={t('subtitle')} icon={<FaGraduationCap />} tone="info" />
+        <PageHeader title={t('title')} description={t('subtitle')} icon={<FaGraduationCap />} tone="info" />
 
-          {stats && (
-            <BadgeRow>
-              {stats.is_premium && <Badge variant="purple">{t('premium')}</Badge>}
-              <Badge variant="primary">{ti('level')} {stats.level}</Badge>
-              <Badge variant="secondary" icon={<FaTrophy />}>{getPlayerTitle(stats.level)}</Badge>
-            </BadgeRow>
-          )}
-        </div>
-
-        {/* Academy Progress Card — prominent, right below header */}
-        <AcademyProgressCard loading={!stats}
-            completedCount={(completedLessons as string[]).filter(slug => lessonsList.some((l: any) => l.slug === slug)).length}
-            totalCount={lessonsList.length}
-            totalXp={stats?.xp ?? 0}
-            streak={stats?.study_streak || 0}
-          />
+        {/* Academy Progress Card — prominent hero with integrated level and rank badges */}
+        <AcademyProgressCard
+          loading={!stats}
+          completedCount={(completedLessons as string[]).filter(slug => lessonsList.some((l: any) => l.slug === slug)).length}
+          totalCount={lessonsList.length}
+          totalXp={stats?.xp ?? 0}
+          streak={stats?.study_streak || 0}
+          level={stats?.level}
+          playerTitle={stats ? getPlayerTitle(stats.level) : undefined}
+          isPremium={stats?.is_premium}
+        />
 
         {/* Daily Challenge Section */}
         {puzzlesList.length === 0 ? (
