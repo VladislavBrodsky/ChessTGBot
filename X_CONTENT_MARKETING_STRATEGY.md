@@ -1,5 +1,5 @@
 # Master Content Marketing Strategy for X (Twitter) (2026)
-## Web3Chess (web3chess.online & @web3chess) Ecosystem
+## Web3Chess (web3chess.online & @defi_ambassador) Ecosystem
 
 > **Executive Thesis**: In 2026, Twitter/X is governed by vector interest embeddings, semantic topic clusters (Grok), and algorithmic rewards for **dwell time, bookmark velocity, and conversation depth**. Broadcasters who blast external links and hashtag spam are penalized with sub-1% impression distribution. 
 > 
@@ -71,7 +71,7 @@ Every impression on X is worthless if it doesn't funnel attention into active pl
 │ AVATAR: 400 x 400 px — High-contrast Violet Rook on Pitch Black Surface     │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ DISPLAY NAME: Web3Chess | Cerebral Speed Chess                              │
-│ HANDLE: @web3chess                                                          │
+│ HANDLE: @defi_ambassador                                                    │
 │ BADGE: Verified (Blue or Gold Organization)                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ BIO (160 Chars Max):                                                        │
@@ -418,7 +418,7 @@ python3 -m pytest marketing/content-ops/test_agents.py
 
 ### Profile Setup Copy
 - **Name**: `Web3Chess | Cerebral Speed Chess`
-- **Handle**: `@web3chess`
+- **Handle**: `@defi_ambassador`
 - **Bio**: `Speed chess for minds. Anti-brainrot PvP with sub-100ms sync on Telegram & Web. Daily $500 USDT Arena drops (18+). Solve, play & master ♟️👇`
 - **Link**: `https://web3chess.online`
 

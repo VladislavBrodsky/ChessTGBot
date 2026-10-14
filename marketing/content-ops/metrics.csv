@@ -9,14 +9,14 @@ content_id,url,channel,pillar,format,variant,published_at,window_start,window_en
 2026-10-12-x-8,https://x.com/defi_ambassador/status/2110181120331428004,x_twitter,Engineering,1:1_single_post,obsidian_canvas,2026-10-14T01:29:20Z,2026-10-14T01:29:20Z,2026-10-13T23:59:59Z,2900,3820,205,58,35,78,68,26,33,17
 2026-10-12-x-9,https://x.com/defi_ambassador/status/2110190353198240216,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-14T02:06:01Z,2026-10-14T02:06:01Z,2026-10-13T23:59:59Z,2260,2980,147,40,22,54,46,18,23,12
 2026-10-12-x-10,https://x.com/defi_ambassador/status/2110167543801360479,x_twitter,Psychology,1:1_single_post,obsidian_canvas,2026-10-14T00:35:22Z,2026-10-14T00:35:22Z,2026-10-13T23:59:59Z,2470,3250,168,46,25,60,52,20,26,13
-2026-10-11-tg-1,https://t.me/web3chess/12,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-11T07:30:00Z,2026-10-11T07:30:00Z,2026-10-13T23:59:59Z,3840,4680,234,42,38,114,98,42,31,22
-2026-10-12-tg-2,https://t.me/web3chess/13,telegram,Chess News,news,emoji_reaction_button,2026-10-12T14:22:28Z,2026-10-12T14:22:28Z,2026-10-13T23:59:59Z,3380,4120,189,32,28,92,82,34,26,18
-2026-10-12-tg-3,https://t.me/web3chess/14,telegram,Openings,news,emoji_reaction_button,2026-10-12T14:22:41Z,2026-10-12T14:22:41Z,2026-10-13T23:59:59Z,3240,3950,178,29,26,88,78,31,24,16
-2026-10-12-tg-4,https://t.me/web3chess/15,telegram,Chess Culture,news,emoji_reaction_button,2026-10-12T14:23:10Z,2026-10-12T14:23:10Z,2026-10-13T23:59:59Z,4440,5420,312,58,52,148,132,54,42,30
-2026-10-12-tg-5,https://t.me/web3chess/16,telegram,Product,product,emoji_reaction_button,2026-10-12T14:23:58Z,2026-10-12T14:23:58Z,2026-10-13T23:59:59Z,3530,4310,196,35,31,102,90,38,28,20
-2026-10-12-tg-6,https://t.me/web3chess/17,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-13T22:23:44Z,2026-10-13T22:23:44Z,2026-10-13T23:59:59Z,4010,4890,251,46,41,126,110,48,35,24
-2026-10-12-tg-7,https://t.me/web3chess/21,telegram,Engineering,rules,emoji_reaction_button,2026-10-14T02:05:40Z,2026-10-14T02:05:40Z,2026-10-13T23:59:59Z,3060,3740,165,27,24,82,72,29,21,15
-2026-10-14-tg-community,https://t.me/web3chess/22,telegram,Chess Culture,news,emoji_reaction_button,2026-10-14T02:18:30Z,2026-10-14T02:18:30Z,2026-10-13T23:59:59Z,3650,4450,218,39,34,108,96,40,30,21
+2026-10-11-tg-1,https://t.me/chess_hub/12,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-11T07:30:00Z,2026-10-11T07:30:00Z,2026-10-13T23:59:59Z,3840,4680,234,42,38,114,98,42,31,22
+2026-10-12-tg-2,https://t.me/chess_hub/13,telegram,Chess News,news,emoji_reaction_button,2026-10-12T14:22:28Z,2026-10-12T14:22:28Z,2026-10-13T23:59:59Z,3380,4120,189,32,28,92,82,34,26,18
+2026-10-12-tg-3,https://t.me/chess_hub/14,telegram,Openings,news,emoji_reaction_button,2026-10-12T14:22:41Z,2026-10-12T14:22:41Z,2026-10-13T23:59:59Z,3240,3950,178,29,26,88,78,31,24,16
+2026-10-12-tg-4,https://t.me/chess_hub/15,telegram,Chess Culture,news,emoji_reaction_button,2026-10-12T14:23:10Z,2026-10-12T14:23:10Z,2026-10-13T23:59:59Z,4440,5420,312,58,52,148,132,54,42,30
+2026-10-12-tg-5,https://t.me/chess_hub/16,telegram,Product,product,emoji_reaction_button,2026-10-12T14:23:58Z,2026-10-12T14:23:58Z,2026-10-13T23:59:59Z,3530,4310,196,35,31,102,90,38,28,20
+2026-10-12-tg-6,https://t.me/chess_hub/17,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-13T22:23:44Z,2026-10-13T22:23:44Z,2026-10-13T23:59:59Z,4010,4890,251,46,41,126,110,48,35,24
+2026-10-12-tg-7,https://t.me/chess_hub/21,telegram,Engineering,rules,emoji_reaction_button,2026-10-14T02:05:40Z,2026-10-14T02:05:40Z,2026-10-13T23:59:59Z,3060,3740,165,27,24,82,72,29,21,15
+2026-10-14-tg-community,https://t.me/chess_hub/22,telegram,Chess Culture,news,emoji_reaction_button,2026-10-14T02:18:30Z,2026-10-14T02:18:30Z,2026-10-13T23:59:59Z,3650,4450,218,39,34,108,96,40,30,21
 2026-10-11-art-1,https://web3chess.online/blog/london-system-counter-attacks,website_blog,Tactics,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5490,8450,412,112,62,305,280,76,138,49
 2026-10-12-art-1,https://web3chess.online/blog/sicilian-defense-tactical-traps,website_blog,Tactics,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5980,9210,486,134,74,342,312,88,158,58
 2026-10-12-art-2,https://web3chess.online/blog/speed-chess-clock-management,website_blog,Culture,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5120,7890,374,98,54,278,252,68,124,44

@@ -81,7 +81,7 @@ All live posts feature obsidian-styled 1080x1080 visual canvases, docked reply l
 | `2026-10-12-x-9` | Tactics | [Status 2110190353198240216](https://x.com/defi_ambassador/status/2110190353198240216) | #Chess #Endgame | 2,980 | 147 |
 | `2026-10-12-x-10` | Psychology | [Status 2110167543801360479](https://x.com/defi_ambassador/status/2110167543801360479) | #SpeedChess #Mindset | 3,250 | 168 |
 
-### B. Telegram Broadcasts (@web3chess)
+### B. Telegram Broadcasts (@chess_hub)
 Every broadcast pairs an obsidian board graphic with an interactive reaction prompt and deep link parameter (`?startapp=mk_tg_<post_id>`):
 
 | Message ID | Pillar | Format | Deep Link Parameter | Est. Views | Clicks to Mini App |

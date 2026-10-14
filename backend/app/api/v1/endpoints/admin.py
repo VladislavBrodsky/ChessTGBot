@@ -1452,15 +1452,15 @@ async def get_marketing_metrics(
         {"id": "2026-10-12-x-9", "platform": "x", "category": "Tactics", "title": "Endgame Precision: Converting Minor Piece Advantages", "url": "https://x.com/defi_ambassador/status/2110190353198240216", "impressions": 2980, "engagements": 147, "rate": "4.93%", "status": "Live"},
         {"id": "2026-10-12-x-10", "platform": "x", "category": "Psychology", "title": "Tilt Control in Bullet: Cognitive Recovery Protocols", "url": "https://x.com/defi_ambassador/status/2110167543801360479", "impressions": 3250, "engagements": 168, "rate": "5.17%", "status": "Live"},
 
-        # Telegram Official Channel Broadcasts (@web3chess)
-        {"id": "mk_tg_12", "platform": "telegram", "category": "Tactics", "title": "Daily Tactics Challenge: White to Move & Mate in 3", "url": "https://t.me/web3chess/12", "impressions": 4680, "engagements": 234, "rate": "5.00%", "status": "Live"},
-        {"id": "mk_tg_13", "platform": "telegram", "category": "News", "title": "Grandmaster Blitz Analysis & Key Turning Points", "url": "https://t.me/web3chess/13", "impressions": 4120, "engagements": 189, "rate": "4.59%", "status": "Live"},
-        {"id": "mk_tg_14", "platform": "telegram", "category": "Openings", "title": "Sicilian Dragon Refutation: Yugoslav Attack Precision", "url": "https://t.me/web3chess/14", "impressions": 3950, "engagements": 178, "rate": "4.51%", "status": "Live"},
-        {"id": "mk_tg_15", "platform": "telegram", "category": "Culture", "title": "Mikhail Tal’s Intuitive Piece Sacrifices (1960)", "url": "https://t.me/web3chess/15", "impressions": 5420, "engagements": 312, "rate": "5.76%", "status": "Live"},
-        {"id": "mk_tg_16", "platform": "telegram", "category": "Product", "title": "Instant Vault Settlement & Non-Custodial USDT Security", "url": "https://t.me/web3chess/16", "impressions": 4310, "engagements": 196, "rate": "4.55%", "status": "Live"},
-        {"id": "mk_tg_17", "platform": "telegram", "category": "Tactics", "title": "Smothered Mate Tactical Matrix with Knight Maneuver", "url": "https://t.me/web3chess/17", "impressions": 4890, "engagements": 251, "rate": "5.13%", "status": "Live"},
-        {"id": "mk_tg_21", "platform": "telegram", "category": "Engineering", "title": "Microsecond Monotonic Engine: Zero-Cheat Latency Fairness", "url": "https://t.me/web3chess/21", "impressions": 3740, "engagements": 165, "rate": "4.41%", "status": "Live"},
-        {"id": "mk_tg_22", "platform": "telegram", "category": "Culture", "title": "Speed Chess Community Welcome: Fair Play on Mobile", "url": "https://t.me/web3chess/22", "impressions": 4450, "engagements": 218, "rate": "4.90%", "status": "Live"},
+        # Telegram Official Channel Broadcasts (@chess_hub)
+        {"id": "mk_tg_12", "platform": "telegram", "category": "Tactics", "title": "Daily Tactics Challenge: White to Move & Mate in 3", "url": "https://t.me/chess_hub/12", "impressions": 4680, "engagements": 234, "rate": "5.00%", "status": "Live"},
+        {"id": "mk_tg_13", "platform": "telegram", "category": "News", "title": "Grandmaster Blitz Analysis & Key Turning Points", "url": "https://t.me/chess_hub/13", "impressions": 4120, "engagements": 189, "rate": "4.59%", "status": "Live"},
+        {"id": "mk_tg_14", "platform": "telegram", "category": "Openings", "title": "Sicilian Dragon Refutation: Yugoslav Attack Precision", "url": "https://t.me/chess_hub/14", "impressions": 3950, "engagements": 178, "rate": "4.51%", "status": "Live"},
+        {"id": "mk_tg_15", "platform": "telegram", "category": "Culture", "title": "Mikhail Tal’s Intuitive Piece Sacrifices (1960)", "url": "https://t.me/chess_hub/15", "impressions": 5420, "engagements": 312, "rate": "5.76%", "status": "Live"},
+        {"id": "mk_tg_16", "platform": "telegram", "category": "Product", "title": "Instant Vault Settlement & Non-Custodial USDT Security", "url": "https://t.me/chess_hub/16", "impressions": 4310, "engagements": 196, "rate": "4.55%", "status": "Live"},
+        {"id": "mk_tg_17", "platform": "telegram", "category": "Tactics", "title": "Smothered Mate Tactical Matrix with Knight Maneuver", "url": "https://t.me/chess_hub/17", "impressions": 4890, "engagements": 251, "rate": "5.13%", "status": "Live"},
+        {"id": "mk_tg_21", "platform": "telegram", "category": "Engineering", "title": "Microsecond Monotonic Engine: Zero-Cheat Latency Fairness", "url": "https://t.me/chess_hub/21", "impressions": 3740, "engagements": 165, "rate": "4.41%", "status": "Live"},
+        {"id": "mk_tg_22", "platform": "telegram", "category": "Culture", "title": "Speed Chess Community Welcome: Fair Play on Mobile", "url": "https://t.me/chess_hub/22", "impressions": 4450, "engagements": 218, "rate": "4.90%", "status": "Live"},
 
         # Website Blog SEO & Academy Guides
         {"id": "blog-london-counter", "platform": "blog", "category": "Tactics", "title": "Countering the London System: Modern Active Setups", "url": "https://web3chess.online/blog/london-system-counter-attacks", "impressions": 8450, "engagements": 412, "rate": "4.88%", "status": "Live"},
@@ -1490,8 +1490,8 @@ async def get_marketing_metrics(
 
     scorecard = [
         {
-            "platform": "X (Twitter) Channel",
-            "handle": "@Web3Chess",
+            "platform": "X (Twitter)",
+            "handle": "@defi_ambassador",
             "published": len(x_posts),
             "reach": int(x_imp * 0.76),
             "impressions": x_imp,
@@ -1503,7 +1503,7 @@ async def get_marketing_metrics(
         },
         {
             "platform": "Telegram Channel",
-            "handle": "@web3chess",
+            "handle": "@chess_hub",
             "published": len(tg_posts),
             "reach": int(tg_imp * 0.82),
             "impressions": tg_imp,

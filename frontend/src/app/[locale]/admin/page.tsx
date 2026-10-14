@@ -588,7 +588,7 @@ function MarketingTab() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
             <h3 className="text-sm font-bold text-brand-primary">Recent Verified Live Posts &amp; Campaigns</h3>
-            <p className="text-caption text-brand-muted">Direct receipts across X (@Web3Chess), Telegram (@web3chess) and Blog</p>
+            <p className="text-caption text-brand-muted">Direct receipts across X (@defi_ambassador), Telegram (@chess_hub) and Blog (web3chess.online)</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">

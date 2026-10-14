@@ -14,9 +14,11 @@ async def test_get_marketing_metrics_payload():
     assert "scorecard" in res
     assert len(res["scorecard"]) == 4
     # All scorecard items must be our own verified platform channels
+    verified_handles = {"@defi_ambassador", "@chess_hub", "web3chess.online", "@chess_matbot"}
+    scorecard_handles = {ch["handle"] for ch in res["scorecard"]}
+    assert scorecard_handles == verified_handles
     for ch in res["scorecard"]:
         assert ch["is_own"] is True
-        assert "@chess_hub" not in ch["platform"]
 
     assert "competitor_benchmark" in res
     assert res["competitor_benchmark"]["competitor_posts"] == 655

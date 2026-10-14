@@ -37,7 +37,7 @@ Telegram's internal search algorithm ranks channels based on **Title relevance, 
 #### Channel Metadata Optimization Formula
 - **Channel Title**: `Web3Chess | Daily Blitz Arena & Puzzles ♟️⚡`
   - *Rationale*: Contains primary keyword ("Web3Chess"), core activity ("Blitz Arena"), and daily value proposition ("Puzzles").
-- **Public Handle**: `@Web3ChessArena` (or matching bot `@chess_matbot`).
+- **Public Handle**: `@chess_hub` (Channel) / `@chess_matbot` (Mini App Bot).
 - **Channel Bio (Max 255 Chars)**:
   ```text
   ♟️ Official Arena of Web3Chess inside Telegram.
@@ -67,7 +67,7 @@ Over 900M users have Telegram. Only the sharpest minds compete here.
 #StrategyDigest — Executive summaries of our in-depth blog guides
 #HallOfFame — Weekly winner leaderboards & on-chain payouts
 
-💬 <b>Join the discussion group</b>: @Web3ChessChat
+💬 <b>Join the discussion group</b>: @chesshub_chat
 ```
 
 ---
@@ -160,7 +160,7 @@ Down to the final 2 seconds, Black attempted to flag White with desperate checks
 
 Did you spot the Queen sacrifice before move 20? 
 
-💬 <i>Debate the position in @Web3ChessChat</i>
+💬 <i>Debate the position in @chesshub_chat</i>
 👉 <a href="https://t.me/chess_matbot?startapp=ref_channel_recap&startapp=lobby">Challenge Players in the Wager Lobby</a>
 ```
 
@@ -214,7 +214,7 @@ All withdrawals below auto-review limits were settled within 120 seconds via TON
 
 ---
 
-## 5. Telegram Discussion Group Strategy (`@Web3ChessChat`)
+## 5. Telegram Discussion Group Strategy (`@chesshub_chat`)
 
 To keep the discussion group high-signal rather than a chaotic wall of spam:
 
