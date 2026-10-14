@@ -31,7 +31,8 @@ async function main() {
     body: 'Bullet, blitz, and USDT stakes · Join our community',
     cta: 'Join the community',
     note: 'USDT matches · 18+ where permitted · Telegram @chesshub_chat',
-    proof: ['1+0 Bullet & 3+2 Blitz', 'Equal USDT stakes', 'Community @chesshub_chat']
+    proof: ['1+0 Bullet & 3+2 Blitz', 'Equal USDT stakes', 'Community @chesshub_chat'],
+    proofIcons: ['lightning', 'coins', 'telegram-logo']
   };
 
   const queueDir = path.resolve(repo, 'marketing/content-ops/queue/2026-10-14');
