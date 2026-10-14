@@ -1,17 +1,17 @@
 {
   "audit_period": "2026-05-01 to 2026-10-13 (Last 6 Months)",
-  "generated_at": "2026-10-14T00:20:18.814388+00:00",
+  "generated_at": "2026-10-14T00:36:29.905296+00:00",
   "executive_summary": {
     "total_posts_monitored": 655,
     "total_views_evaluated": 2323529,
-    "total_own_published_assets": 20,
+    "total_own_published_assets": 21,
     "top_performing_format": "Emoji-as-Answer Tactical Position & Interactive Reveal",
     "highest_retention_channel": "Telegram Mini App (startapp attribution: 42% click-to-game)",
     "highest_seo_dwell_time": "Long-form Tactical Anatomy & Gambits (avg dwell: 3m 48s)"
   },
   "platform_breakdowns": {
     "x_twitter": {
-      "posts_published": 7,
+      "posts_published": 8,
       "key_findings": [
         "Docked Link Law: Root tweets with 0 outbound links gained ~2.4x algorithmic reach compared to legacy tweets containing external URLs.",
         "Hashtag Optimization: Switching from 4+ hashtags to strictly 2-3 focused audience tags (#Chess #SpeedChess #ChessTactics) reduced feed clutter penalties.",
@@ -19,6 +19,7 @@
       ],
       "sample_receipts": [
         "https://x.com/defi_ambassador/status/2109741220180148653",
+        "https://x.com/defi_ambassador/status/2110167543801360479",
         "https://x.com/defi_ambassador/status/2109834432915857574",
         "https://x.com/defi_ambassador/status/2110129827852279849",
         "https://x.com/defi_ambassador/status/2110131949893271673",

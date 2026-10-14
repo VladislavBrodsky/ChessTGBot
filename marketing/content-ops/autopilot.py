@@ -163,6 +163,7 @@ def run_tick(
             due_x_entries.append(entry)
 
     if due_x_entries:
+        due_x_entries.sort(key=lambda e: e.get("scheduled_at") or e["id"])
         next_entry = due_x_entries[0]
         results["next_up_x"] = {
             "id": next_entry["id"],
@@ -217,6 +218,7 @@ def run_tick(
                 due_tg_entries.append(entry)
 
         if due_tg_entries:
+            due_tg_entries.sort(key=lambda e: e.get("scheduled_at") or e["id"])
             next_tg = due_tg_entries[0]
             results["next_up_tg"] = {
                 "id": next_tg["id"],

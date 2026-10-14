@@ -5,7 +5,7 @@
   "category": "Psychology",
   "hook": "The 3-second panic: Why 1800+ players blunder winning endgames",
   "text": "The 3-second panic: Why 1800+ players blunder winning endgames\n\nUnder 5 seconds on the clock, working memory collapses.\n\nYou stop checking opponent threats.\nYou premove captures out of reflex.\nYou throw +6 advantages into stalemate.\n\n#Chess #MentalStamina #CognitivePerformance",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -47,5 +47,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-14T00:35:22Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110167543801360479",
+    "reply_id": "2110167546477301789",
+    "root_url": "https://x.com/defi_ambassador/status/2110167543801360479"
+  },
+  "published": {
+    "root_id": "2110167543801360479",
+    "at": "2026-10-14T00:35:22Z"
   }
 }
