@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 import React, {
   createContext,
   forwardRef,
@@ -9,29 +9,28 @@ import React, {
   useImperativeHandle,
   useMemo,
   useRef,
-} from 'react';
+} from "react";
 import type {
   GlobalOptions as ConfettiGlobalOptions,
   CreateTypes as ConfettiInstance,
   Options as ConfettiOptions,
-} from 'canvas-confetti';
-import confetti from 'canvas-confetti';
-import { Button } from '@/components/ui/Button';
+} from "canvas-confetti";
+import confetti from "canvas-confetti";
 
 export type ConfettiRef = {
   fire: (options?: ConfettiOptions) => Promise<void> | void;
 };
 
-type Props = React.ComponentPropsWithRef<'canvas'> & {
+export interface ConfettiProps extends React.ComponentPropsWithRef<"canvas"> {
   options?: ConfettiOptions;
   globalOptions?: ConfettiGlobalOptions;
   manualstart?: boolean;
   children?: ReactNode;
-};
+}
 
 const ConfettiContext = createContext<ConfettiRef | null>(null);
 
-const ConfettiComponent = forwardRef<ConfettiRef, Props>((props, ref) => {
+export const Confetti = forwardRef<ConfettiRef, ConfettiProps>((props, ref) => {
   const {
     options,
     globalOptions = { resize: true, useWorker: true },
@@ -76,7 +75,7 @@ const ConfettiComponent = forwardRef<ConfettiRef, Props>((props, ref) => {
         ...opts,
       });
     } catch (error) {
-      console.error('Confetti error:', error);
+      console.error("Confetti error:", error);
     }
   }, []);
 
@@ -98,66 +97,36 @@ const ConfettiComponent = forwardRef<ConfettiRef, Props>((props, ref) => {
   );
 });
 
-ConfettiComponent.displayName = 'Confetti';
-
-export const Confetti = ConfettiComponent;
-
-export interface ConfettiButtonProps extends React.ComponentPropsWithoutRef<typeof Button> {
-  options?: ConfettiOptions & ConfettiGlobalOptions & { canvas?: HTMLCanvasElement };
-}
-
-export const ConfettiButton = forwardRef<HTMLButtonElement, ConfettiButtonProps>(
-  ({ options, children, onClick, ...props }, ref) => {
-    const handleClick: ConfettiButtonProps['onClick'] = async (event) => {
-      try {
-        onClick?.(event);
-        if (event?.defaultPrevented) return;
-
-        const target = event?.currentTarget;
-        if (target && 'getBoundingClientRect' in target) {
-          const rect = target.getBoundingClientRect();
-          const origin = {
-            x: (rect.left + rect.width / 2) / window.innerWidth,
-            y: (rect.top + rect.height / 2) / window.innerHeight,
-          };
-
-          await confetti({
-            zIndex: 9999,
-            ...options,
-            origin,
-          });
-        }
-      } catch (error) {
-        console.error('Confetti button error:', error);
-      }
-    };
-
-    return (
-      <Button ref={ref} type="button" onClick={handleClick} {...props}>
-        {children}
-      </Button>
-    );
-  }
-);
-
-ConfettiButton.displayName = 'ConfettiButton';
+Confetti.displayName = "Confetti";
 
 /**
- * Direct imperative trigger for celebratory events (unboxing, match win, level up).
- * Uses Web3Chess obsidian-compatible luxury gold & gem confetti colors.
+ * Fires an imperative confetti burst from anywhere in the app without needing a custom canvas ref.
+ * Uses high-contrast gold, emerald, cyan, and purple particles matching the Obsidian Design System.
  */
-export async function fireGlobalConfetti(opts?: ConfettiOptions) {
-  if (typeof window === 'undefined') return;
+export async function triggerConfettiBurst(opts?: ConfettiOptions) {
+  if (typeof window === "undefined" || process.env.NODE_ENV === "test") return;
+
+  // Respect user preference for reduced motion
+  const prefersReduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  if (prefersReduced) return;
+
+  const defaults: ConfettiOptions = {
+    particleCount: 65,
+    spread: 60,
+    origin: { y: 0.65 },
+    colors: ["#22c55e", "#3b82f6", "#eab308", "#a855f7", "#ec4899", "#ffffff"],
+    disableForReducedMotion: true,
+    zIndex: 9999,
+  };
+
   try {
     await confetti({
-      zIndex: 10000,
-      particleCount: 85,
-      spread: 75,
-      origin: { y: 0.6 },
-      colors: ['#34D399', '#8B5CF6', '#F5C451', '#38BDF8', '#FF4500'],
+      ...defaults,
       ...opts,
     });
-  } catch (e) {
-    console.error('fireGlobalConfetti error:', e);
+  } catch (error) {
+    console.error("Confetti burst error:", error);
   }
 }
+
+export const fireGlobalConfetti = triggerConfettiBurst;

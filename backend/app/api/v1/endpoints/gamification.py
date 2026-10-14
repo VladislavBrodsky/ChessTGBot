@@ -396,6 +396,10 @@ async def get_puzzles(
         puzzles_list.append({
             "id": id,
             "title": p["title"],
+            "theme": p.get("theme", "Tactics"),
+            "stage": p.get("stage", 1),
+            "stage_name": p.get("stage_name", "Novice"),
+            "difficulty": p.get("difficulty", 1),
             "description": p["description"],
             "xp_reward": p["xp_reward"],
             "is_solved": is_solved,
@@ -457,7 +461,12 @@ async def get_puzzle_by_id(
             return {
                 "id": p["id"],
                 "title": p["title"],
+                "stage": p.get("stage", 1),
+                "stage_name": p.get("stage_name", "Novice"),
+                "theme": p.get("theme", "Tactics"),
+                "difficulty": p.get("difficulty", 1),
                 "description": p["description"],
+                "coach_theory": p.get("coach_theory"),
                 "fen": p["fen"],
                 "xp_reward": p["xp_reward"],
                 "move_count": len(p["solution"])
@@ -471,9 +480,17 @@ async def get_puzzle_hint(
 ):
     """Retrieve hint for a puzzle. Returns the starting square of the correct move and the coach's textual tip."""
     from app.core.puzzles import CHESS_PUZZLES
+    from sqlalchemy import select, and_
     
-    if puzzle_id > 10:
-        raise HTTPException(status_code=403, detail="Hints are only available for levels 1-10.")
+    if puzzle_id > 10 and not current_user.is_premium_active:
+        from app.models.gamification import UnlockedPuzzle
+        unlocked_check = await db.execute(
+            select(UnlockedPuzzle).where(
+                and_(UnlockedPuzzle.user_id == current_user.id, UnlockedPuzzle.puzzle_id == puzzle_id)
+            )
+        )
+        if not unlocked_check.scalars().first():
+            raise HTTPException(status_code=403, detail="Unlock this level or upgrade to Premium to receive Grandmaster hints.")
         
     for p in CHESS_PUZZLES:
         if p["id"] == puzzle_id:

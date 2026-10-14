@@ -377,14 +377,14 @@ export default function PuzzleBoard({
             <FaFlag className="text-sm" />
             <p className="text-sm font-semibold normal-case tracking-normal">{t('solved')}</p>
           </div>
-          {dynamicSuccessExplanation ? (
+          {!puzzleId && (dynamicSuccessExplanation ? (
             <div className="text-sm font-medium text-brand-muted bg-brand-surface border border-brand-border-opacity-10 rounded-2xl p-4 shadow-xl max-w-full text-left leading-relaxed">
               <span className="text-caption font-semibold normal-case text-green-400 mb-2 block tracking-normal">{t('explanation')}</span>
               <div dangerouslySetInnerHTML={{ __html: safeSuccessExplanation }} />
             </div>
           ) : (
             <p className="text-sm text-brand-muted">{t('spotted_pattern')}</p>
-          )}
+          ))}
         </motion.div>
       )}
     </div>
