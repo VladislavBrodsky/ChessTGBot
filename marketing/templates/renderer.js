@@ -173,13 +173,25 @@
       }else{
         const rowH=(ph-2*padding)/3;
         d.proof.forEach((rawVal,i)=>{
-          const value=noTrailingDot(rawVal);
+          const value=noTrailingDot(typeof rawVal==='object'?rawVal.text:rawVal);
           const ty=py+padding+i*rowH;
-          const hasIcon = d.id==='tempo'||d.id==='stakes';
+          const rowIcon = (Array.isArray(d.proofIcons)&&d.proofIcons[i])
+            || (typeof rawVal==='object'&&rawVal.icon)
+            || (()=>{
+                const l=value.toLowerCase();
+                if(l.includes('bullet')||l.includes('blitz')) return 'lightning';
+                if(l.includes('usdt')||l.includes('stake')||l.includes('crypto')) return 'coins';
+                if(l.includes('@')||l.includes('chat')||l.includes('community')||l.includes('telegram')) return 'telegram-logo';
+                if(l.includes('rule')||l.includes('equal')) return 'scales';
+                if(d.id==='tempo') return 'clock';
+                if(d.id==='stakes') return 'check';
+                return null;
+              })();
+          const hasIcon = Boolean(rowIcon);
           const iconSpace = hasIcon ? 42 : 0;
           const t=text(value,px+padding+iconSpace,ty,pw-2*padding-iconSpace,wide?24:reels?22:24,{weight:600,color:ink,maxLines:1,min:18,leading:1.1,role:'proof'});
           t.y=ty+(rowH-t.h)/2;
-          if(hasIcon)icon(d.id==='tempo'?'clock':'check',px+padding,ty+(rowH-28)/2,28,ink);
+          if(hasIcon)icon(rowIcon,px+padding,ty+(rowH-28)/2,28,ink);
           if(t.h>rowH-10)warnings.push('proof: rows need more room.');
           if(i<2)line(px+padding,ty+rowH,px+pw-padding,ty+rowH,C.line,1);
         });
