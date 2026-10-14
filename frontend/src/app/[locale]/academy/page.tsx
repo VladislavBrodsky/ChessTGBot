@@ -18,8 +18,16 @@ import { Drawer } from '@/components/ui/Drawer';
 import { useUser } from '@/context/UserContext';
 import useSWR from 'swr';
 import { apiFetch } from "@/lib/api";
-import { telegramAlert, telegramConfirm } from "@/lib/telegram";
+import { telegramAlert, telegramConfirm, telegramHaptic } from "@/lib/telegram";
 import { Card } from '@/components/ui/Card';
+
+const TACTICS_STAGES = [
+  { id: 1, start: 1, end: 20, label: '1–20', name: 'Novice' },
+  { id: 2, start: 21, end: 40, label: '21–40', name: 'Intermediate' },
+  { id: 3, start: 41, end: 60, label: '41–60', name: 'Advanced' },
+  { id: 4, start: 61, end: 80, label: '61–80', name: 'Master' },
+  { id: 5, start: 81, end: 100, label: '81–100', name: 'Grandmaster' },
+] as const;
 import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
 import { Badge, BadgeRow } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -100,7 +108,8 @@ export default function AcademyPage() {
   const [selectedLevel, setSelectedLevel] = useState<{ id: number; info: any } | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCompletedCat, setShowCompletedCat] = useState<Record<string, boolean>>({});
-
+  const [activeStageId, setActiveStageId] = useState<number>(1);
+  const [showAllLevels, setShowAllLevels] = useState<boolean>(false);
 
   const triggerConfetti = () => {
     setShowConfetti(true);
@@ -130,6 +139,24 @@ export default function AcademyPage() {
   const nextPuzzle = puzzlesList.find((p) => !p.is_solved);
   const nextToSolveId = nextPuzzle?.id;
   const allSolved = puzzlesList.length > 0 && !nextPuzzle;
+
+  useEffect(() => {
+    if (nextToSolveId) {
+      const stage = TACTICS_STAGES.find((s) => nextToSolveId >= s.start && nextToSolveId <= s.end);
+      if (stage) setActiveStageId(stage.id);
+    }
+  }, [nextToSolveId]);
+
+  const activeStage = TACTICS_STAGES.find((s) => s.id === activeStageId) || TACTICS_STAGES[0];
+  const displayedPuzzles = showAllLevels
+    ? puzzlesList
+    : puzzlesList.filter((p) => p.id >= activeStage.start && p.id <= activeStage.end);
+
+  const stageCompletedCount = puzzlesList.filter(
+    (p) => p.id >= activeStage.start && p.id <= activeStage.end && p.is_solved
+  ).length;
+  const stageTotalCount = activeStage.end - activeStage.start + 1;
+  const stageProgressPct = Math.round((stageCompletedCount / stageTotalCount) * 100);
 
   const [quoteIdx, setQuoteIdx] = useState(0);
 
@@ -407,88 +434,193 @@ export default function AcademyPage() {
         {/* Hint of the Day */}
         <DailyHintCard />
 
-        {/* 100 Levels Tactics Grid */}
-        {puzzlesList.length > 0 && <section className="space-y-2" aria-labelledby="tactics-grid-title">
-          <SectionHeader id="tactics-grid-title" title={t('tactics_grid')} />
-          <Card variant="solid" className="w-full relative overflow-hidden rounded-2xl">
-            {/* Progress Header */}
-            <div className="flex flex-col px-3 py-2.5 border-b border-brand-border relative z-10">
-              <div className="flex flex-wrap justify-between items-center gap-2 mb-2">
-                <span className="text-sm font-semibold text-brand-primary flex items-center gap-1.5">
-                  <FaBrain className="text-brand-muted text-caption" aria-hidden="true" /> {nextToSolveId ? `${t('level_prefix')} ${nextToSolveId}` : allSolved ? t('all_levels_solved') : t('unlocked')}
-                </span>
-                <Badge variant="emerald">
-                  {completedPuzzles.length} / {puzzlesList.length} ({Math.round((completedPuzzles.length / puzzlesList.length) * 100)}%)
-                </Badge>
-              </div>
-              <div className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden" role="progressbar" aria-label={t('tactics_grid')} aria-valuemin={0} aria-valuemax={puzzlesList.length} aria-valuenow={completedPuzzles.length}>
+        {/* 100 Levels Tactics Grid with Stage Navigation */}
+        {puzzlesList.length > 0 && (
+          <section className="space-y-3" aria-labelledby="tactics-grid-title">
+            <div className="flex items-center justify-between gap-3">
+              <SectionHeader id="tactics-grid-title" title={t('tactics_grid')} />
+              <Badge variant="emerald" className="shrink-0 font-bold">
+                {completedPuzzles.length} / {puzzlesList.length} ({Math.round((completedPuzzles.length / puzzlesList.length) * 100)}%)
+              </Badge>
+            </div>
+
+            <Card variant="solid" className="w-full relative overflow-hidden rounded-2xl p-0">
+              {/* Progress Header & Stage Progress Bar */}
+              <div className="flex flex-col p-4 border-b border-brand-border relative z-10 gap-2">
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="ui-icon-tile ui-icon-tile--gold size-8 rounded-lg shrink-0">
+                      <FaBrain className="text-caption" aria-hidden="true" />
+                    </span>
+                    <div className="text-left">
+                      <h3 className="text-sm font-bold text-brand-primary">
+                        {showAllLevels ? 'All 100 Levels' : `Stage ${activeStage.id}: ${activeStage.name} (${activeStage.label})`}
+                      </h3>
+                      <p className="text-caption text-brand-muted font-medium">
+                        {showAllLevels
+                          ? `${completedPuzzles.length} of 100 Puzzles Solved`
+                          : `${stageCompletedCount} of ${stageTotalCount} Solved (${stageProgressPct}%)`}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      telegramHaptic('selection');
+                      setShowAllLevels(!showAllLevels);
+                    }}
+                    className={`ui-tap-target px-2.5 py-1.5 rounded-xl text-caption font-semibold transition-all border cursor-pointer ${
+                      showAllLevels
+                        ? 'bg-brand-elevated text-brand-primary border-brand-action shadow-sm'
+                        : 'bg-brand-surface border-brand-border text-brand-muted hover:text-brand-primary'
+                    }`}
+                  >
+                    {showAllLevels ? 'View Stages' : 'View All 100'}
+                  </button>
+                </div>
+
                 <div
-                  className="h-full bg-brand-action rounded-full transition-all duration-700"
-                  style={{ width: `${(completedPuzzles.length / puzzlesList.length) * 100}%` }}
-                />
+                  className="w-full h-2 bg-brand-elevated rounded-full overflow-hidden mt-1"
+                  role="progressbar"
+                  aria-label={t('tactics_grid')}
+                  aria-valuemin={0}
+                  aria-valuemax={showAllLevels ? puzzlesList.length : stageTotalCount}
+                  aria-valuenow={showAllLevels ? completedPuzzles.length : stageCompletedCount}
+                >
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700"
+                    style={{ width: `${showAllLevels ? (completedPuzzles.length / puzzlesList.length) * 100 : stageProgressPct}%` }}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Grid */}
-            <div className="p-3 relative z-10">
-              <div className="tactics-grid">
-                {puzzlesList.map(puzzleInfo => {
-                  const id = puzzleInfo.id;
-                  const isCompleted = completedPuzzles.includes(id);
-                  const isSequentialLocked = puzzleInfo.is_sequential_locked;
-                  const isPremiumLocked = puzzleInfo.is_premium_locked;
-                  const isXpLocked = puzzleInfo.is_xp_locked;
-                  const isActive = id === nextToSolveId;
+              {/* Current Objective Quick-Action Banner */}
+              {!allSolved && nextPuzzle && (
+                <div className="mx-4 mt-3.5 p-3 rounded-xl bg-brand-elevated border border-amber-500/30 flex items-center justify-between gap-3 shadow-sm">
+                  <div className="flex items-center gap-2.5 min-w-0 text-left">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500 text-brand-void flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm animate-pulse">
+                      {nextPuzzle.id}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="ui-eyebrow text-amber-400">Current Objective</span>
+                      <h4 className="text-sm font-bold text-brand-primary truncate">
+                        {nextPuzzle.title.replace(/\s*[—\-]\s*Level\s*\d+/i, '') || `${t('level_prefix')} ${nextPuzzle.id}`}
+                      </h4>
+                    </div>
+                  </div>
+                  <Button
+                    variant="action"
+                    size="sm"
+                    className="shrink-0"
+                    leftIcon={<FaPlay className="text-caption" />}
+                    onClick={() => {
+                      telegramHaptic('light');
+                      handlePuzzleClick(nextPuzzle.id, nextPuzzle);
+                    }}
+                  >
+                    Play {nextPuzzle.id}
+                  </Button>
+                </div>
+              )}
 
-                  let bgClass = "";
-                  let statusMark = null;
+              {/* Interactive Stage Tabs */}
+              {!showAllLevels && (
+                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none px-4 pt-3 pb-1 -mx-0">
+                  {TACTICS_STAGES.map((stage) => {
+                    const isSelected = activeStageId === stage.id;
+                    const stageSolved = puzzlesList.filter(p => p.id >= stage.start && p.id <= stage.end && p.is_solved).length;
+                    const isFullySolved = stageSolved === (stage.end - stage.start + 1);
+                    return (
+                      <button
+                        key={stage.id}
+                        type="button"
+                        onClick={() => {
+                          telegramHaptic('selection');
+                          setActiveStageId(stage.id);
+                        }}
+                        className={`ui-tap-target px-3 py-1.5 rounded-xl text-caption font-semibold transition-all flex items-center gap-1.5 shrink-0 border cursor-pointer ${
+                          isSelected
+                            ? 'bg-brand-elevated text-brand-primary border-brand-action shadow-sm'
+                            : 'bg-brand-surface border-brand-border-opacity-10 text-brand-muted hover:text-brand-primary'
+                        }`}
+                      >
+                        <span>{stage.label}</span>
+                        <span className={`text-caption font-bold ${isFullySolved ? 'text-emerald-400' : 'text-brand-muted'}`}>
+                          {isFullySolved ? '✓' : `${stageSolved}/20`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
 
-                  if (isCompleted) {
-                    bgClass = "tc-solved font-bold hover:scale-105";
-                    statusMark = <FaCheckCircle className="absolute top-1 right-1 text-[9px] text-emerald-500" aria-hidden="true" />;
-                  } else if (isSequentialLocked) {
-                    bgClass = "bg-brand-void/25 border-brand-border-opacity-5 text-brand-muted cursor-not-allowed";
-                    statusMark = <FaLock className="absolute bottom-1 right-1 text-[8px] text-brand-muted" aria-hidden="true" />;
-                  } else if (isPremiumLocked) {
-                    bgClass = "tc-locked hover-shake";
-                    statusMark = <FaLock className="absolute bottom-1 right-1 text-[8px] text-purple-500/70" aria-hidden="true" />;
-                  } else if (isXpLocked) {
-                    bgClass = "bg-brand-void/50 border-emerald-500/30 text-emerald-500 hover:scale-105 hover:bg-brand-void/75 hover:border-emerald-500/50 shadow-[0_0_8px_rgba(16,185,129,0.05)]";
-                    statusMark = <FaBolt className="absolute bottom-1 right-1 text-[8px] text-emerald-500/80" aria-hidden="true" />;
-                  } else if (isActive) {
-                    bgClass = [
-                      "bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300",
-                      "text-slate-900 font-semibold z-10 scale-110",
-                      "shadow-[0_0_20px_rgba(255,200,0,0.55),inset_0_1px_3px_var(--color-brand-border-opacity-20)]",
-                      "animate-active-portal",
-                    ].join(" ");
-                  } else {
-                    bgClass = "tc-unlocked font-semibold hover:scale-105";
-                  }
+              {/* Responsive Level Cells Grid */}
+              <div className="p-4 relative z-10">
+                <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-10 gap-2.5">
+                  {displayedPuzzles.map(puzzleInfo => {
+                    const id = puzzleInfo.id;
+                    const isCompleted = completedPuzzles.includes(id);
+                    const isSequentialLocked = puzzleInfo.is_sequential_locked;
+                    const isPremiumLocked = puzzleInfo.is_premium_locked;
+                    const isXpLocked = puzzleInfo.is_xp_locked;
+                    const isActive = id === nextToSolveId;
 
-                  return (
-                    <button type="button"
-                      key={id}
-                      onClick={() => setSelectedLevel({ id, info: puzzleInfo })}
-                      className={`tactics-cell relative rounded-xl border flex items-center justify-center text-caption transition-all duration-200 cursor-pointer ${bgClass}`}
-                      aria-label={`${t('level_prefix')} ${id}`}
-                    >
-                      <span>{id}</span>
-                      {statusMark}
-                    </button>
-                  );
-                })}
+                    let bgClass = "";
+                    let statusMark = null;
+
+                    if (isCompleted) {
+                      bgClass = "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold hover:scale-105 shadow-[0_0_10px_rgba(16,185,129,0.1)]";
+                      statusMark = <FaCheckCircle className="absolute top-1.5 right-1.5 text-xs text-emerald-400" aria-hidden="true" />;
+                    } else if (isActive) {
+                      bgClass = "bg-amber-500/20 border-amber-400 text-amber-300 font-extrabold z-10 scale-105 shadow-[0_0_16px_rgba(245,158,11,0.35)] animate-pulse";
+                      statusMark = <FaBolt className="absolute top-1.5 right-1.5 text-xs text-amber-400" aria-hidden="true" />;
+                    } else if (isSequentialLocked) {
+                      bgClass = "bg-brand-void/40 border-brand-border-opacity-10 text-brand-muted cursor-not-allowed";
+                      statusMark = <FaLock className="absolute bottom-1.5 right-1.5 text-xs text-brand-muted" aria-hidden="true" />;
+                    } else if (isPremiumLocked) {
+                      bgClass = "bg-purple-500/10 border-purple-500/30 text-purple-300 hover-shake";
+                      statusMark = <FaLock className="absolute bottom-1.5 right-1.5 text-xs text-purple-400" aria-hidden="true" />;
+                    } else if (isXpLocked) {
+                      bgClass = "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:scale-105";
+                      statusMark = <FaBolt className="absolute bottom-1.5 right-1.5 text-xs text-emerald-400" aria-hidden="true" />;
+                    } else {
+                      bgClass = "bg-brand-elevated border-brand-border text-brand-primary font-semibold hover:scale-105";
+                    }
+
+                    return (
+                      <button
+                        type="button"
+                        key={id}
+                        onClick={() => {
+                          telegramHaptic('light');
+                          setSelectedLevel({ id, info: puzzleInfo });
+                        }}
+                        className={`min-h-[48px] w-full aspect-square relative rounded-2xl border flex items-center justify-center text-caption font-bold transition-all duration-200 cursor-pointer ${bgClass}`}
+                        aria-label={`${t('level_prefix')} ${id}`}
+                      >
+                        <span>{id}</span>
+                        {statusMark}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* Legend */}
-            <BadgeRow className="px-3 py-2.5 border-t border-brand-border relative z-10">
-              <Badge variant="secondary">{t('unlocked')}</Badge>
-              <Badge variant="emerald">{t('solved')}</Badge>
-              <Badge variant="purple">{t('premium')}</Badge>
-            </BadgeRow>
-          </Card>
-        </section>}
+              {/* Legend */}
+              <BadgeRow className="px-4 py-3 border-t border-brand-border relative z-10 justify-between items-center">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Badge variant="secondary">{t('unlocked')}</Badge>
+                  <Badge variant="emerald">{t('solved')}</Badge>
+                  <Badge variant="purple">{t('premium')}</Badge>
+                </div>
+                <span className="text-caption font-semibold text-brand-muted">
+                  Tap level for hints & reward
+                </span>
+              </BadgeRow>
+            </Card>
+          </section>
+        )}
 
         {/* Mastery Tracks Grid */}
         <section className="space-y-4" aria-labelledby="mastery-tracks-title">
