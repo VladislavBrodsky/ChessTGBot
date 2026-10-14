@@ -28,7 +28,7 @@ async function main() {
     art: 'clock',
     tag: 'Community & Crypto',
     headline: 'SPEED CHESS\nCRYPTO GAINS',
-    body: 'Bullet, blitz, and USDT stakes · Join our community',
+    body: '60s blitz · Instant USDT payouts · The arena is live',
     cta: 'Join the community',
     note: 'USDT matches · 18+ where permitted · Telegram @chesshub_chat',
     proof: ['1+0 Bullet & 3+2 Blitz', 'Equal USDT stakes', 'Community @chesshub_chat'],

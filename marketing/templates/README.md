@@ -11,7 +11,8 @@ Select a family and format, edit the hook/support/label/action, choose a brand s
 - Eight extra 9:16 compositions for the conservative Reels guide, including the puzzle answer.
 - 40 final-resolution PNGs and 40 SVG sources with embedded fonts and artwork.
 - Editable local studio, collection preview, format preview, campaign playbook and export manifest.
-- Current open violet rook / outlined CHESS lockup, Barlow Condensed Bold, Onest, contextual 3D sculpture family, and the existing vendored Phosphor regular icon pack. Licenses are included.
+- Official text-only CHESS Play-to-Earn lockup (Barlow Condensed Bold + Onest), contextual 3D sculpture family, and vendored Phosphor icon pack.
+- Canonical style guide and production rules in [`CANVAS_STYLE_GUIDE.md`](CANVAS_STYLE_GUIDE.md). Licenses are included.
 
 ## Architecture
 
