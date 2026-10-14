@@ -7,7 +7,7 @@
   "hook": "Arena Alert: Midnight Blitz Vault ( USDT) locks in 15 minutes",
   "cta": "arena",
   "text": "⚡ <b>The 02:00 UTC Arena countdown is live.</b>\n\n3-Minute Blitz • Double-elimination bracket • Instant TON settlement.\nFree spectator lounge open for all community members.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.\nRegistration locks the second the round clock starts.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -39,5 +39,10 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-14T08:46:26Z",
+  "published": {
+    "message_id": 25,
+    "at": "2026-10-14T08:46:26Z"
   }
 }

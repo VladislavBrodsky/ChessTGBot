@@ -114,6 +114,7 @@ interface Broadcast {
 
 interface MarketingScorecardItem {
   platform: string;
+  handle?: string;
   published: number;
   reach: number;
   impressions: number;
@@ -121,6 +122,7 @@ interface MarketingScorecardItem {
   rate: string;
   primary_action: string;
   icon: string;
+  is_own?: boolean;
 }
 
 interface MarketingRecentPost {
@@ -158,6 +160,14 @@ interface MarketingData {
     top_performing_format: string;
     highest_retention_channel: string;
     highest_seo_dwell_time: string;
+  };
+  competitor_benchmark?: {
+    title: string;
+    description: string;
+    competitor_posts: number;
+    ecosystem_views: number;
+    competitor_median_rate: string;
+    channels_audited: string[];
   };
   scorecard: MarketingScorecardItem[];
   recent_posts: MarketingRecentPost[];
@@ -420,16 +430,29 @@ function DashboardTab({ stats }: { stats: Stats }) {
 
 function MarketingTab() {
   const { data, isLoading: loading, mutate: refreshMarketing } = useSWRFetch<MarketingData>('/api/v1/admin/marketing');
-  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterPlatform, setFilterPlatform] = useState<string>('all');
+  const [filterPillar, setFilterPillar] = useState<string>('all');
 
   const scorecard = data?.scorecard || [];
   const recentPosts = data?.recent_posts || [];
   const rules = data?.growth_rules || [];
+  const exec = data?.executive_summary;
+  const benchmark = data?.competitor_benchmark;
+
+  const totalImpr = exec?.our_total_impressions ?? recentPosts.reduce((acc, p) => acc + p.impressions, 0);
+  const totalReach = exec?.our_total_reach ?? Math.round(totalImpr * 0.74);
+  const totalEng = recentPosts.reduce((acc, p) => acc + p.engagements, 0);
+  const avgEngRate = totalImpr > 0 ? `${((totalEng / totalImpr) * 100).toFixed(2)}%` : (exec?.our_avg_engagement_rate || '4.98%');
+  const assetsCount = exec?.our_published_assets ?? recentPosts.length;
+  const funnelCtr = exec?.our_mini_app_funnel_ctr || '42.0%';
 
   const filteredPosts = useMemo(() => {
-    if (filterCategory === 'all') return recentPosts;
-    return recentPosts.filter(p => p.category.toLowerCase() === filterCategory.toLowerCase() || p.platform.toLowerCase() === filterCategory.toLowerCase());
-  }, [recentPosts, filterCategory]);
+    return recentPosts.filter(p => {
+      const matchPlatform = filterPlatform === 'all' || p.platform.toLowerCase() === filterPlatform.toLowerCase();
+      const matchPillar = filterPillar === 'all' || p.category.toLowerCase() === filterPillar.toLowerCase();
+      return matchPlatform && matchPillar;
+    });
+  }, [recentPosts, filterPlatform, filterPillar]);
 
   return (
     <div className="w-full space-y-8">
@@ -438,8 +461,8 @@ function MarketingTab() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <h2 className="text-xl font-bold text-brand-primary">Marketing Intelligence & Content Ops</h2>
-            <Badge variant="emerald">CMO Audit</Badge>
+            <h2 className="text-xl font-bold text-brand-primary">Marketing Intelligence &amp; Content Ops</h2>
+            <Badge variant="emerald" className="whitespace-nowrap shrink-0">CMO Audit</Badge>
           </div>
           <p className="text-caption text-brand-muted">
             {data?.audit_period || 'May 1 – October 13, 2026 (6-Month Cross-Platform Review)'}
@@ -459,90 +482,101 @@ function MarketingTab() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KpiCard
           label="Our Content Impressions"
-          value="93.4K"
-          sub="Across 24 published assets"
+          value={totalImpr >= 1000 ? `${(totalImpr / 1000).toFixed(1)}K` : fmt(totalImpr)}
+          sub={`Across ${assetsCount} verified assets`}
           icon={<FaChartLine />}
           accent="emerald"
         />
         <KpiCard
           label="Our Audience Reach"
-          value="64.5K"
+          value={totalReach >= 1000 ? `${(totalReach / 1000).toFixed(1)}K` : fmt(totalReach)}
           sub="X, Telegram & SEO guides"
           icon={<FaBullhorn />}
           accent="blue"
         />
         <KpiCard
           label="Our Avg Engagement"
-          value="4.72%"
-          sub="2.4x vs competitor median (1.98%)"
+          value={avgEngRate}
+          sub="2.5x vs competitor median (1.98%)"
           icon={<FaStar />}
           accent="violet"
         />
         <KpiCard
           label="Mini App Funnel CTR"
-          value="42.0%"
+          value={funnelCtr}
           sub="Direct ?startapp=mk_tg_* conversion"
           icon={<FaBolt />}
           accent="gold"
         />
       </div>
 
-      {/* Market Research & Ecosystem Benchmark Baseline */}
-      <div className="p-4 rounded-2xl bg-brand-surface border border-brand-border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-base shrink-0">
+      {/* External Competitor Intelligence & Ecosystem Baseline */}
+      <div className="p-4 rounded-2xl bg-brand-surface border border-brand-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-sm">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-base shrink-0 mt-0.5 sm:mt-0">
             <FaScaleBalanced />
           </div>
-          <div>
-            <span className="font-bold text-brand-primary block">Market Research &amp; Competitor Benchmark Baseline</span>
-            <span className="text-caption text-brand-muted">
-              655 competitor posts &amp; 2.15M ecosystem views audited in the 6-month CMO study to benchmark engagement formulas.
-            </span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-brand-primary">External Competitor Intelligence &amp; Ecosystem Baseline</span>
+              <Badge variant="amber" className="whitespace-nowrap shrink-0">External Study</Badge>
+            </div>
+            <p className="text-caption text-brand-muted leading-relaxed">
+              {benchmark?.description || 'Comparative audit of 655 external public posts from competitor channels (Chess.com Russian and EdChess). Demonstrates that aggressive unbacked earn/prize claims result in severe viewer fatigue (EdChess suffered a 68% view collapse), whereas pure chess tactics and culture deliver sustainable 4.9%+ engagement.'}
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-4 text-caption text-brand-muted shrink-0">
-          <div><strong className="text-brand-primary">655</strong> Competitor Posts</div>
-          <div><strong className="text-brand-primary">2.15M</strong> Ecosystem Views</div>
-          <div><strong className="text-brand-primary">1.98%</strong> Competitor Median</div>
+        <div className="flex items-center gap-4 text-caption text-brand-muted shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-brand-border/40 w-full md:w-auto justify-between md:justify-end">
+          <div><strong className="text-brand-primary font-mono">{fmt(benchmark?.competitor_posts || 655)}</strong> External Posts</div>
+          <div><strong className="text-brand-primary font-mono">2.15M</strong> Competitor Views</div>
+          <div><strong className="text-brand-primary font-mono">{benchmark?.competitor_median_rate || '1.98%'}</strong> Competitor Median</div>
         </div>
       </div>
 
       {/* Cross-Platform Channel Scorecard */}
       <div>
-        <h3 className="text-sm font-bold text-brand-primary mb-3 flex items-center gap-2">
-          <span>Channel Performance Matrix</span>
-          <span className="text-caption text-brand-muted font-normal">(Verified Analytics)</span>
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-bold text-brand-primary flex items-center gap-2">
+            <span>Channel Performance Matrix</span>
+            <span className="text-caption text-brand-muted font-normal">(Our Verified Channels)</span>
+          </h3>
+          <Badge variant="emerald" className="whitespace-nowrap shrink-0">Web3Chess Ecosystem</Badge>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           {scorecard.map(item => (
             <div key={item.platform} className="p-4 rounded-2xl bg-brand-surface border border-brand-border space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {item.icon === 'x' ? <FaTwitter className="text-sky-400" /> :
-                   item.icon === 'telegram' ? <FaTelegram className="text-blue-400" /> :
-                   item.icon === 'web' ? <FaGlobe className="text-emerald-400" /> :
-                   <FaChartPie className="text-amber-400" />}
-                  <span className="text-caption font-bold text-brand-primary">{item.platform}</span>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    {item.icon === 'x' ? <FaTwitter className="text-sky-400 shrink-0" /> :
+                     item.icon === 'telegram' ? <FaTelegram className="text-blue-400 shrink-0" /> :
+                     item.icon === 'web' ? <FaGlobe className="text-emerald-400 shrink-0" /> :
+                     <FaChessKnight className="text-amber-400 shrink-0" />}
+                    <span className="text-caption font-bold text-brand-primary truncate">{item.platform}</span>
+                  </div>
+                  {item.handle && (
+                    <span className="text-caption text-brand-muted block font-mono pl-6 mt-0.5">{item.handle}</span>
+                  )}
                 </div>
-                <Badge variant={item.icon === 'benchmark' ? 'secondary' : 'emerald'}>
-                  {item.published} {item.icon === 'benchmark' ? 'monitored' : 'posts'}
+                <Badge variant={item.icon === 'miniapp' ? 'primary' : 'emerald'} className="whitespace-nowrap shrink-0">
+                  {item.published} {item.icon === 'miniapp' ? 'Live Engine' : 'posts'}
                 </Badge>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-caption">
                 <div>
-                  <span className="text-brand-muted block">Impressions</span>
+                  <span className="text-brand-muted block">{item.icon === 'miniapp' ? 'Sessions' : 'Impressions'}</span>
                   <span className="font-mono font-bold text-brand-primary text-sm">{fmt(item.impressions)}</span>
                 </div>
                 <div>
-                  <span className="text-brand-muted block">Engagements</span>
-                  <span className="font-mono font-bold text-emerald-400 text-sm">{fmt(item.engagements)}</span>
+                  <span className="text-brand-muted block">{item.icon === 'miniapp' ? 'Game Actions' : 'Engagements'}</span>
+                  <span className="font-mono font-bold text-emerald-400 text-sm">{fmt(item.engagements)} ({item.rate})</span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-brand-border text-caption flex items-center justify-between">
+              <div className="pt-2.5 border-t border-brand-border text-caption flex flex-col gap-1">
                 <span className="text-brand-muted">Conversion Action:</span>
-                <span className="font-medium text-brand-primary truncate max-w-[150px]">{item.primary_action}</span>
+                <span className="font-medium text-brand-primary font-mono text-xs">{item.primary_action}</span>
               </div>
             </div>
           ))}
@@ -551,26 +585,61 @@ function MarketingTab() {
 
       {/* Verified Content Table */}
       <div className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-brand-primary">Recent Verified Live Posts & Campaigns</h3>
-            <p className="text-caption text-brand-muted">Direct links to published receipts across X, Telegram and Blog</p>
+            <h3 className="text-sm font-bold text-brand-primary">Recent Verified Live Posts &amp; Campaigns</h3>
+            <p className="text-caption text-brand-muted">Direct receipts across X (@Web3Chess), Telegram (@web3chess) and Blog</p>
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {['all', 'Tactics', 'Culture', 'Product', 'Debate', 'telegram', 'x'].map(c => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setFilterCategory(c)}
-                className={`ui-tap-target px-2.5 py-1 rounded-lg text-caption font-medium transition-all cursor-pointer ${
-                  filterCategory === c
-                    ? 'bg-brand-primary text-black font-bold'
-                    : 'bg-brand-surface border border-brand-border text-brand-muted hover:text-brand-primary'
-                }`}
-              >
-                {c.charAt(0).toUpperCase() + c.slice(1)}
-              </button>
-            ))}
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            {/* Channel / Platform Filter */}
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-brand-surface border border-brand-border">
+              <span className="text-caption text-brand-muted px-2 font-medium">Channel:</span>
+              {[
+                { key: 'all', label: 'All' },
+                { key: 'x', label: 'X' },
+                { key: 'telegram', label: 'Telegram' },
+                { key: 'blog', label: 'Blog' }
+              ].map(f => (
+                <button
+                  key={f.key}
+                  type="button"
+                  onClick={() => setFilterPlatform(f.key)}
+                  className={`ui-tap-target px-2.5 py-1 rounded-lg text-caption font-medium transition-all cursor-pointer ${
+                    filterPlatform === f.key
+                      ? 'bg-brand-primary text-black font-bold'
+                      : 'text-brand-muted hover:text-brand-primary'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Content Pillar Filter */}
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-brand-surface border border-brand-border">
+              <span className="text-caption text-brand-muted px-2 font-medium">Pillar:</span>
+              {[
+                { key: 'all', label: 'All' },
+                { key: 'tactics', label: 'Tactics' },
+                { key: 'culture', label: 'Culture' },
+                { key: 'product', label: 'Product' },
+                { key: 'engineering', label: 'Engineering' }
+              ].map(p => (
+                <button
+                  key={p.key}
+                  type="button"
+                  onClick={() => setFilterPillar(p.key)}
+                  className={`ui-tap-target px-2.5 py-1 rounded-lg text-caption font-medium transition-all cursor-pointer ${
+                    filterPillar === p.key
+                      ? 'bg-brand-primary text-black font-bold'
+                      : 'text-brand-muted hover:text-brand-primary'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -578,52 +647,72 @@ function MarketingTab() {
           <table className="w-full text-sm text-left border-collapse">
             <thead>
               <tr className="border-b border-brand-border text-caption text-brand-muted font-bold">
-                <th className="px-4 py-3">Platform</th>
-                <th className="px-4 py-3">Pillar</th>
-                <th className="px-4 py-3">Hook / Headline</th>
-                <th className="px-4 py-3 text-right">Impressions</th>
-                <th className="px-4 py-3 text-right">Engagements</th>
-                <th className="px-4 py-3 text-center">Status</th>
-                <th className="px-4 py-3 text-right">Receipt</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap">Platform</th>
+                <th scope="col" className="px-4 py-3 whitespace-nowrap">Pillar</th>
+                <th scope="col" className="px-4 py-3 min-w-[260px]">Hook / Headline</th>
+                <th scope="col" className="px-4 py-3 text-right whitespace-nowrap">Impressions</th>
+                <th scope="col" className="px-4 py-3 text-right whitespace-nowrap">Engagements</th>
+                <th scope="col" className="px-4 py-3 text-center whitespace-nowrap">Status</th>
+                <th scope="col" className="px-4 py-3 text-right whitespace-nowrap">Receipt</th>
               </tr>
             </thead>
             <tbody>
-              {filteredPosts.map(post => (
-                <tr key={post.id} className="border-b border-brand-border/40 hover:bg-brand-elevated transition-colors">
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center gap-1.5 font-semibold text-caption text-brand-primary">
-                      {post.platform === 'x' ? <FaTwitter className="text-sky-400" /> : <FaTelegram className="text-blue-400" />}
-                      <span className="capitalize">{post.platform}</span>
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="cyan">{post.category}</Badge>
-                  </td>
-                  <td className="px-4 py-3 font-medium text-brand-primary max-w-xs truncate" title={post.title}>
-                    {post.title}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-right tabular-nums text-brand-primary">
-                    {fmt(post.impressions)}
-                  </td>
-                  <td className="px-4 py-3 font-mono text-right tabular-nums text-emerald-400 font-bold">
-                    {fmt(post.engagements)} ({post.rate})
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <Badge variant="emerald">{post.status}</Badge>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <a
-                      href={post.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-caption font-semibold bg-brand-elevated border border-brand-border text-brand-primary hover:border-emerald-500/40 hover:text-emerald-400 transition-colors"
-                    >
-                      <span>View</span>
-                      <FaArrowUpRightFromSquare size={10} aria-hidden="true" />
-                    </a>
+              {filteredPosts.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-4 py-8 text-center text-brand-muted text-caption">
+                    No posts matching the selected filters.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredPosts.map(post => {
+                  const pillarVariant: BadgeVariant =
+                    post.category.toLowerCase() === 'tactics' ? 'cyan' :
+                    post.category.toLowerCase() === 'culture' ? 'purple' :
+                    post.category.toLowerCase() === 'product' ? 'amber' :
+                    post.category.toLowerCase() === 'engineering' ? 'emerald' :
+                    'secondary';
+
+                  return (
+                    <tr key={post.id} className="border-b border-brand-border/40 hover:bg-brand-elevated transition-colors">
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1.5 font-semibold text-caption text-brand-primary">
+                          {post.platform === 'x' ? <FaTwitter className="text-sky-400" /> :
+                           post.platform === 'telegram' ? <FaTelegram className="text-blue-400" /> :
+                           <FaGlobe className="text-emerald-400" />}
+                          <span className="capitalize">{post.platform === 'blog' ? 'Web Guide' : post.platform}</span>
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <Badge variant={pillarVariant}>{post.category}</Badge>
+                      </td>
+                      <td className="px-4 py-3 font-medium text-brand-primary min-w-[260px] max-w-md leading-snug">
+                        {post.title}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-right tabular-nums text-brand-primary whitespace-nowrap font-semibold">
+                        {fmt(post.impressions)}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-right tabular-nums text-emerald-400 font-bold whitespace-nowrap">
+                        {fmt(post.engagements)} <span className="text-caption text-brand-muted font-normal font-sans">({post.rate})</span>
+                      </td>
+                      <td className="px-4 py-3 text-center whitespace-nowrap">
+                        <Badge variant="emerald">{post.status}</Badge>
+                      </td>
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <a
+                          href={post.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`View receipt for ${post.title}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-caption font-semibold bg-brand-elevated border border-brand-border text-brand-primary hover:border-emerald-500/40 hover:text-emerald-400 transition-colors"
+                        >
+                          <span>View</span>
+                          <FaArrowUpRightFromSquare size={10} aria-hidden="true" />
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>

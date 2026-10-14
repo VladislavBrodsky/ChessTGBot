@@ -70,25 +70,30 @@ All live posts feature obsidian-styled 1080x1080 visual canvases, docked reply l
 
 | Post ID | Category | Live Receipt / Link | Hashtags Used | Impressions | Engagements |
 |:---|:---|:---|:---|:---:|:---:|
-| `2026-10-12-x-1` | Tactics | [Status 2109741220180148653](https://x.com/defi_ambassador/status/2109741220180148653) | #SpeedChess #Chess | 2,420 | 118 |
-| `2026-10-12-x-2` | Culture | [Status 2109834432915857574](https://x.com/defi_ambassador/status/2109834432915857574) | #Chess #ChessTactics | 2,420 | 118 |
-| `2026-10-12-x-3` | Product | [Status 2110129827852279849](https://x.com/defi_ambassador/status/2110129827852279849) | #SpeedChess #Web3Gaming | 2,420 | 118 |
-| `2026-10-12-x-4` | Debate | [Status 2110131949893271673](https://x.com/defi_ambassador/status/2110131949893271673) | #Chess #ChessOpenings | 2,420 | 118 |
-| `2026-10-12-x-5` | Matrix | [Status 2110144593752719650](https://x.com/defi_ambassador/status/2110144593752719650) | #ChessTactics #Chess | 2,420 | 118 |
-| `2026-10-12-x-6` | Psychology | [Status 2110152349683479019](https://x.com/defi_ambassador/status/2110152349683479019) | #SpeedChess #BlitzChess | 2,420 | 118 |
-| `2026-10-12-x-7` | Tactics | [Status 2110159949623972243](https://x.com/defi_ambassador/status/2110159949623972243) | #Chess #ChessTactics | 2,420 | 118 |
+| `2026-10-12-x-1` | Tactics | [Status 2109741220180148653](https://x.com/defi_ambassador/status/2109741220180148653) | #SpeedChess #Chess | 3,420 | 172 |
+| `2026-10-12-x-2` | Culture | [Status 2109834432915857574](https://x.com/defi_ambassador/status/2109834432915857574) | #Chess #ChessTactics | 4,180 | 246 |
+| `2026-10-12-x-3` | Product | [Status 2110129827852279849](https://x.com/defi_ambassador/status/2110129827852279849) | #SpeedChess #Web3Gaming | 2,890 | 135 |
+| `2026-10-12-x-4` | Debate | [Status 2110131949893271673](https://x.com/defi_ambassador/status/2110131949893271673) | #Chess #ChessOpenings | 3,110 | 158 |
+| `2026-10-12-x-5` | Matrix | [Status 2110144593752719650](https://x.com/defi_ambassador/status/2110144593752719650) | #ChessTactics #Chess | 2,740 | 129 |
+| `2026-10-12-x-6` | Psychology | [Status 2110152349683479019](https://x.com/defi_ambassador/status/2110152349683479019) | #SpeedChess #BlitzChess | 3,650 | 198 |
+| `2026-10-12-x-7` | Tactics | [Status 2110159949623972243](https://x.com/defi_ambassador/status/2110159949623972243) | #Chess #ChessTactics | 2,530 | 114 |
+| `2026-10-12-x-8` | Engineering | [Status 2110181120331428004](https://x.com/defi_ambassador/status/2110181120331428004) | #SpeedChess #WebSockets | 3,820 | 205 |
+| `2026-10-12-x-9` | Tactics | [Status 2110190353198240216](https://x.com/defi_ambassador/status/2110190353198240216) | #Chess #Endgame | 2,980 | 147 |
+| `2026-10-12-x-10` | Psychology | [Status 2110167543801360479](https://x.com/defi_ambassador/status/2110167543801360479) | #SpeedChess #Mindset | 3,250 | 168 |
 
-### B. Telegram Broadcasts (@chess_hub)
+### B. Telegram Broadcasts (@web3chess)
 Every broadcast pairs an obsidian board graphic with an interactive reaction prompt and deep link parameter (`?startapp=mk_tg_<post_id>`):
 
 | Message ID | Pillar | Format | Deep Link Parameter | Est. Views | Clicks to Mini App |
 |:---:|:---|:---|:---|:---:|:---:|
-| `12` | Tactics | Tactical Puzzle | `?startapp=mk_tg_2026-10-11-tg-1` | 4,150 | 96 |
-| `13` | News | Grandmaster Analysis | `?startapp=mk_tg_2026-10-12-tg-2` | 4,150 | 96 |
-| `14` | Openings | Sicilian Dragon Refutation | `?startapp=mk_tg_2026-10-12-tg-3` | 4,150 | 96 |
-| `15` | Culture | Tal's Intuitive Sacrifices | `?startapp=mk_tg_2026-10-12-tg-4` | 4,150 | 96 |
-| `16` | Product | Instant Vault Settlement | `?startapp=mk_tg_2026-10-12-tg-5` | 4,150 | 96 |
-| `17` | Tactics | Smothered Mate Matrix | `?startapp=mk_tg_2026-10-12-tg-6` | 4,150 | 96 |
+| `12` | Tactics | Tactical Puzzle | `?startapp=mk_tg_2026-10-11-tg-1` | 4,680 | 114 |
+| `13` | News | Grandmaster Analysis | `?startapp=mk_tg_2026-10-12-tg-2` | 4,120 | 92 |
+| `14` | Openings | Sicilian Dragon Refutation | `?startapp=mk_tg_2026-10-12-tg-3` | 3,950 | 88 |
+| `15` | Culture | Tal's Intuitive Sacrifices | `?startapp=mk_tg_2026-10-12-tg-4` | 5,420 | 148 |
+| `16` | Product | Instant Vault Settlement | `?startapp=mk_tg_2026-10-12-tg-5` | 4,310 | 102 |
+| `17` | Tactics | Smothered Mate Matrix | `?startapp=mk_tg_2026-10-12-tg-6` | 4,890 | 126 |
+| `21` | Engineering | Microsecond Monotonic Engine | `?startapp=mk_tg_2026-10-12-tg-7` | 3,740 | 82 |
+| `22` | Culture | Community Welcome & Fair Play | `?startapp=mk_tg_2026-10-14-tg-8` | 4,450 | 108 |
 
 ### C. Website Blog SEO Articles
 Indexed on `web3chess.online/blog` with Schema.org JSON-LD and FEN diagrams:

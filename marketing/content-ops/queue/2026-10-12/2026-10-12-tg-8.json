@@ -7,7 +7,7 @@
   "hook": "The 21:00 UTC Global Arena locks in 15 minutes",
   "cta": "arena",
   "text": "<b>The 21:00 UTC Global Arena locks in 15 minutes</b>\n\n Prize Vault. 3-minute blitz. 5 rounds of pure calculation.\n\nBrackets lock once round 1 begins. 95% winner payout.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -32,5 +32,10 @@
   "qa": {
     "passed": true,
     "issues": []
+  },
+  "updated_at": "2026-10-14T05:38:46Z",
+  "published": {
+    "message_id": 23,
+    "at": "2026-10-14T05:38:46Z"
   }
 }

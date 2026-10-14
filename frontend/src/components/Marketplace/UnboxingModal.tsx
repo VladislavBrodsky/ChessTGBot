@@ -56,10 +56,10 @@ export default function UnboxingModal({ isOpen, onClose, tier, prizeName, prizeT
   const handleShareToTelegram = () => {
     telegramHaptic('selection');
     const shareText = encodeURIComponent(
-      `♟️ I just unboxed "${prizeName}" from the ${cfg.name} on Web3Chess!\n\nCan you beat my speed chess rating? Challenge me in Telegram: https://t.me/chess_hub_bot/app`
+      `♟️ I just unboxed "${prizeName}" from the ${cfg.name} on Web3Chess!\n\nCan you beat my speed chess rating? Challenge me in Telegram: https://t.me/chess_matbot/Web3Chess`
     );
     if (typeof window !== 'undefined') {
-      window.open(`https://t.me/share/url?url=https://t.me/chess_hub_bot/app&text=${shareText}`, '_blank');
+      window.open(`https://t.me/share/url?url=https://t.me/chess_matbot/Web3Chess&text=${shareText}`, '_blank');
     }
   };
 

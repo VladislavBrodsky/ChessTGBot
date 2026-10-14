@@ -7,7 +7,7 @@
   "hook": "Player Spotlight: How @grandmaestro scored a 9-game streak in the Blitz Arena (+65 ELO)",
   "cta": "arena",
   "text": "<b>Player Spotlight: How @grandmaestro scored a 9-game streak in the Blitz Arena (+65 ELO)</b>\n\n@grandmaestro just cashed out $190.00 USDT directly to their TON wallet after an undefeated run in today's 3+0 Blitz queue.\n\nMove 23 was the turning point. Can you calculate the decisive tactical strike?\n\nPick the winning line and react below:\n❤ Ra8#   🔥 Rxh7+   👏 Ne6\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -42,5 +42,10 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-14T11:49:40Z",
+  "published": {
+    "message_id": 26,
+    "at": "2026-10-14T11:49:40Z"
   }
 }
