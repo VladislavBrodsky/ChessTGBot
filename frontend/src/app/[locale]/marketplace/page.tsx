@@ -18,13 +18,12 @@ import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { Drawer } from '@/components/ui/Drawer';
 import { telegramHaptic, telegramAlert, telegramConfirm } from '@/lib/telegram';
 import { apiFetch } from '@/lib/api';
-import { FaGem, FaCrown, FaChessBoard, FaEye } from 'react-icons/fa';
-import { FiBox } from 'react-icons/fi';
+import { FaGem, FaCrown, FaChessBoard, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FiBox, FiShoppingBag, FiGrid, FiSliders } from 'react-icons/fi';
 import MysteryBoxCard from '@/components/Marketplace/MysteryBoxCard';
 import UnboxingModal from '@/components/Marketplace/UnboxingModal';
 import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 import { BOX_CONFIG, BOX_ORDER, type BoxTier } from '@/components/Marketplace/boxConfig';
-import { FiShoppingBag } from 'react-icons/fi';
 
 interface BoardTheme {
     id: number;
@@ -120,6 +119,48 @@ export default function MarketplacePage() {
     const [recentWins, setRecentWins] = useState<WonPrize[]>([]);
     const [activeTab, setActiveTab] = useState<MarketplaceTab>('all');
     const [previewTheme, setPreviewTheme] = useState<BoardTheme | null>(null);
+    const [boxViewMode, setBoxViewMode] = useState<'carousel' | 'grid'>('carousel');
+    const [activeBoxIndex, setActiveBoxIndex] = useState<number>(0);
+    const carouselRef = React.useRef<HTMLDivElement>(null);
+
+    const handleCarouselScroll = () => {
+        if (!carouselRef.current) return;
+        const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        if (maxScroll <= 0) return;
+        const scrollFraction = scrollLeft / maxScroll;
+        const index = Math.min(
+            BOX_ORDER.length - 1,
+            Math.max(0, Math.round(scrollFraction * (BOX_ORDER.length - 1)))
+        );
+        setActiveBoxIndex(index);
+    };
+
+    const scrollToBox = (index: number) => {
+        if (!carouselRef.current) return;
+        telegramHaptic('selection');
+        const cards = carouselRef.current.children;
+        if (cards[index]) {
+            (cards[index] as HTMLElement).scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center',
+            });
+            setActiveBoxIndex(index);
+        }
+    };
+
+    const handlePrevBox = () => {
+        if (activeBoxIndex > 0) {
+            scrollToBox(activeBoxIndex - 1);
+        }
+    };
+
+    const handleNextBox = () => {
+        if (activeBoxIndex < BOX_ORDER.length - 1) {
+            scrollToBox(activeBoxIndex + 1);
+        }
+    };
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -263,7 +304,7 @@ export default function MarketplacePage() {
 
     return (
         <LayoutWrapper className="w-full">
-            <main className="app-page">
+            <main className="app-page pb-[calc(var(--app-safe-bottom)+6.5rem)]">
                     <PageHeader title={t('title')} description={t('subtitle')} icon={<FiShoppingBag />} tone="gold" />
 
                     <section aria-labelledby="xp-balance-heading" className="w-full">
@@ -340,47 +381,184 @@ export default function MarketplacePage() {
                     </nav>
 
                     {(activeTab === 'all' || activeTab === 'boxes') && (
-                        <section className="w-full space-y-4" aria-labelledby="marketplace-vaults-title">
-                            <SectionHeader id="marketplace-vaults-title" title={t('section_boxes')} />
-                            {/* Ultra-premium 2026: Enforce exactly 2 columns for a robust, chunky layout */}
-                            <div className="grid w-full grid-cols-2 items-start gap-3 md:gap-4">
-                                {BOX_ORDER.map((tier) => (
-                                    <MysteryBoxCard
-                                        key={tier}
-                                        tier={tier}
-                                        userXP={userXP}
-                                        onUnbox={() => handleOpenBox(tier)}
-                                        disabled={loadingStats || balanceError}
-                                    />
-                                ))}
+                        <section className="w-full space-y-3.5" aria-labelledby="marketplace-vaults-title">
+                            <div className="flex items-center justify-between gap-3 w-full">
+                                <SectionHeader id="marketplace-vaults-title" title={t('section_boxes')} />
+                                <div className="flex items-center gap-2 shrink-0">
+                                    {/* Carousel vs Grid View Switcher */}
+                                    <div className="flex items-center p-0.5 rounded-xl bg-brand-surface border border-brand-border">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                telegramHaptic('selection');
+                                                setBoxViewMode('carousel');
+                                            }}
+                                            className={`ui-tap-target px-2.5 py-1.5 rounded-lg text-caption font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                                boxViewMode === 'carousel'
+                                                    ? 'bg-brand-elevated text-brand-primary shadow-sm'
+                                                    : 'text-brand-muted hover:text-brand-primary'
+                                            }`}
+                                            title="Horizontal Showcase"
+                                            aria-label="Horizontal Showcase"
+                                        >
+                                            <FiSliders size={13} className="rotate-90 text-brand-action" />
+                                            <span className="hidden sm:inline">Showcase</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                telegramHaptic('selection');
+                                                setBoxViewMode('grid');
+                                            }}
+                                            className={`ui-tap-target px-2.5 py-1.5 rounded-lg text-caption font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                                boxViewMode === 'grid'
+                                                    ? 'bg-brand-elevated text-brand-primary shadow-sm'
+                                                    : 'text-brand-muted hover:text-brand-primary'
+                                            }`}
+                                            title="Grid View"
+                                            aria-label="Grid View"
+                                        >
+                                            <FiGrid size={13} />
+                                            <span className="hidden sm:inline">Grid</span>
+                                        </button>
+                                    </div>
+
+                                    {/* Desktop Left/Right navigation buttons for carousel */}
+                                    {boxViewMode === 'carousel' && (
+                                        <div className="hidden sm:flex items-center gap-1">
+                                            <button
+                                                type="button"
+                                                onClick={handlePrevBox}
+                                                disabled={activeBoxIndex === 0}
+                                                className="ui-tap-target p-2 rounded-xl bg-brand-surface border border-brand-border text-brand-muted hover:text-brand-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                                                aria-label="Previous vault"
+                                            >
+                                                <FaChevronLeft size={11} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleNextBox}
+                                                disabled={activeBoxIndex === BOX_ORDER.length - 1}
+                                                className="ui-tap-target p-2 rounded-xl bg-brand-surface border border-brand-border text-brand-muted hover:text-brand-primary disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                                                aria-label="Next vault"
+                                            >
+                                                <FaChevronRight size={11} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
+
+                            {boxViewMode === 'carousel' ? (
+                                <div className="w-full space-y-3">
+                                    {/* Horizontal Snap Track with Peek */}
+                                    <div
+                                        ref={carouselRef}
+                                        onScroll={handleCarouselScroll}
+                                        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-2 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth items-stretch"
+                                        style={{ WebkitOverflowScrolling: 'touch' }}
+                                    >
+                                        {BOX_ORDER.map((tier) => (
+                                            <div
+                                                key={tier}
+                                                className="w-[78vw] max-w-[280px] sm:w-[270px] shrink-0 snap-center flex flex-col"
+                                            >
+                                                <MysteryBoxCard
+                                                    tier={tier}
+                                                    userXP={userXP}
+                                                    onUnbox={() => handleOpenBox(tier)}
+                                                    disabled={loadingStats || balanceError}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Quick-Jump Tier Indicator Strip */}
+                                    <div className="flex items-center justify-start sm:justify-center gap-1.5 w-full py-1 overflow-x-auto scrollbar-none">
+                                        {BOX_ORDER.map((tier, idx) => {
+                                            const cfg = BOX_CONFIG[tier];
+                                            const isActive = activeBoxIndex === idx;
+                                            const { accent, rgb } = cfg.theme;
+                                            return (
+                                                <button
+                                                    key={tier}
+                                                    type="button"
+                                                    onClick={() => scrollToBox(idx)}
+                                                    className={`ui-tap-target px-2.5 py-1 rounded-full text-caption font-semibold transition-all flex items-center gap-1.5 cursor-pointer border shrink-0 ${
+                                                        isActive
+                                                            ? 'shadow-sm'
+                                                            : 'border-transparent text-brand-muted hover:text-brand-primary'
+                                                    }`}
+                                                    style={{
+                                                        background: isActive ? `rgba(${rgb}, 0.14)` : 'transparent',
+                                                        borderColor: isActive ? `rgba(${rgb}, 0.45)` : 'transparent',
+                                                        color: isActive ? `color-mix(in srgb, ${accent} 40%, var(--text-primary))` : undefined,
+                                                    }}
+                                                >
+                                                    <span className="text-xs">{cfg.glyph}</span>
+                                                    <span>{cfg.metal}</span>
+                                                    {cfg.limited && <span className="text-caption text-amber-400">★</span>}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ) : (
+                                /* Balanced Responsive Grid View */
+                                <div className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 items-start gap-3 md:gap-4">
+                                    {BOX_ORDER.map((tier) => (
+                                        <MysteryBoxCard
+                                            key={tier}
+                                            tier={tier}
+                                            userXP={userXP}
+                                            onUnbox={() => handleOpenBox(tier)}
+                                            disabled={loadingStats || balanceError}
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </section>
                     )}
 
                     {(activeTab === 'all' || activeTab === 'premium') && (
                         <section className="w-full space-y-4 mt-2" aria-labelledby="marketplace-premium-title">
                             <SectionHeader id="marketplace-premium-title" title={t('section_premium')} />
-                            <div className="grid grid-cols-1 gap-3 w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full">
                                 {directPurchases.map((item) => {
                                     const affordable = userXP >= item.cost;
+                                    const isYearly = item.id === 'premium_1y';
                                     return (
                                         <Card
                                             key={item.id}
                                             variant="solid"
-                                            className={`p-5 transition-colors ${affordable ? 'ui-stat--premium' : ''}`}
+                                            className={`p-5 transition-colors relative overflow-hidden flex flex-col justify-between ${affordable ? 'ui-stat--premium' : ''}`}
                                         >
-                                            <div className="flex flex-wrap items-start justify-between gap-4">
-                                                <div className="min-w-0">
-                                                <h3 className="flex items-center gap-2 text-base font-semibold text-brand-primary">
-                                                    <FaCrown style={{ color: "var(--badge-purple-ink)" }} aria-hidden="true" />
-                                                    {item.name}
-                                                </h3>
-                                                <p className="mt-2 text-sm leading-5 text-brand-muted">{item.desc}</p>
+                                            {isYearly && (
+                                                <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-xl bg-purple-500/20 border-b border-l border-purple-500/30 text-caption font-bold text-purple-300">
+                                                    Best Value · 30% Off
                                                 </div>
-                                                <Badge variant="purple">
-                                                    {item.cost.toLocaleString(locale)} XP
-                                                </Badge>
+                                            )}
+                                            <div className="space-y-3">
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div className="min-w-0">
+                                                        <h3 className="flex items-center gap-2 text-base font-semibold text-brand-primary">
+                                                            <FaCrown style={{ color: "var(--badge-purple-ink)" }} aria-hidden="true" />
+                                                            {item.name}
+                                                        </h3>
+                                                        <p className="mt-1 text-sm leading-5 text-brand-muted">{item.desc}</p>
+                                                    </div>
+                                                    <Badge variant="purple" className="shrink-0 mt-0.5">
+                                                        {item.cost.toLocaleString(locale)} XP
+                                                    </Badge>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-2 text-caption pt-1 text-brand-muted">
+                                                    <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border">⚡ Ad-Free Blitz</span>
+                                                    <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border">📊 Advanced Analytics</span>
+                                                    <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border">👑 Crown Badge</span>
+                                                </div>
                                             </div>
+
                                             <Button
                                                 variant={affordable ? 'premium' : 'secondary'}
                                                 className="mt-4 w-full"
@@ -397,10 +575,10 @@ export default function MarketplacePage() {
                     )}
 
                     {(activeTab === 'all' || activeTab === 'themes') && (
-                        <section className="w-full space-y-4 mt-2 pb-10" aria-labelledby="marketplace-themes-title">
+                        <section className="w-full space-y-4 mt-2" aria-labelledby="marketplace-themes-title">
                             <SectionHeader id="marketplace-themes-title" title={t('section_themes')} />
                             {loadingThemes ? (
-                                <div className="grid grid-cols-1 gap-3 w-full">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
                                     <SkeletonList count={3} label={t('section_themes')} />
                                 </div>
                             ) : themesError && !themesData ? (
@@ -413,7 +591,7 @@ export default function MarketplacePage() {
                                     onAction={() => { void fetchThemes(); }}
                                 />
                             ) : (
-                                <div className="grid grid-cols-1 gap-3 w-full">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
                                     {themes.map((theme) => {
                                         const swatch = THEME_SWATCHES[theme.code] || THEME_SWATCHES.default;
                                         const affordable = userXP >= theme.price_xp;

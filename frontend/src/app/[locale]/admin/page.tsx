@@ -19,7 +19,7 @@ import {
   FaDatabase, FaMemory, FaTelegram, FaWallet, FaGear,
   FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation,
   FaArrowsRotate, FaScaleBalanced, FaBan, FaArrowUpRightFromSquare,
-  FaBullseye, FaCode, FaCheck, FaGlobe, FaTwitter
+  FaBullseye, FaCode, FaCheck, FaGlobe, FaTwitter, FaPaperPlane
 } from 'react-icons/fa6';
 import LayoutWrapper from '@/components/LayoutWrapper';
 
@@ -382,7 +382,7 @@ function DashboardTab({ stats }: { stats: Stats }) {
     <div className="w-full">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-brand-primary">{greeting}, Admin 👋</h2>
+          <h2 className="text-lg font-semibold text-brand-primary">{greeting}, Admin</h2>
           <p className="admin-kpi-sub text-caption mt-0.5">{now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
         <Badge variant="emerald">Live</Badge>
