@@ -7,7 +7,7 @@
   "hook": "How our sub-100ms WebSocket engine enforces zero-cheat fairness",
   "cta": "rules",
   "text": "<b>How our sub-100ms WebSocket engine enforces zero-cheat fairness</b>\n\nIn online speed chess, latency unfairness kills competition.\n\nEvery move in Web3Chess is timestamped on the server with microsecond monotonic clocks. Even if an opponent throttles their connection, the server validates move legality and clock elapsed time with zero client trust.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -37,5 +37,10 @@
     "skipped": false,
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-7.png"
+  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-7.png",
+  "updated_at": "2026-10-14T02:05:40Z",
+  "published": {
+    "message_id": 21,
+    "at": "2026-10-14T02:05:40Z"
+  }
 }

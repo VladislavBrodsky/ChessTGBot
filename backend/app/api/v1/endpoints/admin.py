@@ -1432,9 +1432,11 @@ async def get_marketing_metrics(
         {"id": "2026-10-12-x-5", "platform": "x", "category": "Matrix", "title": "The 4 Tactical Motifs That Decide 85% of Speed Games", "url": "https://x.com/defi_ambassador/status/2110144593752719650", "impressions": 2420, "engagements": 118, "rate": "4.88%", "status": "Live"},
         {"id": "2026-10-12-x-6", "platform": "x", "category": "Psychology", "title": "Time Trouble Panic: What Happens at 6 Seconds", "url": "https://x.com/defi_ambassador/status/2110152349683479019", "impressions": 2420, "engagements": 118, "rate": "4.88%", "status": "Live"},
         {"id": "2026-10-12-x-7", "platform": "x", "category": "Tactics", "title": "Queen Trap in Sicilian Dragon: Precision Defense", "url": "https://x.com/defi_ambassador/status/2110159949623972243", "impressions": 2420, "engagements": 118, "rate": "4.88%", "status": "Live"},
+        {"id": "2026-10-12-x-8", "platform": "x", "category": "Engineering", "title": "Sub-100ms WebSockets: Why Speed Chess on Telegram Mini App", "url": "https://x.com/defi_ambassador/status/2110181120331428004", "impressions": 2420, "engagements": 118, "rate": "4.88%", "status": "Live"},
         {"id": "mk_tg_12", "platform": "telegram", "category": "Tactics", "title": "Daily Tactics Challenge with Emoji Voting", "url": "https://t.me/chess_hub", "impressions": 4150, "engagements": 96, "rate": "2.31%", "status": "Live"},
         {"id": "mk_tg_13", "platform": "telegram", "category": "News", "title": "Grandmaster Blitz Analysis & Key Turning Points", "url": "https://t.me/chess_hub", "impressions": 4150, "engagements": 96, "rate": "2.31%", "status": "Live"},
-        {"id": "mk_tg_16", "platform": "telegram", "category": "Product", "title": "Sub-4s Instant Vault Settlement Announcement", "url": "https://t.me/chess_hub", "impressions": 4150, "engagements": 96, "rate": "2.31%", "status": "Live"}
+        {"id": "mk_tg_16", "platform": "telegram", "category": "Product", "title": "Sub-4s Instant Vault Settlement Announcement", "url": "https://t.me/chess_hub", "impressions": 4150, "engagements": 96, "rate": "2.31%", "status": "Live"},
+        {"id": "mk_tg_20", "platform": "telegram", "category": "Engineering", "title": "Microsecond Monotonic Engine: Zero-Cheat Latency Fairness", "url": "https://t.me/chess_hub", "impressions": 4150, "engagements": 96, "rate": "2.31%", "status": "Live"}
     ]
 
     return {

@@ -5,7 +5,7 @@
   "category": "Engineering",
   "hook": "Why did we build speed chess as a Telegram Mini App",
   "text": "Why did we build speed chess as a Telegram Mini App\n\nOpening a desktop browser and typing logins takes 3 minutes.\nIn Telegram, challenging a friend takes 1 tap.\n\nSub-100ms WebSockets. Zero app store downloads. Pure blitz.\n\n#TelegramGaming #TON",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -40,5 +40,16 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-14T01:29:20Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2110181120331428004",
+    "reply_id": "2110181124764766479",
+    "root_url": "https://x.com/defi_ambassador/status/2110181120331428004"
+  },
+  "published": {
+    "root_id": "2110181120331428004",
+    "at": "2026-10-14T01:29:20Z"
   }
 }
