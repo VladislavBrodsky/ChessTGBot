@@ -9,7 +9,7 @@ const source = JSON.parse(await readFile(resolve(root, 'design-system/website/to
 const names = { ink: 'carbon-black', paper: 'paper-white', canvas: 'warm-canvas', mist: 'mist-gray', line: 'ash', muted: 'slate', smoke: 'smoke', mint: 'mint-chip', voltage: 'voltage-yellow' };
 const colors = Object.fromEntries(Object.entries(names).map(([key, token]) => [key, source.color[token].$value]));
 const icons = {};
-for (const name of ['arrow-up-right', 'arrow-right', 'telegram-logo', 'users-three', 'clock', 'graduation-cap', 'strategy', 'scales', 'check', 'target', 'book-open-text', 'share-network', 'cpu', 'shield-check', 'chats-circle']) {
+for (const name of ['arrow-up-right', 'arrow-right', 'telegram-logo', 'users-three', 'clock', 'graduation-cap', 'strategy', 'scales', 'check', 'target', 'book-open-text', 'share-network', 'cpu', 'shield-check', 'chats-circle', 'lightning', 'coins', 'wallet', 'trophy', 'sparkle']) {
   icons[name] = await readFile(resolve(root, `website/src/icons/svg/${name}.svg`), 'utf8');
 }
 const art = {};

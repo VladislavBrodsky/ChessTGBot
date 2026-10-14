@@ -27,11 +27,11 @@ async function main() {
     theme: 'canvas',
     art: 'clock',
     tag: 'Community & Crypto',
-    headline: 'SPEED CHESS.\nCRYPTO GAINS.',
-    body: 'Bullet, blitz, and USDT stakes. Join our community.',
+    headline: 'SPEED CHESS\nCRYPTO GAINS',
+    body: 'Bullet, blitz, and USDT stakes · Join our community',
     cta: 'Join the community',
-    note: 'USDT matches · 18+ · Telegram @chesshub_chat · web3chess.online',
-    proof: ['1+0 Bullet & 3+2 Blitz', 'Equal USDT stakes', 'Chat @chesshub_chat']
+    note: 'USDT matches · 18+ where permitted · Telegram @chesshub_chat',
+    proof: ['1+0 Bullet & 3+2 Blitz', 'Equal USDT stakes', 'Community @chesshub_chat']
   };
 
   const queueDir = path.resolve(repo, 'marketing/content-ops/queue/2026-10-14');

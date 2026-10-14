@@ -86,30 +86,41 @@
     };
     const action=(value,x,y,w,h,size)=>{
       layer='action';group='action';const fill=theme==='ink'?C.mint:C.ink,color=theme==='ink'?C.ink:C.paper;
-      rect(x,y,w,h,fill,12,'action-panel');const t=text(value,x+28,y,w-108,size,{color,weight:600,min:size,maxLines:1,role:'cta'});t.y=y+(h-t.h)/2;
-      icon('arrow-up-right',x+w-62,y+(h-34)/2,34,color);block('action',x,y,w,h);
+      rect(x,y,w,h,fill,14,'action-panel');
+      const pillW=Math.min(252,Math.round(w*0.32)),pillH=h-20,pillX=x+w-pillW-10,pillY=y+10;
+      const t=text(value,x+28,y,w-pillW-44,size,{color,weight:600,min:Math.round(size*0.75),maxLines:1,role:'cta'});
+      t.y=y+(h-t.h)/2;
+      rect(pillX,pillY,pillW,pillH,theme==='ink'?C.paper:C.mint,10,'action-pill');
+      const urlText=text('web3chess.online',pillX+18,pillY,pillW-46,Math.round(size*0.64),{color:C.ink,weight:600,min:16,maxLines:1,role:'cta-url'});
+      urlText.y=pillY+(pillH-urlText.h)/2;
+      icon('arrow-up-right',pillX+pillW-34,pillY+(pillH-22)/2,22,C.ink);
+      block('action',x,y,w,h);
     };
+    const noTrailingDot = s => typeof s === 'string' ? s.split('\n').map(l => l.trim().replace(/\.+$/, '')).join('\n') : s;
     const reveal=d.id==='puzzle'&&d.reveal;
-    const title=reveal?'THE BACK RANK.\nNO WAY OUT.':d.headline;
-    const deck=reveal?'Ra8#. The king’s own pawns block its escape.':d.body;
-    const tag=reveal?'The answer / 02':d.tag;
-    const note=reveal?'Ra8# · More tactical puzzles in the Academy.':d.note;
-    const cta=reveal?'Try another puzzle':d.cta;
+    const title=noTrailingDot(reveal?'THE BACK RANK\nNO WAY OUT':d.headline);
+    const deck=noTrailingDot(reveal?'Ra8# · The king’s own pawns block its escape':d.body);
+    const tag=noTrailingDot(reveal?'The answer / 02':d.tag);
+    const note=noTrailingDot(reveal?'Ra8# · More tactical puzzles in the Academy':d.note);
+    const cta=noTrailingDot(reveal?'Try another puzzle':d.cta);
     rect(0,0,f.width,f.height,bg,0,'background');
     // Keep a deliberate second margin inside the platform-control envelope.
     const inset=24,x=safe.x+inset,w=safe.width-2*inset,top=safe.y+inset,bottom=safe.y+safe.height-inset;
-    const spec=wide?{brand:96,head:174,headMin:128,body:42,headGap:44,bodyGap:32,visualGap:36,cta:96,note:34,ctaSize:38}
-      :portrait?{brand:88,head:154,headMin:128,body:38,headGap:64,bodyGap:28,visualGap:36,cta:94,note:32,ctaSize:36}
-      :vertical&&!reels?{brand:96,head:164,headMin:126,body:40,headGap:64,bodyGap:30,visualGap:36,cta:100,note:34,ctaSize:38}
-      :reels?{brand:80,head:126,headMin:106,body:36,headGap:48,bodyGap:24,visualGap:28,cta:84,note:30,ctaSize:34}
-      :{brand:72,head:124,headMin:106,body:34,headGap:44,bodyGap:24,visualGap:28,cta:80,note:30,ctaSize:34};
+    const spec=wide?{brand:88,head:136,headMin:106,body:34,headGap:36,bodyGap:24,visualGap:28,cta:88,note:24,ctaSize:34}
+      :portrait?{brand:88,head:154,headMin:128,body:38,headGap:64,bodyGap:28,visualGap:36,cta:94,note:24,ctaSize:36}
+      :vertical&&!reels?{brand:96,head:164,headMin:126,body:40,headGap:64,bodyGap:30,visualGap:36,cta:100,note:24,ctaSize:38}
+      :reels?{brand:80,head:126,headMin:106,body:36,headGap:48,bodyGap:24,visualGap:28,cta:84,note:24,ctaSize:34}
+      :{brand:72,head:124,headMin:106,body:34,headGap:44,bodyGap:24,visualGap:28,cta:80,note:24,ctaSize:34};
     layer='brand';group='brand';const logoW=spec.brand*A.logoAspect;
     image(theme==='ink'?A.logos.dark:A.logos.light,x,top,logoW,spec.brand,'brand-lockup');block('brand',x,top,logoW,spec.brand);
     const textW=wide?910:w;
     layer='hook';group='tag';
     let badge,hy;
-    if(wide){badge=pill(tag,x,top+spec.brand+48,800);hy=badge.y+badge.h+spec.headGap;}
-    else {
+    if(wide){
+      meter.font=face('body',badgeSpec.font,500);const desired=Math.ceil(meter.measureText(tag).width)+90;
+      badge=pill(tag,x+textW-desired,top+(spec.brand-badgeSpec.minHeight)/2,desired);
+      hy=top+spec.brand+spec.headGap;
+    } else {
       const tagW=w-logoW-48;meter.font=face('body',badgeSpec.font,500);const desired=Math.ceil(meter.measureText(tag).width)+90;
       if(desired<=tagW){badge=pill(tag,x+w-desired,top+(spec.brand-badgeSpec.minHeight)/2,tagW);hy=top+spec.brand+spec.headGap;}
       else {badge=pill(tag,x,top+spec.brand+spec.brand/2,w);hy=badge.y+badge.h+32;}
@@ -118,7 +129,7 @@
     const headline=text(title,x,hy,textW,spec.head,{font:'display',weight:700,maxLines:2,min:spec.headMin,leading:.88,role:'headline'});block('headline',x,hy,textW,headline.h);
     group='body';const body=text(deck,x,hy+headline.h+spec.bodyGap,wide?830:w,spec.body,{color:muted,maxLines:2,role:'body'});block('body',x,body.y,body.w,body.h);
     layer='action';group='note';const noteW=wide?850:w;
-    const term=text(note,x,0,noteW,spec.note,{color:muted,maxLines:2,role:'note'});term.y=bottom-term.h;
+    const term=text(note,x,0,noteW,spec.note,{color:muted,maxLines:1,min:20,role:'note'});term.y=bottom-term.h;
     block('note',x,term.y,noteW,term.h);
     const actionY=term.y-22-spec.cta;
     action(cta,x,actionY,wide?760:w,spec.cta,spec.ctaSize);
@@ -139,30 +150,37 @@
       if(reveal){const xx=bx+pad+cell*.5,y1=by+pad+cell*7.25,y2=by+pad+cell*.7;line(xx,y1,xx,y2,C.ink,5,'answer-arrow');line(xx,y2,xx-10,y2+16,C.ink,5,'answer-arrow');line(xx,y2,xx+10,y2+16,C.ink,5,'answer-arrow');}
     };
     function proofCard(px,py,pw,ph,compact=false){
-      group='proof';rect(px,py,pw,ph,theme==='paper'?C.canvas:C.paper,24,'proof-panel');block('proof',px,py,pw,ph);
+      group='proof';
+      if(theme!=='canvas'&&!d.transparentCard){
+        rect(px,py,pw,ph,theme==='paper'?C.canvas:C.paper,24,'proof-panel');
+      }
+      block('proof',px,py,pw,ph);
       const padding=compact?24:28,ink=C.ink,sub=C.muted;
       if(compact){
         icon(d.icon,px+padding,py+(ph-44)/2,44,ink);
-        const value=({opening:'Free A.I. practice\nNo download',rival:'You. Your friend. One board.',academy:'Learn → Practise → Play',tempo:'1+0 · 3+2 · 10+0',stakes:'Equal stakes. Clear rules.',culture:'“One more game.”\nEvery chess group.'})[d.id];
-        const t=text(value,px+88,py,pw-116,36,{weight:600,color:ink,maxLines:2,role:'proof'});t.y=py+(ph-t.h)/2;return;
+        const value=noTrailingDot(({opening:'Free A.I. practice · No download',rival:'You · Your friend · One board',academy:'Learn → Practise → Play',tempo:'1+0 · 3+2 · 10+0',stakes:'Equal stakes · Clear rules',culture:'“One more game” · Every chess group'})[d.id] || (Array.isArray(d.proof) ? d.proof.map(noTrailingDot).join(' · ') : ''));
+        const t=text(value,px+88,py,pw-116,36,{weight:600,color:ink,maxLines:1,min:24,role:'proof'});t.y=py+(ph-t.h)/2;return;
       }
       if(d.id==='opening'||d.id==='rival'){
         const first=shapes.length;
         icon(d.id==='opening'?'telegram-logo':d.icon,px+padding,py+padding,40,ink);
-        const value=d.id==='opening'?'CHESS.\nIN YOUR CHAT.':'YOU.\nYOUR FRIEND.';
+        const value=noTrailingDot(d.id==='opening'?'CHESS\nIN YOUR CHAT':'YOU\nYOUR FRIEND');
         const t=text(value,px+padding,py+padding+64,pw-2*padding,reels?46:portrait||vertical?54:48,{font:'display',weight:700,min:reels?40:44,leading:1.02,color:ink,role:'proof-title'});
-        const subtext=d.id==='opening'?'No download.':'One board. Equal stakes.';
+        const subtext=noTrailingDot(d.id==='opening'?'No download':'One board · Equal stakes');
         const subtitle=text(subtext,px+padding,t.y+t.h+24,pw-2*padding,reels?28:30,{color:sub,maxLines:2,role:'proof'});
         if(subtitle.y+subtitle.h>py+ph-padding)warnings.push('proof: shorten the copy or give the card more room.');
         else {const offset=(ph-(subtitle.y+subtitle.h-py-padding))/2-padding;for(const s of shapes.slice(first))s.y+=offset;}
       }else{
         const rowH=(ph-2*padding)/3;
-        d.proof.forEach((value,i)=>{
+        d.proof.forEach((rawVal,i)=>{
+          const value=noTrailingDot(rawVal);
           const ty=py+padding+i*rowH;
-          const t=text(value,px+padding+(d.id==='tempo'||d.id==='stakes'?42:0),ty,pw-2*padding-(d.id==='tempo'||d.id==='stakes'?42:0),reels?28:30,{weight:600,color:ink,maxLines:2,min:28,role:'proof'});
+          const hasIcon = d.id==='tempo'||d.id==='stakes';
+          const iconSpace = hasIcon ? 42 : 0;
+          const t=text(value,px+padding+iconSpace,ty,pw-2*padding-iconSpace,wide?24:reels?22:24,{weight:600,color:ink,maxLines:1,min:18,leading:1.1,role:'proof'});
           t.y=ty+(rowH-t.h)/2;
-          if(d.id==='tempo'||d.id==='stakes')icon(d.id==='tempo'?'clock':'check',px+padding,ty+(rowH-28)/2,28,ink);
-          if(t.h>rowH-12)warnings.push('proof: rows need more room.');
+          if(hasIcon)icon(d.id==='tempo'?'clock':'check',px+padding,ty+(rowH-28)/2,28,ink);
+          if(t.h>rowH-10)warnings.push('proof: rows need more room.');
           if(i<2)line(px+padding,ty+rowH,px+pw-padding,ty+rowH,C.line,1);
         });
       }
@@ -171,7 +189,8 @@
       const gap=20,cardH=Math.min(106,(ph-2*gap)/3),total=3*cardH+2*gap;
       if(cardH<76)warnings.push('proof: the stacked cards need more room.');
       const firstY=py+(ph-total)/2;
-      d.proof.forEach((value,i)=>{
+      d.proof.forEach((rawVal,i)=>{
+        const value=noTrailingDot(rawVal);
         const offset=i===1?18:0,xx=px+offset,yy=firstY+i*(cardH+gap),ww=pw-offset;
         group=`proof-${i}`;
         rect(xx,yy,ww,cardH,d.id==='culture'?C.canvas:C.paper,20,'proof-panel');
@@ -189,8 +208,11 @@
         const size=708;board(rx+(rw-size)/2,top+8,size);
         group='puzzle-proof';const t=text(reveal?'Ra8# · BACK-RANK MATE':'WHITE TO MOVE · MATE IN ONE',rx,top+8+size+40,rw,40,{font:'display',weight:700,color:fg,maxLines:1,role:'proof-title'});block('puzzle-proof',t.x,t.y,t.w,t.h);
       }else{
-        const artSize=668;group='art';image(A.art[d.art],rx+(rw-artSize)/2,top+8,artSize,artSize);block('art',rx+(rw-artSize)/2,top+8,artSize,artSize);
-        proofCard(rx,top+8+artSize+42,rw,144,true);
+        const artSize=680;
+        const artY=top+(bottom-top-artSize)/2;
+        group='art';image(A.art[d.art],rx+(rw-artSize)/2,artY,artSize,artSize);block('art',rx+(rw-artSize)/2,artY,artSize,artSize);
+        const ph=Math.min(visualH, 250);
+        proofCard(x, visualY+(visualH-ph)/2, textW, ph);
       }
     }else{
       if(visualH<(reels?245:format==='square'?300:400))warnings.push('visual: copy leaves too little room for the main visual.');
@@ -198,13 +220,13 @@
         const size=Math.min(visualH,w*(vertical&&!reels?.57:portrait?.55:.46));
         board(x,visualY+(visualH-size)/2,size);
         group='puzzle-proof';const px=x+size+40,pw=w-size-40;
-        const p=text(reveal?'Ra8#':'YOUR\nMOVE?',px,visualY+Math.max(12,(visualH-210)/2),pw,reels?74:96,{font:'display',weight:700,leading:1.02,maxLines:2,role:'proof-title'});
-        const t=text(reveal?'The pawns block the king’s escape.':'Find the finish. Then test a friend.',px,p.y+p.h+26,pw,reels?30:34,{color:muted,maxLines:3,role:'proof'});
+        const p=text(reveal?'Ra8#':'YOUR\nMOVE',px,visualY+Math.max(12,(visualH-210)/2),pw,reels?74:96,{font:'display',weight:700,leading:1.02,maxLines:2,role:'proof-title'});
+        const t=text(reveal?'The pawns block the king’s escape':'Find the finish · Then test a friend',px,p.y+p.h+26,pw,reels?30:34,{color:muted,maxLines:3,role:'proof'});
         block('puzzle-proof',px,p.y,pw,t.y+t.h-p.y);
         if(t.y+t.h>visualBottom)warnings.push('puzzle proof: needs more room.');
       }else{
         const stacked=['opening','rival','culture'].includes(d.id);
-        const pw=stacked?(reels?296:portrait||vertical?316:336):portrait||vertical&&!reels?336:reels?304:350,artW=w-pw-30;
+        const pw=stacked?(reels?296:portrait||vertical?316:336):portrait||vertical&&!reels?390:reels?304:390,artW=w-pw-30;
         const size=Math.min(visualH,artW),artY=visualY+(visualH-size)/2;
         group='art';image(A.art[d.art],x+w-size,artY,size,size);block('art',x+w-size,artY,size,size);
         if(stacked)storyStack(x,visualY,pw,visualH);
