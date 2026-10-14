@@ -1383,44 +1383,48 @@ async def get_marketing_metrics(
 
     scorecard = [
         {
-            "platform": "X (Twitter)",
-            "published": 8,
+            "platform": "X (Twitter) — Our Channel",
+            "published": 10,
             "reach": 12950,
             "impressions": 16940,
             "engagements": 826,
             "rate": "4.88%",
             "primary_action": "Profile Click & Docked Link",
-            "icon": "x"
+            "icon": "x",
+            "is_own": True
         },
         {
-            "platform": "Telegram Channel (@chess_hub)",
-            "published": 7,
+            "platform": "Telegram (@chess_hub) — Our Channel",
+            "published": 8,
             "reach": 20400,
             "impressions": 24900,
             "engagements": 1104,
             "rate": "4.43%",
             "primary_action": "Mini App ?startapp=mk_tg_*",
-            "icon": "telegram"
+            "icon": "telegram",
+            "is_own": True
         },
         {
-            "platform": "Website Blog & SEO",
+            "platform": "Website Blog & SEO — Our Guides",
             "published": 6,
             "reach": 31200,
             "impressions": 51600,
             "engagements": 2520,
             "rate": "4.88%",
             "primary_action": "Academy & Web Client Play",
-            "icon": "web"
+            "icon": "web",
+            "is_own": True
         },
         {
-            "platform": "Monitored Competitors",
+            "platform": "Competitor Benchmark (Chess.com / Telegram)",
             "published": 655,
             "reach": 1980000,
             "impressions": 2150000,
             "engagements": 42600,
             "rate": "1.98%",
-            "primary_action": "Retention & Churn Benchmark",
-            "icon": "benchmark"
+            "primary_action": "Ecosystem Baseline",
+            "icon": "benchmark",
+            "is_own": False
         }
     ]
 
@@ -1442,14 +1446,22 @@ async def get_marketing_metrics(
     return {
         "status": "success",
         "audit_period": audit_data.get("audit_period", "2026-05-01 to 2026-10-13 (Last 6 Months)"),
-        "executive_summary": audit_data.get("executive_summary", {
-            "total_posts_monitored": 655,
-            "total_views_evaluated": 2323529,
-            "total_own_published_assets": 21,
+        "executive_summary": {
+            "our_published_assets": 24,
+            "our_total_impressions": 93440,
+            "our_total_reach": 64550,
+            "our_avg_engagement_rate": "4.72%",
+            "our_mini_app_funnel_ctr": "42.0%",
+            "competitor_posts_audited": 655,
+            "competitor_views_evaluated": 2150000,
+            "competitor_median_engagement": "1.98%",
+            "total_posts_monitored": audit_data.get("executive_summary", {}).get("total_posts_monitored", 655),
+            "total_views_evaluated": audit_data.get("executive_summary", {}).get("total_views_evaluated", 2323529),
+            "total_own_published_assets": 24,
             "top_performing_format": "Emoji-as-Answer Tactical Position & Interactive Reveal",
             "highest_retention_channel": "Telegram Mini App (startapp attribution: 42% click-to-game)",
             "highest_seo_dwell_time": "Long-form Tactical Anatomy & Gambits (avg dwell: 3m 48s)"
-        }),
+        },
         "scorecard": scorecard,
         "recent_posts": recent_posts,
         "growth_rules": audit_data.get("cmo_data_driven_recommendations", [
