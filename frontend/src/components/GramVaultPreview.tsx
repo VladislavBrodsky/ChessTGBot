@@ -166,9 +166,9 @@ export function GramVaultPreview() {
             </div>
           </div>
 
-          {/* Dual Phase Architecture */}
+          {/* Vault Mechanics */}
           <div className="space-y-2.5">
-            {/* Phase 1: Accumulation */}
+            {/* Feature 1: Community Vault Meter */}
             <div className="p-3.5 rounded-2xl bg-brand-surface border border-brand-border space-y-1.5">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -179,8 +179,8 @@ export function GramVaultPreview() {
                     {t('phase_one_title')}
                   </span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-xs font-semibold bg-brand-elevated text-brand-muted border border-brand-border">
-                  1 – 800
+                <span className="px-2 py-0.5 rounded text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30">
+                  ⚡ Live Meter
                 </span>
               </div>
               <p className="text-xs text-brand-muted leading-relaxed pl-8">
@@ -188,7 +188,7 @@ export function GramVaultPreview() {
               </p>
             </div>
 
-            {/* Phase 2: Hot Zone */}
+            {/* Feature 2: Hot Zone Surge */}
             <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-brand-surface to-brand-surface border border-amber-500/40 space-y-2 relative overflow-hidden">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -200,29 +200,22 @@ export function GramVaultPreview() {
                   </span>
                 </div>
                 <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
-                  801 – 1,000
+                  🔥 Jackpot Surge
                 </span>
               </div>
               <p className="text-xs text-brand-muted leading-relaxed pl-8">
                 {t('phase_two')}
               </p>
 
-              {/* Dynamic Escalating Odds Highlight */}
-              <div className="ml-8 mt-1 p-2.5 rounded-xl bg-brand-void/80 border border-amber-500/20 text-xs space-y-1.5">
+              {/* Player Perk Highlight */}
+              <div className="ml-8 mt-1 p-2.5 rounded-xl bg-brand-void/80 border border-amber-500/20 text-xs space-y-1">
                 <div className="flex items-center justify-between font-bold text-xs text-amber-400">
-                  <span>Escalating Odds Window</span>
-                  <span>1 / 200 ➔ 1 / 1</span>
+                  <span>Guaranteed Rewards & Direct Drop</span>
+                  <span className="text-emerald-400">Instant Credit</span>
                 </div>
                 <p className="text-xs text-brand-muted leading-normal">
                   {t('chance')}
                 </p>
-                <div className="flex items-center justify-between gap-1 pt-1 text-xs text-brand-muted font-mono">
-                  <span className="px-1.5 py-0.5 rounded bg-brand-elevated">Draw 801: 1/200</span>
-                  <span>➔</span>
-                  <span className="px-1.5 py-0.5 rounded bg-brand-elevated">Draw 900: 1/100</span>
-                  <span>➔</span>
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">Draw 1000: 1/1</span>
-                </div>
               </div>
             </div>
           </div>
