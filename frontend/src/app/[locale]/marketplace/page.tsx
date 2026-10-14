@@ -21,6 +21,7 @@ import { apiFetch } from '@/lib/api';
 import { FaGem, FaCrown, FaChessBoard, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { FiBox, FiShoppingBag, FiGrid, FiSliders } from 'react-icons/fi';
 import MysteryBoxCard from '@/components/Marketplace/MysteryBoxCard';
+import LiveDropsTicker from '@/components/Marketplace/LiveDropsTicker';
 import UnboxingModal from '@/components/Marketplace/UnboxingModal';
 import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 import { BOX_CONFIG, BOX_ORDER, type BoxTier } from '@/components/Marketplace/boxConfig';
@@ -307,60 +308,83 @@ export default function MarketplacePage() {
             <main className="app-page pb-[calc(var(--app-safe-bottom)+6.5rem)]">
                     <PageHeader title={t('title')} description={t('subtitle')} icon={<FiShoppingBag />} tone="gold" />
 
+                    {/* Social Proof Live Drops Marquee Ticker */}
+                    <section aria-label="Live recent drops" className="w-full">
+                        <LiveDropsTicker userDrops={recentWins} />
+                    </section>
+
+                    {/* Gamified XP Balance & Goal Progression Card */}
                     <section aria-labelledby="xp-balance-heading" className="w-full">
                         <h2 id="xp-balance-heading" className="sr-only">{t('xp_balance_label')}</h2>
                         <div className="ui-hero-card ui-hero-card--gold p-4 sm:p-5">
                             <div className="flex items-center justify-between gap-4 relative z-10">
                                 <div className="space-y-1 text-start">
-                                <span className="ui-eyebrow">{t('xp_balance')}</span>
-                                {loadingStats ? (
-                                    <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
-                                ) : (
-                                    <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
-                                        className="mt-2 block text-3xl font-semibold leading-none tabular-nums text-brand-primary">
-                                        {userXP.toLocaleString(locale)} <span className="text-lg text-brand-gold">XP</span>
-                                    </motion.span>
-                                )}
+                                    <span className="ui-eyebrow">{t('xp_balance')}</span>
+                                    {loadingStats ? (
+                                        <span className="mt-2 block h-8 w-28 animate-pulse rounded-lg bg-brand-elevated" />
+                                    ) : (
+                                        <motion.span key={userXP} initial={{ opacity: 0.4, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                                            className="mt-2 block text-3xl font-semibold leading-none tabular-nums text-brand-primary">
+                                            {userXP.toLocaleString(locale)} <span className="text-lg text-brand-gold">XP</span>
+                                        </motion.span>
+                                    )}
                                 </div>
                                 <span className="ui-icon-tile ui-icon-tile--gold h-12 w-12 rounded-2xl">
                                     <FaGem size={20} aria-hidden="true" />
                                 </span>
                             </div>
-                            {(loadingStats || nextBox) && (
-                                <div className="mt-4 flex min-h-[var(--size-control-sm)] items-center justify-between gap-3 border-t border-brand-border-opacity-10 pt-4 relative z-10">
-                                    {loadingStats || !nextBox ? <Skeleton width="60%" textRole="body" /> : <>
-                                    <p className="text-sm leading-5 text-brand-muted">
-                                        <span className="font-bold text-brand-primary">{nextBox.name}</span> · {t('need_more_xp', { amount: xpToNextBox.toLocaleString(locale) })}
-                                    </p>
-                                    <Link href={`/${locale}/academy`} className="inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 text-sm font-semibold text-brand-success transition-colors hover:bg-brand-elevated">
-                                        {ti('academy')}
-                                    </Link>
-                                    </>}
+
+                            {/* Goal Progression Bar towards next tier mystery chest */}
+                            {nextBox && (
+                                <div className="mt-4 pt-3 border-t border-brand-border-opacity-10 relative z-10">
+                                    <div className="flex items-center justify-between text-caption font-semibold">
+                                        <span className="text-brand-muted">
+                                            Target: <span className="text-brand-primary font-bold">{nextBox.name}</span>
+                                        </span>
+                                        <span className="text-brand-gold font-bold">
+                                            {Math.min(100, Math.round((userXP / nextBox.costXP) * 100))}%
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-brand-elevated h-2.5 rounded-full overflow-hidden mt-1.5 border border-brand-border-opacity-10">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full transition-all duration-500"
+                                            style={{ width: `${Math.min(100, Math.round((userXP / nextBox.costXP) * 100))}%` }}
+                                        />
+                                    </div>
+                                    <div className="mt-2 flex items-center justify-between text-caption text-brand-muted">
+                                        <span>{userXP.toLocaleString(locale)} / {nextBox.costXP.toLocaleString(locale)} XP</span>
+                                        <span className="font-semibold text-amber-400">+{xpToNextBox.toLocaleString(locale)} XP to unlock</span>
+                                    </div>
                                 </div>
                             )}
+
+                            {/* Viral XP Earn Shortcuts */}
+                            <div className="mt-3.5 pt-3 border-t border-brand-border-opacity-10 flex flex-wrap items-center gap-2 relative z-10">
+                                <span className="text-caption font-bold text-brand-muted">Earn XP:</span>
+                                <Link
+                                    href={`/${locale}/game`}
+                                    className="ui-tap-target px-2.5 py-1.5 rounded-lg bg-brand-elevated border border-brand-border-opacity-10 text-caption font-semibold text-brand-primary hover:text-brand-gold hover:border-brand-gold transition-colors flex items-center gap-1.5"
+                                >
+                                    <span>⚡ Play Blitz</span>
+                                    <span className="text-emerald-400 font-bold">+50 XP</span>
+                                </Link>
+                                <Link
+                                    href={`/${locale}/academy`}
+                                    className="ui-tap-target px-2.5 py-1.5 rounded-lg bg-brand-elevated border border-brand-border-opacity-10 text-caption font-semibold text-brand-primary hover:text-brand-gold hover:border-brand-gold transition-colors flex items-center gap-1.5"
+                                >
+                                    <span>🧩 Tactics</span>
+                                    <span className="text-emerald-400 font-bold">+25 XP</span>
+                                </Link>
+                                <Link
+                                    href={`/${locale}/profile`}
+                                    className="ui-tap-target px-2.5 py-1.5 rounded-lg bg-brand-elevated border border-brand-border-opacity-10 text-caption font-semibold text-brand-primary hover:text-brand-gold hover:border-brand-gold transition-colors flex items-center gap-1.5"
+                                >
+                                    <span>👥 Invite</span>
+                                    <span className="text-emerald-400 font-bold">+500 XP</span>
+                                </Link>
+                            </div>
                         </div>
                     </section>
-
-                    {/* Recently won */}
-                    <AnimatePresence>
-                        {recentWins.length > 0 && (
-                            <motion.div key="recent-wins" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="w-full">
-                                <SectionHeader title={t('recently_won')} />
-                                <div className="mt-3 flex gap-2.5 overflow-x-auto pb-1 px-1 scrollbar-none">
-                                    {recentWins.map((w) => {
-                                        const c = BOX_CONFIG[w.tier].theme;
-                                        return (
-                                            <div key={w.at} className="shrink-0 px-3.5 py-2.5 rounded-xl border bg-brand-surface flex items-center gap-2.5"
-                                                style={{ borderColor: `rgba(${c.rgb},0.25)`, background: `rgba(${c.rgb},0.08)` }}>
-                                                <FiBox size={13} style={{ color: c.accent }} className="drop-shadow-md" />
-                                                <span className="text-caption font-semibold tracking-normal text-brand-primary whitespace-nowrap">{w.name}</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
 
                     {/* Category Tabs / Filter */}
                     <nav aria-label={tc('marketplace_categories')} className="w-full pt-1">
@@ -535,7 +559,7 @@ export default function MarketplacePage() {
                                         >
                                             {isYearly && (
                                                 <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-xl bg-purple-500/20 border-b border-l border-purple-500/30 text-caption font-bold text-purple-300">
-                                                    Best Value · 30% Off
+                                                    Best Value · 33% Off
                                                 </div>
                                             )}
                                             <div className="space-y-3">
@@ -547,15 +571,28 @@ export default function MarketplacePage() {
                                                         </h3>
                                                         <p className="mt-1 text-sm leading-5 text-brand-muted">{item.desc}</p>
                                                     </div>
-                                                    <Badge variant="purple" className="shrink-0 mt-0.5">
-                                                        {item.cost.toLocaleString(locale)} XP
-                                                    </Badge>
+                                                    <div className="text-right shrink-0 mt-0.5">
+                                                        {isYearly && (
+                                                            <span className="block text-caption text-brand-muted line-through">
+                                                                180,000 XP
+                                                            </span>
+                                                        )}
+                                                        <Badge variant="purple">
+                                                            {item.cost.toLocaleString(locale)} XP
+                                                        </Badge>
+                                                    </div>
                                                 </div>
 
                                                 <div className="flex flex-wrap gap-2 text-caption pt-1 text-brand-muted">
                                                     <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border">⚡ Ad-Free Blitz</span>
                                                     <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border">📊 Advanced Analytics</span>
                                                     <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border">👑 Crown Badge</span>
+                                                    {isYearly && (
+                                                        <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border text-amber-400 font-semibold">💎 2× Login Bonus</span>
+                                                    )}
+                                                    {isYearly && (
+                                                        <span className="px-2 py-0.5 rounded-md bg-brand-elevated border border-brand-border text-emerald-400 font-semibold">Save 60,000 XP</span>
+                                                    )}
                                                 </div>
                                             </div>
 

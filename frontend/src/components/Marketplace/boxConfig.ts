@@ -49,6 +49,10 @@ export interface BoxConfig {
     drops: DropOdds[];
     /** Seasonal / limited flag → drives the "LIMITED" ribbon + countdown. */
     limited?: boolean;
+    /** Apex reward highlight for viral FOMO */
+    apexDrop: string;
+    /** Tier marketing badge label */
+    badgeLabel: string;
 }
 
 export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
@@ -60,6 +64,8 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
         glyph: '♟',
         tagline: 'Pawn-marked opening chest',
         costXP: 5000,
+        badgeLabel: 'Starter',
+        apexDrop: 'Top: 1.2× Boost & Border',
         theme: { accent: '#CD7F32', accent2: '#5C3317', glow: '#CD7F32', rgb: '205,127,50' },
         drops: [
             { label: '500 XP Refund', chance: 50, kind: 'refund' },
@@ -75,6 +81,8 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
         glyph: '♞',
         tagline: 'Knight-forged tactical chest',
         costXP: 8000,
+        badgeLabel: 'Popular',
+        apexDrop: 'Top: 1-Week VIP Access',
         theme: { accent: '#C0C0C0', accent2: '#606063', glow: '#D8D8D8', rgb: '192,192,192' },
         drops: [
             { label: '1.5× XP Boost · 48h', chance: 40, kind: 'boost' },
@@ -90,6 +98,8 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
         glyph: '♛',
         tagline: 'Crown-clasp royal chess chest',
         costXP: 10000,
+        badgeLabel: 'High Roller',
+        apexDrop: 'Top: 1-Month VIP + 2× Boost',
         theme: { accent: '#FFD700', accent2: '#B8860B', glow: '#FFE55C', rgb: '255,215,0' },
         drops: [
             { label: '1-Month Premium', chance: 50, kind: 'premium' },
@@ -105,6 +115,8 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
         glyph: '♚',
         tagline: 'Pearl-board sovereign chest',
         costXP: 30000,
+        badgeLabel: 'Apex Jackpot',
+        apexDrop: 'Top: 5,000 XP & 1-Year VIP',
         theme: { accent: '#E5E4E2', accent2: '#A09F9C', glow: '#B9F2FF', rgb: '229,228,226' },
         drops: [
             { label: '5,000 XP Jackpot', chance: 50, kind: 'refund' },
@@ -120,6 +132,8 @@ export const BOX_CONFIG: Record<BoxTier, BoxConfig> = {
         glyph: '♜',
         tagline: 'Ruby-forged final-move chest',
         costXP: 12000,
+        badgeLabel: 'Season 1 Exclusive',
+        apexDrop: 'Top: Limited Season Multiplier',
         theme: { accent: '#FF4500', accent2: '#8B0000', glow: '#FF6347', rgb: '255,69,0' },
         limited: true,
         drops: [

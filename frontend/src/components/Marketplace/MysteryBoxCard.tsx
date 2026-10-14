@@ -63,14 +63,18 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                             <span className="block text-caption font-bold normal-case tracking-normal text-brand-muted truncate">{cfg.piece}</span>
                         </div>
                     </div>
-                    {cfg.limited && (
-                        <Badge variant="secondary"
-
-                            style={{ color: `color-mix(in srgb, ${accent} 38%, var(--text-primary))`, background: `rgba(${rgb},0.08)`, borderColor: `rgba(${rgb},0.22)` }}
+                    <div className="flex items-center gap-1.5">
+                        <span
+                            className="px-2 py-0.5 rounded-full text-caption font-semibold tracking-normal border"
+                            style={{
+                                color: `color-mix(in srgb, ${accent} 40%, var(--text-primary))`,
+                                background: `rgba(${rgb},0.08)`,
+                                borderColor: `rgba(${rgb},0.22)`,
+                            }}
                         >
-                            {t('limited')}
-                        </Badge>
-                    )}
+                            {cfg.badgeLabel}
+                        </span>
+                    </div>
                 </div>
 
                 <div className="relative -mx-1 mt-1 mb-1 z-10 h-[118px] flex items-center justify-center">
@@ -86,8 +90,13 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                 </div>
 
                 <div className="text-left z-10 min-h-[45px]">
-                    <h3 className="text-[13px] font-semibold normal-case tracking-tight leading-tight text-brand-primary">{cfg.name}</h3>
+                    <h3 className="text-sm font-semibold normal-case tracking-tight leading-tight text-brand-primary">{cfg.name}</h3>
                     <p className="text-caption text-brand-muted leading-snug mt-1 font-medium">{cfg.tagline}</p>
+                    {/* Apex Drop Highlight for Viral FOMO */}
+                    <div className="mt-2 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-brand-elevated border border-brand-border-opacity-10 text-caption font-medium">
+                        <span className="text-amber-400 font-bold shrink-0">★</span>
+                        <span className="truncate text-brand-primary font-semibold">{cfg.apexDrop}</span>
+                    </div>
                     {cfg.limited && <SeasonalCountdown className="mt-1.5" accent={accent} />}
                 </div>
 
@@ -95,7 +104,7 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                     type="button"
                     onClick={() => setShowDetails(true)}
                     aria-haspopup="dialog"
-                    className="ui-tap-target z-10 min-h-11 w-full mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
+                    className="ui-tap-target z-10 min-h-11 w-full mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-brand-border-opacity-10 text-caption font-semibold normal-case tracking-normal text-brand-muted hover:text-brand-primary transition-colors cursor-pointer"
                 >
                     <span>{t('whats_inside')}</span>
                     <FiChevronDown size={11} className="-rotate-90" />
@@ -124,6 +133,12 @@ export default function MysteryBoxCard({ tier, userXP, onUnbox, disabled }: Myst
                                 : t('need_more_xp', { amount: shortfall.toLocaleString() })}
                     </span>
                 </button>
+
+                {/* 100% Guaranteed Drop reassurance */}
+                <div className="mt-2 flex items-center justify-center gap-1 text-caption text-brand-muted font-medium">
+                    <span className="text-emerald-400 font-bold">✓</span>
+                    <span>100% Guaranteed Drop</span>
+                </div>
             </div>
             {showDetails && (
                 <MysteryBoxDetailsSheet
