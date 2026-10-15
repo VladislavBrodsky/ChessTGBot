@@ -66,7 +66,14 @@ async function route(path, method, requestBody = {}) {
   ];
   if (path.endsWith('/gamification/tasks')) return tasks.map(task => ({ ...task, gram_reward_nano: task.title_key === 'join_channel' ? '500000000' : '300000000', gram_reward_mode: 'claim' }));
   if (path.endsWith('/gamification/engagement/status')) return { enabled: false };
-  if (path.endsWith('/gamification/academy/state')) return { unlocked_lessons: [], completed_lessons: [], puzzles: [] };
+  if (path.endsWith('/gamification/academy/state')) return {
+    unlocked_lessons: ['piece-values', 'forks'], completed_lessons: ['piece-values'],
+    // 100 tactical levels: three solved, one current, then sequential, XP and premium locks, so every state of the grid renders.
+    puzzles: Array.from({ length: 100 }, (_, i) => ({
+      id: i + 1, title: `${i < 5 ? 'Mate in 1' : 'Fork the king'} — Level ${i + 1}`, description: i < 5 ? 'Find the mating move.' : 'Win material with a tactic.', xp_reward: 50, xp_cost: i >= 10 && i < 29 ? 100 : undefined,
+      is_solved: i < 3, is_sequential_locked: i > 3, is_premium_locked: i >= 29, is_xp_locked: i >= 10 && i < 29,
+    })),
+  };
   if (/\/academy\/puzzles\/\d+$/.test(path)) return { id: 1, title: 'Mate in 1', description: 'White to move.', fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4', move_count: 1, xp_reward: 50 };
   if (/\/academy\/puzzles\/\d+\/verify$/.test(path)) return { status: 'success', solved: true, new_xp: 900, new_elo: 1455, explanation: 'Qxf7# uses the queen and bishop together to give checkmate.' };
   if (/\/academy\/puzzles\/\d+\/hint$/.test(path)) return { from: 'h5', hint_text: 'Look for a check supported by your bishop on c4.' };
