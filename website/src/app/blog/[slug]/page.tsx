@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Badge, Eyebrow } from "@/components/ui/Badge";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   getPublishedPosts,
@@ -291,6 +292,17 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           {/* Subtitle / Lead */}
           <p className="text-lead text-fg-muted">{post.subtitle}</p>
+
+          {post.coverImage && (
+            <Image
+              src={post.coverImage}
+              width={1000}
+              height={1000}
+              sizes="(max-width: 639px) 240px, 320px"
+              alt=""
+              className="mx-auto h-auto w-full max-w-[240px] sm:max-w-xs"
+            />
+          )}
 
           {/* Author Badge */}
           <div className="flex items-center gap-3.5 pt-6 border-t border-line">

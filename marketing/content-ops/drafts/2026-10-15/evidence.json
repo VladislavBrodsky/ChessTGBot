@@ -1,0 +1,220 @@
+{
+  "status": "draft-for-review",
+  "language": "en",
+  "local_date": "2026-10-15",
+  "timezone": "America/Mexico_City",
+  "created_at": "2026-10-15T15:05:04.293807+00:00",
+  "verified_at": "2026-10-15T15:05:04.293807+00:00",
+  "intended_publication_date": "2026-10-15",
+  "actual_publication_date": null,
+  "human_approval": null,
+  "selection": {
+    "calendar_slot": "Chess News; fallback castling rights",
+    "selected": "Evergreen Academy lesson: can you castle when the rook is attacked?",
+    "reason": "The collected fresh candidates did not yield a fully verified news game position in this run. The inspected Lichess item announces events rather than a teaching position. Use the scheduled evergreen fallback without manufacturing a current-event connection.",
+    "duplicate_check": "No existing daily package for 2026-10-15. Searched website article JSON and prior daily drafts. Oct 8 screenshot-to-FEN draft briefly mentions castling rights; this article serves the narrower attacked-rook and attacked-b1 legality intent with three new constructed positions. No duplicate slug or published article with that task was found.",
+    "future_article_url": "https://web3chess.online/blog/can-you-castle-if-rook-is-attacked",
+    "future_article_url_status": "Unpublished; not a live distribution destination"
+  },
+  "collection": {
+    "report": "marketing/content-ops/reports/research-2026-10-15.json",
+    "fetched_at": "2026-10-15T14:59:39.394399+00:00",
+    "candidate_count": 22,
+    "sources": [
+      {
+        "id": "fide",
+        "http_status": 200,
+        "new": 10,
+        "updated": 0,
+        "unchanged": 0
+      },
+      {
+        "id": "lichess",
+        "http_status": 200,
+        "new": 1,
+        "updated": 0,
+        "unchanged": 23
+      },
+      {
+        "id": "chesscom",
+        "http_status": 200,
+        "new": 11,
+        "updated": 0,
+        "unchanged": 14
+      }
+    ],
+    "interpretation": "Feed snippets were used for discovery only. Collector opportunity scores are not audience metrics. Youth and school stories were not used for commercial promotion."
+  },
+  "claims": [
+    {
+      "claim": "FIDE distinguishes lost castling rights from temporary obstructions and attacks on the king route",
+      "source_url": "https://handbook.fide.com/chapter/E012023",
+      "source_publication_date": null,
+      "effective_date": "2023-01-01",
+      "event_date": null,
+      "captured_at": "2026-10-15T15:05:04.293807+00:00",
+      "verification": "Full primary HTML downloaded successfully with public HTTP 200 after web-reader timeouts; inspected Articles 3.8.2, 3.9 and context. Original prose paraphrases the rules; no source quotation used.",
+      "status": "verified"
+    },
+    {
+      "claim": "Legal castling in exercise 1; illegal crossing in exercise 2; legal queenside castle despite b1 attack in exercise 3; no castling after rights removed",
+      "source_url": "https://jhlywa.github.io/chess.js/",
+      "source_publication_date": null,
+      "event_date": null,
+      "captured_at": "2026-10-15T15:05:04.293807+00:00",
+      "verification": "Read primary API documentation for moves, getCastlingRights and isAttacked. Replayed original FEN exercises using local chess.js 1.4.0, strict SAN for legal castles and the moved-and-returned rook sequence. Full results in position-checks.json. No engine evaluation or strongest-move claim.",
+      "status": "verified-original-analysis"
+    },
+    {
+      "claim": "Fresh Lichess candidate announces October–December titled arenas",
+      "source_url": "https://lichess.org/@/Lichess/blog/titled-arenas-announcement-october-to-december-2026/WuJIesah",
+      "source_publication_date": "2026-10-13",
+      "feed_announcement_date": "2026-10-14",
+      "event_date": null,
+      "captured_at": "2026-10-15T15:05:04.293807+00:00",
+      "verification": "Read the full primary page, including entry requirements and event table. Not selected: announcement offers no verified game position for this lesson. No event, prize or audience claims are reused in the article.",
+      "status": "reviewed-not-used"
+    },
+    {
+      "claim": "Academy destination and related opening lesson are reachable",
+      "source_url": "https://web3chess.online/academy",
+      "source_publication_date": null,
+      "event_date": null,
+      "captured_at": "2026-10-15T15:05:04.293807+00:00",
+      "verification": "Public link checks returned HTTP 200. Inspected current website Academy source for route and practice framing. Copy only invites Academy exploration, without claiming this specific drill is installed in the product.",
+      "status": "verified"
+    }
+  ],
+  "ordered_review_passes": [
+    {
+      "order": 1,
+      "role": "CMO",
+      "decision": "One evergreen lesson for chess improvers, not a prize or wagering acquisition hook. Primary action: Academy exploration. Hypothesis: a precise yes/no legality question can earn useful saves. Compare hook A and B only in like formats and comparable windows. Stop/revise if reach lacks saves or qualified visits; no baseline supplied."
+    },
+    {
+      "order": 2,
+      "role": "Research and keyword",
+      "decision": "Collected three permitted feeds successfully; 22 candidates. Read the full Lichess candidate; primary FIDE rules and chess.js docs verified. Intent seed: can you castle if your rook is attacked. Volume and difficulty unknown. Narrower task than the Oct 8 screenshot-to-FEN draft; unique slug checked."
+    },
+    {
+      "order": 3,
+      "role": "Chess editor",
+      "decision": "Original 636-word lesson including captions; 3-minute estimate at 220 words/minute. Three constructed standard-chess positions, exact FENs, retained-right captions, explicit answers and a no-rights variation. Five scenario checks passed. Legality is distinguished from strategic quality and Chess960. Organization author is editorial attribution, not a claim of human approval."
+    },
+    {
+      "order": 4,
+      "role": "SMM",
+      "decision": "Two complete hook variants, Telegram copy, four-post X thread, Instagram caption, six-frame carousel storyboard, three-frame story with payoff, and Reel narration. Four static hook creatives are exported in native ratios; storyboard frames are specifications, not claimed finished carousel/video exports. All graphics visibly labelled Draft for review; generic Academy artwork is not represented as the exercise board."
+    },
+    {
+      "order": 5,
+      "role": "SEO and performance",
+      "decision": "Full website content checker with --draft passed for 35 articles. Metadata, dates, unique slug, related slug and original FENs passed. Four public destinations/source links returned 200. Four creative layout checks passed and proof sheet visually inspected. Reading proof checked at 320, 390 and 768px with no horizontal overflow; proof is an approximate local editorial layout, not a production template, lab CWV or field performance result."
+    }
+  ],
+  "keyword": {
+    "primary": "can you castle if your rook is attacked",
+    "secondary": [
+      "can you castle if b1 is attacked",
+      "castling through check"
+    ],
+    "intent": "Resolve a precise standard-chess legality question with original exercises",
+    "volume": null,
+    "difficulty": null
+  },
+  "checks": {
+    "content_checker": "Passed: 35 articles including draft, using website/scripts/check-content.mjs --draft",
+    "position_checks": "Five scenario checks passed; see position-checks.json",
+    "creative": "Existing export-creative.mjs; 4 PNG + 4 editable SVG + proof sheet, no layout warnings; visually inspected",
+    "mobile": {
+      "links": [
+        {
+          "url": "https://web3chess.online/academy",
+          "status": 200
+        },
+        {
+          "url": "https://web3chess.online/blog/opening-mastery-tactics",
+          "status": 200
+        },
+        {
+          "url": "https://handbook.fide.com/chapter/E012023",
+          "status": 200
+        },
+        {
+          "url": "https://jhlywa.github.io/chess.js/",
+          "status": 200
+        }
+      ],
+      "mobileReadingProof": [
+        {
+          "width": 320,
+          "scrollWidth": 320,
+          "headings": 1,
+          "boards": 3,
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "scrollWidth": 390,
+          "headings": 1,
+          "boards": 3,
+          "overflow": false
+        },
+        {
+          "width": 768,
+          "scrollWidth": 768,
+          "headings": 1,
+          "boards": 3,
+          "overflow": false
+        }
+      ],
+      "productionTemplateTested": false
+    },
+    "publication": "Not published, pushed, deployed, broadcast or scheduled"
+  },
+  "product_mechanics": {
+    "money_or_prizes": "No USDT, GRAM reward, income, swap, payout or eligibility claim is made. No financial or referral logic changed.",
+    "cta": "Academy overview only; no promise the constructed drill is a current app puzzle"
+  },
+  "assets": {
+    "source": "Existing repository campaign renderer, bundled brand artwork and fonts",
+    "source_files": [
+      "marketing/templates/renderer.js",
+      "marketing/templates/assets.js",
+      "marketing/templates/CANVAS_STYLE_GUIDE.md"
+    ],
+    "licensing": "Reuses repository-supplied brand/font/icon assets; no third-party article media or competitor creative copied; no new external asset licence claim"
+  },
+  "analytics": {
+    "channel_metrics": null,
+    "search_console": null,
+    "field_core_web_vitals": null,
+    "performance_or_virality_claims": "None",
+    "review_windows": "72 hours and seven days after any approved publication"
+  },
+  "limits": [
+    "Human editorial approval is pending",
+    "Four hook formats are complete; carousel and story sequences are supplied as copy/storyboards rather than rendered multi-frame exports",
+    "Local reading proof uses approximate Fog Board styling; production article layout is not built or deployed"
+  ],
+  "sha256": {
+    "article-mobile.png": "56d9d89ce5cde4f04b25c580acd6b030ee96fa2732bf6e0a7438371a6c6afd3c",
+    "article.json": "0a17e0ce21c2a9998a203e4b917367b0a4ef91acbe81a1cf292f7a2408fc5da4",
+    "article.md": "88dee97f5f8e2d7b3f7b9e3493238a7bbcaa4d1558761e6fedf5f1a7531e8aa3",
+    "creative/manifest.json": "655c65d5c8d58074157ff3231440c9edb84402e097ecdd51ef68cee94ebb3941",
+    "creative/portrait.png": "52be1bf15eba508ad59b2f5882cbf63792839c5a2a7c2897fecf3a469634c56f",
+    "creative/portrait.svg": "8ac6d91681542a5522060402efe4446eddec3fd5d4af82aef435b96546933ddb",
+    "creative/preview.png": "abf8d08da0268f2e7263b3b9cb89d8f905c9ec4e8fc07d6b5f2b0c3fcaeb0722",
+    "creative/square.png": "193b71b7a974fccff4d204158d5a89b02fc707b8edc04ecdff12b50a6b1899a1",
+    "creative/square.svg": "752d913473b051efea0a3022bbbd1f6361c5560a18d74d769615721f9f4bea62",
+    "creative/story.png": "9aa6de3d9e88e75695b498f4fab9a7839aaca8730c81f7dc30a3e34354b4b28a",
+    "creative/story.svg": "df0270c7592da3305b85c8dfedebaa2a539b886b5b9f0714f02bc1e9637b519a",
+    "creative/wide.png": "517935fdde36a02230a58b130ab3497ce4c998e79bce15f78ee2731757fc375e",
+    "creative/wide.svg": "8cbfb15ea821203b4ae3b92aae73c80c3204c7c6bbdf7064389d742d62394f38",
+    "creative.json": "b4396de8a508c4b2b169b4df57da2e263e5a0cce34d9ad77835c1d857b36ed4f",
+    "position-checks.json": "51cee79ba0f896cdaf506222aa233aafe5612601096527546459a66166505ed7",
+    "reading-preview.html": "dc22e42aa01ecec822cd8d10f7397fea9e7ae8e559f4460888d0ba6108c8ccc7",
+    "review-checks.json": "9fae03279caee1329852e82cdff24a6a6c88c63f1d737345a739e0f2f743962c",
+    "social.md": "91ae20e779d2ed0a3903c9a681b9a533ca3de502e87e4fcc1df9e43b88d32c67"
+  }
+}

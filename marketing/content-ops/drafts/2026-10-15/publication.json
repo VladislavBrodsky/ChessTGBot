@@ -1,0 +1,43 @@
+{
+  "slug": "can-you-castle-if-rook-is-attacked",
+  "approval": {
+    "by": "Human owner in this chat",
+    "at_recorded": "2026-10-15T15:14:43.989871+00:00",
+    "request": "Looks good, publish the article on our website, push it to GitHub and deploy it so I can see it in production.",
+    "approved_draft_sha256": "0a17e0ce21c2a9998a203e4b917367b0a4ef91acbe81a1cf292f7a2408fc5da4",
+    "additional_instruction": "Generate eye-catching 3D elements following the design system and branding",
+    "text_changed": false
+  },
+  "website_article": "website/src/content/articles/can-you-castle-if-rook-is-attacked.json",
+  "website_article_sha256": "4609ae54a07ab91d5e2fcb81c9ed961298d5ab5445e8a97d37185a5009b81c07",
+  "publication_url": "https://web3chess.online/blog/can-you-castle-if-rook-is-attacked",
+  "publication_status": "approved-awaiting-deployment-verification",
+  "distribution": {
+    "website": "authorized",
+    "social": "not authorized; remains draft"
+  },
+  "artwork": {
+    "source": "artwork/castling-source.png",
+    "prompt": "artwork/prompt.md",
+    "method": "built-in image generation",
+    "website_asset": "website/public/illustrations/chess-castling.webp",
+    "social_asset": "website/public/illustrations/chess-castling-social.png",
+    "role": "Decorative article sculpture, journal art and Open Graph preview; exact board diagrams unchanged"
+  },
+  "checks": {
+    "draft_schema": "Passed: 35 articles including this draft",
+    "legal_scenarios": "Five passed, position-checks.json",
+    "draft_creative_exports": "Four formats previously verified; remain labelled drafts",
+    "release_checks": {
+      "production_build": "passed",
+      "content": "35 articles verified",
+      "lint": "passed",
+      "typecheck": "passed",
+      "seo": "44 public pages and sitemap routes passed",
+      "standalone_request_test": "passed",
+      "mobile_desktop": "320/390/768/1280px: no overflow or browser errors",
+      "share_image": "1200x630 verified and visually inspected",
+      "approved_text": "unchanged; decorative coverImage metadata only"
+    }
+  }
+}

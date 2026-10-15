@@ -1,0 +1,273 @@
+{
+  "fetched_at": "2026-10-15T14:59:39.394399+00:00",
+  "sources": [
+    {
+      "id": "fide",
+      "http_status": 200,
+      "new": 10,
+      "updated": 0,
+      "unchanged": 0
+    },
+    {
+      "id": "lichess",
+      "http_status": 200,
+      "new": 1,
+      "updated": 0,
+      "unchanged": 23
+    },
+    {
+      "id": "chesscom",
+      "http_status": 200,
+      "new": 11,
+      "updated": 0,
+      "unchanged": 14
+    }
+  ],
+  "candidates": [
+    {
+      "event_date": null,
+      "published_at": "2026-10-14T20:47:54+00:00",
+      "source": "fide",
+      "summary": "Surprises and perfect scores shape the opening rounds of the 2026 World Championships U7\u2013U17 With an outstanding turnout of 721 players representing 82 countries, the 2026 FIDE World Championships U7\u2013U17 got underway on October 13 in the coastal town of Roquetas de Mar, in the province of Almer\u00eda, southern Spain. Running until October 21, the event is jointly organized by the International Chess F",
+      "title": "World Championships U7\u2013U17 2026: Young talents make their mark in Spain",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/world-championships-u7-u17-2026-young-talents-make-their-mark-in-spain/",
+      "opportunity_score": 53.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-15T08:20:31+00:00",
+      "source": "fide",
+      "summary": "By George Chitiyo, Ph.D.Tennessee Technological University Chess has a long history in schools, yet the field has lacked a global account of how school chess programs are organized, supported and evaluated. The 2026 FIDE Global Chess in Schools Survey, conducted for the FIDE Chess in Education Commission, was designed to address that gap. This article summarizes the main findings from the global s",
+      "title": "Chess in Schools Worldwide: Reach, Structure and Evidence in 100 countries",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/chess-in-schools-worldwide-reach-structure-and-evidence-in-100-countries/",
+      "opportunity_score": 46.7
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-15T07:58:20+00:00",
+      "source": "fide",
+      "summary": "Armenia \u2013 Mexico 1(men\u2019s section), India 1 \u2013 Mexico (women\u2019s section) and India 1 \u2013 Serbia (youth section) are set to clash in the finals for the titles. The 6th Intercontinental Online Chess Championship for Prisoners continued on 14 October with an exciting Championship Round (quarterfinals), bringing together the best teams from Day 1. This stage featured two round-robin groups in each section,",
+      "title": "Finals set at the 6th Intercontinental Online Chess Championship for Prisoners",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/finals-set-at-the-6th-intercontinental-online-chess-championship-for-prisoners/",
+      "opportunity_score": 46.7
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-14T12:39:44+00:00",
+      "source": "fide",
+      "summary": "FIDE and the Venezuelan Chess Federation, in cooperation with the Ministry of People\u2019s Power for Sport, invite all FIDE Member Federations to participate in the FIDE World Junior U20 Championship to be held in Caracas 17 to 28 November 2026. Each National Federation may register up to two invited players (one per category). Additional players may be sent at the federation\u2019s own expense. Players ho",
+      "title": "FIDE World Junior U20 Championship in Venezuela: Registration deadline extended",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/fide-world-junior-u20-championship-in-venezuela-registration-deadline-extended/",
+      "opportunity_score": 45.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-14T07:38:51+00:00",
+      "source": "fide",
+      "summary": "The most anticipated chess event of the year, the match for the world crown, opens on 22 November in Geneva, Switzerland, with the first game scheduled for 24 November. Two 20-year-old prodigies, World Champion Gukesh D of India and Challenger Javokhir Sindarov of Uzbekistan will battle for the World Championship title and the right to be called the leader of their generation. Seeing the players u",
+      "title": "Ticket sales for the Salesforce FIDE World Championship are now open",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/ticket-sales-for-the-salesforce-fide-world-championship-are-now-open/",
+      "opportunity_score": 45.7
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-13T21:47:47+00:00",
+      "source": "fide",
+      "summary": "The 6th Intercontinental Online Chess Championship for Prisoners kicked off on October 13, bringing together incarcerated players from around the world for three days of international online competition. This year\u2019s championship established a new participation record, with 140 teams from 56 countries registered for the event. The championship is held in men\u2019s, women\u2019s, and youth sections, with tea",
+      "title": "6th Intercontinental Online Chess Championship for Prisoners kicks off with record 140 teams",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/6th-intercontinental-online-chess-championship-for-prisoners-kicks-off-with-record-140-teams/",
+      "opportunity_score": 45.3
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-13T11:57:07+00:00",
+      "source": "fide",
+      "summary": "GM Evgenios Ioannidis and IM Stavroula Tsolakidou are the new Greek chess champions. Ioannidis claimed his maiden national crown, while Tsolakidou won her second title. The 75th edition of the Greek Championship (open section) took place from October 3 to 11, 2026 on the island of Psara. Organized by the Greek Chess Federation (ESO) in cooperation with the Korydallos Chess Club and with the suppor",
+      "title": "Greek Championship 2026: Evgenios Ioannidis and Stavroula Tsolakidou win titles",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/greek-championship-2026-evgenios-ioannidis-wins-maiden-title/",
+      "opportunity_score": 44.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-12T13:29:27+00:00",
+      "source": "fide",
+      "summary": "The FIDE General Assembly has formally supported a resolution based on a proposal by the Icelandic Chess Federation concerning shorter time controls in classical chess. However, the adoption of the resolution does not mean that the regulations change immediately. Under the FIDE Charter, the General Assembly is empowered to approve general guidelines for FIDE activities, while amendments to specifi",
+      "title": "FIDE General Assembly adopts resolution on shorter time controls: What it means",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/fide-general-assembly-adopts-resolution-on-shorter-time-controls-what-it-means/",
+      "opportunity_score": 43.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-15T01:57:00+00:00",
+      "source": "chesscom",
+      "summary": "Eight out of 12 games were decisive on Wednesday, making it the bloodiest round across both tournaments in this year's 2026 U.S. Chess Championships. GM Andy Woodward took down defending champion GM Fabiano Caruana to join GM Wesley So in the lead...",
+      "title": "Woodward Topples Caruana; Lee On 4.5/5 After Bloodiest Day Yet",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-us-chess-championships-round-5",
+      "opportunity_score": 38.5
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-14T19:00:54+00:00",
+      "source": "chesscom",
+      "summary": "IM Roman Shogdzhiev took a major step toward becoming the youngest grandmaster in chess history on Monday, scoring his second GM norm in the Serbian Super League. The 11-year-old is now one norm and 29 rating points away from breaking GM Abhimanyu...",
+      "title": "Roman Shogdzhiev, 11, Closes In On Mishra's Youngest GM Record",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/roman-shogdzhiev-second-gm-norm-youngest-grandmaster-record",
+      "opportunity_score": 38.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-13T05:51:46.672000+00:00",
+      "source": "lichess",
+      "summary": "",
+      "title": "Titled Arenas Announcement \u2014 October to December 2026",
+      "trust": "primary",
+      "updated_at": "2026-10-13T05:51:46.672000+00:00",
+      "url": "https://lichess.org/@/Lichess/blog/titled-arenas-announcement-october-to-december-2026/WuJIesah",
+      "opportunity_score": 37.6
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-12T12:16:36+00:00",
+      "source": "fide",
+      "summary": "FIDE General Assembly September 26-27, 2026 Samarkand, Uzbekistan List of decisions GA-2026/01 To approve the Electoral Commission\u2019s report. GA-2026/02 To elect three Scrutineers: Ms. Nina Rob (SLO), Mr. Francisco J Cruz Arce (PUR), Mr. Sidi Mohammed Tajedine (MTN), with Mr. Rajai N. Al-Susi (PLE) as a substitute. GA-2026/03 To elect Mr. Timur Turlov as FIDE President and Mr. Viswanathan Anand as ",
+      "title": "2026 FIDE General Assembly: List of decisions",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/fide-general-assembly-2026-list-of-decisions/",
+      "opportunity_score": 36.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-12T12:06:42+00:00",
+      "source": "fide",
+      "summary": "3rd FIDE Council Meeting September 21, 2026 List of decisions CM3-2026/01 To note Interim President\u2019s report. CM3-2026/02 To approve Treasurer\u2019s report. CM3-2026/03 To note the Global Strategy Commission\u2019 Report. CM3-2026/04 To note the Arbiters\u2019 Commission\u2019s report CM3-2026/05 To approve the recommendations of the Arbiters\u2019 Commission on Seminars, Classification upgrades, Amendments to the lectur",
+      "title": "2026 3rd FIDE Council Meeting: List of decisions",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/3rd-fide-council-meeting-2026-list-of-decisions/",
+      "opportunity_score": 36.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-13T08:04:00+00:00",
+      "source": "chesscom",
+      "summary": "It was a day of endgames in round four of the 2026 U.S. Chess Championship, with GM Fabiano Caruana scoring a long grinding win over GM Ray Robson to join GM Wesley So in the lead on three points. In other games, GMs Jeffery Xiong, Grigoriy Oparin...",
+      "title": "Day Of Endgames Sees Caruana Join So At Top; Lee Sole Leader In Women's",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-us-chess-championships-round-4",
+      "opportunity_score": 36.7
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-12T07:40:22+00:00",
+      "source": "chesscom",
+      "summary": "GMs Wesley So and Awonder Liang continued as joint leaders with 2.5 points after their mutual encounter ended in a draw in the third round of the 2026 U.S. Chess Championship. GM Andy Woodward was rewarded with a win for his dynamic play against G...",
+      "title": "Woodward, Shankland Strike; Alice Lee Joins Women's Leaders",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-us-chess-championships-round-3",
+      "opportunity_score": 35.7
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-11T02:58:00+00:00",
+      "source": "chesscom",
+      "summary": "GMs Wesley So and Awonder Liang won again in round two of the 2026 U.S. Chess Championship to lead with 2/2 perfect scores. So was much worse against GM Jeffery Xiong but turned it around, while Liang converted an endgame to give GM Sam Sevian his...",
+      "title": "Wesley So, Awonder Liang Lead Open; Paragua, Cervantes Lead Women With Perfect Scores",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-us-chess-championships-round-2",
+      "opportunity_score": 34.5
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-10T14:47:00+00:00",
+      "source": "chesscom",
+      "summary": "GM Parham Maghsoodloo took a step closer to qualifying for the 2027 FIDE Freestyle Chess World Championship by taking out the latest edition of Freestyle Friday. Maghsoodloo scored 9/11 en route to victory, suffering only a single loss to one of U...",
+      "title": "Maghsoodloo Wins Star-Studded Freestyle Friday",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/maghsoodloo-wins-freestyle-friday-october-9-2026",
+      "opportunity_score": 34.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-10T08:55:00+00:00",
+      "source": "chesscom",
+      "summary": "Three-time national champion GM Wesley So celebrated his 33rd birthday with a win over GM Sam Shankland in the first round of the 2026 U.S. Chess Championship, which started in St. Louis on Friday. GMs Jeffery Xiong and Awonder Liang also started ...",
+      "title": "Birthday Boy Wesley So Starts U.S. Championship With Topsy-Turvy Win",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-us-chess-championship-round-1",
+      "opportunity_score": 33.7
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-09T15:30:22+00:00",
+      "source": "chesscom",
+      "summary": "Josh Smith, an amateur player with a US Chess rating in the 1800s, is set to play GM Daniil Dubov in a 100-game bullet match with up to $20,000 on the line. But there is a catch: Dubov must win every single game to collect the full amount. The 49...",
+      "title": "Dubov Accepts $20,000 100-Game Challenge From 'Bullet Grandpa'",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/club-player-challenges-dubov-to-100-bullet-games",
+      "opportunity_score": 33.0
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-13T18:44:54+00:00",
+      "source": "chesscom",
+      "summary": "GM Fabiano Caruana won Titled Tuesday on October 13 during an off day in the 2026 U.S. Championship&mdash;where he currently shares the tournament lead&mdash;defeating GM Nihal Sarin in a key 10th-round matchup. Caruana then only made a draw in th...",
+      "title": "Caruana Wins Titled Tuesday On Day Off In U.S. Championship",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/caruana-wins-titled-tuesday-october-13-2026",
+      "opportunity_score": 30.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-11T00:14:00+00:00",
+      "source": "chesscom",
+      "summary": "History was made in the Bullet Brawl arena on Saturday as GM Hikaru Nakamura acquired his fifth straight title, eclipsing a record set and shared by the late GM Daniel Naroditsky and himself back in 2023. Nakamura made his biggest move in the sec...",
+      "title": "Nakamura Makes History With Record 5th Straight Bullet Brawl Victory",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/hikaru-nakamura-wins-bullet-brawl-oct-10-2026",
+      "opportunity_score": 27.4
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-10T06:09:00+00:00",
+      "source": "chesscom",
+      "summary": "GMs Jan-Krzysztof Duda, Oleksandr Bortnyk, and Tuan Minh Le fended off prodigies and numerous 3000+ rated opponents to win October 8's 3 0 Thursday&nbsp;tournaments outright. Duda dominated the 215-player-strong first tournament and came close to...",
+      "title": "Duda Scores 10/11 In 3 0 Thursday, Narrowly Misses 1st Perfect Score",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/duda-bortnyk-le-3-0-thursday-10-8-2026",
+      "opportunity_score": 26.6
+    }
+  ],
+  "limitations": [
+    "Opportunity scores are heuristics, not measured virality. Social views and search volume are unavailable unless supplied."
+  ]
+}

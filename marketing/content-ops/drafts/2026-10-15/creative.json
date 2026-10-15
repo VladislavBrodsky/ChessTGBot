@@ -1,0 +1,34 @@
+{
+  "id": "academy",
+  "number": "08",
+  "name": "Castling: the king route",
+  "purpose": "Original evergreen chess lesson",
+  "icon": "book-open-text",
+  "theme": "canvas",
+  "art": "academy",
+  "tag": "Draft for review",
+  "headline": "ROOK UNDER\nATTACK?",
+  "body": "Check the king’s route before you rule out castling",
+  "cta": "Explore the Academy",
+  "note": "Standard chess · Constructed exercises",
+  "alternate": "CAN YOU\nSTILL CASTLE?",
+  "proof": [
+    "Keep the right",
+    "Clear the gap",
+    "Check the king route"
+  ],
+  "proofIcons": [
+    "clock",
+    "strategy",
+    "shield-check"
+  ],
+  "caption": "An attacked rook alone does not rule out castling. Test the right, the gap and the king route in three original exercises. Draft for review",
+  "destination": "https://web3chess.online/academy",
+  "measure": "Saves per reach at 72 hours and seven days after approved publication",
+  "sequence": [
+    "Ask whether an attacked rook prevents castling",
+    "Reveal yes, no, yes across three constructed positions",
+    "Explain the king route and invite practice"
+  ],
+  "status": "draft-for-review"
+}

@@ -1,0 +1,44 @@
+{
+  "links": [
+    {
+      "url": "https://web3chess.online/academy",
+      "status": 200
+    },
+    {
+      "url": "https://web3chess.online/blog/opening-mastery-tactics",
+      "status": 200
+    },
+    {
+      "url": "https://handbook.fide.com/chapter/E012023",
+      "status": 200
+    },
+    {
+      "url": "https://jhlywa.github.io/chess.js/",
+      "status": 200
+    }
+  ],
+  "mobileReadingProof": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "headings": 1,
+      "boards": 3,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "headings": 1,
+      "boards": 3,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "headings": 1,
+      "boards": 3,
+      "overflow": false
+    }
+  ],
+  "productionTemplateTested": false
+}

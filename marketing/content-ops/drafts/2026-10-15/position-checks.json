@@ -1,0 +1,54 @@
+{
+  "library": "chess.js 1.4.0",
+  "engineEvaluation": null,
+  "results": [
+    {
+      "name": "rook attacked",
+      "fen": "4k2r/8/8/8/8/8/8/4K2R w K - 0 1",
+      "move": "O-O",
+      "legal": true,
+      "attackedSquare": "h1",
+      "after": "4k2r/8/8/8/8/8/8/5RK1 b - - 1 1",
+      "passed": true
+    },
+    {
+      "name": "crossing attacked",
+      "fen": "4kr2/8/8/8/8/8/8/4K2R w K - 0 1",
+      "move": "O-O",
+      "legal": false,
+      "attackedSquare": "f1",
+      "after": null,
+      "passed": true
+    },
+    {
+      "name": "b1 attacked",
+      "fen": "1r2k3/8/8/8/8/8/8/R3K3 w Q - 0 1",
+      "move": "O-O-O",
+      "legal": true,
+      "attackedSquare": "b1",
+      "after": "1r2k3/8/8/8/8/8/8/2KR4 b - - 1 1",
+      "passed": true
+    },
+    {
+      "name": "right removed",
+      "fen": "4k2r/8/8/8/8/8/8/4K2R w - - 0 1",
+      "move": "O-O",
+      "legal": false,
+      "attackedSquare": "h1",
+      "after": null,
+      "passed": true
+    },
+    {
+      "name": "rook moved and returned",
+      "sequence": [
+        "Rh2",
+        "Kf8",
+        "Rh1",
+        "Ke8"
+      ],
+      "after": "4k2r/8/8/8/8/8/8/4K2R w - - 4 3",
+      "castlingLegal": false,
+      "passed": true
+    }
+  ]
+}

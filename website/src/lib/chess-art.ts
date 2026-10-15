@@ -1,5 +1,14 @@
 /** Page-specific art and live captions; the render itself never contains text. */
 export const chessArt = {
+  castling: {
+    file: "chess-castling",
+    alt: "An ivory porcelain king and rook on a small tiled platform with a mint accent",
+    label: "Check the king route",
+    notation: "Right · Gap · Route",
+    title: "A clear route for the king",
+    caption: "Decorative castling sculpture; the lesson diagrams show the exact positions.",
+    icon: "strategy",
+  },
   home: {
     file: "chess-sculpture",
     alt: "An ivory knight, charcoal rook, and mint pawn on a sculpted chessboard",
@@ -59,6 +68,7 @@ export const chessArt = {
 export type ChessArtVariant = keyof typeof chessArt;
 
 export function articleArt(slug: string, category: string): ChessArtVariant {
+  if (slug === "can-you-castle-if-rook-is-attacked") return "castling";
   if (slug.includes("fair-play")) return "fairPlay";
   if (slug.includes("wager") || slug.includes("stake")) return "wagers";
   if (category === "Product") return "howItWorks";
