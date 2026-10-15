@@ -1,5 +1,7 @@
 # Web3Chess organic growth plan — 2026-10-08
 
+> For the current Search Console, indexing, domain, and execution status, read the [2026-10-15 operating system](SEO_GROWTH_OPERATING_SYSTEM_2026-10-15.md). The baseline below is a historical snapshot.
+
 ## Decision in one page
 
 Win the narrow, useful searches that the product can satisfy now: **play chess in Telegram**, **free A.I. practice**, and **solve a real chess position**. Send a visitor from a helpful answer or puzzle into a working game path. Measure authenticated arrival and actual games before expanding. Do not make 150 near-duplicate landing pages for 150 phrases.

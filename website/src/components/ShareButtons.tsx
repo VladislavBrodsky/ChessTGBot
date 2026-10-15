@@ -35,9 +35,9 @@ export function ShareButtons({
   }, [url]);
   const shareText = title + " — Web3Chess";
   async function copy() {
-    trackShareClick("copy_link", compact ? "challenge" : "article", url);
     try {
       await navigator.clipboard.writeText(url);
+      trackShareClick("copy_link", compact ? "challenge" : "article", url);
       setStatus("Link copied. Your friend is up next.");
       setShowLink(false);
       if (timer.current) clearTimeout(timer.current);

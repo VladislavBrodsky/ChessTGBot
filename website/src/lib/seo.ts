@@ -97,13 +97,6 @@ export function softwareApplicationData() {
       price: "0",
       priceCurrency: "USD",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "3840",
-      bestRating: "5",
-      worstRating: "1",
-    },
   };
 }
 

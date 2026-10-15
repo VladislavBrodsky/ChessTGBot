@@ -13,22 +13,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
+  // Only article dates are known from editorial data. A build or sitemap fetch
+  // does not mean the main content of a static route changed.
   return [
-    { url: SITE.url, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
-    { url: `${SITE.url}/play`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: SITE.url, priority: 1.0 },
+    { url: `${SITE.url}/play`, priority: 0.95 },
     {
       url: `${SITE.url}/how-it-works`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
       priority: 0.9,
     },
-    { url: `${SITE.url}/wagers`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${SITE.url}/academy`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${SITE.url}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-    { url: `${SITE.url}/fair-play`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
-    { url: `${SITE.url}/rules`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
-    { url: `${SITE.url}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    { url: `${SITE.url}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE.url}/wagers`, priority: 0.9 },
+    { url: `${SITE.url}/academy`, priority: 0.9 },
+    { url: `${SITE.url}/blog`, priority: 0.9 },
+    { url: `${SITE.url}/fair-play`, priority: 0.85 },
+    { url: `${SITE.url}/rules`, priority: 0.85 },
+    { url: `${SITE.url}/terms`, priority: 0.5 },
+    { url: `${SITE.url}/privacy`, priority: 0.5 },
     ...posts,
   ];
 }

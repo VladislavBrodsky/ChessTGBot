@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Chess } from "chess.js";
 import { FogBoard } from "./FogBoard";
 import { ChallengeIntro } from "./ChallengeIntro";
@@ -16,6 +16,7 @@ import { board } from "../../../design-system/website/tokens";
 import { Icon } from "@/icons";
 
 export function ChessChallenge() {
+  const startedPuzzle = useRef<string | null>(null);
   const [index, setIndex] = useState(() => {
     const id = new URLSearchParams(window.location.search).get("puzzle");
     return Math.max(
@@ -42,6 +43,7 @@ export function ChessChallenge() {
       trackPuzzleInteraction(CHALLENGES[next].id, "switch");
     }
     setIndex(next);
+    startedPuzzle.current = null;
     setPosition(CHALLENGES[next].fen);
     setOutcome("playing");
     setSelected(null);
@@ -52,6 +54,10 @@ export function ChessChallenge() {
   }
   function tryMove(move: string | { from: string; to: string }) {
     if (outcome !== "playing") return false;
+    if (startedPuzzle.current !== puzzle.id) {
+      trackPuzzleInteraction(puzzle.id, "start");
+      startedPuzzle.current = puzzle.id;
+    }
     const moveNotation =
       typeof move === "string" ? move : `${move.from}-${move.to}`;
     try {
@@ -225,7 +231,10 @@ export function ChessChallenge() {
             <>
               <Button
                 variant="soft"
-                onClick={() => setHint(!hint)}
+                onClick={() => {
+                  if (!hint) trackPuzzleInteraction(puzzle.id, "hint");
+                  setHint(!hint);
+                }}
                 aria-expanded={hint}
               >
                 {hint ? "Hide hint" : "Give me a hint"}

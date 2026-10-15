@@ -1,4 +1,4 @@
-import { GA_MEASUREMENT_ID } from "./config";
+import { GA_MEASUREMENT_ID, telegramLink } from "./config";
 
 /**
  * Google Analytics (GA4) & Data Collection Utilities.
@@ -50,9 +50,7 @@ export function trackPageView(url: string, title?: string): void {
  * confirmed Telegram arrival, registered player, game, or revenue event.
  */
 export function trackPlayClick(location: string, startapp?: string): void {
-  const destination = startapp
-    ? `https://t.me/chess_matbot/Web3Chess?startapp=${startapp}`
-    : "https://t.me/chess_matbot/Web3Chess";
+  const destination = telegramLink(startapp === "arena" ? "arena" : undefined);
 
   // Keep the established event name for trend continuity; classify its stage
   // explicitly so a click cannot be reported as an acquired player or income.
@@ -111,6 +109,7 @@ export function trackShareClick(
   url: string,
 ): void {
   trackEvent("share", {
+    funnel_stage: "share_intent",
     method,
     content_type: context,
     item_id: url,

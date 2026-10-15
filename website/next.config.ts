@@ -23,6 +23,31 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["framer-motion", "cobe"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.web3chess.online" }],
+        destination: "https://web3chess.online/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:locale(en|es|fr|de|ru|pt|zh|hi|ar|ja)/login",
+        destination: "https://app.web3chess.online/:locale/login",
+        permanent: true,
+      },
+      {
+        source: "/:locale(en|es|fr|de|ru|pt|zh|hi|ar|ja)",
+        destination: "https://app.web3chess.online/:locale/home",
+        permanent: true,
+      },
+      {
+        source: "/login",
+        destination: "https://app.web3chess.online/en/login",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
