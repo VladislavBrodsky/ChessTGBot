@@ -154,14 +154,16 @@ test.describe('browser safety net', () => {
 
     await page.goto('/en/wallet', { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: /Deposit/i }).click();
-    await expect(page.getByRole('button', { name: /Reconnect Wallet App|Connect Wallet to Top Up/i })).toBeVisible();
-    await page.locator('.bottom-drawer-sheet').getByRole('button', { name: 'Close dialog' }).click();
-    await expect(page.locator('.bottom-drawer-backdrop')).toBeHidden({ timeout: 10_000 });
+    const depositDialog = page.getByRole('dialog', { name: 'Deposit USDT', exact: true });
+    await expect(depositDialog.getByRole('button', { name: /Reconnect Wallet App|Connect Wallet to Top Up/i })).toBeVisible();
+    await depositDialog.getByRole('button', { name: 'Close dialog' }).click();
+    await expect(depositDialog).toBeHidden({ timeout: 10_000 });
     await page.getByRole('button', { name: /Withdraw/i }).click();
-    const amount = page.locator('input[type="number"]');
+    const withdrawDialog = page.getByRole('dialog', { name: 'Withdraw USDT', exact: true });
+    const amount = withdrawDialog.getByRole('spinbutton');
     await amount.fill('100');
-    await expect(page.getByText(/Insufficient Platform Balance/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Request TON Withdrawal/i })).toBeDisabled();
+    await expect(amount).toHaveAttribute('aria-invalid', 'true');
+    await expect(withdrawDialog.getByRole('button', { name: /Insufficient Platform Balance/i })).toBeDisabled();
     expect(requests.get('/api/v1/wallet/withdraw') || 0).toBe(0);
   });
 
