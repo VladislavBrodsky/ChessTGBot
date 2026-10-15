@@ -1,16 +1,16 @@
 1:"$Sreact.fragment"
-2:I[61304,[],"ClientPageRoot"]
-3:I[46569,["6711","static/chunks/8e1d74a4-c937ad2621392ad2.js","844","static/chunks/ee560e2c-dfb9ec75951e953f.js","7012","static/chunks/7012-7f547e4b8648e376.js","8500","static/chunks/8500-01a63dafd809e317.js","9840","static/chunks/9840-10ccf075f748a0ae.js","4798","static/chunks/4798-ad13ee3665d46f35.js","8895","static/chunks/8895-63a6163010e02964.js","3855","static/chunks/3855-82f75fe0dd79a31c.js","8476","static/chunks/8476-7c83ef26dcc67ff8.js","3977","static/chunks/3977-a6485812a6cddb8f.js","2219","static/chunks/2219-9c08e3de1406cc5a.js","4985","static/chunks/app/%5Blocale%5D/academy/puzzle/page-ac78d466e74418c5.js"],"default"]
-6:I[90484,[],"OutletBoundary"]
+2:I[34564,[],"ClientPageRoot"]
+3:I[65789,["7012","static/chunks/0df54e70-94df272d6fcf5588.js","956","static/chunks/f1f5c819-5e6e91ad35c26600.js","4972","static/chunks/4972-0af2b5080e9566d8.js","1440","static/chunks/1440-3d09de7fe2cdaba9.js","4852","static/chunks/4852-d228516184a4de9b.js","4738","static/chunks/4738-1567ebc14253eb09.js","2083","static/chunks/2083-fff12e654243a5c6.js","4503","static/chunks/4503-ec8fae82ab69dfaa.js","3812","static/chunks/3812-51f7506804c04c98.js","583","static/chunks/583-1ebf3d672d02b1f1.js","375","static/chunks/375-ed7c0fa7a594e717.js","4985","static/chunks/app/%5Blocale%5D/academy/puzzle/page-cd90b61e1f8cf878.js"],"default"]
+6:I[39280,[],"OutletBoundary"]
 7:"$Sreact.suspense"
-b:I[90484,[],"ViewportBoundary"]
-c:I[90484,[],"MetadataBoundary"]
-e:I[57121,[],""]
-f:I[74581,[],""]
+b:I[39280,[],"ViewportBoundary"]
+c:I[39280,[],"MetadataBoundary"]
+e:I[85997,[],""]
+f:I[8569,[],""]
 a:X
 11:X
 11:C
-0:{"buildId":"TfKN3QFF0zLek4KKOa_nJ","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{"locale":"pt"},"promises":["$@4","$@5"]}}],null,["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":"$@9","staleTime":"$a","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$Lb",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","div",null,{"hidden":true,"children":["$","$Lc",null,{"children":["$","$7",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}]]}]}]}],null]}],"isPartial":"$@d","staleTime":"$a","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]]}],"isPartial":"$@10","staleTime":"$a","varyParams":"$11"},{"rsc":["$","$1","c",{"children":[null,["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]]}],"isPartial":"$@12","staleTime":"$a","varyParams":"$11"}],"isUpgradeableISRFallback":false,"a":"$@13","rootVaryParams":null,"needsRuntimeRequest":"$@14"}
+0:{"buildId":"xuyv8RAu96vjavrlq4O9E","data":[{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{"locale":"pt"},"promises":["$@4","$@5"]}}],null,["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"isPartial":"$@9","staleTime":"$a","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$Lb",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","div",null,{"hidden":true,"children":["$","$Lc",null,{"children":["$","$7",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}]]}]}]}],null]}],"isPartial":"$@d","staleTime":"$a","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]]}],"isPartial":"$@10","staleTime":"$a","varyParams":"$11"},{"rsc":["$","$1","c",{"children":[null,["$","$Le",null,{"parallelRouterKey":"children","template":["$","$Lf",null,{}]}]]}],"isPartial":"$@12","staleTime":"$a","varyParams":"$11"}],"isUpgradeableISRFallback":false,"a":"$@13","rootVaryParams":null,"needsRuntimeRequest":"$@14"}
 4:{}
 5:"$0:data:0:rsc:props:children:0:props:serverProvidedParams:params"
 8:null
