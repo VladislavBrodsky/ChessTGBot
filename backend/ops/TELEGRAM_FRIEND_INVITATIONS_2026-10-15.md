@@ -1,6 +1,6 @@
 # Telegram friend invitations — 15 October 2026
 
-Implementation is local and has not been deployed by this task. Deploy the API, migration and frontend together before sharing new links. Physical Telegram iOS/Android acceptance remains a release check.
+The implementation was pushed to `main` as `23132c8b86` on 15 October 2026. Production deployment, migration verification and the two-account Telegram acceptance check are in progress. The existing QR browser regression now checks the Main Mini App `startapp` format. Physical Telegram iOS/Android acceptance remains a release check.
 
 ## Reported failure and root causes
 

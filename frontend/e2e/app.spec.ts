@@ -69,7 +69,7 @@ test.describe('browser safety net', () => {
     await page.route('https://api.qrserver.com/**', route => route.abort());
     await page.goto('/en/qr?code=friend_123', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { name: 'You are invited to play' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Open invitation in Telegram' })).toHaveAttribute('href', /start=ref_friend_123$/);
+    await expect(page.getByRole('link', { name: 'Open invitation in Telegram' })).toHaveAttribute('href', /startapp=ref_friend_123$/);
     await page.goto('/en/qr?code=bad%3Fstart%3Devil', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('p[role="alert"]')).toContainText('invalid', { timeout: 20_000 });
     await expect(page.getByRole('link', { name: 'Open invitation in Telegram' })).toHaveCount(0);
