@@ -410,3 +410,12 @@ A paid Quick Match joins the real server queue once per explicit action. Never c
 ### Shared dialog structure
 
 `DialogHeader` pins the named h2, purpose and 44px close control above `.ui-dialog-body`. Optional primary/secondary actions belong in the pinned `footer`; only the body scrolls. Keep lists inside the body in normal flow. `Modal` and `Drawer` share the global `useDialog` stack, portal to `document.body`, clamp to the Telegram safe viewport, and respect app/OS reduced motion. `Drawer.maxHeight` is a CSS length, default `85dvh`; nested dialogs explicitly use layer 110, system/reward notices layer 120. Closing restores focus without scrolling the page. Loading, retry and confirmed states retain the same title and geometry.
+
+Loading quest cards reserve their header, progress area and action before account
+stats arrive. Skeleton children must use valid HTML containers; never place a
+block placeholder inside a paragraph. Wallet loading labels keep the final action
+label and control geometry, with disabled/busy state carrying request status.
+
+SnapPicker recenters on an actual size change, using the latest selection. Keep
+its ResizeObserver mounted during swipes so an intermediate selection cannot
+interrupt scrolling.

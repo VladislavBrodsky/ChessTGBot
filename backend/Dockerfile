@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Copy Backend Requirements
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --require-hashes -r requirements.txt
 
 # Copy Backend Code
 COPY app ./app

@@ -11,12 +11,12 @@ export function GramBalances() {
   const { quote, loading } = useGramQuote();
   return (
     <div className="space-y-3 border-t border-brand-border pt-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="grid min-h-11 grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
         <span className="t-caption text-brand-muted">{t('equivalent')}</span>
         {loadingBalance || loading ? (
-          <Skeleton width={120} height={20} />
+          <Skeleton textRole="caption" width="7rem" />
         ) : balanceError || !quote ? (
-          <span className="t-caption text-brand-muted">{t('rate_unavailable')}</span>
+          <span className="min-w-28 text-end t-caption text-brand-muted">{t('rate_unavailable')}</span>
         ) : (
           <GramAmount estimate={(walletBalance / 100) * Number(quote.gram_per_usdt)} className="t-label font-semibold text-white" />
         )}

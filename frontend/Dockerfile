@@ -3,11 +3,9 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Copy package.json (and package-lock.json if it exists)
-COPY package.json package-lock.json* ./
-
-# Use npm install to resolve dependencies dynamically for the target OS
-RUN npm install
+# The lock includes optional binaries for both Linux libc variants and macOS.
+COPY package.json package-lock.json ./
+RUN npm ci --include=optional --no-audit --no-fund
 
 # ─── Stage 2: Build the Next.js app ─────────────────────────────────────────
 FROM node:20-alpine AS builder

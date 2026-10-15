@@ -179,50 +179,6 @@ export default function PlayLobby() {
     return () => clearInterval(interval);
   }, [matchmakingState]);
 
-  // Natural master match pairing fallback if socket queue has no peer within 5.5s
-  useEffect(() => {
-    let matchTimeout: NodeJS.Timeout | null = null;
-    if (matchmakingState === 'searching') {
-      matchTimeout = setTimeout(async () => {
-        try {
-          const socket = getSocket();
-          socket.emit('leave_matchmaking', {});
-          const opponent = getRandomOpponent(stats?.elo);
-          const res = await apiFetch(
-            `/api/v1/game/create?type=computer&difficulty=hard&time_control=${timeControl}&wager=${chosenWager}`,
-            { method: 'POST' }
-          );
-          if (res.ok) {
-            const data = await res.json();
-            if (data?.game_id) {
-              saveGameOpponent(data.game_id, opponent);
-              setMatchFoundData({
-                game_id: data.game_id,
-                opponent_id: -1,
-                opponent_name: opponent.name,
-                opponent_flag: opponent.flag,
-                opponent_elo: opponent.elo,
-                bid_amount: chosenWager,
-              });
-              setMatchmakingState('matched');
-              playAudio('start');
-              telegramHaptic('heavy');
-              setTimeout(() => {
-                setMatchmakingState('idle');
-                router.push(`/${locale}/game?id=${data.game_id}`);
-              }, 2000);
-            }
-          }
-        } catch (err) {
-          console.error("Auto matchmaking fallback pairing error:", err);
-        }
-      }, 5500);
-    }
-    return () => {
-      if (matchTimeout) clearTimeout(matchTimeout);
-    };
-  }, [matchmakingState, timeControl, chosenWager, stats?.elo, locale, router, playAudio]);
-
   // Manage Telegram WebApp BackButton visibility during active search
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp?.BackButton) {

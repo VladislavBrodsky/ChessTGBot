@@ -175,7 +175,7 @@
 .lobby-payout__win-row { display: inline-flex; align-items: center; gap: 6px; }
 .lobby-payout__value--win { color: var(--brand-success); font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .lobby-payout__note { display: none; }
-.lobby-payout__info { display: inline-flex; width: 28px; height: 28px; align-items: center; justify-content: center; color: var(--text-muted); border-radius: 8px; transition: color 150ms, background-color 150ms; cursor: pointer; }
+.lobby-payout__info { display: inline-flex; width: var(--size-control-sm); height: var(--size-control-sm); align-items: center; justify-content: center; color: var(--text-muted); border-radius: 8px; transition: color 150ms, background-color 150ms; cursor: pointer; }
 .lobby-payout__info:hover { color: var(--text-primary); background: var(--bg-elevated); }
 
 /* Primary action */

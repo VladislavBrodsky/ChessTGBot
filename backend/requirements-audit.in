@@ -1,0 +1,2 @@
+# Audit tooling is isolated from application dependencies and locked separately.
+pip-audit>=2.9,<3

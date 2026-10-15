@@ -3,8 +3,8 @@
 # root directory unset.
 FROM node:20-alpine AS deps
 WORKDIR /app/website
-COPY website/package.json ./
-RUN npm install --no-audit --no-fund
+COPY website/package.json website/package-lock.json ./
+RUN npm ci --include=optional --no-audit --no-fund
 
 FROM node:20-alpine AS builder
 WORKDIR /app

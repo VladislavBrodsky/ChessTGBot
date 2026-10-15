@@ -6,13 +6,14 @@ venv/
 .env
 
 # Node.js
-node_modules/
+node_modules
 .next/
 dist/
 video/
 coverage/
 .playwright/
 playwright-report/
+.lighthouseci/
 test-results/
 .npm-cache/
 

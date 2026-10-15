@@ -15,7 +15,7 @@ the Mini App's invariants (safe areas, navbar rules, static-export CI guard) are
 ## Develop
 
 ```bash
-cd website && npm install && npm run dev
+cd website && npm ci --include=optional && npm run dev
 ```
 
 ## Checks

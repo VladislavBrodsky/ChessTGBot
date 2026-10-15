@@ -35,9 +35,16 @@ then commit the result. A stale committed export has caused confusion during deb
 ## CI & tests
 
 `.github/workflows/ci.yml` runs on every PR and push to `main`:
-- **frontend**: `npm ci` → `npm run build` (static export) → `npm run test:ci` (jest) → `npm run lint` (non-blocking).
-- **backend**: `pip install` → import check (`python -c "import app.main"`) → `python -m pytest`.
+- **frontend**: `npm ci --include=optional` → `npm run build` (static export) → `npm run test:ci` (jest) → `npm run lint -- --max-warnings=0` (blocking).
+- **frontend-e2e**: locked dependencies → production build → Chromium desktop/mobile browser suite (blocking).
+- **website**: locked `npm ci` → build → standalone request tests → SEO, types, lint, and the locked Lighthouse audits.
+- **backend**: `pip install --require-hashes -r requirements.txt` → import check (`python -c "import app.main"`) → `python -m pytest`.
 - **static-export-fresh**: the staleness guard above (PRs only).
+
+Commit both app lockfiles and preserve their optional Linux/macOS binaries. Python
+inputs are `backend/requirements.in` and `backend/requirements-audit.in`; regenerate
+the hashed locks with the universal uv commands in `README.md`. Never replace a
+locked CI/Docker install with a floating install to work around a platform issue.
 
 Run locally: `cd frontend && npm test` and `cd backend && python -m pytest` (on Windows use the project venv: `./venv/Scripts/python -m pytest`). The main suite is `backend/tests/` (~600 tests, needs the docker-compose Postgres for the `_test` database); `backend/app/tests/` holds a few pure-unit tests plus manual live-server scripts excluded via `backend/pytest.ini`.
 

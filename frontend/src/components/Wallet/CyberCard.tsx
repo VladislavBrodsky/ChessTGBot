@@ -57,7 +57,7 @@ export default function CyberCard({
           <Button variant="secondary" size="sm" onClick={onRetry}>{tw('balance_unavailable')}</Button>
         </div>
       ) : (
-        <p className="flex flex-wrap items-baseline gap-2">
+        <p className="flex min-h-11 flex-wrap items-baseline gap-2">
           <span className="t-numeric-xl">${(balance / 100).toFixed(2)}</span>
           <span className="text-sm font-medium text-brand-muted">USDT</span>
         </p>
@@ -67,10 +67,10 @@ export default function CyberCard({
       {/* ── Connected Web3 TON Wallet Tile ── */}
       <div className="border-t border-brand-border pt-3">
         {loading ? (
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-brand-surface border border-brand-border min-h-12">
-            <Skeleton variant="rectangular" width={32} height={32} className="rounded-lg shrink-0" />
+          <div className="flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-brand-surface border border-brand-border">
+            <Skeleton variant="rectangular" width={32} height={44} className="rounded-lg shrink-0" />
             <div className="space-y-1.5 flex-1">
-              <Skeleton textRole="body" width="14ch" />
+              <Skeleton textRole="caption" width="14ch" />
               <Skeleton textRole="caption" width="20ch" />
             </div>
           </div>

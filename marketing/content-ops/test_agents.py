@@ -263,7 +263,7 @@ class TestAgents(unittest.TestCase):
         from unittest.mock import patch
         from pipeline import x_publisher
 
-        with patch("requests.post") as mock_post:
+        with patch.object(x_publisher, "get_oauth1_auth", return_value=object()), patch("requests.post") as mock_post:
             mock_post.return_value.ok = True
             mock_post.return_value.status_code = 200
             mock_post.return_value.json.return_value = {"data": {"id": "1234567890"}}
@@ -274,6 +274,7 @@ class TestAgents(unittest.TestCase):
             )
             self.assertEqual(res["data"]["id"], "1234567890")
             called_json = mock_post.call_args[1]["json"]
+            self.assertEqual(called_json["media"], {"media_ids": ["9876543210"]})
     def test_extended_viral_categories(self):
         cw = self.orchestrator.copywriter
         qa = self.orchestrator.qa

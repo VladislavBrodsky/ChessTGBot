@@ -131,7 +131,7 @@ For a fresh checkout, copy `backend/.env.example` to `backend/.env` if the file 
 python3 -m venv .venv
 source .venv/bin/activate
 
-pip install -r backend/requirements.txt
+pip install --require-hashes -r backend/requirements.txt
 cd backend
 uvicorn app.main:app --reload --port 8000
 ```
@@ -144,6 +144,29 @@ npm run dev
 ```
 
 Visit `http://localhost:3000` to play locally.
+
+### Reproducible dependency updates
+
+Both Next.js apps commit `package-lock.json`. Use `npm ci --include=optional` in
+development, CI, and Docker; it selects the current platform's binaries from the
+same locked dependency tree. Use `npm install` only when intentionally updating
+dependencies, and commit the changed manifest and lock together. The website's
+Lighthouse tool is also locked, rather than downloaded by `npx` during CI.
+
+Python direct dependencies live in `backend/requirements.in`; the generated
+`requirements.txt` pins the complete tree with hashes. Audit tooling has a separate
+input and lock. The manual content QA workflow uses its own small hashed lock at
+`marketing/content-ops/requirements.txt`. Regenerate from the repository root with uv 0.10.11:
+
+```bash
+uv pip compile --universal --python-version 3.12 --generate-hashes backend/requirements.in -o backend/requirements.txt
+uv pip compile --universal --python-version 3.12 --generate-hashes backend/requirements-audit.in -o backend/requirements-audit.txt
+uv pip compile --universal --python-version 3.12 --generate-hashes marketing/content-ops/requirements.in -o marketing/content-ops/requirements.txt
+```
+
+CI and Docker install these files with `pip install --require-hashes`. Test changed
+locks on Linux CI before deploying. Enable Railway's **Wait for CI** on the Website,
+Frontend, and Backend services so a failed workflow cannot trigger a deployment.
 
 ### Production environment variables
 

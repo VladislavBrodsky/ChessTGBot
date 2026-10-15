@@ -1,11 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
+import { availableQuest } from './fixtures';
 
 /**
  * Skeletons must occupy the same box as the content they replace. Every API response is delayed so the
  * loading state is on screen, then resolves; the cumulative layout shift of that swap must stay small.
  */
 const user = {
-  telegram_id: 999001, first_name: 'Alexandra', last_name: 'Rivera', username: 'alexandra', elo: 1450, level: 5, xp: 850,
+  region: 'americas', telegram_id: 999001, first_name: 'Alexandra', last_name: 'Rivera', username: 'alexandra', elo: 1450, level: 5, xp: 850,
   games_played: 28, wins: 16, losses: 10, draws: 2, win_rate: 57.1, draw_rate: 7.1, loss_rate: 35.7,
   current_streak: { count: 3, type: 'win' }, study_streak: 7, percentile: 82, global_rank: 127, total_score: 17,
   unlocked_items: [], recent_games: [], referral_code: 'layout-preview', is_premium: false,
@@ -20,19 +21,24 @@ const players = Array.from({ length: 6 }, (_, i) => ({ ...user, rank: i + 1, tel
 async function prepare(page: Page) {
   await page.route('https://telegram.org/**', route => route.abort());
   await page.addInitScript(() => {
-    (window as Window & { __E2E_TEST_AUTH__?: boolean }).__E2E_TEST_AUTH__ = true;
+    sessionStorage.setItem('telegram_web_auth', 'id=999001&hash=e2e-invalid-signature');
     localStorage.setItem('onboarding_completed', 'true');
     localStorage.setItem('setting_reduce_motion', 'true');
     (window as unknown as { __cls: number }).__cls = 0;
     new PerformanceObserver(list => {
       for (const entry of list.getEntries() as unknown as { value: number; hadRecentInput: boolean }[]) {
-        if (!entry.hadRecentInput) (window as unknown as { __cls: number }).__cls += entry.value;
+        if (!entry.hadRecentInput) {
+          (window as unknown as { __cls: number }).__cls += entry.value;
+          const shift = entry as unknown as { value: number; sources?: { node?: Node; previousRect: DOMRectReadOnly; currentRect: DOMRectReadOnly }[] };
+          console.log('Layout shift', JSON.stringify({ value: shift.value, sources: shift.sources?.map(source => ({ element: source.node instanceof Element ? source.node.outerHTML.slice(0, 180) : source.node?.nodeName, before: source.previousRect.toJSON(), after: source.currentRect.toJSON() })) }));
+        }
       }
     }).observe({ type: 'layout-shift', buffered: true });
   });
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname;
     const data = path.endsWith('/users/sync') ? user
+      : path.endsWith('/gamification/engagement/status') ? availableQuest
       : path.endsWith('/wallet/balance') ? { balance: 1250, wallet_address: 'EQPreviewConnectedTONWallet0000' }
       : path.endsWith('/wallet/transactions') ? [{ id: 1, type: 'deposit', amount: 1250, fee: 65, status: 'completed', reference_id: 'p', created_at: '2026-10-07T12:00:00Z' }]
       : path.endsWith('/gamification/tasks') ? tasks
@@ -50,6 +56,7 @@ async function prepare(page: Page) {
 const BUDGET = 0.08;
 for (const route of ['home', 'profile', 'wallet', 'challenges', 'marketplace']) {
   test(`${route}: loading to loaded keeps layout shift under ${BUDGET}`, async ({ page }) => {
+    page.on('console', message => { if (message.text().startsWith('Layout shift')) console.log(message.text()); });
     await prepare(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/en/${route}`, { waitUntil: 'domcontentloaded' });

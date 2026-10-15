@@ -43,7 +43,7 @@ export default function EngagementQuest() {
   const tReferral = useTranslations('Referral');
   const locale = useLocale();
   const router = useRouter();
-  const { stats, syncStats } = useUser();
+  const { stats, loadingStats, syncStats } = useUser();
   const { data, error, isValidating, mutate } = useSWR(stats ? PATH : null, readQuest, { errorRetryCount: 1 });
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -94,12 +94,21 @@ export default function EngagementQuest() {
     }
   }
 
-  if (!stats || data?.enabled === false) return null;
+  if ((!stats && !loadingStats) || data?.enabled === false) return null;
   if (!data && error) return <ErrorState title={t('load_error')} message={t('retry_message')} onRetry={() => void mutate()} retryLabel={t('retry')} />;
-  if (!data) return <Card variant="solid" className="p-4 space-y-3" aria-busy="true" aria-label={t('loading')}>
-    <Skeleton textRole="title-3" width="65%" /><Skeleton textRole="body" /><Skeleton textRole="body" />
-    <Skeleton textRole="caption" /><Skeleton variant="rectangular" className="h-control-md w-full" />
-    <Skeleton textRole="caption" width="70%" />
+  if (!stats || !data) return <Card variant="solid" className="p-4 space-y-3" aria-busy="true" aria-label={t('loading')}>
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="ui-icon-tile ui-icon-tile--gold"><FiGift size={20} aria-hidden="true" /></span>
+        <div className="min-w-0"><h2 className="t-title-3 truncate">{t('title')}</h2><p className="t-caption text-brand-muted">{t('subtitle')}</p></div>
+      </div>
+      <Button variant="secondary" size="sm" disabled className="shrink-0">{t('brief')}</Button>
+    </div>
+    <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">
+      <div className="flex items-center gap-3"><Skeleton variant="rectangular" height={8} width="100%" /><Skeleton textRole="numeric-sm" width="3ch" className="shrink-0" /></div>
+      <p className="t-caption text-brand-muted text-right font-medium">{t('qualification')}</p>
+    </div>
+    <Button variant="secondary" className="w-full font-bold" disabled>{t('loading')}</Button>
   </Card>;
 
   const label = data.state === 'available' ? t('join') : data.state === 'claimable' ? t('claim') : data.state === 'claimed' ? t('claimed') : t('play');
@@ -117,18 +126,19 @@ export default function EngagementQuest() {
           </div>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={() => {
             telegramHaptic('selection');
             setDetails(true);
           }}
-          className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-elevated/80 border border-brand-border text-brand-muted hover:text-white hover:border-brand-action/40 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
+          className="shrink-0 flex items-center gap-1.5 px-2.5 rounded-full bg-brand-elevated/80 border border-brand-border text-brand-muted hover:text-white hover:border-brand-action/40 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
           aria-label={t('odds')}
         >
           <FiInfo size={13} className="text-brand-action" aria-hidden="true" />
           <span>{t('brief')}</span>
-        </button>
+        </Button>
       </div>
 
       <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">

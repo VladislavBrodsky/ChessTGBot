@@ -115,18 +115,19 @@ export function GramVaultPreview() {
             </div>
           </div>
 
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               handleOpenModal();
             }}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-300 group-hover:text-white group-hover:border-sky-400/50 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
+            className="shrink-0 flex items-center gap-1.5 px-3 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-300 group-hover:text-white group-hover:border-sky-400/50 transition-all text-xs font-semibold cursor-pointer active:scale-95 whitespace-nowrap"
             aria-label={t('details')}
           >
             <FiInfo size={13} className="text-sky-400" aria-hidden="true" />
             <span>{t('details')}</span>
-          </button>
+          </Button>
         </div>
       </Card>
 

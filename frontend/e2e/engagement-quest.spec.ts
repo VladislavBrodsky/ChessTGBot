@@ -1,16 +1,17 @@
 import { test, expect } from '@playwright/test';
+import { messages } from './messages';
 
 test('earned-box progress, rules and claim work at 320px in dark/light and Arabic', async ({ page }, testInfo) => {
   test.setTimeout(120000);
   let claimed = false;
-  const user = { telegram_id: 700701, first_name: 'Quest preview', xp: 120, level: 1, elo: 1000,
+  const user = { region: 'americas', telegram_id: 700701, first_name: 'Quest preview', xp: 120, level: 1, elo: 1000,
     games_played: 3, wins: 0, losses: 0, draws: 3, win_rate: 0, current_streak: { count: 0, type: 'none' }, unlocked_items: [] };
   const quest = { enabled: true, accepting_enrollments: true, enrolled: true, target: 3, progress: 3,
     state: 'claimable', reward_key: null, rewards: [{ key: 'xp_250', probability_percent: 60 },
       { key: 'boost_24h', probability_percent: 30 }, { key: 'border_gold', probability_percent: 10 }] };
   await page.route('https://telegram.org/**', route => route.abort());
   await page.addInitScript(() => {
-    (window as Window & { __E2E_TEST_AUTH__?: boolean }).__E2E_TEST_AUTH__ = true;
+    sessionStorage.setItem('telegram_web_auth', 'id=999001&hash=e2e-invalid-signature');
     localStorage.setItem('onboarding_completed', 'true');
     localStorage.setItem('setting_reduce_motion', 'true');
   });
@@ -27,7 +28,7 @@ test('earned-box progress, rules and claim work at 320px in dark/light and Arabi
   });
   await page.setViewportSize({ width: 320, height: 740 });
   for (const theme of ['dark', 'light']) {
-    for (const locale of ['en', 'ar']) {
+    for (const locale of ['en', 'ar'] as const) {
       claimed = false;
       await page.addInitScript(theme => localStorage.setItem('theme', theme), theme);
       await page.goto(`/${locale}/home`, { waitUntil: 'domcontentloaded' });
@@ -36,7 +37,7 @@ test('earned-box progress, rules and claim work at 320px in dark/light and Arabi
       await card.scrollIntoViewIfNeeded();
       await expect(card.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '3');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await card.getByRole('button').nth(1).click();
+      await card.getByRole('button', { name: messages[locale].Engagement.odds, exact: true }).click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
       for (const odds of ['60%', '30%', '10%']) await expect(dialog.getByText(odds, { exact: true })).toBeVisible();
@@ -49,10 +50,10 @@ test('earned-box progress, rules and claim work at 320px in dark/light and Arabi
       expect(geometry.right).toBeLessThanOrEqual(geometry.width);
       await page.keyboard.press('Escape');
       await expect(dialog).toBeHidden();
-      await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
-      await card.getByRole('button').first().click();
+      await expect(page.getByRole('navigation', { name: messages[locale].Common.primary_navigation })).toBeVisible();
+      await card.getByRole('button', { name: messages[locale].Engagement.claim, exact: true }).click();
       await expect(page.getByRole('dialog')).toBeVisible();
-      await expect(page.getByRole('dialog').getByRole('status')).toHaveText('250 XP');
+      await expect(page.getByRole('dialog').getByRole('status')).toHaveText(messages[locale].Engagement.rewards.xp_250);
     }
   }
 });

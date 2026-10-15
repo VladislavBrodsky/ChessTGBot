@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { availableQuest } from './fixtures';
 
 const mockUser = {
   telegram_id: 999_001,
@@ -17,7 +18,7 @@ const mockUser = {
 
 async function enableLocalTestIdentity(page: Page) {
   await page.addInitScript(() => {
-    (window as Window & { __E2E_TEST_AUTH__?: boolean }).__E2E_TEST_AUTH__ = true;
+    sessionStorage.setItem('telegram_web_auth', 'id=999001&hash=e2e-invalid-signature');
   });
 }
 
@@ -32,7 +33,9 @@ async function mockApi(page: Page, requests?: Map<string, number>) {
     const path = new URL(route.request().url()).pathname;
     requests?.set(path, (requests.get(path) || 0) + 1);
 
-    const response = path.endsWith('/wallet/balance')
+    const response = path.endsWith('/gamification/engagement/status')
+      ? availableQuest
+      : path.endsWith('/wallet/balance')
       ? { balance: 1250, wallet_address: 'EQE2EWalletAddress' }
       : path.endsWith('/wallet/transactions')
         ? []

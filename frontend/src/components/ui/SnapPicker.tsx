@@ -34,6 +34,9 @@ export function SnapPicker<T extends string | number>({ id, label, icon, hint, o
   const everCentered = useRef(false);
   const selectedIndex = Math.max(0, options.findIndex(option => option.value === value));
 
+  const selectedIndexRef = useRef(selectedIndex);
+  selectedIndexRef.current = selectedIndex;
+
   const centreOn = useCallback((index: number, smooth: boolean) => {
     const track = trackRef.current;
     const item = itemRefs.current[index];
@@ -60,10 +63,10 @@ export function SnapPicker<T extends string | number>({ id, label, icon, hint, o
   useEffect(() => {
     const track = trackRef.current;
     if (!track || typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(() => centreOn(selectedIndex, false));
+    const observer = new ResizeObserver(() => centreOn(selectedIndexRef.current, false));
     observer.observe(track);
     return () => observer.disconnect();
-  }, [selectedIndex, centreOn]);
+  }, [centreOn]);
 
   useEffect(() => () => { window.cancelAnimationFrame(frame.current); window.clearTimeout(settle.current); }, []);
 

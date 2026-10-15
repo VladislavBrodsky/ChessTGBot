@@ -1,7 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { availableQuest } from './fixtures';
+import { messages } from './messages';
 
 const user = {
-  telegram_id: 999001, first_name: 'Alexandra', last_name: 'Rivera', username: 'alexandra',
+  region: 'americas', telegram_id: 999001, first_name: 'Alexandra', last_name: 'Rivera', username: 'alexandra',
   elo: 1450, level: 5, xp: 850, games_played: 28, wins: 16, losses: 10, draws: 2,
   win_rate: 57.1, current_streak: { count: 3, type: 'win' }, study_streak: 7,
   percentile: 82, global_rank: 127, total_score: 17, unlocked_items: [], recent_games: [],
@@ -15,7 +17,7 @@ const tasks = [
 async function prepare(page: Page, theme = 'dark') {
   await page.route('https://telegram.org/**', route => route.abort());
   await page.addInitScript(theme => {
-    (window as Window & { __E2E_TEST_AUTH__?: boolean }).__E2E_TEST_AUTH__ = true;
+    sessionStorage.setItem('telegram_web_auth', 'id=999001&hash=e2e-invalid-signature');
     localStorage.setItem('onboarding_completed', 'true');
     localStorage.setItem('theme', theme);
     localStorage.setItem('setting_reduce_motion', 'true');
@@ -23,6 +25,7 @@ async function prepare(page: Page, theme = 'dark') {
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname;
     const data = path.endsWith('/users/sync') ? user
+      : path.endsWith('/gamification/engagement/status') ? availableQuest
       : path.endsWith('/wallet/balance') ? { balance: 1250, wallet_address: 'EQPreviewConnectedTONWallet0000' }
       : path.endsWith('/wallet/transactions') ? [{ id: 1, type: 'deposit', amount: 1250, fee: 65, status: 'completed', reference_id: 'preview', created_at: '2026-10-07T12:00:00Z' }]
       : path.endsWith('/gamification/tasks') ? tasks
@@ -41,6 +44,7 @@ const routes = ['home', 'game', 'academy', 'marketplace', 'challenges', 'wallet'
 test('all destinations keep a readable heading, usable controls, and navigation', async ({ page }, testInfo) => {
   test.setTimeout(180000);
   await prepare(page);
+  const undersizedByRoute: { route: string; controls: unknown[] }[] = [];
   for (const route of routes) {
     await page.goto(`/en/${route}`, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('h1').first()).toBeVisible({ timeout: 20000 });
@@ -52,20 +56,21 @@ test('all destinations keep a readable heading, usable controls, and navigation'
       .filter(element => !element.closest('[data-testid="live-chessboard"]') && !['Open Next.js Dev Tools', 'Open issues overlay', 'Collapse issues badge'].includes(element.getAttribute('aria-label') || ''))
       .map(element => ({ name: element.getAttribute('aria-label') || element.textContent?.trim(), width: element.getBoundingClientRect().width, height: element.getBoundingClientRect().height }))
       .filter(element => element.width < 43.5 || element.height < 43.5));
-    expect(undersized, `${route} touch targets`).toEqual([]);
+    if (undersized.length) undersizedByRoute.push({ route, controls: undersized });
     await page.screenshot({ path: testInfo.outputPath(`${testInfo.project.name}-${route.replaceAll('/', '-')}.png`), fullPage: true });
   }
+  expect(undersizedByRoute, 'touch targets across all destinations').toEqual([]);
 });
 
 test('320px light and Arabic layouts retain all primary destinations', async ({ page }) => {
   test.setTimeout(120000);
   await prepare(page, 'light');
   await page.setViewportSize({ width: 320, height: 740 });
-  for (const locale of ['en', 'ar']) {
+  for (const locale of ['en', 'ar'] as const) {
     for (const route of ['home', 'game', 'wallet', 'settings', 'marketplace']) {
       await page.goto(`/${locale}/${route}`, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('h1').first(), `${locale}/${route} should have a visible heading at ${page.url()}`).toBeVisible({ timeout: 20000 });
-      const nav = page.getByRole('navigation', { name: 'Primary navigation' });
+      const nav = page.getByRole('navigation', { name: messages[locale].Common.primary_navigation });
       await expect(nav).toBeVisible();
       await expect(nav.getByRole('link')).toHaveCount(5);
       const offscreen = await nav.getByRole('link').evaluateAll(links => links.filter(link => {

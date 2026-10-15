@@ -5,9 +5,9 @@ FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 
 # Copy frontend dependency files
-COPY frontend/package.json frontend/package-lock.json* frontend/yarn.lock* ./
+COPY frontend/package.json frontend/package-lock.json ./
 # Install deps
-RUN npm install
+RUN npm ci --include=optional --no-audit --no-fund
 
 # Copy frontend source
 COPY frontend/ ./
@@ -31,7 +31,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Copy Backend Requirements
 COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --require-hashes -r requirements.txt
 
 # Copy Backend Code
 COPY backend/app ./app

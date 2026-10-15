@@ -94,7 +94,7 @@ export default function WalletPage() {
           <Button variant="secondary" size="lg" leftIcon={<FaArrowUp />}
             disabled={loadingBalance}
             onClick={() => { if (balanceError) { void refreshWalletData(); return; } setActiveModal('withdraw'); }}>
-            {balanceError ? tw('balance_unavailable') : loadingBalance ? `${tw('usdt_balance')}…` : tw('withdraw')}
+            {balanceError ? tw('balance_unavailable') : tw('withdraw')}
           </Button>
         </div>
         <Card variant="solid" className="w-full p-3 space-y-3">

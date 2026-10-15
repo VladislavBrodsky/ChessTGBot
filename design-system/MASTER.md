@@ -215,3 +215,12 @@ Dashboard `PageHeader` uses logical start alignment, with one h1 and a purpose b
 Skeletons reuse loaded geometry and typography roles; missing values remain unknown. Finished-game money arrives in cents and is converted once for USDT readouts. Draws/aborts show a returned stake; wins show the confirmed credited payout, including stake, with no guessed ELO or payout. Custom-stake previews mirror the backend’s separately rounded 3% and 2% fee allocation.
 
 Full-screen onboarding is the walkthrough exception: body portal, the same dialog stack, pinned steps/actions and a scrollable middle stage. Critical game failures use `Modal role="alertdialog"` with one reload action.
+
+Loading quest cards reserve their header, progress area and action before account
+stats arrive. Skeleton children must use valid HTML containers; never place a
+block placeholder inside a paragraph. Wallet loading labels keep the final action
+label and control geometry, with disabled/busy state carrying request status.
+
+SnapPicker recenters on an actual size change, using the latest selection. Keep
+its ResizeObserver mounted during swipes so an intermediate selection cannot
+interrupt scrolling.

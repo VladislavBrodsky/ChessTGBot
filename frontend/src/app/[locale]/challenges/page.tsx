@@ -18,7 +18,7 @@ import { useUser } from "@/context/UserContext";
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getXPProgress } from '@/lib/xpProgress';
 import { FiTarget } from 'react-icons/fi';
@@ -186,7 +186,7 @@ export default function ChallengesPage() {
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-border bg-brand-elevated text-lg font-semibold tabular-nums">{stats ? userLevel : <Skeleton textRole="numeric" width="2ch" />}</div>
                 <div className="min-w-0 flex-1">
                   <h2 id="level-heading" className="t-title-3 text-brand-primary header-balanced">{t('grandmaster_rising')}</h2>
-                  <p className="text-caption font-medium text-brand-muted">{stats ? t('next_level', { xp: nextLevelXp }) : <Skeleton textRole="caption" width="16ch" />}</p>
+                  <div className="text-caption font-medium text-brand-muted">{stats ? t('next_level', { xp: nextLevelXp }) : <Skeleton textRole="caption" width="16ch" />}</div>
                 </div>
                 <Badge variant="secondary" className="shrink-0">{stats ? `${Math.round(progressPercentage)}%` : '—'}</Badge>
               </div>
@@ -231,7 +231,20 @@ export default function ChallengesPage() {
           <SectionHeader id="tasks-heading" title={t('daily_operations')} />
           <div className="mt-2 space-y-2 w-full">
             {loading ? (
-              <SkeletonList count={3} />
+              <div role="status" aria-busy="true" aria-label={t('loading_missions')} className="space-y-2">
+                {[0, 1, 2].map(index => <Card key={index} variant="solid" className="w-full p-3" aria-hidden="true">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
+                    <Skeleton variant="rectangular" className="size-tile-md shrink-0 rounded-tile" />
+                    <div className="flex min-w-0 flex-col gap-0.5">
+                      <Skeleton textRole="body" width="65%" />
+                      <Skeleton textRole="caption" width="100%" />
+                      <Skeleton textRole="caption" width="80%" />
+                      <Skeleton textRole="caption" width="40%" className="mt-1" />
+                    </div>
+                    <Skeleton variant="rectangular" width="7rem" height="var(--size-control-sm)" className="col-start-2 rounded-control sm:col-start-3 sm:row-start-1 sm:self-center" />
+                  </div>
+                </Card>)}
+              </div>
             ) : tasksError && tasks.length === 0 ? (
               <ErrorState title={ti('load_failed')} onRetry={() => { void refreshTasks(); }} retryLabel={ti('retry')} />
             ) : tasks.filter(t => !t.claimed).length === 0 ? (
