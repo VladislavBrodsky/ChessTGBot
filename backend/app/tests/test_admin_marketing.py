@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import MagicMock
 from app.models.user import User
 from app.api.v1.endpoints.admin import get_marketing_metrics
 
@@ -21,11 +20,15 @@ async def test_get_marketing_metrics_payload():
         assert ch["is_own"] is True
 
     assert "competitor_benchmark" in res
-    assert res["competitor_benchmark"]["competitor_posts"] == 655
 
     assert "recent_posts" in res
     posts = res["recent_posts"]
     assert len(posts) >= 20
+
+    # Report counts describe the included rows, not a historical audit size.
+    assert res["competitor_benchmark"]["competitor_posts"] == len(posts)
+    assert res["executive_summary"]["total_posts_monitored"] == len(posts)
+    assert res["executive_summary"]["our_published_assets"] == len(posts)
 
     # Ensure no duplicate copy-pasted stats across posts
     impressions_set = set(p["impressions"] for p in posts)

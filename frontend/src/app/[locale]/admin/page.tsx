@@ -19,7 +19,7 @@ import {
   FaDatabase, FaMemory, FaTelegram, FaWallet, FaGear,
   FaBell, FaCircleCheck, FaCircleXmark, FaTriangleExclamation,
   FaArrowsRotate, FaScaleBalanced, FaBan, FaArrowUpRightFromSquare,
-  FaBullseye, FaCode, FaCheck, FaGlobe, FaTwitter, FaPaperPlane
+  FaBullseye, FaCheck, FaGlobe, FaTwitter, FaPaperPlane
 } from 'react-icons/fa6';
 import LayoutWrapper from '@/components/LayoutWrapper';
 
@@ -439,7 +439,7 @@ function MarketingTab() {
   const [filterPillar, setFilterPillar] = useState<string>('all');
 
   const scorecard = data?.scorecard || [];
-  const recentPosts = data?.recent_posts || [];
+  const recentPosts = useMemo(() => data?.recent_posts ?? [], [data?.recent_posts]);
   const rules = data?.growth_rules || [];
   const exec = data?.executive_summary;
   const benchmark = data?.publishing_standards || data?.competitor_benchmark;

@@ -1,7 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/Badge';
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';

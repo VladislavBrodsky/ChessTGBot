@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { useUser } from '@/context/UserContext';
@@ -10,7 +10,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Skeleton, SkeletonList } from '@/components/ui/Skeleton';
+import { SkeletonList } from '@/components/ui/Skeleton';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -19,7 +19,7 @@ import { Drawer } from '@/components/ui/Drawer';
 import { telegramHaptic, telegramAlert, telegramConfirm } from '@/lib/telegram';
 import { apiFetch } from '@/lib/api';
 import { FaGem, FaCrown, FaChessBoard, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { FiBox, FiShoppingBag, FiGrid, FiSliders } from 'react-icons/fi';
+import { FiShoppingBag, FiGrid, FiSliders } from 'react-icons/fi';
 import MysteryBoxCard from '@/components/Marketplace/MysteryBoxCard';
 import LiveDropsTicker from '@/components/Marketplace/LiveDropsTicker';
 import UnboxingModal from '@/components/Marketplace/UnboxingModal';

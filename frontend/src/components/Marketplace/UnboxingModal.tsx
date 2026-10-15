@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { FiGift, FiAward, FiZap, FiCheck, FiStar, FiRefreshCw, FiShare2 } from 'react-icons/fi';
+import { FiGift, FiAward, FiZap, FiCheck, FiStar, FiRefreshCw } from 'react-icons/fi';
 import { FaTelegram } from 'react-icons/fa';
 import { telegramHaptic } from '@/lib/telegram';
 import { Modal } from '@/components/ui/Modal';

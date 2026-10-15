@@ -10,7 +10,6 @@ import {
   FaGraduationCap,
   FaChevronDown,
   FaChevronUp,
-  FaArrowRight,
   FaTrophy,
   FaStar,
   FaLightbulb,
@@ -21,8 +20,6 @@ import { ActionLink, PageHeader } from '@/components/ui/PageHeader';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { triggerConfettiBurst } from '@/components/ui/Confetti';
 import { useNavbarHide } from '@/context/NavbarContext';
 import { useUser } from '@/context/UserContext';
