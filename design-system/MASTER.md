@@ -61,6 +61,12 @@ Keep the primary action within the first viewport, secondary routes reachable wi
 
 Home may include `EngagementQuest` as a secondary Card below the main Play action. Its server-recorded progress, pre-enrollment odds/rules Modal, optimistic rollback and confirmed reward reveal use shared primitives. The quest’s play action opens `/[locale]/game?practice=1` to select free AI difficulty directly. A disabled campaign stays hidden; existing enrolled players keep their claim rights when enrollment pauses.
 
+Free friend challenges remain actionable when the balance service is loading or unavailable. Use the shared lobby action and localized free-invite copy; free rematches show one play-again action. Server-resolved `go_` launch tokens route only to known destinations after authentication. Expired invitations use `ErrorState` with retry and leave navigation available.
+
+`InvitationProvider` owns friend launch previews and saved requests, and pauses first-run dialogs while an invitation is active. Use the shared Modal with real player name/rating, free/stake disclosure, clock, explicit request/accept/join actions and useful recovery. Pending requests remain in the Home inbox after closing the dialog; status refresh preserves the last confirmed state and offers a connection retry. Passive notifications only open on Home when no other dialog is visible. Do not force a game transition from a passive notification. Shared Main Mini App links strip `@`, omit assumed `/app` paths, and pass the intent through `startapp`; the bot fallback explains the extra tap.
+
+Admin → Marketing uses `PlayerTrackingPanel`: shared Cards, Input, SegmentedControl and Buttons for measured player counts, mature retention denominators, acquisition sources and community-link creation. Unknown coverage is an em dash with explanatory text; zero is shown only after measurement begins. Retain the last confirmed response if refresh fails and display a status message. Do not reintroduce sample reach, funnel percentages or fabricated social proof.
+
 For balance-funded play, upgrades, and deposits, disable the action or offer a retry while the balance or account identity is unverified. A deposit memo must use the account ID returned by the authenticated API; never manufacture a fallback ID or display a transfer destination before that identity is available.
 
 1. **Safe Area Insets**:

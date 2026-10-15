@@ -4,6 +4,8 @@ const isCI = Boolean(process.env.CI);
 
 export default defineConfig({
   testDir: './e2e',
+  // Pilot checks use their own compiler/cache and required CI lane.
+  testIgnore: '**/pilot.spec.ts',
   // Exercise production routes on one local server with isolated browser contexts.
   fullyParallel: false,
   workers: 1,

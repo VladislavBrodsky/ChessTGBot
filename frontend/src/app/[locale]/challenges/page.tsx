@@ -23,10 +23,12 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { getXPProgress } from '@/lib/xpProgress';
 import { FiTarget } from 'react-icons/fi';
 import EngagementQuest from '@/components/EngagementQuest';
+import { mainMiniAppLink, shareInvitation } from '@/lib/invitations';
 
 export default function ChallengesPage() {
   const t = useTranslations('Gamification');
   const ti = useTranslations('Index');
+  const inviteText = useTranslations('Invitations');
   const tGram = useTranslations('Gram');
 
   // Use global context — no stub defaults, no duplicate fetch
@@ -339,10 +341,9 @@ export default function ChallengesPage() {
                           size="sm"
                           className="whitespace-nowrap px-3 text-caption"
                           onClick={() => {
-                            const inviteLink = `https://t.me/${stats?.bot_username}?start=ref_${stats?.referral_code}`;
-                            const text = encodeURIComponent('♟️ Play chess with me on Web3Chess. 18+ — USDT matches carry risk.');
-                            const url = encodeURIComponent(inviteLink);
-                            window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
+                            if (!stats?.referral_code || !/^[A-Za-z0-9_-]{1,60}$/.test(stats.referral_code)) return;
+                            const inviteLink = mainMiniAppLink(stats.bot_username || 'chess_matbot', `ref_${stats.referral_code}`);
+                            shareInvitation(inviteLink, inviteText('share_text'));
                           }}
                         >
                           {t.has('invite_friend') ? t('invite_friend') : 'Invite Friend'}

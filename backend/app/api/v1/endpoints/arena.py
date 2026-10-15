@@ -74,5 +74,5 @@ async def arena_status(
         "participants": len(players),
         "standings": standings,
         "me": me,
-        "in_pool": current_user.telegram_id in service.pool,
+        "in_pool": await service.in_pool(current_user.telegram_id),
     }

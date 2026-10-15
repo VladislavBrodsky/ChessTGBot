@@ -14,7 +14,7 @@ def test_stripe_reconciliation_loop_is_started_once():
         for node in ast.walk(tree)
         if isinstance(node, ast.Call)
         and isinstance(node.func, ast.Name)
-        and node.func.id == "start_stripe_reconciliation_loop"
+        and node.func.id == "run_owned_services"
     ]
 
     assert len(calls) == 1

@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "tokens": "node scripts/build-tokens.mjs",
     "check:design": "node scripts/check-design-rules.mjs",
-    "dev:mock": "node scripts/dev-mock.mjs"
+    "dev:mock": "node scripts/dev-mock.mjs",
+    "test:pilot": "playwright test --config=playwright.pilot.config.ts"
   },
   "keywords": [],
   "author": "",

@@ -37,7 +37,6 @@ async def auth_ip_is_blocked(ip_hash: Optional[str]) -> bool:
             val = await sm.redis.get(key)
             return bool(val) and int(val) >= AUTH_FAIL_LIMIT
     except Exception:
-        SessionManager._use_memory = True
         pass
     now = time.time()
     hist = [t for t in _auth_fail_memory.get(key, []) if now - t < AUTH_FAIL_WINDOW]
@@ -58,7 +57,6 @@ async def register_auth_failure(ip_hash: Optional[str]) -> None:
                 await sm.redis.expire(key, AUTH_FAIL_WINDOW)
             return
     except Exception:
-        SessionManager._use_memory = True
         pass
     _auth_fail_memory.setdefault(key, []).append(time.time())
 
@@ -151,7 +149,13 @@ async def get_current_user(
         await note_signup(db, ip_hash)
 
         start_param = telegram_user.get("start_param")
-        if start_param:
+        if start_param and start_param.startswith("go_"):
+            from app.services.player_tracking import resolve_launch, attribute_launch
+            launch = await resolve_launch(db, start_param[3:])
+            if launch:
+                await attribute_launch(db, user, launch)
+                await db.commit()
+        if start_param and not start_param.startswith("go_"):
             code = start_param
             if code.startswith("ref_"):
                 code = code[4:]
@@ -185,6 +189,15 @@ async def get_current_user(
             await db.commit()
             await db.refresh(user)
         
+    # Recover a signed launch when a player later opens the ordinary bot menu.
+    # Only /users/sync captures it; repeated API calls cannot re-open a dismissal.
+    if request.url.path.endswith('/users/sync') and telegram_user.get('start_param'):
+        from urllib.parse import parse_qsl
+        from app.services.friend_invites import remember_launch
+        source_time = int(dict(parse_qsl(x_telegram_init_data or '')).get('auth_date', '0')) * 1000000
+        await remember_launch(db, user, telegram_user['start_param'], version=source_time)
+        await db.commit()
+
     # 3. Self-healing premium status sync
     if user.is_premium and user.premium_expires_at:
         from datetime import datetime, timezone

@@ -360,36 +360,12 @@ export default function PlayLobby() {
 
   const playVsFriend = async () => {
     if (isCreating || submittingRef.current) return;
-    if (balanceError || loadingBalance) {
-      setMatchmakingError(tw('balance_unavailable'));
-      if (balanceError) void syncBalance();
-      return;
-    }
-
-    if (isNaN(chosenWager) || chosenWager < 100) {
-      setMatchmakingError("Minimum wager is $1.00.");
-      return;
-    }
-    
-    // Check if creator has sufficient balance for chosenWager
-    if (walletBalance < chosenWager) {
-      logTelemetryEvent('wager_insufficient_balance', {
-        source: 'friend_invite',
-        selected_wager_cents: chosenWager,
-        wallet_balance_cents: walletBalance,
-        shortfall_cents: chosenWager - walletBalance,
-        time_control: timeControl,
-        custom_wager: isCustomWager,
-      });
-      setShowDepositDrawer(true);
-      return;
-    }
-
+    telegramHaptic('selection');
     submittingRef.current = true;
     setIsCreating(true);
     setMatchmakingError("");
     try {
-      const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${timeControl}&wager=${chosenWager}`, {
+      const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${timeControl}&wager=0`, {
         method: "POST"
       });
       if (!res.ok) {
@@ -400,7 +376,7 @@ export default function PlayLobby() {
       router.push(`/${locale}/game?id=${data.game_id}`);
     } catch (e: any) {
       console.error("Failed to create friend game", e);
-      setMatchmakingError(e.message || "Failed to generate invite link.");
+      setMatchmakingError(tg('friend_invite_failed'));
     } finally {
       setIsCreating(false);
       submittingRef.current = false;
@@ -431,7 +407,6 @@ export default function PlayLobby() {
   };
   
   const lobby = useLobbyStats();
-  const slipValid = Number.isFinite(chosenWager) && chosenWager >= 100;
 
   return (
     <LayoutWrapper className="justify-start ">
@@ -651,13 +626,13 @@ export default function PlayLobby() {
                     <span className="lobby-tile__sub">{tg('lobby_no_stake')}</span>
                   </span>
                 </button>
-                <button type="button" className="lobby-tile" onClick={playVsFriend} disabled={isCreating || loadingBalance || !slipValid}>
+                <Button variant="secondary" className="lobby-tile" onClick={playVsFriend} disabled={isCreating}>
                   <span className="ui-icon-tile ui-icon-tile--premium"><FaShareAlt size={16} aria-hidden="true" /></span>
                   <span className="lobby-tile__text">
                     <span className="lobby-tile__title">{tg('play_friend')}</span>
-                    <span className="lobby-tile__sub">{slipValid ? formatUsd(chosenWager) : '—'}</span>
+                    <span className="lobby-tile__sub">{tg('lobby_no_stake')}</span>
                   </span>
-                </button>
+                </Button>
               </div>
 
               <RecentResults recent={lobby.recent} t={tg} />

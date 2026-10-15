@@ -18,9 +18,7 @@ interface LobbyStats {
 /** Server activity stays distinct from loading, unknown, and measured zero. */
 export function useLobbyStats() {
   const { data, error } = useSWRFetch<LobbyStats>('/api/v1/game/lobby-stats', {
-    refreshInterval: 15000,
-    revalidateOnFocus: false,
-    errorRetryCount: 1,
+    refreshInterval: 15000, revalidateOnFocus: false, errorRetryCount: 1,
   });
   const valid = data && Number.isFinite(data.searching) && Number.isFinite(data.games_24h);
   return {

@@ -150,3 +150,14 @@ describe('FirstRunCoordinator', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 });
+
+test('a saved invitation pauses first-run dialogs without completing onboarding', async () => {
+  const { InvitationContext } = await import('@/context/InvitationContext');
+  localStorage.removeItem('onboarding_completed');
+  const value = { busy: true, items: [], unavailable: false, open: jest.fn() };
+  const { rerender } = render(<InvitationContext.Provider value={value}><FirstRunCoordinator /></InvitationContext.Provider>);
+  expect(screen.queryByTestId('onboarding-dialog')).not.toBeInTheDocument();
+  expect(localStorage.getItem('onboarding_completed')).toBeNull();
+  rerender(<InvitationContext.Provider value={{ ...value, busy: false }}><FirstRunCoordinator /></InvitationContext.Provider>);
+  expect(await screen.findByTestId('onboarding-dialog')).toBeInTheDocument();
+});

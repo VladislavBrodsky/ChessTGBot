@@ -20,7 +20,7 @@ async def cleanup_session_manager():
     MatchmakerService._redis_client = orig_mm_client
 
 @pytest.mark.asyncio
-async def test_deps_auth_redis_failure_sets_fail_fast(cleanup_session_manager):
+async def test_auth_throttle_outage_does_not_change_game_authority(cleanup_session_manager):
     # Setup mock Redis client that raises an exception on get
     mock_redis = AsyncMock()
     mock_redis.get.side_effect = Exception("Redis Connection Down")
@@ -33,10 +33,10 @@ async def test_deps_auth_redis_failure_sets_fail_fast(cleanup_session_manager):
     
     # Verify we fell back to memory, returned False, and flipped _use_memory to True
     assert is_blocked is False
-    assert SessionManager._use_memory is True
+    assert SessionManager._use_memory is False
 
 @pytest.mark.asyncio
-async def test_deps_register_failure_sets_fail_fast(cleanup_session_manager):
+async def test_auth_failure_counter_does_not_change_game_authority(cleanup_session_manager):
     # Setup mock Redis client that raises an exception on incr
     mock_redis = AsyncMock()
     mock_redis.incr.side_effect = Exception("Redis Connection Down")
@@ -48,7 +48,7 @@ async def test_deps_register_failure_sets_fail_fast(cleanup_session_manager):
     await deps.register_auth_failure("test_ip_hash")
     
     # Verify flipped _use_memory to True
-    assert SessionManager._use_memory is True
+    assert SessionManager._use_memory is False
 
 @pytest.mark.asyncio
 async def test_try_recover_redis_success(cleanup_session_manager):

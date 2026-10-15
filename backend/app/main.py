@@ -282,61 +282,67 @@ async def lifespan(app: FastAPI):
 
     # Start background subscription expiration checker
     from app.services.subscription_service import start_subscription_checker
-    start_background_task(start_subscription_checker())
 
     # Start background deposit crawler to auto-sync transactions
     from app.services.deposit_crawler import start_deposit_crawler
-    start_background_task(start_deposit_crawler())
 
     # Start background Stripe deposit reconciliation loop
     from app.services.stripe_reconciliation import start_stripe_reconciliation_loop
-    start_background_task(start_stripe_reconciliation_loop())
 
     # Start background ledger audit reconciliation
     from app.services.ledger_audit import start_ledger_audit_loop
-    start_background_task(start_ledger_audit_loop())
 
     # Notification outbox reads only committed GRAM reward credits.
     from app.services.gram_rewards import start_gram_reward_notifications
-    start_background_task(start_gram_reward_notifications())
 
     # Start background solvency alert loop (no-op unless SOLVENCY_ALERTS_ENABLED)
     from app.services.solvency_service import start_solvency_alert_loop, start_gas_float_alert_loop
-    start_background_task(start_solvency_alert_loop())
 
     # Start background gas-float alert loop (no-op unless GAS_FLOAT_ALERTS_ENABLED)
-    start_background_task(start_gas_float_alert_loop())
 
     # Start background payout backlog processor
     from app.process_payouts_backlog import start_payout_backlog_loop
-    start_background_task(start_payout_backlog_loop())
 
     # Start background withdrawal verification crawler
     from app.services.withdrawal_crawler import start_withdrawal_crawler
-    start_background_task(start_withdrawal_crawler())
 
     # Start background stale-game sweeper: aborts + refunds matched wager games
     # that never got a first move (backstop for the ephemeral in-process abort timer).
     from app.services.stale_game_sweeper import start_stale_game_sweeper
-    start_background_task(start_stale_game_sweeper())
 
     # Start the daily-arena scheduler (announce -> live pairing -> prizes)
     from app.services.arena_service import start_arena_loop
-    start_background_task(start_arena_loop())
 
     # Start the marketing scheduler
     from app.services.marketing_scheduler import start_marketing_loop
-    start_background_task(start_marketing_loop())
 
     # Start background Redis recovery loop
-    start_background_task(start_redis_recovery_loop())
 
     # Refund withdrawal-confirmation requests that expired unanswered
-    start_background_task(start_withdrawal_confirmation_sweeper())
 
     # Aggregate complete UTC telemetry days before pruning expired raw events.
     from app.services.telemetry_maintenance import start_telemetry_maintenance_loop
-    start_background_task(start_telemetry_maintenance_loop())
+
+    from app.services.player_tracking import start_player_tracking_loop
+    from app.services.background_owner import run_owned_services
+    start_background_task(run_owned_services([
+        start_subscription_checker,
+        start_deposit_crawler,
+        start_stripe_reconciliation_loop,
+        start_ledger_audit_loop,
+        start_gram_reward_notifications,
+        start_solvency_alert_loop,
+        start_gas_float_alert_loop,
+        start_payout_backlog_loop,
+        start_withdrawal_crawler,
+        start_stale_game_sweeper,
+        start_arena_loop,
+        start_marketing_loop,
+        start_redis_recovery_loop,
+        start_withdrawal_confirmation_sweeper,
+        start_telemetry_maintenance_loop,
+        start_player_tracking_loop,
+    ]))
 
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────
     # Lifts users whose stored level is below the level earned from their XP.
@@ -408,7 +414,8 @@ async def lifespan(app: FastAPI):
                         return
                         
                     # Set the key immediately to prevent race conditions during scaling
-                    await redis_client.set("broadcast_sent:v1.7.0", "1", ex=3600)
+                    if not await redis_client.set("broadcast_claim:v1.7.0", "reserved", nx=True):
+                        return
                     
                     logger.info("Initializing v1.7.0 release broadcast...")
                     bot = TelegramService.application.bot if (TelegramService.application and TelegramService.application.bot) else None
@@ -435,7 +442,7 @@ async def lifespan(app: FastAPI):
                         f"• ⚡ <b>Stable Matchmaking:</b> Fortified databases and sockets. Reconnect instantly without interrupting your match if you drop connection.\n"
                         f"• ❓ <b>Settings FAQ:</b> Questions about ELO, deposits, or Premium? We added an expandable FAQ directly in your Settings!\n"
                         f"• 🎯 <b>Clearer Quests:</b> Refined instructions on achievements and daily tasks (like inviting friends) so you know exactly how to claim XP.\n"
-                        f"• 🛠️ <b>Performance Tuning:</b> Upgraded backend to handle over 100,000 concurrent players.\n\n"
+                        f"• 🛠️ <b>Performance Tuning:</b> Improved shared game-state protection and recovery.\n\n"
                         f"Test your strategy and climb the leaderboard!\n\n"
                         f"🔗 <b><a href=\"https://t.me/{bot_username}/play\">Play Web3 Chess</a></b>"
                     )
@@ -469,7 +476,8 @@ async def lifespan(app: FastAPI):
                 except Exception as e:
                     logger.error(f"Error running v1.7.0 broadcast startup task: {e}")
                     
-            start_background_task(run_release_broadcast())
+            if settings.SEND_RELEASE_BROADCAST:
+                start_background_task(run_release_broadcast())
 
     except Exception as e:
         logger.error(f"⚠️  Level backfill failed (non-fatal): {e}")
@@ -564,7 +572,6 @@ def create_application() -> FastAPI:
                     await session_mgr.redis.set(redis_key, "1", ex=60)
                 return True
             except Exception:
-                SessionManager._use_memory = True
                 pass
                 
         # In-memory token bucket fallback
@@ -648,8 +655,7 @@ def create_application() -> FastAPI:
                     nx=True,
                 ))
         except Exception:
-            if session_mgr is not None:
-                session_mgr._use_memory = True
+            pass
 
         if fingerprint not in client_error_correlations and len(client_error_correlations) >= 500:
             # This is only a best-effort alert-sampling cache. Resetting it is
@@ -764,6 +770,12 @@ def create_application() -> FastAPI:
     async def get_version():
         return {"version": settings.VERSION, "status": "deployed"}
 
+    from app.core.coordination import SharedStateUnavailable
+
+    @application.exception_handler(SharedStateUnavailable)
+    async def shared_storage_unavailable(request, exc):
+        return JSONResponse(status_code=503, content={"detail": "Game service temporarily unavailable. Please retry."}, headers={"Retry-After": "3"})
+
     @application.get("/health")
     @application.head("/health")
     @application.get("/api/v1/health")
@@ -781,20 +793,21 @@ def create_application() -> FastAPI:
             logger.error(f"Health Check Database Failure: {db_err}")
             return JSONResponse(
                 status_code=500,
-                content={"status": "unhealthy", "detail": f"Database connection error: {str(db_err)}"}
+                content={"status": "unhealthy", "detail": "Database unavailable"}
             )
 
         # 2. Check Redis
         try:
             from app.services.session_manager import SessionManager
             session_mgr = SessionManager()
-            if session_mgr.redis and not session_mgr._use_memory:
-                await session_mgr.redis.ping()
+            if session_mgr._use_memory or session_mgr.redis is None:
+                raise RuntimeError("Shared storage unavailable")
+            await session_mgr.redis.ping()
         except Exception as redis_err:
             logger.error(f"Health Check Redis Failure: {redis_err}")
             return JSONResponse(
                 status_code=500,
-                content={"status": "unhealthy", "detail": f"Redis connection error: {str(redis_err)}"}
+                content={"status": "unhealthy", "detail": "Shared storage unavailable"}
             )
 
         return {"status": "ok", "version": settings.VERSION}

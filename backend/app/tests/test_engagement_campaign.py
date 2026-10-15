@@ -150,8 +150,8 @@ async def test_real_ai_completion_keeps_start_time_and_quest_eligibility(quest, 
         row = (await db.execute(select(GameHistory).where(GameHistory.game_id == game_id))).scalar_one()
         assert row.created_at == started.replace(tzinfo=None)
         assert row.ended_at >= started.replace(tzinfo=None)
-    # Bot games do not advance quest progress
-    assert (await campaign.status(db, user))["progress"] == 0
+    # Free AI games started after enrollment honor the published promise
+    assert (await campaign.status(db, user))["progress"] == 1
 
     # Real online PvP game advances quest progress
     opponent = User(telegram_id=888999, first_name="Opponent", xp=0, level=1, balance=5000)
@@ -167,4 +167,4 @@ async def test_real_ai_completion_keeps_start_time_and_quest_eligibility(quest, 
     pvp_state.result_type = "draw"
     pvp_state.move_history = ["e2e4", "e7e5", "g1f3", "b8c6"] * 5
     await service.end_game(pvp_id, pvp_state)
-    assert (await campaign.status(db, user))["progress"] == 1
+    assert (await campaign.status(db, user))["progress"] == 2

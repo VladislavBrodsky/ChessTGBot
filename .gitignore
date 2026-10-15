@@ -44,3 +44,7 @@ pyrightconfig.json
 *.tsbuildinfo
 
 .env.production
+
+# Isolated pilot browser test cache
+frontend/.next-pilot*/
+frontend/test-results-pilot/

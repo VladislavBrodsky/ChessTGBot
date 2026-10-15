@@ -264,6 +264,7 @@ class TelegramService:
             # Detect language from Telegram profile, then DB preference, fallback to 'en'
             tg_lang = TelegramService._get_lang(user.language_code)
 
+            created_here = False
             async with AsyncSessionLocal() as db:
                 result = await db.execute(select(User).where(User.telegram_id == user.id))
                 db_user = result.scalars().first()
@@ -278,7 +279,7 @@ class TelegramService:
                         last_name=user.last_name,
                         username=user.username,
                         preferred_language=tg_lang,
-                        photo_url=await TelegramService.get_user_profile_photo(user.id, context.bot),
+                        photo_url=None if start_param else await TelegramService.get_user_profile_photo(user.id, context.bot),
                         referral_code=ref_code
                     )
                     db.add(db_user)
@@ -296,12 +297,6 @@ class TelegramService:
                         if db_user is None:
                             raise
 
-                    # Process referral only for the user we actually created here
-                    if created_here and start_param and start_param.startswith("ref_"):
-                        try:
-                            await GamificationService.process_referral(db, db_user, start_param)
-                        except Exception as ref_err:
-                            bot_errors_logger.error(f"Error processing referral in start_command: {ref_err}")
                 else:
                     # If the user has no DB language set yet, save the Telegram one
                     if not db_user.preferred_language or db_user.preferred_language == "en":
@@ -320,6 +315,36 @@ class TelegramService:
                     db_user.referral_code = referral_code
                     await db.commit()
 
+            # Invite /start must reply before avatar downloads, menu resets or
+            # referral notifications. Persist context even for returning players.
+            from app.services.mini_app_links import app_link, web_app_link, is_invite_parameter
+            if is_invite_parameter(start_param):
+                from app.services.friend_invites import remember_launch, host_for_code, identity
+                async with AsyncSessionLocal() as launch_db:
+                    await remember_launch(launch_db, db_user, start_param)
+                    await launch_db.commit()
+                    name = ''
+                    if start_param.startswith('ref_'):
+                        try:
+                            name = identity(await host_for_code(launch_db, start_param))['name']
+                        except Exception:
+                            pass
+                    import html
+                    from app.services.invitation_copy import invitation_copy
+                    copy = invitation_copy(lang)
+                    invitation_text = '♟ ' + (copy[0].format(name='<b>' + html.escape(name) + '</b>') if name else copy[1])
+                    invitation_text += '\n\n' + copy[2]
+                    await update.message.reply_text(invitation_text, parse_mode='HTML', reply_markup=InlineKeyboardMarkup([
+                        [InlineKeyboardButton(copy[3], web_app=WebAppInfo(url=web_app_link(start_param, lang)))]
+                    ]))
+                    if created_here and start_param.startswith('ref_'):
+                        try:
+                            from app.services.gamification_service import GamificationService
+                            await GamificationService.process_referral(launch_db, db_user, start_param)
+                        except Exception:
+                            bot_errors_logger.exception('Referral attribution after invitation reply failed')
+                return
+
             # Build webapp URL with the resolved language and cache-busting version
             web_app_url = f"{settings.WEBAPP_URL}/{lang}/home?v={settings.VERSION}"
             if start_param:
@@ -327,7 +352,7 @@ class TelegramService:
 
             raw_username = settings.TELEGRAM_BOT_USERNAME or "chess_matbot"
             bot_username = raw_username.lstrip("@")
-            referral_link = f"https://t.me/{bot_username}?start=ref_{referral_code}"
+            referral_link = app_link(f"ref_{referral_code}")
 
             # Resolve localised strings (fallback to English)
             msgs = TelegramService.WELCOME_MESSAGES.get(lang, TelegramService.WELCOME_MESSAGES["en"])
@@ -421,12 +446,12 @@ class TelegramService:
             # marketing site). Per-chat buttons outrank BotFather and the global default
             # forever, so those users kept seeing the stale title/URL. Resetting removes
             # the override and the chat follows the global button again.
+            await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
+
             try:
                 await context.bot.set_chat_menu_button(chat_id=user.id, menu_button=MenuButtonDefault())
             except Exception as menu_err:
                 logger.debug(f"Could not reset per-chat menu button for {user.id}: {menu_err}")
-
-            await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode="HTML")
 
         except Forbidden:
             # The user blocked the bot before our reply landed (e.g. /start then
@@ -874,15 +899,8 @@ class TelegramService:
         """
         Generates a direct StartApp link for the Telegram Mini App.
         """
-        bot_username = settings.TELEGRAM_BOT_USERNAME or "chess_matbot"
-        try:
-            if cls.application:
-                me = await cls.application.bot.get_me()
-                bot_username = me.username
-        except Exception as e:
-            logger.warning(f"Could not fetch bot username: {e}")
-
-        return f"https://t.me/{bot_username}/app?startapp={game_id}"
+        from app.services.mini_app_links import app_link
+        return app_link(game_id)
 
     PREMIUM_WELCOME_MESSAGES = {
         "en": {

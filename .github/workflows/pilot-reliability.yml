@@ -1,0 +1,80 @@
+name: Pilot reliability with PostgreSQL and Redis
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pilot-reliability:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pilot
+          POSTGRES_PASSWORD: pilot
+          POSTGRES_DB: chess_pilot_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U pilot -d chess_pilot_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: sqlite+aiosqlite:////tmp/chess-pilot-unit.db
+      PILOT_DATABASE_URL: postgresql://pilot:pilot@127.0.0.1:5432/chess_pilot_test
+      PILOT_REDIS_URL: redis://127.0.0.1:6379/15
+      PILOT_REPORT_PATH: /tmp/chess-pilot-load.json
+      REQUIRE_REAL_DB: '1'
+      SECRET_KEY: ci-pilot-only
+      WEBHOOK_SECRET: ci-pilot-only
+      ADMIN_TELEGRAM_IDS: '999999'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install --require-hashes -r requirements.txt
+      - name: Apply migrations to real PostgreSQL
+        run: DATABASE_URL="$PILOT_DATABASE_URL" python -m alembic upgrade head
+      - name: Cross-worker correctness and pilot workload
+        run: python -m pytest tests/test_pilot_reliability.py --tb=short
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pilot-workload
+          path: /tmp/chess-pilot-load.json
+          if-no-files-found: ignore
+
+  pilot-browser:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --include=optional
+      - run: npx playwright install --with-deps chromium
+      - name: Free challenge and player tracking journeys
+        run: npm run test:pilot
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: pilot-browser-traces
+          path: frontend/test-results-pilot/
+          if-no-files-found: ignore

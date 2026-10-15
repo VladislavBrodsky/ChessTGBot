@@ -162,17 +162,24 @@ if settings.REDIS_URL:
         )
         logger.info("[Socket] Initialized AsyncRedisManager with configured Redis service")
     except Exception as e:
+        if not settings.is_development_or_testing:
+            raise RuntimeError("Realtime shared storage is unavailable") from e
         logger.warning(
             "[Socket] Failed to initialize AsyncRedisManager; falling back to "
             "in-memory: %s",
             exception_summary(e),
         )
 
+if client_mgr is None and not settings.is_development_or_testing:
+    raise RuntimeError("Realtime shared storage is required")
+
 from app.core.security import is_allowed_cors_origin  # noqa: E402
 
 # Create a Socket.IO server
 sio = socketio.AsyncServer(
     async_mode='asgi',
+    # One WebSocket per player needs no HTTP polling affinity on Railway.
+    transports=['polling', 'websocket'] if settings.is_development_or_testing or settings.SOCKET_LEGACY_POLLING_ENABLED else ['websocket'],
     cors_allowed_origins=is_allowed_cors_origin,
     client_manager=client_mgr
 )

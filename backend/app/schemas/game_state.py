@@ -7,6 +7,8 @@ class ChessMove(BaseModel):
     promotion: Optional[str] = None
 
 class GameState(BaseModel):
+    revision: int = 0
+    invite_token: Optional[str] = None
     fen: str
     turn: str  # 'w' or 'b'
     is_check: bool
@@ -23,6 +25,7 @@ class GameState(BaseModel):
     black_time_left: float = 600.0
     last_move_at: Optional[float] = None
     created_at: Optional[float] = None  # time.time() at creation; used by the stale-game sweeper
+    matched_at: Optional[float] = None  # second human joined; survives worker restarts
     move_history: List[str] = []
     result_type: Optional[str] = None
     difficulty: Optional[str] = "medium"

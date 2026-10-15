@@ -4,7 +4,7 @@ Prepared 11 October 2026 for **@chess_hub**. Virtual rewards are approved; TON p
 
 ## The first offer
 
-**Play 3 free AI games → unlock one free Epic Mystery Box.** Join the quest on Home first. Then complete three server-recorded AI games, each with at least 20 half-moves (10 moves per side). Wins, losses, and draws count. Earlier, paid, aborted, and short games do not count. The box is once per account, has no deadline, and costs no XP or money to open.
+**Play 3 free AI games → unlock one free Epic Mystery Box.** Join the quest on Home first. Then complete three server-recorded AI games, each with at least 20 half-moves (10 moves per side). Wins, losses, and draws count. Earlier, aborted, and short games do not count. Qualifying free human games also count, and existing human-match eligibility is preserved for enrolled players. No stake or deposit is needed. The box is once per account, has no deadline, and costs no XP or money to open.
 
 | Virtual reward | Chance | Fulfillment |
 | --- | ---: | --- |

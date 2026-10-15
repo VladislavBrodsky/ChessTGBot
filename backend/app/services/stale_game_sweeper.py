@@ -44,19 +44,15 @@ SWEEP_ALERT_REMINDER_SWEEPS = 10
 
 def is_sweepable(state, now: float, grace: float = STALE_GRACE_SECONDS) -> bool:
     """
-    True only for a *matched wager* game that has NEVER started and is now stale:
+    True only for a *matched human* game that has NEVER started and is now stale:
       - not already over,
-      - has a wager (bid_amount > 0),
       - both real human players joined (excludes AI = -1 and unfilled lobbies),
       - no move was ever made (last_move_at is None), and
-      - it was created more than `grace` seconds ago.
+      - its first-move grace plus a safety margin has elapsed since matching.
     Started-but-abandoned games are intentionally left to the clock-timeout path
-    (a real forfeit, not a refund); unfilled/no-opponent lobbies are handled by
-    heal_zombie_wagers on reconnect.
+    (a real forfeit, not a refund); unfilled free invitations remain shareable until their normal TTL.
     """
     if state is None or state.is_game_over:
-        return False
-    if getattr(state, "bid_amount", 0) <= 0:
         return False
     white_id = state.white_player_id
     black_id = state.black_player_id
@@ -71,7 +67,11 @@ def is_sweepable(state, now: float, grace: float = STALE_GRACE_SECONDS) -> bool:
         # Pre-existing games from before created_at was tracked: leave them to
         # the 24h TTL / reconnect self-heal rather than guess their age.
         return False
-    return (now - created) >= grace
+    matched = getattr(state, "matched_at", None)
+    if getattr(state, "bid_amount", 0) <= 0 and not matched:
+        return False  # legacy free games have no reliable match timestamp
+    minimum_age = max(grace, (getattr(state, "first_move_grace_seconds", None) or 30) + 60)
+    return (now - (matched or created)) >= minimum_age
 
 
 def is_clock_expired(state, now: float) -> bool:
@@ -97,7 +97,7 @@ async def _sweep_once(service: GameService) -> int:
 
     game_ids = []
     if sm._use_memory or not sm.redis:
-        active_games = sm._memory_store.get("games:active", set())
+        active_games = sm._memory_store.get("games:active", set()) | sm._memory_store.get("games:unsettled", set())
         game_ids = list(active_games)
     else:
         # No fallback path here: the former scan() fallback used the same Redis
@@ -105,7 +105,7 @@ async def _sweep_once(service: GameService) -> int:
         # occurs in production — Redis being unreachable — the fallback failed
         # identically and turned a blip into a loop-level error. Let the failure
         # propagate to the caller, which counts it toward a sustained outage.
-        game_ids = [g.decode() if isinstance(g, bytes) else g for g in await sm.redis.smembers("games:active")]
+        game_ids = [g.decode() if isinstance(g, bytes) else g for g in await sm.redis.sunion("games:active", "games:unsettled")]
 
     swept = 0
     for gid in game_ids:
@@ -115,13 +115,17 @@ async def _sweep_once(service: GameService) -> int:
                 # Ghost key: game state deleted or expired from Redis; prune from active set
                 if not sm._use_memory and sm.redis:
                     await sm.redis.srem("games:active", gid)
+                    await sm.redis.srem("games:unsettled", gid)
                 elif sm._use_memory and "games:active" in sm._memory_store:
                     sm._memory_store["games:active"].discard(gid)
                 continue
 
-            if is_sweepable(state, now):
+            if state.is_game_over:
+                await service.end_game(gid, state)
+                swept += 1
+            elif is_sweepable(state, now):
                 logger.info(
-                    f"[StaleSweeper] Aborting + refunding never-started wager game {gid} "
+                    f"[StaleSweeper] Aborting + refunding never-started human game {gid} "
                     f"(age {int(now - state.created_at)}s, bid {state.bid_amount})"
                 )
                 state.is_game_over = True

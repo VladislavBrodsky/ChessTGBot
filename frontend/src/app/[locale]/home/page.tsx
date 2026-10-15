@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FiBell, FiSettings, FiShoppingBag, FiCreditCard } from 'react-icons/fi';
 import { FaGraduationCap, FaChessKnight, FaTrophy } from 'react-icons/fa';
@@ -21,6 +20,7 @@ import { HeroCardSkeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
 import XPProgressBar from '@/components/XPProgressBar';
 import FirstRunCoordinator from '@/components/FirstRunCoordinator';
+import { InvitationInboxCard } from '@/components/FriendInvitations';
 import NotificationModal from '@/components/NotificationModal';
 import DailyGoalsBento from '@/components/DailyGoalsBento';
 import EngagementQuest from '@/components/EngagementQuest';
@@ -28,19 +28,10 @@ import { GramVaultPreview } from '@/components/GramVaultPreview';
 import QuickMatchModal from '@/components/game/QuickMatchModal';
 import { telegramHaptic } from '@/lib/telegram';
 
-// Telegram's `start_param` persists for the whole webview session, so the
-// deep-link redirect below re-fired on EVERY Home mount — after finishing a
-// deep-linked game, returning to Home yanked the user straight back into that
-// (now finished) game's MatchOverModal, with no escape. Honor a deep link at
-// most once per session; live-game resume is handled by LayoutWrapper's
-// /game/active check (which correctly excludes finished games).
-let deepLinkHandled = false;
-
 export default function Home() {
  const t = useTranslations('Index');
   const tc = useTranslations('Common');
  const locale = useLocale();
- const router = useRouter();
  const [tgUser, setTgUser] = useState<any>(null);
  const [showNotifications, setShowNotifications] = useState(false);
  const [showQuickMatch, setShowQuickMatch] = useState(false);
@@ -53,27 +44,6 @@ export default function Home() {
    : stats
      ? `${stats.first_name}${stats.last_name ? ` ${stats.last_name}` : ''}`
      : (tgUser ? `${tgUser.first_name}${tgUser.last_name ? ` ${tgUser.last_name}` : ''}` : fallbackCombatant);
-
- useEffect(() => {
-   if (typeof window !== 'undefined') {
-     let startParam = '';
-     if (window.Telegram?.WebApp?.initDataUnsafe?.start_param) {
-       startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
-     } else {
-       const params = new URLSearchParams(window.location.search);
-       startParam = params.get('startapp') || params.get('start') || '';
-     }
-     
-     if (startParam && !startParam.startsWith('ref_') && !deepLinkHandled) {
-       deepLinkHandled = true;
-       if (startParam === 'arena') {
-         router.push(`/${locale}/game`);
-       } else {
-         router.push(`/${locale}/game?id=${startParam}`);
-       }
-     }
-   }
- }, [locale, router]);
 
  useEffect(() => {
    setMounted(true);
@@ -141,6 +111,7 @@ export default function Home() {
               <span className="block text-sm font-semibold">{t('execute_matchmaking')}</span>
             </ActionLink>
           </div>
+          <InvitationInboxCard />
           <EngagementQuest />
           <GramVaultPreview />
           <div className="w-full"><ArenaBanner /></div>

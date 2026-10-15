@@ -1,5 +1,7 @@
 'use client';
 
+import { mainMiniAppLink } from '@/lib/invitations';
+
 import { useState } from 'react';
 import useSWR from 'swr';
 import { useLocale, useTranslations } from 'next-intl';
@@ -50,13 +52,13 @@ export default function EngagementQuest() {
   const [details, setDetails] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const referralCode = stats?.referral_code;
-  const canShare = typeof referralCode === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(referralCode);
+  const canShare = typeof referralCode === 'string' && /^[A-Za-z0-9_-]{1,60}$/.test(referralCode);
 
   function shareInvite() {
     if (!canShare || !referralCode) return;
     const bot = (stats?.bot_username || process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').replace(/^@+/, '');
     if (!/^[A-Za-z0-9_]{5,32}$/.test(bot)) return;
-    const inviteLink = `https://t.me/${bot}?start=ref_${referralCode}`;
+    const inviteLink = mainMiniAppLink(bot, `ref_${referralCode}`);
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}`;
     telegramHaptic('selection');
     void sendTelemetryEvent('engagement_quest_share', { campaign_id: 'first-three-v1' });
@@ -176,7 +178,7 @@ export default function EngagementQuest() {
             void act('claim');
           } else {
             telegramHaptic('selection');
-            router.push(`/${locale}/game`);
+            router.push(`/${locale}/game?practice=1`);
           }
         }}
       >

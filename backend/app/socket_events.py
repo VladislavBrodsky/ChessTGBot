@@ -3,6 +3,8 @@ import random
 import time
 import logging
 import html
+from weakref import WeakValueDictionary
+from redis.exceptions import RedisError
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +14,9 @@ OFFLINE_FIRST_MOVE_GRACE_SECONDS = 180.0
 
 # One background matchmaking poller per user; a re-join replaces the old one.
 _active_matchmaking_pollers: dict = {}
+_rematch_locks = WeakValueDictionary()
+
+from app.core.config import get_settings
 
 
 async def _sid_connected(sid: str) -> bool:
@@ -22,6 +27,10 @@ async def _sid_connected(sid: str) -> bool:
         await sio.get_session(sid)
         return True
     except Exception:
+        from app.services.session_manager import SessionManager
+        sm = SessionManager()
+        if sm.redis and not sm._use_memory:
+            return bool(await sm.redis.get(f"socket:presence:{sid}"))
         return False
 
 def ws_correlation(event_name: str):
@@ -33,6 +42,7 @@ def ws_correlation(event_name: str):
             @functools.wraps(func)
             async def wrapper(sid, *args, **kwargs):
                 game_id_str = ""
+                session = {}
                 try:
                     session = await sio.get_session(sid)
                     game_id = session.get('game_id')
@@ -44,7 +54,28 @@ def ws_correlation(event_name: str):
                 req_id = f"ws:{sid}{game_id_str}:{event_name}"
                 token = request_id_var.set(req_id)
                 try:
+                    if not get_settings().is_development_or_testing and event_name in {'make_move', 'join_matchmaking', 'join_room', 'offer_rematch', 'accept_rematch', 'offer_draw', 'accept_draw'}:
+                        sm = GameService().session_manager
+                        from app.core.coordination import require_shared_store
+                        require_shared_store(sm._use_memory, sm.redis)
+                        user_key = session.get('user_id')
+                        if not user_key:
+                            return
+                        budget = 20 if event_name == 'make_move' else 5
+                        count = await sm.redis.eval("local n=redis.call('incr',KEYS[1]); if n==1 then redis.call('expire',KEYS[1],1) end; return n", 1, f"socket:rate:{user_key}:{event_name}")
+                        if count > budget:
+                            await sio.emit('error', {'message': 'Please slow down and try again.', 'retryable': True}, room=sid)
+                            return
+                    if event_name == 'accept_rematch':
+                        sm = GameService().session_manager
+                        payload = args[0] if args else {}
+                        key = str(payload.get('game_id', ''))
+                        lock = _rematch_locks.setdefault(key, asyncio.Lock())
+                        async with shared_lock(sm.redis, f"lock:rematch:{key}", use_memory=sm._use_memory, local_lock=lock):
+                            return await func(sid, *args, **kwargs)
                     return await func(sid, *args, **kwargs)
+                except (SharedStateUnavailable, RedisError):
+                    await sio.emit('error', {'message': 'Game service is busy. Please reconnect and try again.', 'retryable': True}, room=sid)
                 finally:
                     request_id_var.reset(token)
             return wrapper
@@ -60,6 +91,7 @@ def ws_correlation(event_name: str):
             return wrapper
     return decorator
 
+from app.core.coordination import SharedStateUnavailable, shared_lock
 from app.core.socket import sio  # noqa: E402
 from app.services.game_service import GameService  # noqa: E402
 from app.core.security import validate_init_data, extract_client_ip, hash_ip  # noqa: E402
@@ -191,6 +223,10 @@ async def connect(sid, environ, auth):
 
         # Save user_id to session
         await sio.save_session(sid, {'user_id': user_id, 'user_data': user_data, 'ip_hash': ip_hash})
+        await sio.enter_room(sid, f'user:{user_id}')
+        sm = GameService().session_manager
+        if sm.redis and not sm._use_memory:
+            await sm.redis.set(f"socket:presence:{sid}", str(user_id), ex=90)
         print(f"Socket {sid} connected as User {user_id}")
         # Run self-healing zombie wager routine on socket connect (in background with jitter to prevent mass-reconnect DDOS)
         if user_id:
@@ -216,13 +252,22 @@ async def connect(sid, environ, auth):
             # Same for a live arena pool entry
             try:
                 from app.services.arena_service import ArenaService
-                ArenaService().update_sid(user_id, sid)
+                await ArenaService().update_sid_shared(user_id, sid)
             except Exception as e:
                 logger.warning(f"Failed to refresh arena sid for user {user_id}: {e}")
         
     except Exception as e:
         print(f"Socket connection rejected: {e}")
         return False # Reject connection
+
+@sio.event
+@ws_correlation('presence')
+async def presence(sid, data=None):
+    session = await sio.get_session(sid)
+    if session.get('user_id'):
+        sm = GameService().session_manager
+        if sm.redis and not sm._use_memory:
+            await sm.redis.set(f"socket:presence:{sid}", str(session['user_id']), ex=90)
 
 @sio.event
 @ws_correlation('disconnect')
@@ -234,6 +279,9 @@ async def disconnect(sid):
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
         game_id = session.get('game_id')
+        sm = GameService().session_manager
+        if sm.redis and not sm._use_memory:
+            await sm.redis.delete(f"socket:presence:{sid}")
         if user_id:
             # Wagered queues die with the socket (the wager is refunded and the
             # money paths assume no lingering entry). FREE queue entries persist:
@@ -248,7 +296,7 @@ async def disconnect(sid):
             # the abort timer, so drop them (their score keeps; they can rejoin).
             try:
                 from app.services.arena_service import ArenaService
-                ArenaService().leave(user_id)
+                await ArenaService().leave_shared(user_id, sid)
             except Exception:
                 pass
             
@@ -257,7 +305,7 @@ async def disconnect(sid):
                 service = GameService()
                 state = await service.get_game_state(game_id)
                 if state and not state.is_game_over:
-                    if state.white_player_id == user_id and not state.black_player_id:
+                    if state.white_player_id == user_id and not state.black_player_id and state.bid_amount > 0:
                         logger.info(f"Creator {user_id} disconnected from lobby {game_id}. Aborting game and refunding.")
                         state.is_game_over = True
                         state.result_type = 'aborted'
@@ -325,7 +373,7 @@ async def join_room(sid, data):
                 
                 # Start White's first-move abort timer if it's not a bot game
                 if state.black_player_id != -1:
-                    service.start_abort_monitor(room, expected_move_count=0, time_limit=30.0, player_color='w')
+                    service.start_abort_monitor(room, expected_move_count=0, time_limit=state.first_move_grace_seconds or 30.0, player_color='w')
             elif state:
                 # Just send state to this user
                 await sio.emit('game_state', state.model_dump(), room=sid)
@@ -374,6 +422,7 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
         state.first_move_grace_seconds = OFFLINE_FIRST_MOVE_GRACE_SECONDS
 
     state.bid_amount = bid_amount
+    state.matched_at = time.time()
     
     # Resolve pending wagers if stakes are greater than 0
     async with AsyncSessionLocal() as db:
@@ -576,6 +625,7 @@ async def establish_arena_game(user_id: int, user_sid: str, opponent_id: int, op
         state.black_username = black.first_name if black else f"User_{state.black_player_id}"
         state.black_elo = black.elo if black else 1000
 
+    state.matched_at = time.time()
     await service.session_manager.save_game(game_id, state)
 
     await sio.enter_room(user_sid, game_id)
@@ -611,13 +661,14 @@ async def join_arena(sid, data):
             await sio.emit('arena_error', {'message': 'Unauthorized connection'}, room=sid)
             return
         arena_service = ArenaService()
-        if arena_service.current_arena_id is None:
+        current_arena_id = await arena_service.current_id()
+        if current_arena_id is None:
             await sio.emit('arena_error', {'message': 'No arena is live right now.'}, room=sid)
             return
         async with AsyncSessionLocal() as db:
             user = await user_crud.get_user_by_telegram_id(db, user_id)
             elo = getattr(user, 'elo', 1000) if user else 1000
-            joined = await arena_service.join(db, arena_service.current_arena_id, user_id, sid, elo=elo)
+            joined = await arena_service.join(db, current_arena_id, user_id, sid, elo=elo)
         if joined:
             await sio.emit('arena_status', {'status': 'joined', 'arena_id': arena_service.current_arena_id}, room=sid)
         else:
@@ -635,7 +686,7 @@ async def leave_arena(sid, data):
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
         if user_id:
-            ArenaService().leave(user_id)
+            await ArenaService().leave_shared(user_id, sid)
             await sio.emit('arena_status', {'status': 'left'}, room=sid)
     except Exception as e:
         print(f"Error leaving arena: {e}")
@@ -1113,7 +1164,7 @@ async def make_move(sid, data):
                        await sio.emit('error', {'message': 'Not your turn'}, room=sid)
                        return
 
-        new_state = await service.make_move(game_id, uci, preloaded_state=current_state)
+        new_state = await service.make_move(game_id, uci, preloaded_state=current_state, player_id=user_id)
         if new_state:
             await sio.emit('game_state', new_state.model_dump(), room=game_id)
             
@@ -1244,6 +1295,9 @@ async def offer_rematch(sid, data):
         service = GameService()
         state = await service.get_game_state(game_id)
         if state:
+            if user_id not in (state.white_player_id, state.black_player_id):
+                await sio.emit('error', {'message': 'You are not a player in this game.'}, room=sid)
+                return
             if not state.is_game_over:
                 await sio.emit('error', {'message': 'Cannot offer rematch. The game is still in progress.'}, room=sid)
                 return
@@ -1283,6 +1337,9 @@ async def accept_rematch(sid, data):
         service = GameService()
         state = await service.get_game_state(game_id)
         if state:
+            if user_id not in (state.white_player_id, state.black_player_id):
+                await sio.emit('error', {'message': 'You are not a player in this game.'}, room=sid)
+                return
             opponent_id = state.black_player_id if state.white_player_id == user_id else state.white_player_id
             if opponent_id and opponent_id != -1:
                 # 1. Fetch pending rematch details from Redis
@@ -1298,7 +1355,12 @@ async def accept_rematch(sid, data):
                     await sio.emit('error', {'message': 'You cannot accept your own rematch offer.'}, room=sid)
                     return
                 
+                if pending.get('challenger_id') != opponent_id or not state.is_game_over:
+                    await sio.emit('error', {'message': 'Invalid rematch offer.'}, room=sid)
+                    return
                 wager = int(pending.get('wager', 0))
+                if wager < 0 or (state.bid_amount == 0 and wager != 0):
+                    return
                 
                 from app.core.database import AsyncSessionLocal
                 from app.crud import user as user_crud
@@ -1352,7 +1414,7 @@ async def accept_rematch(sid, data):
                     # Delete the pending rematch key to prevent replay attacks
                     await service.session_manager.redis.delete(f"pending_rematch:{game_id}")
                     
-                    new_game_id = str(uuid.uuid4())[:8]
+                    new_game_id = uuid.uuid4().hex
                     # Randomly assign colors and preserve original time control
                     time_control = getattr(state, "time_control_seconds", 600)
                     new_state = await service.create_game(new_game_id, is_bot_game=False, time_control_seconds=time_control, bid_amount=wager)
@@ -1364,7 +1426,9 @@ async def accept_rematch(sid, data):
                         new_state.white_player_id = user_id
                         new_state.black_player_id = opponent_id
                     
-                    await service.session_manager.redis.set(f"game:{new_game_id}", new_state.model_dump_json())
+                    new_state.matched_at = time.time()
+                    await service.session_manager.save_game(new_game_id, new_state)
+                    service.start_abort_monitor(new_game_id, expected_move_count=0, time_limit=30.0, player_color='w')
                     await sio.emit('match_found', {'game_id': new_game_id}, room=game_id)
 
 

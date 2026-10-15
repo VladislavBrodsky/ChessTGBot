@@ -56,7 +56,7 @@ test('active quest opens the match lobby without an invented cash prize or activ
   mockFetch.mockResolvedValue(response({ ...quest, progress: 1, state: 'active' }));
   mount();
   fireEvent.click(await screen.findByRole('button', { name: 'play' }));
-  expect(mockPush).toHaveBeenCalledWith('/en/game');
+  expect(mockPush).toHaveBeenCalledWith('/en/game?practice=1');
   expect(screen.queryByText(/TON|mystery boxes unlocked today/i)).not.toBeInTheDocument();
 });
 
@@ -67,7 +67,7 @@ test('claimed reward offers an optional tracked Telegram invite using the real r
     mount();
     fireEvent.click(await screen.findByRole('button', { name: 'share_invite' }));
     expect(open).toHaveBeenCalledWith(
-      `https://t.me/share/url?url=${encodeURIComponent('https://t.me/chess_matbot?start=ref_invite7')}`,
+      `https://t.me/share/url?url=${encodeURIComponent('https://t.me/chess_matbot?startapp=ref_invite7')}`,
       '_blank',
       'noopener,noreferrer',
     );

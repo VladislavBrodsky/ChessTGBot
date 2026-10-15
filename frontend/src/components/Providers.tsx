@@ -8,6 +8,7 @@ import ClientErrorReporter from './ClientErrorReporter';
 import TelemetryReporter from './TelemetryReporter';
 import { ReducedMotionProvider } from '@/context/ReducedMotionContext';
 import AuthGuard from './AuthGuard';
+import { InvitationProvider } from '@/components/FriendInvitations';
 
 export default function Providers({ children }: { children: ReactNode }) {
 
@@ -39,7 +40,7 @@ export default function Providers({ children }: { children: ReactNode }) {
 
     // Wallet dialogs own their provider. Loading the TON SDK must never block
     // the route shell or remount AuthGuard when moving between destinations.
-    const pageContent = <AuthGuard>{children}</AuthGuard>;
+    const pageContent = <AuthGuard><InvitationProvider>{children}</InvitationProvider></AuthGuard>;
 
     return (
         <SWRConfig value={{

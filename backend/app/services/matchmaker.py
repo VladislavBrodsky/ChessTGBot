@@ -7,6 +7,7 @@ import redis.asyncio as redis
 from typing import Dict, Optional
 from app.core.config import get_settings
 from app.core.redis_client import create_redis_client
+from app.core.coordination import RedisLease, FencedRedis, current_lease, require_shared_store, SharedStateUnavailable
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ class MatchmakerService:
     _lock = asyncio.Lock()
     _redis_client = None
     _use_memory = False
+    _leases = {}
     _memory_queues = {}  # Dict[int, List[dict]]
 
     # Cross-time-control matching: an exact time-control match is always
@@ -58,55 +60,36 @@ class MatchmakerService:
             except Exception as e:
                 logger.warning(f"Failed to initialize Redis client for Matchmaker: {e}. Falling back to in-memory store.")
                 MatchmakerService._redis_client = None
+                if not settings.is_development_or_testing:
+                    raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
                 MatchmakerService._use_memory = True
 
     @property
     def redis(self):
-        return MatchmakerService._redis_client
+        require_shared_store(self._use_memory, self._redis_client)
+        return FencedRedis(self._redis_client) if self._redis_client else None
 
-    async def _acquire_distributed_lock(self, key: str, ttl_seconds: int = 5) -> Optional[str]:
-        """Acquire a simple distributed lock in Redis with retries."""
-        if MatchmakerService._use_memory or not self.redis:
+    async def _acquire_distributed_lock(self, key: str, ttl_seconds: int = 15):
+        require_shared_store(self._use_memory, self._redis_client)
+        if self._use_memory or not self._redis_client:
             return None
-        
-        lock_key = f"lock:matchmaker:{key}"
-        token = str(uuid.uuid4())
-        
-        # Retry for up to 3 seconds to acquire the lock
-        retries = 30
-        for attempt in range(retries):
-            try:
-                # set nx=True, ex=ttl_seconds
-                acquired = await self.redis.set(lock_key, token, nx=True, ex=ttl_seconds)
-                if acquired:
-                    return token
-            except Exception as e:
-                if attempt == retries - 1:
-                    logger.warning(f"Redis system/connection error during lock acquisition after {retries} attempts: {e}. Switching to in-memory store.")
-                    MatchmakerService._use_memory = True
-                    return None
-            await asyncio.sleep(0.1)
-            
-        logger.error(f"Failed to acquire distributed lock for key {key} after {retries} retries.")
-        return None
-
-    async def _release_distributed_lock(self, key: str, token: str) -> None:
-        """Atomically release distributed lock using a Lua script."""
-        if MatchmakerService._use_memory or not self.redis or not token:
-            return
-            
-        lock_key = f"lock:matchmaker:{key}"
-        lua_release_script = """
-        if redis.call('get', KEYS[1]) == ARGV[1] then
-            return redis.call('del', KEYS[1])
-        else
-            return 0
-        end
-        """
         try:
-            await self.redis.eval(lua_release_script, 1, lock_key, token)
-        except Exception as e:
-            logger.warning(f"Failed to release lock {key}: {e}")
+            lease = await RedisLease(self._redis_client, f"lock:matchmaker:{key}", ttl_ms=ttl_seconds * 1000).acquire()
+        except SharedStateUnavailable:
+            if not settings.is_development_or_testing:
+                raise
+            MatchmakerService._use_memory = True
+            return None
+        context_token = current_lease.set((lease.key, lease.token))
+        self._leases[lease.token] = (lease, context_token)
+        return lease.token
+
+    async def _release_distributed_lock(self, key: str, token: str):
+        entry = self._leases.pop(token, None)
+        if entry:
+            lease, context_token = entry
+            current_lease.reset(context_token)
+            await lease.release()
 
     @staticmethod
     def _would_collude(user_id: int, ip_hash: Optional[str], referrer_id: Optional[int], candidate: dict, recent_opponents: Optional[set] = None) -> bool:
@@ -198,6 +181,8 @@ class MatchmakerService:
                 queues[tc] = json.loads(data) if data else []
         except Exception as e:
             logger.warning(f"Redis _load_bid_queues failed ({e}). Falling back to memory.")
+            if not settings.is_development_or_testing:
+                raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
             MatchmakerService._use_memory = True
             return {
                 tc: list(queue)
@@ -212,6 +197,17 @@ class MatchmakerService:
             MatchmakerService._memory_queues[(bid_amount, time_control)] = queue
             return
         try:
+            queue_key = f"matchmaker:queue:{bid_amount}:{time_control}"
+            previous_raw = await self.redis.get(queue_key)
+            previous = json.loads(previous_raw) if previous_raw else []
+            live_ids = {item['user_id'] for item in queue}
+            for item in previous:
+                index_key = f"matchmaker:user_queue:{item['user_id']}"
+                if item['user_id'] not in live_ids and await self.redis.get(index_key) == queue_key:
+                    await self.redis.delete(index_key)
+            for item in queue:
+                remaining = max(1, int(self.queue_ttl(bid_amount) - (time.time() - item['joined_at'])))
+                await self.redis.set(f"matchmaker:user_queue:{item['user_id']}", queue_key, ex=remaining)
             if len(queue) == 0:
                 await self.redis.delete(f"matchmaker:queue:{bid_amount}:{time_control}")
                 await self._remove_active_queue_link_if_empty(bid_amount, time_control, 0)
@@ -220,81 +216,33 @@ class MatchmakerService:
                 await self._add_active_queue_link(bid_amount, time_control)
         except Exception as e:
             logger.warning(f"Redis _store_queue failed ({e}). Falling back to memory.")
+            if not settings.is_development_or_testing:
+                raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
             MatchmakerService._use_memory = True
             MatchmakerService._memory_queues[(bid_amount, time_control)] = queue
 
-    async def get_queue_counts(
-        self,
-        bid_amount: int,
-        time_control: int,
-        exclude_user_id: Optional[int] = None,
-    ) -> dict:
-        """Return unique, non-expired queue sizes from the shared queue store."""
-        lock_token = await self._acquire_distributed_lock("global")
-        async with self._lock:
-            try:
-                now = time.time()
-                pool_users = set()
-                all_users = set()
-
-                def collect(bid: int, tc: int, queue: list) -> list:
-                    ttl = self.queue_ttl(bid)
-                    active = [
-                        item for item in queue
-                        if now - item.get('joined_at', now) <= ttl
-                    ]
-                    user_ids = {
-                        item.get('user_id')
-                        for item in active
-                        if item.get('user_id') is not None
-                    }
-                    all_users.update(user_ids)
-                    if bid == bid_amount and tc == time_control:
-                        pool_users.update(user_ids)
-                    return active
-
-                if MatchmakerService._use_memory or not self.redis:
-                    for (bid, tc), queue in list(MatchmakerService._memory_queues.items()):
-                        active = collect(bid, tc, queue)
-                        if len(active) != len(queue):
-                            MatchmakerService._memory_queues[(bid, tc)] = active
-                else:
-                    try:
-                        active_bids = await self.redis.smembers("matchmaker:active_bids")
-                        for bid_str in active_bids:
-                            try:
-                                bid = int(bid_str)
-                            except (TypeError, ValueError):
-                                continue
-                            queues = await self._load_bid_queues(bid)
-                            for tc, queue in queues.items():
-                                active = collect(bid, tc, queue)
-                                if len(active) != len(queue):
-                                    await self._store_queue(bid, tc, active)
-                    except Exception as e:
-                        logger.warning(
-                            f"Redis get_queue_counts failed ({e}). Falling back to memory."
-                        )
-                        MatchmakerService._use_memory = True
-                        pool_users.clear()
-                        all_users.clear()
-                        for (bid, tc), queue in list(MatchmakerService._memory_queues.items()):
-                            active = collect(bid, tc, queue)
-                            if len(active) != len(queue):
-                                MatchmakerService._memory_queues[(bid, tc)] = active
-
-                excluded = {exclude_user_id} if exclude_user_id is not None else set()
-                return {
-                    'real_pool_queue_size': len(pool_users),
-                    'real_total_queue_size': len(all_users),
-                    'real_pool_opponents': len(pool_users - excluded),
-                    'real_total_opponents': len(all_users - excluded),
-                    'queue_size_source': 'server_shared_queue',
-                    'queue_size_counted_at': int(now),
-                }
-            finally:
-                if lock_token:
-                    await self._release_distributed_lock("global", lock_token)
+    async def get_queue_counts(self, bid_amount: int, time_control: int, exclude_user_id=None):
+        """Read-only snapshot: activity display never takes the pairing lock."""
+        require_shared_store(self._use_memory, self._redis_client)
+        now = time.time()
+        pool_users, all_users = set(), set()
+        if self._use_memory or not self.redis:
+            queues = dict(self._memory_queues)
+        else:
+            queues = {}
+            for raw_bid in await self.redis.smembers("matchmaker:active_bids"):
+                bid = int(raw_bid)
+                for tc, queue in (await self._load_bid_queues(bid)).items():
+                    queues[(bid, tc)] = queue
+        for (bid, tc), queue in queues.items():
+            users = {item['user_id'] for item in queue if now - item.get('joined_at', now) <= self.queue_ttl(bid)}
+            all_users.update(users)
+            if (bid, tc) == (bid_amount, time_control):
+                pool_users.update(users)
+        excluded = {exclude_user_id} if exclude_user_id is not None else set()
+        return {'real_pool_queue_size': len(pool_users), 'real_total_queue_size': len(all_users),
+                'real_pool_opponents': len(pool_users - excluded), 'real_total_opponents': len(all_users - excluded),
+                'queue_size_source': 'server_shared_queue', 'queue_size_counted_at': int(now)}
 
     async def add_to_queue(self, user_id: int, bid_amount: int, sid: str, elo: int = 1000, time_control: int = 600, ip_hash: Optional[str] = None, referrer_id: Optional[int] = None) -> None:
         """
@@ -332,11 +280,12 @@ class MatchmakerService:
                     data = await self.redis.get(queue_key)
                     queue = json.loads(data) if data else []
                     queue.append(player_data)
-                    await self.redis.set(queue_key, json.dumps(queue))
-                    await self._add_active_queue_link(bid_amount, time_control)
+                    await self._store_queue(bid_amount, time_control, queue)
                     logger.info(f"Matchmaker (Redis): Added User {user_id} (ELO {elo}) to ${bid_amount / 100:.2f} ({time_control}s) queue")
                 except Exception as e:
                     logger.warning(f"Redis add_to_queue failed ({e}). Falling back to memory.")
+                    if not settings.is_development_or_testing:
+                        raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
                     MatchmakerService._use_memory = True
                     if queue_key_mem not in MatchmakerService._memory_queues:
                         MatchmakerService._memory_queues[queue_key_mem] = []
@@ -507,6 +456,8 @@ class MatchmakerService:
                     queue = json.loads(data) if data else []
                 except Exception as e:
                     logger.warning(f"Redis find_opponent failed ({e}). Falling back to memory.")
+                    if not settings.is_development_or_testing:
+                        raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
                     MatchmakerService._use_memory = True
                     queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
 
@@ -551,6 +502,11 @@ class MatchmakerService:
         """Point any persisted queue entries for this user at a fresh socket id.
         Called on socket (re)connect so a free-game entry that survived a
         disconnect emits match_found to the live connection."""
+        # Most connections are not queued. A read must not serialize every
+        # login behind the global mutation lease.
+        if not MatchmakerService._use_memory and self.redis:
+            if await self.find_user_entry(user_id) is None:
+                return
         lock_token = await self._acquire_distributed_lock("global")
         async with self._lock:
             try:
@@ -584,9 +540,11 @@ class MatchmakerService:
                                     item['sid'] = new_sid
                                     changed = True
                             if changed:
-                                await self.redis.set(queue_key, json.dumps(queue))
+                                await self._store_queue(bid, tc, queue)
                 except Exception as e:
                     logger.warning(f"Redis update_sid failed ({e}). Falling back to memory.")
+                    if not settings.is_development_or_testing:
+                        raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
                     MatchmakerService._use_memory = True
             finally:
                 if lock_token:
@@ -602,6 +560,15 @@ class MatchmakerService:
                         return {'bid_amount': bid, 'time_control': tc, 'entry': item}
             return None
         try:
+            indexed = await self.redis.get(f"matchmaker:user_queue:{user_id}")
+            if indexed:
+                raw = await self.redis.get(indexed)
+                if raw:
+                    _, _, bid_text, tc_text = indexed.split(':')
+                    bid, tc = int(bid_text), int(tc_text)
+                    for item in json.loads(raw):
+                        if item['user_id'] == user_id and time.time() - item['joined_at'] <= self.queue_ttl(bid):
+                            return {'bid_amount': bid, 'time_control': tc, 'entry': item}
             active_bids = await self.redis.smembers("matchmaker:active_bids")
             for bid_str in active_bids:
                 try:
@@ -623,6 +590,8 @@ class MatchmakerService:
                             return {'bid_amount': bid, 'time_control': tc, 'entry': item}
         except Exception as e:
             logger.warning(f"Redis find_user_entry failed ({e}). Falling back to memory.")
+            if not settings.is_development_or_testing:
+                raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
             MatchmakerService._use_memory = True
             for (bid, tc), queue in MatchmakerService._memory_queues.items():
                 for item in queue:
@@ -660,12 +629,14 @@ class MatchmakerService:
                         for item in queue:
                             if item.get('user_id') == user_id:
                                 item['notify_when_matched'] = enabled
-                                await self.redis.set(queue_key, json.dumps(queue))
+                                await self._store_queue(0, tc, queue)
                                 return {'bid_amount': 0, 'time_control': tc, 'entry': item}
                 except Exception as e:
                     logger.warning(
                         f"Redis set_notification_opt_in failed ({e}). Falling back to memory."
                     )
+                    if not settings.is_development_or_testing:
+                        raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
                     MatchmakerService._use_memory = True
                 return None
             finally:
@@ -695,14 +666,12 @@ class MatchmakerService:
                     if data:
                         queue = json.loads(data)
                         new_queue = [item for item in queue if item['user_id'] not in (player1_id, player2_id)]
-                        if len(new_queue) == 0:
-                            await self.redis.delete(queue_key)
-                            await self._remove_active_queue_link_if_empty(bid_amount, time_control, 0)
-                        else:
-                            await self.redis.set(queue_key, json.dumps(new_queue))
+                        await self._store_queue(bid_amount, time_control, new_queue)
                     logger.info(f"Matchmaker (Redis): Removed User {player1_id} and User {player2_id} from ${bid_amount / 100:.2f} ({time_control}s) queue")
                 except Exception as e:
                     logger.warning(f"Redis remove_match_pair failed ({e}). Falling back to memory.")
+                    if not settings.is_development_or_testing:
+                        raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
                     MatchmakerService._use_memory = True
                     if queue_key_mem in MatchmakerService._memory_queues:
                         MatchmakerService._memory_queues[queue_key_mem] = [
@@ -750,14 +719,12 @@ class MatchmakerService:
                         original_len = len(queue)
                         new_queue = [item for item in queue if item['user_id'] != user_id]
                         if len(new_queue) < original_len:
-                            if len(new_queue) == 0:
-                                await self.redis.delete(queue_key)
-                                await self._remove_active_queue_link_if_empty(bid, tc, 0)
-                            else:
-                                await self.redis.set(queue_key, json.dumps(new_queue))
+                            await self._store_queue(bid, tc, new_queue)
                             logger.info(f"Matchmaker (Redis): Removed User {user_id} from {queue_key} queue")
         except Exception as e:
             logger.warning(f"Redis _remove_from_queue_unsafe failed ({e}). Falling back to memory.")
+            if not settings.is_development_or_testing:
+                raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
             MatchmakerService._use_memory = True
 
     async def is_in_queue(self, bid_amount: int, time_control: int, user_id: int) -> bool:
@@ -772,6 +739,8 @@ class MatchmakerService:
                 data = await self.redis.get(queue_key)
                 queue = json.loads(data) if data else []
             except Exception:
+                if not settings.is_development_or_testing:
+                    raise SharedStateUnavailable("Shared matchmaking storage is unavailable")
                 MatchmakerService._use_memory = True
                 queue = MatchmakerService._memory_queues.get(queue_key_mem, [])
                 

@@ -69,7 +69,7 @@ async def get_stats(
     import json
 
     session_mgr = SessionManager()
-    cache_key = "admin:dashboard:stats"
+    cache_key = "admin:dashboard:stats:accepted-play-v1"
     if session_mgr.redis and not session_mgr._use_memory:
         try:
             cached_stats = await session_mgr.redis.get(cache_key)
@@ -98,34 +98,9 @@ async def get_stats(
     )
     total_blocked_users: int = blocked_res.scalar_one() or 0
 
-    # ── Activity (users active via games, transactions, signups, or check-ins) ──
-    async def _active_users(since: datetime) -> int:
-        q1 = select(GameHistory.white_player_id.label("player_id")).where(
-            GameHistory.game_type == "online",
-            GameHistory.created_at >= since,
-        )
-        q2 = select(GameHistory.black_player_id.label("player_id")).where(
-            GameHistory.game_type == "online",
-            GameHistory.created_at >= since,
-        )
-        q3 = select(Transaction.user_id.label("player_id")).where(
-            Transaction.created_at >= since,
-        )
-        q4 = select(User.id.label("player_id")).where(
-            User.created_at >= since,
-        )
-        q5 = select(User.id.label("player_id")).where(
-            User.last_checkin_date >= since,
-        )
-        q_union = union(q1, q2, q3, q4, q5)
-        subq = q_union.subquery()
-        q_count = select(func.count(subq.c.player_id))
-        r = await db.execute(q_count)
-        return r.scalar_one() or 0
-
-    active_24h = await _active_users(ago_24h)
-    active_7d  = await _active_users(ago_7d)
-    active_30d = await _active_users(ago_30d)
+    from app.services.player_tracking import gameplay_counts
+    activity = await gameplay_counts(db)
+    active_24h, active_7d, active_30d = activity['dau'], activity['wau'], activity['mau']
 
     # ── Games ────────────────────────────────────────────────────────────────
     total_games_res = await db.execute(
@@ -254,6 +229,8 @@ async def get_stats(
         "total_blocked_users": total_blocked_users,
         "premium_users": premium_users,
         "premium_conversion_rate": conversion_rate,
+        "activity_basis": activity["basis"],
+        "activity_coverage_start": activity["coverage_start"],
         "active_24h": active_24h,
         "active_7d": active_7d,
         "active_30d": active_30d,
@@ -1390,7 +1367,6 @@ async def trigger_benchmark(
             redis_p95 = round(statistics.quantiles(redis_latencies, n=20)[18], 2)
         except Exception as redis_err:
             logger.warning(f"Redis benchmark failed: {redis_err}")
-            SessionManager._use_memory = True
 
     return {
         "status": "success",
@@ -1413,176 +1389,38 @@ async def trigger_benchmark(
 # 10. Marketing Performance & CMO Intelligence
 # ---------------------------------------------------------------------------
 
+@router.get("/player-metrics")
+async def get_player_metrics(db: AsyncSession = Depends(get_db), _admin: User = Depends(get_admin_user)):
+    from app.services.player_tracking import pilot_metrics
+    return await pilot_metrics(db)
+
+
+class PilotLaunchRequest(BaseModel):
+    campaign: str
+    destination: str = "home"
+
+
+@router.post("/player-campaigns")
+async def create_player_campaign(payload: PilotLaunchRequest, db: AsyncSession = Depends(get_db), _admin: User = Depends(get_admin_user)):
+    from app.services.player_tracking import create_launch
+    from app.core.config import get_settings
+    if payload.destination == "game":
+        raise HTTPException(status_code=400, detail="Create friend invitations through the game endpoint")
+    try:
+        launch = await create_launch(db, campaign=payload.campaign, destination=payload.destination)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    await db.commit()
+    from app.services.mini_app_links import app_link
+    return {"url": app_link(f"go_{launch.token}"), "expires_at": launch.expires_at.isoformat() + "Z"}
+
+
 @router.get("/marketing")
-async def get_marketing_metrics(
-    _admin: User = Depends(get_admin_user),
-):
-    """
-    Returns the comprehensive 6-month CMO marketing metrics, cross-platform
-    KPI scorecards, channel benchmarks, live verified posts, and growth rules.
-    """
-    from pathlib import Path
-    import json
-
-    report_path = Path("marketing/content-ops/reports/cmo-6month-content-audit-2026.json")
-    if not report_path.exists():
-        alt_path = Path(__file__).resolve().parents[4] / "marketing/content-ops/reports/cmo-6month-content-audit-2026.json"
-        if alt_path.exists():
-            report_path = alt_path
-
-    audit_data = {}
-    if report_path.exists():
-        try:
-            with open(report_path, "r", encoding="utf-8") as f:
-                audit_data = json.load(f)
-        except Exception as e:
-            logger.warning(f"Failed to read marketing audit report: {e}")
-
-    # Verified recent posts with authentic, distinct metrics and mathematical consistency
-    recent_posts = [
-        # X (Twitter) Engine
-        {"id": "2026-10-12-x-1", "platform": "x", "category": "Tactics", "title": "Tactical Strike: Pin & Decoy Combination", "url": "https://x.com/defi_ambassador/status/2109741220180148653", "impressions": 3420, "engagements": 172, "rate": "5.03%", "status": "Live"},
-        {"id": "2026-10-12-x-2", "platform": "x", "category": "Culture", "title": "Historical Immortal Games: Tal’s Sacrifices", "url": "https://x.com/defi_ambassador/status/2109834432915857574", "impressions": 4180, "engagements": 246, "rate": "5.89%", "status": "Live"},
-        {"id": "2026-10-12-x-3", "platform": "x", "category": "Product", "title": "FastAPI + Socket.IO: Zero Board Lag on Telegram", "url": "https://x.com/defi_ambassador/status/2110129827852279849", "impressions": 2890, "engagements": 135, "rate": "4.67%", "status": "Live"},
-        {"id": "2026-10-12-x-4", "platform": "x", "category": "Debate", "title": "Rapid vs Blitz: Intuition vs Memory Controversy", "url": "https://x.com/defi_ambassador/status/2110131949893271673", "impressions": 3110, "engagements": 158, "rate": "5.08%", "status": "Live"},
-        {"id": "2026-10-12-x-5", "platform": "x", "category": "Tactics", "title": "The 4 Tactical Motifs That Decide 85% of Speed Games", "url": "https://x.com/defi_ambassador/status/2110144593752719650", "impressions": 2740, "engagements": 129, "rate": "4.71%", "status": "Live"},
-        {"id": "2026-10-12-x-6", "platform": "x", "category": "Psychology", "title": "Time Trouble Panic: What Happens at 6 Seconds", "url": "https://x.com/defi_ambassador/status/2110152349683479019", "impressions": 3650, "engagements": 198, "rate": "5.42%", "status": "Live"},
-        {"id": "2026-10-12-x-7", "platform": "x", "category": "Openings", "title": "Queen Trap in Sicilian Dragon: Precision Defense", "url": "https://x.com/defi_ambassador/status/2110159949623972243", "impressions": 2530, "engagements": 114, "rate": "4.51%", "status": "Live"},
-        {"id": "2026-10-12-x-8", "platform": "x", "category": "Engineering", "title": "Sub-100ms WebSockets: Why Speed Chess on Telegram Mini App", "url": "https://x.com/defi_ambassador/status/2110181120331428004", "impressions": 3820, "engagements": 205, "rate": "5.37%", "status": "Live"},
-        {"id": "2026-10-12-x-9", "platform": "x", "category": "Tactics", "title": "Endgame Precision: Converting Minor Piece Advantages", "url": "https://x.com/defi_ambassador/status/2110190353198240216", "impressions": 2980, "engagements": 147, "rate": "4.93%", "status": "Live"},
-        {"id": "2026-10-12-x-10", "platform": "x", "category": "Psychology", "title": "Tilt Control in Bullet: Cognitive Recovery Protocols", "url": "https://x.com/defi_ambassador/status/2110167543801360479", "impressions": 3250, "engagements": 168, "rate": "5.17%", "status": "Live"},
-
-        # Telegram Official Channel Broadcasts (@chess_hub)
-        {"id": "mk_tg_12", "platform": "telegram", "category": "Tactics", "title": "Daily Tactics Challenge: White to Move & Mate in 3", "url": "https://t.me/chess_hub/12", "impressions": 4680, "engagements": 234, "rate": "5.00%", "status": "Live"},
-        {"id": "mk_tg_13", "platform": "telegram", "category": "News", "title": "Grandmaster Blitz Analysis & Key Turning Points", "url": "https://t.me/chess_hub/13", "impressions": 4120, "engagements": 189, "rate": "4.59%", "status": "Live"},
-        {"id": "mk_tg_14", "platform": "telegram", "category": "Openings", "title": "Sicilian Dragon Refutation: Yugoslav Attack Precision", "url": "https://t.me/chess_hub/14", "impressions": 3950, "engagements": 178, "rate": "4.51%", "status": "Live"},
-        {"id": "mk_tg_15", "platform": "telegram", "category": "Culture", "title": "Mikhail Tal’s Intuitive Piece Sacrifices (1960)", "url": "https://t.me/chess_hub/15", "impressions": 5420, "engagements": 312, "rate": "5.76%", "status": "Live"},
-        {"id": "mk_tg_16", "platform": "telegram", "category": "Product", "title": "Instant Vault Settlement & Non-Custodial USDT Security", "url": "https://t.me/chess_hub/16", "impressions": 4310, "engagements": 196, "rate": "4.55%", "status": "Live"},
-        {"id": "mk_tg_17", "platform": "telegram", "category": "Tactics", "title": "Smothered Mate Tactical Matrix with Knight Maneuver", "url": "https://t.me/chess_hub/17", "impressions": 4890, "engagements": 251, "rate": "5.13%", "status": "Live"},
-        {"id": "mk_tg_21", "platform": "telegram", "category": "Engineering", "title": "Microsecond Monotonic Engine: Zero-Cheat Latency Fairness", "url": "https://t.me/chess_hub/21", "impressions": 3740, "engagements": 165, "rate": "4.41%", "status": "Live"},
-        {"id": "mk_tg_22", "platform": "telegram", "category": "Culture", "title": "Speed Chess Community Welcome: Fair Play on Mobile", "url": "https://t.me/chess_hub/22", "impressions": 4450, "engagements": 218, "rate": "4.90%", "status": "Live"},
-
-        # Website Blog SEO & Academy Guides
-        {"id": "blog-london-counter", "platform": "blog", "category": "Tactics", "title": "Countering the London System: Modern Active Setups", "url": "https://web3chess.online/blog/london-system-counter-attacks", "impressions": 8450, "engagements": 412, "rate": "4.88%", "status": "Live"},
-        {"id": "blog-sicilian-traps", "platform": "blog", "category": "Openings", "title": "Sicilian Defense Tactical Traps & King's Indian Keys", "url": "https://web3chess.online/blog/sicilian-defense-tactical-traps", "impressions": 9210, "engagements": 486, "rate": "5.28%", "status": "Live"},
-        {"id": "blog-speed-clock", "platform": "blog", "category": "Culture", "title": "Speed Chess Clock Management: The 5-Second Crisis", "url": "https://web3chess.online/blog/speed-chess-clock-management", "impressions": 7890, "engagements": 374, "rate": "4.74%", "status": "Live"},
-        {"id": "blog-endgame-pawns", "platform": "blog", "category": "Tactics", "title": "Endgame Pawn Structures & Opposition Breakthroughs", "url": "https://web3chess.online/blog/endgame-pawn-structures", "impressions": 8940, "engagements": 442, "rate": "4.94%", "status": "Live"},
-        {"id": "blog-bullet-psychology", "platform": "blog", "category": "Psychology", "title": "Psychology of Bullet Chess: Tilt Control Under High Speed", "url": "https://web3chess.online/blog/psychology-of-bullet-chess", "impressions": 7420, "engagements": 358, "rate": "4.82%", "status": "Live"},
-        {"id": "blog-queens-gambit", "platform": "blog", "category": "Openings", "title": "Queen's Gambit Accepted: Complete Modern Guide", "url": "https://web3chess.online/blog/queens-gambit-accepted-guide", "impressions": 8120, "engagements": 395, "rate": "4.86%", "status": "Live"},
-    ]
-
-    # Dynamically compute channel metrics from verified posts
-    x_posts = [p for p in recent_posts if p["platform"] == "x"]
-    tg_posts = [p for p in recent_posts if p["platform"] == "telegram"]
-    blog_posts = [p for p in recent_posts if p["platform"] == "blog"]
-
-    x_imp = sum(p["impressions"] for p in x_posts)
-    x_eng = sum(p["engagements"] for p in x_posts)
-    x_rate = f"{(x_eng / x_imp * 100):.2f}%" if x_imp else "0.00%"
-
-    tg_imp = sum(p["impressions"] for p in tg_posts)
-    tg_eng = sum(p["engagements"] for p in tg_posts)
-    tg_rate = f"{(tg_eng / tg_imp * 100):.2f}%" if tg_imp else "0.00%"
-
-    blog_imp = sum(p["impressions"] for p in blog_posts)
-    blog_eng = sum(p["engagements"] for p in blog_posts)
-    blog_rate = f"{(blog_eng / blog_imp * 100):.2f}%" if blog_imp else "0.00%"
-
-    scorecard = [
-        {
-            "platform": "X (Twitter)",
-            "handle": "@defi_ambassador",
-            "published": len(x_posts),
-            "reach": int(x_imp * 0.76),
-            "impressions": x_imp,
-            "engagements": x_eng,
-            "rate": x_rate,
-            "primary_action": "Profile Click & Docked Link",
-            "icon": "x",
-            "is_own": True
-        },
-        {
-            "platform": "Telegram Channel",
-            "handle": "@chess_hub",
-            "published": len(tg_posts),
-            "reach": int(tg_imp * 0.82),
-            "impressions": tg_imp,
-            "engagements": tg_eng,
-            "rate": tg_rate,
-            "primary_action": "Mini App ?startapp=mk_tg_*",
-            "icon": "telegram",
-            "is_own": True
-        },
-        {
-            "platform": "Website Blog & SEO",
-            "handle": "web3chess.online",
-            "published": len(blog_posts),
-            "reach": int(blog_imp * 0.65),
-            "impressions": blog_imp,
-            "engagements": blog_eng,
-            "rate": blog_rate,
-            "primary_action": "Academy & Web Client Play",
-            "icon": "web",
-            "is_own": True
-        },
-        {
-            "platform": "Mini App Game Platform",
-            "handle": "@chess_matbot",
-            "published": 1,
-            "reach": 36500,
-            "impressions": 48200,
-            "engagements": 19280,
-            "rate": "40.00%",
-            "primary_action": "Direct Matchmaking & Wagers",
-            "icon": "miniapp",
-            "is_own": True
-        }
-    ]
-
-    total_content_imp = x_imp + tg_imp + blog_imp
-    total_content_eng = x_eng + tg_eng + blog_eng
-    total_content_reach = int(x_imp * 0.76) + int(tg_imp * 0.82) + int(blog_imp * 0.65)
-    avg_eng_rate = f"{(total_content_eng / total_content_imp * 100):.2f}%" if total_content_imp else "0.00%"
-
-    return {
-        "status": "success",
-        "audit_period": audit_data.get("audit_period", "2026-05-01 to 2026-10-13 (Last 6 Months)"),
-        "executive_summary": {
-            "our_published_assets": len(recent_posts),
-            "our_total_impressions": total_content_imp,
-            "our_total_reach": total_content_reach,
-            "our_avg_engagement_rate": avg_eng_rate,
-            "our_mini_app_funnel_ctr": "42.0%",
-            "total_ecosystem_impressions": total_content_imp + 48200,
-            "total_posts_monitored": len(recent_posts),
-            "total_views_evaluated": total_content_imp + 48200,
-            "total_own_published_assets": len(recent_posts),
-            "top_performing_format": "Emoji-as-Answer Tactical Position & Interactive Reveal",
-            "highest_retention_channel": "Telegram Mini App (startapp attribution: 42% click-to-game)",
-            "highest_seo_dwell_time": "Long-form Tactical Anatomy & Gambits (avg dwell: 3m 48s)"
-        },
-        "publishing_standards": {
-            "title": "Official Platform Publishing Standards & Organic Distribution",
-            "description": "Strict organic publishing protocols across our 4 verified platform pillars: X (@defi_ambassador), Telegram (@chess_hub), Web Blog (web3chess.online), and Telegram Mini App (@chess_matbot). Content strategy prioritizes high-signal tactical puzzles, chess culture, engine transparency, and 18+ compliant skill-based matchmaking with zero spam links or misleading promises.",
-            "verified_channels": 4,
-            "total_impressions": total_content_imp + 48200,
-            "target_engagement_rate": "4.98%"
-        },
-        "competitor_benchmark": {
-            "title": "Official Platform Publishing Standards & Organic Distribution",
-            "description": "Strict organic publishing protocols across our 4 verified platform pillars: X (@defi_ambassador), Telegram (@chess_hub), Web Blog (web3chess.online), and Telegram Mini App (@chess_matbot). Content strategy prioritizes high-signal tactical puzzles, chess culture, engine transparency, and 18+ compliant skill-based matchmaking with zero spam links or misleading promises.",
-            "competitor_posts": len(recent_posts),
-            "ecosystem_views": total_content_imp + 48200,
-            "competitor_median_rate": avg_eng_rate,
-            "channels_audited": ["@defi_ambassador (X)", "@chess_hub (Telegram)", "web3chess.online (Blog)", "@chess_matbot (Mini App)"]
-        },
-        "scorecard": scorecard,
-        "recent_posts": recent_posts,
-        "growth_rules": audit_data.get("cmo_data_driven_recommendations", [
-            {"rule": "Enforce Strict 2-3 Audience Hashtags on X", "rationale": "Empirical data shows 4+ hashtags trigger algorithmic spam suppression, while 2-3 hashtags index accurately into high-intent search clusters."},
-            {"rule": "Maintain 3-Hour Telegram Spacing with 7-Hour Threaded Reveals", "rationale": "Double engagement curve: Morning puzzle creates immediate voting reactions, evening reveal reactivates the message thread and pushes notification to users."},
-            {"rule": "Zero Outbound Links in Root Tweets", "rationale": "Twitter/X heavily suppresses posts containing external URLs in the root body. Docking links in the delayed reply preserves algorithmic reach."},
-            {"rule": "Skill-Based Wager Transparency (18+ Compliant)", "rationale": "Competitors promising unbacked 'earn crypto' suffer falling reach. Highlighting 95% pot return and sub-4s TON settlement builds durable trust."}
-        ])
-    }
-
+async def get_marketing_metrics(_admin: User = Depends(get_admin_user)):
+    # Historical hardcoded figures and unverified CSV rows cannot establish
+    # reach, conversions, or retention. Keep the legacy response honest.
+    return {"status": "success", "data_status": "unavailable",
+            "audit_period": "Verified platform exports required",
+            "executive_summary": {"our_total_impressions": None, "our_total_reach": None,
+                                  "our_avg_engagement_rate": None, "our_mini_app_funnel_ctr": None},
+            "scorecard": [], "recent_posts": [], "growth_rules": []}

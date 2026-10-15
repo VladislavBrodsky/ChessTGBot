@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     # DB Pooling (defaults tuned for Railway Postgres connection limits; override via env)
     DB_POOL_SIZE: int = int(os.getenv("DB_POOL_SIZE") or "10")
     DB_MAX_OVERFLOW: int = int(os.getenv("DB_MAX_OVERFLOW") or "20")
+    DB_POOL_TIMEOUT_SECONDS: float = 5.0
 
     # Raw events support debugging; daily aggregates remain available for trends.
     TELEMETRY_RAW_RETENTION_DAYS: int = int(os.getenv("TELEMETRY_RAW_RETENTION_DAYS", "30"))
@@ -60,6 +61,8 @@ class Settings(BaseSettings):
     # Redis
     # Default to localhost for dev. In production, use REDIS_URL environment variable.
     REDIS_URL: str = "redis://localhost:6379/0"
+    # Temporary single-replica migration switch for already-open older clients.
+    SOCKET_LEGACY_POLLING_ENABLED: bool = False
 
     # Telegram
     TELEGRAM_BOT_TOKEN: str = (os.getenv("TELEGRAM_BOT_TOKEN") or os.getenv("BOT_TOKEN") or "").strip().strip('"').strip("'")
@@ -67,6 +70,7 @@ class Settings(BaseSettings):
     # First Three is live after both services were deployed and verified.
     # Set false to pause new entries; existing entrants retain claim rights.
     ENGAGEMENT_CAMPAIGN_ENABLED: bool = True
+    SEND_RELEASE_BROADCAST: bool = False
     ADMIN_TELEGRAM_IDS: str | None = None
     ADMIN_TELEGRAM_ID: int = int(os.getenv("ADMIN_TELEGRAM_ID") or "0")
     PAYOUT_MNEMONIC: str = os.getenv("PAYOUT_MNEMONIC") or ""

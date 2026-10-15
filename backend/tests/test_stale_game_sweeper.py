@@ -36,7 +36,7 @@ def test_not_sweepable_when_already_over():
     assert is_sweepable(_state(is_game_over=True), time.time()) is False
 
 
-def test_not_sweepable_without_wager():
+def test_legacy_free_game_without_match_timestamp_is_not_guessed():
     assert is_sweepable(_state(bid_amount=0), time.time()) is False
 
 
@@ -215,6 +215,8 @@ def test_is_clock_expired():
 
 @pytest.mark.asyncio
 async def test_sweep_prunes_ghost_keys_from_active_set(monkeypatch):
+    from app.services.session_manager import SessionManager
+    monkeypatch.setattr(SessionManager, "_memory_store", {})
     from app.services.game_service import GameService
     svc = GameService()
     sm = svc.session_manager
@@ -228,3 +230,10 @@ async def test_sweep_prunes_ghost_keys_from_active_set(monkeypatch):
     assert swept == 0
     assert ghost_gid not in sm._memory_store.get("games:active", set())
 
+
+
+def test_free_invitation_gets_full_grace_after_friend_joins():
+    now = time.time()
+    state = _state(bid_amount=0, created_at=now - 3600, matched_at=now - 200, first_move_grace_seconds=180)
+    assert not is_sweepable(state, now)
+    assert is_sweepable(state, now + 41)

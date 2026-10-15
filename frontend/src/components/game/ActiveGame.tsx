@@ -1,3 +1,4 @@
+import { mainMiniAppLink } from '@/lib/invitations';
 import { gameResultSummary } from '@/lib/gameResult';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -584,10 +585,13 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   }, [gameState, userId, playAudio]);
 
   const botUsername = userStats?.bot_username || "chess_matbot";
-  const inviteLink = `https://t.me/${botUsername}/app?startapp=${gameId}`;
+  const inviteStart = gameState?.invite_token ? `go_${gameState.invite_token}` : gameId;
+  const inviteLink = mainMiniAppLink(botUsername, inviteStart);
 
   const handleShareInvite = () => {
-    const shareText = `Play a game of wager chess with me! ♟️ Stake: $${((gameState?.bid_amount || 0) / 100).toFixed(2)} USDT. Click to join:`;
+    const shareText = (gameState?.bid_amount || 0) > 0
+      ? tg('friend_share_staked', { amount: ((gameState.bid_amount || 0) / 100).toFixed(2) })
+      : tg('friend_share_free');
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(shareText)}`;
 
     if (window.Telegram?.WebApp) {

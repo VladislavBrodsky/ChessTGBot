@@ -13,7 +13,7 @@ interface ReadCacheEntry {
 const READ_CACHE_TTL_MS = 45_000;
 const MAX_READ_CACHE_ENTRIES = 80;
 const readCache = new Map<string, ReadCacheEntry>();
-const NON_CACHEABLE_READ_PATH = /\/(?:admin(?:\/|$)|game\/active(?:\/|$)|wallet(?:\/|$)|stripe(?:\/|$)|withdraw(?:\/|$)|onchain-balances(?:\/|$))/;
+const NON_CACHEABLE_READ_PATH = /\/(?:admin(?:\/|$)|game\/(?:active|lobby-stats|launch|friends)(?:\/|$)|wallet(?:\/|$)|stripe(?:\/|$)|withdraw(?:\/|$)|onchain-balances(?:\/|$))/;
 
 function canUseReadCache(path: string, options: RequestInit): boolean {
   const method = (options.method || 'GET').toUpperCase();

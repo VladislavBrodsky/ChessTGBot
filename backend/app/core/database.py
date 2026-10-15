@@ -29,7 +29,7 @@ else:
         echo=False,
         pool_size=settings.DB_POOL_SIZE,
         max_overflow=settings.DB_MAX_OVERFLOW,
-        pool_timeout=30,
+        pool_timeout=settings.DB_POOL_TIMEOUT_SECONDS,
         pool_recycle=300,
         pool_pre_ping=True
     )
@@ -51,7 +51,7 @@ else:
             echo=False,
             pool_size=settings.DB_POOL_SIZE,
             max_overflow=settings.DB_MAX_OVERFLOW,
-            pool_timeout=30,
+            pool_timeout=settings.DB_POOL_TIMEOUT_SECONDS,
             pool_recycle=300,
             pool_pre_ping=True
         )

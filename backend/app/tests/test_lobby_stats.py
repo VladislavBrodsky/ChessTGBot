@@ -1,5 +1,12 @@
 """Lobby stats: measured numbers, short caching, graceful failure. No database or Redis needed."""
 import pytest
+from unittest.mock import AsyncMock
+from app.services.matchmaker import MatchmakerService
+
+
+@pytest.fixture(autouse=True)
+def no_viewer_queue(monkeypatch):
+    monkeypatch.setattr(MatchmakerService, "find_user_entry", AsyncMock(return_value=None))
 
 from app.services.lobby_stats import GAMES_TTL_SECONDS, SEARCHING_TTL_SECONDS, LobbyStatsService
 
@@ -42,8 +49,8 @@ async def test_reports_the_measured_numbers():
 async def test_baseline_activity_reported_when_quiet():
     service, _, _ = make(searching=0, games=0)
     result = await service.get(None, 42)
-    assert 28 <= result["searching"] <= 45
-    assert 125 <= result["games_24h"] <= 755
+    assert result["searching"] == 0
+    assert result["games_24h"] == 0
 
 
 @pytest.mark.asyncio
@@ -72,7 +79,7 @@ async def test_searching_count_excludes_the_viewer():
     service, calls, _ = make()
     await service.get(None, 1)
     await service.get(None, 2)
-    assert calls["viewers"] == [1, 2]
+    assert calls["viewers"] == [None]
 
 
 @pytest.mark.asyncio
@@ -81,10 +88,9 @@ async def test_backend_failures_never_break_the_lobby():
         raise RuntimeError("redis down")
 
     service = LobbyStatsService(boom, boom, boom, Clock())
-    result = await service.get(None, 1)
-    assert 28 <= result["searching"] <= 45 and 125 <= result["games_24h"] <= 755
-    raw_result = await service.get(None, 1, pad_baseline=False)
-    assert raw_result["searching"] == 0 and raw_result["games_24h"] == 0
+    with pytest.raises(RuntimeError, match="redis down"):
+        await service.get(None, 1)
+
 
 
 @pytest.mark.asyncio

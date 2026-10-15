@@ -7,7 +7,7 @@ import json
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
@@ -39,6 +39,9 @@ def catalog():
         "target": TARGET,
         "minimum_plies": MIN_PLIES,
         "game_type": "online",
+        "free_ai_eligible": True,
+        "free_human_eligible": True,
+        "existing_human_eligibility_preserved": True,
         "once_per_account": True,
         "cash_value": False,
         "rewards": list(REWARDS),
@@ -72,9 +75,13 @@ async def status(db: AsyncSession, user: User):
                 GameHistory.white_player_id == user.telegram_id,
                 GameHistory.black_player_id == user.telegram_id,
             ),
-            GameHistory.black_player_id != -1,
-            GameHistory.white_player_id != -1,
-            GameHistory.game_type == "online",
+            or_(
+                # Honor the published free-practice promise as well as existing
+                # enrolled players' human-match progress. No new money reward.
+                and_(GameHistory.bid_amount == 0, GameHistory.game_type.in_(["online", "computer"])),
+                and_(GameHistory.white_player_id > 0, GameHistory.black_player_id > 0,
+                     GameHistory.game_type == "online"),
+            ),
             GameHistory.total_moves >= MIN_PLIES,
             GameHistory.result_type.in_(["checkmate", "resignation", "timeout", "draw"]),
             GameHistory.created_at >= enrolled.created_at,

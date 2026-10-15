@@ -1,10 +1,11 @@
-from sqlalchemy import Integer, String, BigInteger, DateTime
+from sqlalchemy import Integer, String, BigInteger, DateTime, Index
 from sqlalchemy.orm import Mapped, mapped_column
 from app.core.database import Base
 from datetime import datetime, timezone
 
 class GameHistory(Base):
     __tablename__ = "game_history"
+    __table_args__ = (Index("ix_game_history_type_ended_at", "game_type", "ended_at"),)
 
     # Explicit nullability preserves the existing schema when adding Mapped types.
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)

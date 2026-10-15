@@ -19,61 +19,19 @@ from app.crud import game_history as game_history_crud  # noqa: E402
 from app.models.game_history import GameHistory  # noqa: E402
 from app.models.transaction import Transaction  # noqa: E402
 import contextlib  # noqa: E402
-import secrets  # noqa: E402
+from contextvars import Context  # noqa: E402
+from weakref import WeakValueDictionary  # noqa: E402
 
-_local_game_locks = {}
+from app.core.coordination import shared_lock
+
+_local_game_locks = WeakValueDictionary()
 
 @contextlib.asynccontextmanager
 async def game_lock(redis_client, game_id: str, use_memory: bool = False):
-    """
-    Acquire a distributed lock in Redis for a specific game_id,
-    falling back to a local process-level lock if Redis is disabled/in-memory.
-    """
-    if use_memory or not redis_client:
-        global _local_game_locks
-        if game_id not in _local_game_locks:
-            _local_game_locks[game_id] = asyncio.Lock()
-        
-        async with _local_game_locks[game_id]:
-            yield
-            return
-
-    lock_key = f"lock:game:{game_id}"
-    token = secrets.token_hex(16)
-    acquired = False
-    retries = 30  # retry for up to 3 seconds
-    
-    try:
-        for _ in range(retries):
-            try:
-                # Attempt to set the lock key with a 5 second expiry (ex=5, nx=True)
-                res = await redis_client.set(lock_key, token, nx=True, ex=5)
-                if res:
-                    acquired = True
-                    break
-            except Exception:
-                pass
-            await asyncio.sleep(0.1)
-            
-        if not acquired:
-            logger.warning(f"Failed to acquire Redis lock for game {game_id} after retries. Proceeding anyway.")
-            
+    lock = _local_game_locks.setdefault(game_id, asyncio.Lock())
+    async with shared_lock(redis_client, f"lock:game:{game_id}", use_memory=use_memory, local_lock=lock):
         yield
-        
-    finally:
-        if acquired:
-            # Release lock atomically using Lua script
-            lua_release = """
-            if redis.call('get', KEYS[1]) == ARGV[1] then
-                return redis.call('del', KEYS[1])
-            else
-                return 0
-            end
-            """
-            try:
-                await redis_client.eval(lua_release, 1, lock_key, token)
-            except Exception as e:
-                logger.warning(f"Failed to release Redis lock {game_id}: {e}")
+
 from app.services.telegram_bot import TelegramService  # noqa: E402
 from app.services.gamification_service import GamificationService, TaskType  # noqa: E402
 from app.services.referral_commission_service import ReferralCommissionService  # noqa: E402
@@ -260,6 +218,7 @@ class GameService:
 
     async def get_active_game_for_user(self, user_id: int) -> Optional[str]:
         """Find the active game ID for a user, using O(1) Redis key lookups."""
+        from app.core.coordination import SharedStateUnavailable
         game_ids = []
         if self.session_manager._use_memory or not self.session_manager.redis:
             # Fallback to scanning memory store keys
@@ -275,19 +234,8 @@ class GameService:
                     game_ids = [g_id]
                 else:
                     game_ids = []
-            except Exception as e:
-                logger.warning(f"Failed to fetch active game from Redis for user {user_id}: {e}. Falling back to scan.")
-                game_ids = []
-                try:
-                    cursor = 0
-                    while True:
-                        cursor, keys = await self.session_manager.redis.scan(cursor, match="game:*", count=100)
-                        for key in keys:
-                            game_ids.append(key.split(":", 1)[1])
-                        if cursor == 0:
-                            break
-                except Exception:
-                    pass
+            except Exception as exc:
+                raise SharedStateUnavailable("Shared game storage is unavailable") from exc
 
         # Check each game's actual state (evaluating lazy timeouts)
         for g_id in game_ids:
@@ -305,18 +253,24 @@ class GameService:
                 # Cleanup stale active game link if we verified the game is over
                 if (state and state.is_game_over) or not state:
                     if not self.session_manager._use_memory and self.session_manager.redis:
-                        await self.session_manager.redis.delete(f"user:active_game:{user_id}")
+                        await self.session_manager.redis.eval("if redis.call('get',KEYS[1])==ARGV[1] then return redis.call('del',KEYS[1]) end; return 0", 1, f"user:active_game:{user_id}", g_id)
                     elif self.session_manager._use_memory:
                         self.session_manager._memory_store.pop(f"user:active_game:{user_id}", None)
+            except SharedStateUnavailable:
+                raise
             except Exception as e:
                 logger.error(f"Error checking active game state for {g_id}: {e}")
         return None
 
     async def join_game(self, game_id: str, user_id: int) -> Optional[GameState]:
+        async with game_lock(self.session_manager.redis, game_id, use_memory=self.session_manager._use_memory):
+            return await self._join_game_locked(game_id, user_id)
+
+    async def _join_game_locked(self, game_id: str, user_id: int) -> Optional[GameState]:
         """Assign user to White or Black if available."""
         state = await self.get_game_state(game_id)
-        if not state:
-            return None
+        if not state or state.is_game_over:
+            return state
         
         changed = False
         async with AsyncSessionLocal() as session:
@@ -374,6 +328,7 @@ class GameService:
                     state.black_player_id = creator_id
                     state.black_username = creator_username
                     state.black_elo = creator_elo
+                state.matched_at = time.time()
                 changed = True
         
         # If it's a bot game, assign bot details
@@ -465,13 +420,20 @@ class GameService:
             if GameService._active_abort_tasks.get(game_id) == asyncio.current_task():
                 GameService._active_abort_tasks.pop(game_id, None)
 
-    async def make_move(self, game_id: str, uci: str, preloaded_state: Optional[GameState] = None) -> Optional[GameState]:
+    async def make_move(self, game_id: str, uci: str, preloaded_state: Optional[GameState] = None, player_id: Optional[int] = None) -> Optional[GameState]:
         """Load state, apply move, save state. Returns new state if valid."""
         async with game_lock(self.session_manager.redis, game_id, use_memory=self.session_manager._use_memory):
             # 1. Load from Redis (always re-fetch inside lock to prevent stale states)
             current_state = await self.session_manager.get_game(game_id)
-            if not current_state:
+            if not current_state or current_state.is_game_over:
                 return None
+            if player_id is not None:
+                active_id = current_state.white_player_id if current_state.turn == 'w' else current_state.black_player_id
+                if active_id == -1:
+                    if player_id not in (current_state.white_player_id, current_state.black_player_id):
+                        return None
+                elif active_id != player_id:
+                    return None
 
             # 2. Reconstruct Board
             board = chess.Board(current_state.fen)
@@ -481,6 +443,11 @@ class GameService:
             # 3. Validate & Move
             if engine.make_move(uci):
                 new_state = engine.get_state()
+                new_state.revision = current_state.revision
+                new_state.invite_token = current_state.invite_token
+                new_state.created_at = current_state.created_at
+                new_state.matched_at = current_state.matched_at
+                new_state.first_move_grace_seconds = current_state.first_move_grace_seconds
                 
                 # Preserve Players and Configs
                 new_state.white_player_id = current_state.white_player_id
@@ -516,7 +483,7 @@ class GameService:
                 
                 # 5. Handle Game Over in Background
                 if new_state.is_game_over:
-                    asyncio.create_task(self.end_game(game_id, new_state))
+                    asyncio.create_task(self.end_game(game_id, new_state), context=Context())
                 
                 return new_state
             
@@ -548,6 +515,11 @@ class GameService:
 
         if bot_move_uci and engine.make_move(bot_move_uci):
             new_state = engine.get_state()
+            new_state.revision = current_state.revision
+            new_state.invite_token = current_state.invite_token
+            new_state.created_at = current_state.created_at
+            new_state.matched_at = current_state.matched_at
+            new_state.first_move_grace_seconds = current_state.first_move_grace_seconds
             new_state.white_player_id = current_state.white_player_id
             new_state.black_player_id = current_state.black_player_id
             new_state.time_control_seconds = current_state.time_control_seconds
@@ -663,22 +635,18 @@ class GameService:
         return streak
 
     async def end_game(self, game_id: str, state: GameState):
-        """Process game result and update ELO.
-
-        Thin wrapper so arena bookkeeping runs no matter which of the many
-        early-return paths (abort, refund, duplicate) the settle takes —
-        without it, an aborted arena game would leave both players flagged
-        as in-game and never re-paired.
-        """
-        try:
-            return await self._end_game_impl(game_id, state)
-        finally:
+        await self._end_game_once(game_id, state)
+        # Only a committed result acknowledges the durable settlement queue.
+        async with AsyncSessionLocal() as db:
+            recorded = (await db.execute(select(GameHistory.id).where(GameHistory.game_id == game_id))).scalar_one_or_none()
+        if recorded is not None:
             if game_id.startswith("arena"):
-                try:
-                    from app.services.arena_service import ArenaService
-                    await ArenaService().record_result(game_id, state)
-                except Exception as arena_err:
-                    logger.error(f"Arena result recording failed for {game_id}: {arena_err}", exc_info=True)
+                from app.services.arena_service import ArenaService
+                await ArenaService().record_result(game_id, state)
+            await self.session_manager.mark_settled(game_id)
+
+    async def _end_game_once(self, game_id: str, state: GameState):
+        return await self._end_game_impl(game_id, state)
 
     async def _end_game_impl(self, game_id: str, state: GameState):
         """Process game result and update ELO."""

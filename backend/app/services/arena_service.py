@@ -9,14 +9,18 @@ The scheduler loop (start_arena_loop) drives the whole lifecycle:
   scheduled --(T-15m broadcast)--> live --(window ends)--> settling
   --(grace for in-flight games)--> finished (prizes + notifications)
 
-The waiting pool lives in process memory (single-instance deployment, same
-assumption as the matchmaker's in-memory fallback). Pairing is invoked by the
-loop every few seconds; games are created via a callback injected from
-socket_events so this module stays importable without socket.io.
+The production waiting pool lives in Redis under a renewable, fenced lease.
+Scores and prize receipts are durable in PostgreSQL. Pairing runs every few
+seconds; games use a callback injected from socket_events so this module stays
+importable without socket.io. Development tests may use a local pool.
 """
 import asyncio
 import logging
 import random
+import json
+from contextlib import asynccontextmanager
+
+from app.core.coordination import shared_lock, current_lease, FencedRedis
 from datetime import datetime, timedelta, timezone
 from typing import Callable, Optional
 
@@ -62,6 +66,78 @@ class ArenaService:
             # Set by socket_events at import time: async (uid_a, sid_a, uid_b, sid_b, tc, arena_id) -> game_id|None
             inst.create_game_callback: Optional[Callable] = None
         return cls._instance
+
+    @asynccontextmanager
+    async def shared_pool(self):
+        """Load/mutate/persist a shared pool while retaining lock ownership."""
+        if settings.is_development_or_testing:
+            yield
+            return
+        from app.services.session_manager import SessionManager
+        sm = SessionManager()
+        held = current_lease.get()
+        if held and held[0] == "lock:arena:pool":
+            yield
+            return
+        async with shared_lock(sm.redis, "lock:arena:pool", use_memory=sm._use_memory):
+            raw = await sm.redis.get("arena:pool")
+            data = json.loads(raw) if raw else {"arena_id": None, "players": {}}
+            self.current_arena_id = data["arena_id"]
+            self.pool = {int(uid): entry for uid, entry in data["players"].items()}
+            yield
+            await FencedRedis(sm.redis).set("arena:pool", json.dumps({
+                "arena_id": self.current_arena_id, "players": self.pool,
+            }), ex=86400)
+
+    async def pool_snapshot(self):
+        """Read the last committed pool without a global mutation lease."""
+        held = current_lease.get()
+        if settings.is_development_or_testing or (held and held[0] == "lock:arena:pool"):
+            return self.current_arena_id, self.pool
+        from app.services.session_manager import SessionManager
+        from app.core.coordination import require_shared_store
+        sm = SessionManager()
+        require_shared_store(sm._use_memory, sm.redis)
+        raw = await sm.redis.get("arena:pool")
+        data = json.loads(raw) if raw else {"arena_id": None, "players": {}}
+        return data["arena_id"], {int(uid): entry for uid, entry in data["players"].items()}
+
+    async def current_id(self):
+        arena_id, _ = await self.pool_snapshot()
+        return arena_id
+
+    async def in_pool(self, user_id):
+        _, pool = await self.pool_snapshot()
+        return user_id in pool
+
+    async def leave_shared(self, user_id, sid=None):
+        _, pool = await self.pool_snapshot()
+        entry = pool.get(user_id)
+        if not entry or (sid is not None and entry.get('sid') != sid):
+            return
+        async with self.shared_pool():
+            entry = self.pool.get(user_id)
+            if entry and (sid is None or entry.get('sid') == sid):
+                self.leave(user_id)
+
+    async def update_sid_shared(self, user_id, sid):
+        _, pool = await self.pool_snapshot()
+        if user_id not in pool:
+            return
+        async with self.shared_pool():
+            self.update_sid(user_id, sid)
+
+    async def join(self, db, arena_id, user_id, sid, elo=1000):
+        async with self.shared_pool():
+            return await self._join(db, arena_id, user_id, sid, elo)
+
+    async def pair_waiting_players(self):
+        async with self.shared_pool():
+            return await self._pair_waiting_players()
+
+    async def record_result(self, game_id, state):
+        async with self.shared_pool():
+            return await self._record_result(game_id, state)
 
     # ── Schedule ─────────────────────────────────────────────────────────────
 
@@ -136,7 +212,7 @@ class ArenaService:
             await db.refresh(arena)
         return arena
 
-    async def join(self, db, arena_id: int, user_id: int, sid: str, elo: int = 1000) -> bool:
+    async def _join(self, db, arena_id: int, user_id: int, sid: str, elo: int = 1000) -> bool:
         """Register a player (idempotent) and put them in the waiting pool."""
         from app.models.arena import Arena, ArenaPlayer
         res = await db.execute(select(Arena).where(Arena.id == arena_id))
@@ -151,6 +227,7 @@ class ArenaService:
         if not existing.scalars().first():
             db.add(ArenaPlayer(arena_id=arena_id, user_id=user_id))
             await db.commit()
+        self.current_arena_id = arena_id
         entry = self.pool.get(user_id) or {}
         self.pool[user_id] = {
             'sid': sid,
@@ -172,10 +249,16 @@ class ArenaService:
 
     # ── Pairing ──────────────────────────────────────────────────────────────
 
-    async def pair_waiting_players(self) -> int:
+    async def _pair_waiting_players(self) -> int:
         """Pair every two waiting players; returns number of games created."""
         if not self.create_game_callback or self.current_arena_id is None:
             return 0
+        if not settings.is_development_or_testing:
+            from app.services.session_manager import SessionManager
+            sm = SessionManager()
+            for uid, entry in self.pool.items():
+                active_id = await sm.redis.get(f"user:active_game:{uid}")
+                entry['in_game'] = bool(active_id)
         waiting = [uid for uid, e in self.pool.items() if not e.get('in_game')]
         if len(waiting) < 2:
             return 0
@@ -234,9 +317,9 @@ class ArenaService:
         except (ValueError, IndexError):
             return None
 
-    async def record_result(self, game_id: str, state) -> None:
+    async def _record_result(self, game_id: str, state) -> None:
         """Score a settled arena game and put both players back in rotation.
-        Called from GameService.end_game; must never raise."""
+        Called after SQL settlement; failures stay retryable in games:unsettled."""
         arena_id = self.parse_arena_id(game_id)
         if arena_id is None:
             return
@@ -245,16 +328,17 @@ class ArenaService:
 
         white_id, black_id = state.white_player_id, state.black_player_id
         aborted = (state.result_type == 'aborted')
-        already_scored = game_id in self._scored_games
-        self._scored_games.add(game_id)
-        if len(self._scored_games) > 5000:
-            self._scored_games.clear()
 
         async with AsyncSessionLocal() as db:
             res = await db.execute(select(Arena).where(Arena.id == arena_id))
             arena = res.scalars().first()
-            if arena and not aborted and not already_scored:
-                for uid in (white_id, black_id):
+            from app.models.player_tracking import ArenaGameResult
+            from app.services.player_tracking import insert_once
+            fresh = await insert_once(db, ArenaGameResult, {
+                "game_id": game_id, "arena_id": arena_id, "created_at": _utcnow(),
+            }, ["game_id"])
+            if arena and not aborted and fresh:
+                for uid in sorted({white_id, black_id}):
                     pres = await db.execute(
                         select(ArenaPlayer).where(
                             and_(ArenaPlayer.arena_id == arena_id, ArenaPlayer.user_id == uid)
@@ -273,7 +357,7 @@ class ArenaService:
                     else:
                         player.losses += 1
                         player.score += SCORE_LOSS
-                await db.commit()
+            await db.commit()
 
             arena_live = arena is not None and arena.status == "live"
 
@@ -316,6 +400,13 @@ class ArenaService:
                 xp = PARTICIPATION_XP
             user = await user_crud.get_user_by_telegram_id(db, p.user_id, for_update=True)
             if not user:
+                continue
+            from app.models.player_tracking import CampaignDelivery
+            from app.services.player_tracking import insert_once
+            if not await insert_once(db, CampaignDelivery, {
+                "campaign": f"arena-prize:{arena_id}", "user_id": p.user_id,
+                "created_at": _utcnow(), "status": "awarded",
+            }, ["campaign", "user_id"]):
                 continue
             await GamificationService.add_xp(
                 db, user, xp, trigger_kickback=False, apply_booster=False,
@@ -383,6 +474,11 @@ async def _notify_results(db, arena, awarded) -> None:
 
 
 async def _tick(service: ArenaService) -> None:
+    async with service.shared_pool():
+        await _tick_owned(service)
+
+
+async def _tick_owned(service: ArenaService) -> None:
     from app.core.database import AsyncSessionLocal
     from app.models.arena import Arena
 

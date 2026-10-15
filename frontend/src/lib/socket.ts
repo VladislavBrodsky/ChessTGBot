@@ -121,7 +121,7 @@ export const getSocket = () => {
         }
 
         socket = io(url, {
-            transports: ["polling", "websocket"],
+            transports: ["websocket"],
             autoConnect: Boolean(initData),
             path: "/socket.io/", // Standard Socket.IO path
             reconnection: true,
@@ -137,11 +137,17 @@ export const getSocket = () => {
             }
         });
 
+        let presenceTimer: ReturnType<typeof setInterval> | undefined;
         socket.on("connect", () => {
+            if (presenceTimer) clearInterval(presenceTimer);
+            socket.emit('presence');
+            presenceTimer = setInterval(() => { if (socket.connected) socket.emit('presence'); }, 25000);
             console.log("Connected to Game Server", socket.id);
         });
 
         socket.on("disconnect", () => {
+            if (presenceTimer) clearInterval(presenceTimer);
+            presenceTimer = undefined;
             console.log("Disconnected from Game Server");
         });
     }

@@ -56,7 +56,7 @@ async def broadcast_marketing_messages():
             # Fetch users in batches to prevent Out-Of-Memory (OOM) errors at scale
             res = await db.execute(
                 select(User.telegram_id, User.preferred_language)
-                .where(User.telegram_id.isnot(None))
+                .where(User.telegram_id.isnot(None), User.is_blocked.is_(False), User.arena_notifications.is_(True))
                 .order_by(User.id)
                 .offset(offset)
                 .limit(chunk_size)
@@ -82,9 +82,13 @@ async def broadcast_marketing_messages():
             reply_markup = InlineKeyboardMarkup(keyboard)
             
             try:
+                from app.services.player_tracking import reserve_delivery
+                async with AsyncSessionLocal() as receipt_db:
+                    if not await reserve_delivery(receipt_db, f"marketing:{datetime.now(timezone.utc).date().isoformat()}", tid):
+                        continue
                 await TelegramService.send_notification(
-                    user_id=tid,
-                    message=msg_text,
+                    telegram_id=tid,
+                    text=msg_text,
                     reply_markup=reply_markup
                 )
                 sent_count += 1

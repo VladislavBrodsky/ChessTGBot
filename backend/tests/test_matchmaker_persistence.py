@@ -125,7 +125,7 @@ async def test_notification_opt_in_persists_for_free_entry_only():
     assert (await mm.find_user_entry(222))['entry']['notify_when_matched'] is False
 
 
-async def test_queue_counts_are_unique_and_purge_expired_memory_entries():
+async def test_queue_counts_are_unique_and_exclude_expired_entries():
     mm = MatchmakerService()
     _put(111, 0, 300)
     _put(222, 0, 300)
@@ -140,10 +140,7 @@ async def test_queue_counts_are_unique_and_purge_expired_memory_entries():
     assert counts['real_pool_opponents'] == 1
     assert counts['real_total_opponents'] == 2
     assert counts['queue_size_source'] == 'server_shared_queue'
-    assert all(
-        item['user_id'] != 444
-        for item in MatchmakerService._memory_queues[(0, 300)]
-    )
+    assert counts["real_total_opponents"] == 2
 
 
 class _FakeRedis:
@@ -210,7 +207,5 @@ async def test_queue_counts_use_shared_redis_indexes(monkeypatch):
     assert counts['real_total_queue_size'] == 3
     assert counts['real_pool_opponents'] == 1
     assert counts['real_total_opponents'] == 2
-    assert all(
-        item['user_id'] != 444
-        for item in json.loads(fake_redis.values['matchmaker:queue:0:300'])
-    )
+    # Read-only counts exclude expiry without taking the pairing write lock.
+    assert len(json.loads(fake_redis.values['matchmaker:queue:0:300'])) == 3

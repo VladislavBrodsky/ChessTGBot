@@ -21,7 +21,7 @@ def test_player_game_keeps_its_stake():
     assert normalise_create_request("online", 300, 500) == (False, 300, 500)
 
 
-@pytest.mark.parametrize("wager", [0, 99, -500])
+@pytest.mark.parametrize("wager", [1, 99, -500])
 def test_player_game_needs_at_least_one_dollar(wager):
     with pytest.raises(HTTPException) as err:
         normalise_create_request("online", 600, wager)
@@ -49,3 +49,7 @@ def test_aborting_a_player_game_refunds_the_stored_stake():
     assert refundable_stake(_State(None, 500)) == 500
     assert refundable_stake(_State(222, None)) == 0
     assert refundable_stake(_State(222, -5)) == 0
+
+
+def test_free_friend_game_has_no_stake():
+    assert normalise_create_request("online", 600, 0) == (False, 600, 0)

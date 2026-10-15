@@ -7,6 +7,7 @@ import { GramAmount } from '@/components/ui/GramAmount';
 import { useUser } from '@/context/UserContext';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { telegramHaptic } from '@/lib/telegram';
+import { mainMiniAppLink, shareInvitation } from '@/lib/invitations';
 import { copyToClipboard } from '@/lib/clipboard';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
@@ -46,6 +47,7 @@ function EarningsChart({ data, label }: { data: EarningPoint[]; label: string })
 /** Referral metrics come only from /users/referrals/stats; unavailable is never shown as zero. */
 export default function ReferralDashboard({ referralCode, botUsername }: ReferralDashboardProps = {}) {
   const t = useTranslations('Referral');
+  const inviteText = useTranslations('Invitations');
   const tg = useTranslations('Gram');
   const ti = useTranslations('Index');
   const locale = useLocale();
@@ -55,9 +57,9 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
   const referralStats = data && Number.isFinite(data.total_referrals) && Number.isFinite(data.active_referrals) && Number.isFinite(data.total_earnings_usdt) ? data : null;
 
   const code = user?.referral_code || referralCode || '';
-  const validCode = /^[A-Za-z0-9_-]{1,64}$/.test(code);
+  const validCode = /^[A-Za-z0-9_-]{1,60}$/.test(code);
   const bot = (user?.bot_username || botUsername || process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').replace(/^@+/, '');
-  const inviteLink = `https://t.me/${bot}?start=ref_${code}`;
+  const inviteLink = validCode ? mainMiniAppLink(bot, `ref_${code}`) : '';
 
   const copyInvite = async () => {
     if (!validCode) return;
@@ -71,7 +73,7 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
   const shareInvite = () => {
     if (!validCode) return;
     telegramHaptic('selection');
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}`, '_blank', 'noopener,noreferrer');
+    shareInvitation(inviteLink, inviteText('share_text'));
   };
 
   return (

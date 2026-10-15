@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@/context/UserContext';
 import { apiFetch } from '@/lib/api';
+import { useInvitations } from '@/context/InvitationContext';
 
 const Onboarding = dynamic(() => import('./Onboarding'), { ssr: false });
 const RegionPrompt = dynamic(() => import('./RegionPrompt'), { ssr: false });
@@ -21,6 +22,7 @@ const DAILY_SESSION_KEY = 'daily_checkin_dismissed';
 
 export default function FirstRunCoordinator({ onOnboardingChange }: FirstRunCoordinatorProps = {}) {
   const pathname = usePathname();
+  const { busy: invitationBusy } = useInvitations();
   const { stats, loadingStats } = useUser();
   const [activeStep, setActiveStep] = useState<FirstRunStep>(() => {
     if (typeof window !== 'undefined') {
@@ -75,7 +77,7 @@ export default function FirstRunCoordinator({ onOnboardingChange }: FirstRunCoor
 
   // Main coordinator engine: decides which dialog (if any) should be mounted
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || invitationBusy) return;
 
     // 1. Step 1: Onboarding check
     const onboardingDone = localStorage.getItem('onboarding_completed') === 'true';
@@ -109,7 +111,7 @@ export default function FirstRunCoordinator({ onOnboardingChange }: FirstRunCoor
     // 4. Queue is exhausted — all first-run steps completed
     setActiveStep(null);
     onOnboardingChange?.(false);
-  }, [loadingStats, stats, isHomePage, dailyStatusChecked, canClaimDaily, onOnboardingChange]);
+  }, [loadingStats, stats, isHomePage, dailyStatusChecked, canClaimDaily, onOnboardingChange, invitationBusy]);
 
   const handleOnboardingClose = useCallback(() => {
     try {
@@ -170,6 +172,8 @@ export default function FirstRunCoordinator({ onOnboardingChange }: FirstRunCoor
       });
     }
   };
+
+  if (invitationBusy) return null;
 
   // Mount strictly at most ONE modal at any given time
   return (

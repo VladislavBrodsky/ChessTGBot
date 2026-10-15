@@ -7,15 +7,16 @@ import { Card } from '@/components/ui/Card';
 import { Backdrop } from '@/components/ui/Backdrop';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { telegramHaptic } from '@/lib/telegram';
+import { mainMiniAppLink } from '@/lib/invitations';
 
 /** A public, shareable referral page. Never trust a bot name from the URL. */
 export default function QrClient() {
   const params = useSearchParams();
   const t = useTranslations('Referral');
   const code = params.get('code') || '';
-  const validCode = /^[A-Za-z0-9_-]{1,64}$/.test(code);
+  const validCode = /^[A-Za-z0-9_-]{1,60}$/.test(code);
   const bot = (process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').trim().replace(/^@+/, '');
-  const inviteLink = `https://t.me/${bot}?start=ref_${code}`;
+  const inviteLink = validCode ? mainMiniAppLink(bot, `ref_${code}`) : '';
   const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(inviteLink)}&color=000000&bgcolor=ffffff&qzone=2&format=png`;
 
   return (
