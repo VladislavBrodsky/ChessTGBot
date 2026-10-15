@@ -150,7 +150,9 @@ Visit `http://localhost:3000` to play locally.
 Both Next.js apps commit `package-lock.json`. Use `npm ci --include=optional` in
 development, CI, and Docker; it selects the current platform's binaries from the
 same locked dependency tree. Use `npm install` only when intentionally updating
-dependencies, and commit the changed manifest and lock together. The website's
+dependencies, and commit the changed manifest and lock together. Generate locks
+with npm 10.8.2 (the Node 20 deployment toolchain), and verify `npm ci` with that
+version before committing; npm 11 can omit optional entries that npm 10 requires. The website's
 Lighthouse tool is also locked, rather than downloaded by `npx` during CI.
 
 Python direct dependencies live in `backend/requirements.in`; the generated

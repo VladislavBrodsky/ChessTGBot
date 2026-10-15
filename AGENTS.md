@@ -41,6 +41,7 @@ then commit the result. A stale committed export has caused confusion during deb
 - **backend**: `pip install --require-hashes -r requirements.txt` → import check (`python -c "import app.main"`) → `python -m pytest`.
 - **static-export-fresh**: the staleness guard above (PRs only).
 
+Generate npm locks with npm 10.8.2, matching the Node 20 CI/Docker toolchain.
 Commit both app lockfiles and preserve their optional Linux/macOS binaries. Python
 inputs are `backend/requirements.in` and `backend/requirements-audit.in`; regenerate
 the hashed locks with the universal uv commands in `README.md`. Never replace a
