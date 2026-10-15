@@ -7,13 +7,17 @@ import { availableQuest } from './fixtures';
  */
 const user = { region: 'americas', telegram_id: 999001, first_name: 'Alexandra', last_name: 'Rivera', username: 'alexandra', elo: 1450, level: 5, xp: 850, games_played: 28, wins: 16, losses: 10, draws: 2, win_rate: 57.1, current_streak: { count: 3, type: 'win' }, study_streak: 7, unlocked_items: [], recent_games: [], referral_code: 'motion-budget', is_premium: false };
 
-async function prepare(page: Page, reduce: boolean) {
+async function prepare(page: Page, reduce: boolean, lowEnd = false, osReduce = false) {
+  // CI workers have few cores; explicitly exercise both the full and lite paths.
+  await page.emulateMedia({ reducedMotion: osReduce ? 'reduce' : 'no-preference' });
   await page.route('https://telegram.org/**', route => route.abort());
-  await page.addInitScript(r => {
+  await page.addInitScript(({ reduce, lowEnd }) => {
     sessionStorage.setItem('telegram_web_auth', 'id=999001&hash=e2e-invalid-signature');
     localStorage.setItem('onboarding_completed', 'true');
-    if (r) localStorage.setItem('setting_reduce_motion', 'true');
-  }, reduce);
+    localStorage.setItem('setting_reduce_motion', String(reduce));
+    Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, get: () => lowEnd ? 2 : 8 });
+    Object.defineProperty(navigator, 'deviceMemory', { configurable: true, get: () => lowEnd ? 2 : 8 });
+  }, { reduce, lowEnd });
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname;
     const now = Date.now();
@@ -35,6 +39,7 @@ test('home runs 1-3 looping animations with motion on', async ({ page }) => {
   await page.goto('/en/home', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('h1').first()).toBeVisible({ timeout: 30000 });
   await page.waitForTimeout(2500);
+  await expect(page.locator('html')).not.toHaveClass(/lite-fx/);
   const n = await loops(page);
   if (n > 3) console.log('Looping animations', await page.evaluate(() => document.getAnimations().filter(animation => animation.effect?.getComputedTiming().iterations === Infinity).map(animation => ({ name: (animation as CSSAnimation).animationName, element: ((animation.effect as KeyframeEffect).target as Element)?.outerHTML.slice(0, 180) }))));
   expect(n, 'looping animations on Home').toBeGreaterThanOrEqual(1);
@@ -49,3 +54,16 @@ test('home runs no looping animation when motion is reduced', async ({ page }) =
   await page.waitForTimeout(2500);
   expect(await loops(page)).toBe(0);
 });
+
+for (const mode of ['OS preference', 'low-end device'] as const) {
+  test(`home runs no looping animation for ${mode}`, async ({ page }) => {
+    const lowEnd = mode === 'low-end device';
+    await prepare(page, false, lowEnd, !lowEnd);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/en/home', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.ui-action-link--primary')).toBeVisible({ timeout: 30000 });
+    if (lowEnd) await expect(page.locator('html')).toHaveClass(/lite-fx/);
+    await page.waitForTimeout(2500);
+    expect(await loops(page)).toBe(0);
+  });
+}
