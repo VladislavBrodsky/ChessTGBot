@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge, BadgeRow } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useLocale, useTranslations } from 'next-intl';
@@ -32,46 +33,30 @@ export default function AcademyProgressCard({
   const completed = Math.max(0, Math.min(completedCount, totalCount));
   const percentage = totalCount > 0 ? Math.round(completed / totalCount * 100) : 0;
   const fmt = (value: number) => value.toLocaleString(locale);
-  return <Card variant="solid" className="ui-hero-card w-full p-5 space-y-4" aria-busy={loading || undefined}>
+  const hasBadges = level != null || Boolean(playerTitle) || Boolean(isPremium);
+  return <Card variant="solid" className="ui-hero-card w-full p-4 space-y-3" aria-busy={loading || undefined}>
     <div className="flex items-start justify-between gap-3">
-      <div className="min-w-0 space-y-1">
+      <div className="min-w-0 space-y-0.5">
         <h2 className="t-title-2 text-brand-primary">{t('academy_progress')}</h2>
         <p className="t-caption text-brand-muted">{t('master_the_game')}</p>
       </div>
-
-      <div className="flex items-center gap-2.5 shrink-0">
-        {loading ? (
-          <div className="flex items-center gap-1.5">
-            <Skeleton textRole="caption" width="6ch" />
-            <Skeleton textRole="caption" width="12ch" />
-          </div>
-        ) : (
-          (level != null || playerTitle || isPremium) && (
-            <div className="flex flex-wrap items-center justify-end gap-1.5 max-w-[220px] sm:max-w-none">
-              {isPremium && (
-                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30 whitespace-nowrap">
-                  {t('premium')}
-                </span>
-              )}
-              {level != null && (
-                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-brand-action/15 text-brand-action border border-brand-action/30 whitespace-nowrap">
-                  {ti('level')} {level}
-                </span>
-              )}
-              {playerTitle && (
-                <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-brand-elevated text-brand-primary border border-brand-border flex items-center gap-1.5 shadow-sm whitespace-nowrap">
-                  <FaTrophy className="text-amber-400 text-xs shrink-0" aria-hidden="true" />
-                  <span>{playerTitle}</span>
-                </span>
-              )}
-            </div>
-          )
-        )}
-        <span className="ui-icon-tile ui-icon-tile--info shrink-0">
-          <FaGraduationCap aria-hidden="true" />
-        </span>
-      </div>
+      <span className="ui-icon-tile ui-icon-tile--info shrink-0">
+        <FaGraduationCap aria-hidden="true" />
+      </span>
     </div>
+    {/* Status badges get their own row: beside the title they squeezed it to a few characters on phones. */}
+    {loading ? (
+      <BadgeRow aria-hidden="true">
+        <Skeleton variant="rectangular" width={56} height={26} className="rounded-chip" />
+        <Skeleton variant="rectangular" width={104} height={26} className="rounded-chip" />
+      </BadgeRow>
+    ) : hasBadges && (
+      <BadgeRow>
+        {isPremium && <Badge variant="purple">{t('premium')}</Badge>}
+        {level != null && <Badge variant="primary">{ti('level')} {level}</Badge>}
+        {playerTitle && <Badge variant="secondary" icon={<FaTrophy className="text-brand-gold" />}>{playerTitle}</Badge>}
+      </BadgeRow>
+    )}
     <dl className="hero-metrics">
       <div><dt className="t-caption text-brand-muted">{t('completed')}</dt><dd className="t-numeric text-brand-primary">{loading ? <Skeleton textRole="numeric" width="4ch" /> : <><bdi>{fmt(completed)}</bdi><span className="t-caption text-brand-muted">/{fmt(totalCount)}</span></>}</dd></div>
       <div><dt className="t-caption text-brand-muted">XP</dt><dd className="t-numeric text-brand-primary">{loading ? <Skeleton textRole="numeric" width="4ch" /> : <bdi>{fmt(totalXp)}</bdi>}</dd></div>

@@ -108,10 +108,10 @@ export function GramVaultPreview() {
           <div className="flex items-center gap-3 min-w-0">
             <VibingGramIcon size={34} />
             <div className="min-w-0">
-              <h2 id="gram-vault-preview-title" className="t-title-3 truncate">
+              <h2 id="gram-vault-preview-title" className="t-title-3 line-clamp-2">
                 {t('title')}
               </h2>
-              <p className="t-caption text-brand-muted truncate">{t('status')}</p>
+              <p className="t-caption text-brand-muted line-clamp-2">{t('status')}</p>
             </div>
           </div>
 
@@ -126,7 +126,7 @@ export function GramVaultPreview() {
             aria-label={t('details')}
           >
             <FiInfo size={13} className="text-sky-400" aria-hidden="true" />
-            <span>{t('details')}</span>
+            <span className="max-[380px]:sr-only">{t('details')}</span>
           </Button>
         </div>
       </Card>

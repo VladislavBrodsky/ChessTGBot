@@ -10,6 +10,7 @@ import { getSocket } from '@/lib/socket';
 import { readLaunchParameter, shareInvitation } from '@/lib/invitations';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { Avatar } from '@/components/ui/Avatar';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -153,7 +154,7 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
       <div className="space-y-4">
         {selected && <>
           <div className="flex min-w-0 items-center gap-3"><Avatar name={selected.opponent.name} size="lg" /><div className="min-w-0"><p className="break-words font-semibold text-brand-primary">{selected.opponent.name}</p>{selected.opponent.elo != null && <p className="text-sm text-brand-muted">{t('rating', { rating: selected.opponent.elo })}</p>}</div></div>
-          <Card variant="solid" className="space-y-1 p-3"><p className="font-semibold text-brand-primary">{selected.free ? t('free_game') : t('paid_game', { amount: ((selected.wager || 0) / 100).toFixed(2) })} · {t('minutes', { minutes: Math.round(selected.time_control / 60) })}</p><p className="text-sm text-brand-muted">{selected.free ? t('no_wallet') : t('paid_notice')}</p></Card>
+          <Card variant="solid" className="space-y-1 p-3"><MetaLine className="font-semibold text-brand-primary"><span>{selected.free ? t('free_game') : t('paid_game', { amount: ((selected.wager || 0) / 100).toFixed(2) })}</span><span>{t('minutes', { minutes: Math.round(selected.time_control / 60) })}</span></MetaLine><p className="text-sm text-brand-muted">{selected.free ? t('no_wallet') : t('paid_notice')}</p></Card>
           <p className="text-sm leading-relaxed text-brand-muted" role="status">{selected.self ? t('own_help') : selected.kind === 'friend' ? t('request_help') : selected.kind === 'game' ? t('join_help') : status === 'ready' ? t('ready_help') : status === 'pending' ? t(selected.role === 'host' ? 'accept_help' : 'waiting_help') : t('closed_help')}</p>
         </>}
         {inboxUnavailable && selected && !error && <ErrorState title={t('error_title')} message={t('unavailable')} onRetry={() => window.dispatchEvent(new Event('focus'))} retryLabel={t('retry')} />}

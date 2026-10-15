@@ -26,6 +26,7 @@
   --color-brand-primary: var(--text-primary);
   --color-brand-muted: var(--text-muted);
   --color-brand-gold: var(--text-gold);
+  --color-brand-gold-ink: var(--badge-amber-ink);
   --color-brand-success: var(--brand-success);
 
   --color-brand-border-opacity-5: var(--color-border-opacity-5);

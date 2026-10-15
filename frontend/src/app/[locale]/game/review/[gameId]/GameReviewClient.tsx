@@ -324,7 +324,7 @@ export default function GameReviewClient({ gameId }: GameReviewClientProps) {
           <Skeleton variant="rectangular" height={64} className="rounded-card" />
           <Skeleton variant="rectangular" className="aspect-square w-full rounded-card" />
           <Skeleton variant="rectangular" height={48} className="rounded-control" />
-        </div> : <ErrorState title={ti('load_failed')} message={ti('no_games_logged')} retryLabel={ti('retry')} onRetry={() => setRetryAttempt(value => value + 1)} />}
+        </div> : <ErrorState headingAs="h2" title={ti('load_failed')} message={ti('no_games_logged')} retryLabel={ti('retry')} onRetry={() => setRetryAttempt(value => value + 1)} />}
       </main>
     </LayoutWrapper>;
   }

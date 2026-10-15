@@ -13,6 +13,8 @@ export interface ErrorStateProps {
   retryLabel?: string;
   action?: React.ReactNode;
   className?: string;
+  /** Heading level of the title; use `h2` when the state directly follows the page's `h1` so levels never skip. */
+  headingAs?: 'h2' | 'h3' | 'h4';
 }
 
 export function ErrorState({
@@ -22,6 +24,7 @@ export function ErrorState({
   retryLabel,
   action,
   className = '',
+  headingAs: Heading = 'h3',
 }: ErrorStateProps) {
   const t = useTranslations('Common');
   return (
@@ -35,7 +38,7 @@ export function ErrorState({
       </div>
 
       <div className="space-y-1 max-w-sm">
-        <h3 className="text-sm font-bold text-brand-primary">{title ?? t('error_title')}</h3>
+        <Heading className="text-sm font-bold text-brand-primary">{title ?? t('error_title')}</Heading>
         <p className="text-sm leading-relaxed text-brand-muted">{message ?? t('error_description')}</p>
       </div>
 

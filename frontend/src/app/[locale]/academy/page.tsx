@@ -430,12 +430,11 @@ export default function AcademyPage() {
         {/* 100 Levels Tactics Grid with Stage Navigation */}
         {puzzlesList.length > 0 && (
           <section className="space-y-3" aria-labelledby="tactics-grid-title">
-            <div className="flex items-center justify-between gap-3">
-              <SectionHeader id="tactics-grid-title" title={t('tactics_grid')} />
-              <Badge variant="emerald" className="shrink-0 font-bold">
-                {completedPuzzles.length} / {puzzlesList.length} ({Math.round((completedPuzzles.length / puzzlesList.length) * 100)}%)
+            <SectionHeader id="tactics-grid-title" title={t('tactics_grid')} action={
+              <Badge variant="emerald" className="font-bold">
+                <bdi>{completedPuzzles.length} / {puzzlesList.length} ({Math.round((completedPuzzles.length / puzzlesList.length) * 100)}%)</bdi>
               </Badge>
-            </div>
+            } />
 
             <Card variant="solid" className="w-full relative overflow-hidden rounded-2xl p-0">
               {/* Progress Header & Stage Progress Bar */}
@@ -490,8 +489,8 @@ export default function AcademyPage() {
 
               {/* Current Objective Quick-Action Banner */}
               {!allSolved && nextPuzzle && (
-                <div className="mx-4 mt-3.5 p-3 rounded-xl bg-brand-elevated border border-amber-500/30 flex items-center justify-between gap-3 shadow-sm">
-                  <div className="flex items-center gap-2.5 min-w-0 text-left">
+                <div className="mx-4 mt-3.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5 rounded-xl border border-amber-500/30 bg-brand-elevated p-3 shadow-sm">
+                  <div className="flex min-w-0 flex-1 basis-40 items-center gap-2.5 text-start">
                     <div className="w-10 h-10 rounded-xl bg-amber-500 text-brand-void flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm animate-pulse">
                       {nextPuzzle.id}
                     </div>
@@ -505,7 +504,7 @@ export default function AcademyPage() {
                   <Button
                     variant="action"
                     size="sm"
-                    className="shrink-0"
+                    className="shrink-0 max-[360px]:w-full"
                     leftIcon={<FaPlay className="text-caption" />}
                     onClick={() => {
                       telegramHaptic('light');

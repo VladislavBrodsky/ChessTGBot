@@ -41,15 +41,19 @@
   gap: var(--space-gap-card, 16px);
   width: 100%;
 }
+/* Phones: value first, label under it (the label may wrap) so neither is ever truncated; wider screens read inline. */
 .lobby-live__metric {
   display: flex;
   min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-gap-inline, 8px);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-0-5, 2px);
 }
 .lobby-live__metric dd {
+  order: -1;
   flex: none;
+  font-size: var(--type-numeric-size);
+  line-height: var(--type-numeric-leading);
   font-variant-numeric: tabular-nums;
 }
 .lobby-live__val--live {
@@ -119,8 +123,14 @@
   }
   .lobby-live__metric {
     display: inline-flex;
+    flex-direction: row;
     align-items: center;
     gap: 8px;
+  }
+  .lobby-live__metric dd {
+    order: 0;
+    font-size: var(--type-numeric-sm-size);
+    line-height: var(--type-numeric-sm-leading);
   }
   .lobby-hero__action {
     flex: 0 0 auto;
@@ -210,10 +220,10 @@
 .lobby-goal { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--border-muted); border-radius: var(--radius-row); background: var(--bg-surface); }
 .lobby-goal__text { display: flex; min-width: min(100%, 180px); flex: 1; flex-direction: column; gap: 5px; }
 .lobby-goal__row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 650; line-height: 1.3; color: var(--text-primary); }
-.lobby-goal__row span:last-child { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.lobby-goal__row > :last-child { color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .lobby-goal__bar { height: 6px; overflow: hidden; border-radius: 999px; background: var(--bg-elevated); }
 .lobby-goal__fill { height: 100%; border-radius: inherit; background: var(--grad-action); transition: width 600ms var(--ease-emphasized, cubic-bezier(0.16, 1, 0.3, 1)); }
-.lobby-goal__streak { display: inline-flex; flex: none; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--text-gold); }
+.lobby-goal__streak { display: inline-flex; flex: none; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--badge-amber-ink); }
 
 /* Recent real results */
 .lobby-recent { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--border-muted); border-radius: var(--radius-row); background: var(--bg-surface); }

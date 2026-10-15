@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/Badge';
+import { MetaLine } from '@/components/ui/MetaLine';
 
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import Link from 'next/link';
@@ -148,9 +149,10 @@ export default function ProfilePage() {
       <div className="ui-stat ui-stat--accent">
         <span className="ui-stat__label">{t('elo')}</span>
         <span className="ui-stat__value">{Number.isFinite(stats.elo) ? stats.elo : '—'}</span>
-        <span className="ui-stat__meta">
-          {tp('global_rank')} {Number.isFinite(stats.global_rank) ? `#${stats.global_rank}` : '—'} · {tp('percentile')} {Number.isFinite(stats.percentile) ? `${stats.percentile.toFixed(0)}%` : '—'}
-        </span>
+        <MetaLine className="ui-stat__meta">
+          <span>{tp('global_rank')} {Number.isFinite(stats.global_rank) ? `#${stats.global_rank}` : '—'}</span>
+          <span>{tp('percentile')} {Number.isFinite(stats.percentile) ? `${stats.percentile.toFixed(0)}%` : '—'}</span>
+        </MetaLine>
       </div>
     )}
 

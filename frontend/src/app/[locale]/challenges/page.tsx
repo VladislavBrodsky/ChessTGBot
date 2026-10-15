@@ -18,6 +18,7 @@ import { useUser } from "@/context/UserContext";
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { getXPProgress } from '@/lib/xpProgress';
@@ -203,7 +204,8 @@ export default function ChallengesPage() {
         </section>
 
         {/* Grand Mystery Box Engagement Quest */}
-        <div className="w-full my-3">
+        {/* Renders nothing when there is no active quest; `empty:hidden` keeps the wrapper from leaving a gap behind. */}
+        <div className="w-full empty:hidden">
           <EngagementQuest />
         </div>
 
@@ -282,7 +284,10 @@ export default function ChallengesPage() {
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <h3 className="text-sm font-bold text-brand-primary normal-case tracking-normal">{t(task.title_key)}</h3>
                       <p className="text-caption text-brand-muted leading-snug">{t(`${task.title_key}_desc`)}</p>
-                      {task.gram_reward_nano && task.gram_reward_nano !== "0" && <GramAmount plus nano={task.gram_reward_nano} className="t-caption text-brand-action" />}
+                      <MetaLine className="t-caption font-medium tabular-nums text-brand-muted">
+                        <span className="text-brand-gold-ink">+{task.xp_reward} XP</span>
+                        {task.gram_reward_nano && task.gram_reward_nano !== "0" && <GramAmount plus nano={task.gram_reward_nano} className="text-brand-action" />}
+                      </MetaLine>
                       {t.has(`${task.title_key}_inst`) && !task.completed && (
                         <p className="flex items-start gap-1.5 text-caption font-medium leading-snug text-brand-primary">
                           <FiInfo size={12} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
@@ -304,7 +309,7 @@ export default function ChallengesPage() {
                       </div>
                     </div>
 
-                    <div className="col-start-2 sm:col-start-3 sm:row-start-1 sm:self-center">
+                    <div className="col-start-2 empty:hidden sm:col-start-3 sm:row-start-1 sm:self-center">
                     {task.completed && !task.claimed ? (
                       <Button
                         variant="action"
@@ -335,7 +340,6 @@ export default function ChallengesPage() {
                       </div>
                     ) : task.title_key.startsWith("ach_refer_") ? (
                       <div className="flex shrink-0 flex-col items-end gap-1">
-                        <span className="text-sm font-semibold tabular-nums text-brand-primary">{task.xp_reward} XP</span>
                         <Button
                           variant="outline"
                           size="sm"
@@ -349,12 +353,7 @@ export default function ChallengesPage() {
                           {t.has('invite_friend') ? t('invite_friend') : 'Invite Friend'}
                         </Button>
                       </div>
-                    ) : (
-                      <div className="flex shrink-0 flex-col items-end">
-                        <span className="text-sm font-semibold tabular-nums text-brand-primary">{task.xp_reward} XP</span>
-                        <span className="text-caption font-bold normal-case tracking-normal text-brand-muted">{t('reward')}</span>
-                      </div>
-                    )}
+                    ) : null}
                     </div>
                   </div>
                 </Card>

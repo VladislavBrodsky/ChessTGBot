@@ -22,6 +22,7 @@ function ReviewFromQuery() {
         <main className="app-page app-page--focused space-y-4">
         <PageHeader title={tg('review_title')} backHref={`/${locale}/profile`} />
         <ErrorState
+          headingAs="h2"
           title={t('load_failed')}
           message={t('no_games_logged')}
           action={<ActionLink href={`/${locale}/profile`}>{t('nav_profile')}</ActionLink>}

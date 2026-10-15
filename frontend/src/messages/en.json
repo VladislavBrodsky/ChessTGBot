@@ -94,6 +94,7 @@
     "launch_unavailable": "This invitation is unavailable or expired"
   },
   "Marketplace": {
+    "recent_drops": "Your recent drops",
     "cost": "Cost",
     "confirm": "Confirm",
     "title": "Marketplace",
@@ -1246,7 +1247,12 @@
     "earned": "Earned GRAM rewards",
     "separate": "App reward credits, separate from USDT. GRAM withdrawals are not available yet",
     "referral_reward": "Earn 1 GRAM per qualified friend",
-    "referral_rules": "Your friend must join through your link, deposit USDT and complete 3 human wager matches. Rewards are credited once after qualification",
+    "referral_needs": "Your friend needs to",
+    "referral_step_join": "Join through your link",
+    "referral_step_deposit": "Deposit USDT",
+    "referral_step_matches": "Complete 3 human wager matches",
+    "referral_credited_once": "The reward is credited once, after qualification.",
+    "referral_earned": "Earned",
     "referral_qualified": "{count, plural, one {# friend qualified} other {# friends qualified}}",
     "privacy_title": "Join the GRAM leaderboard",
     "privacy_description": "Share your estimated portfolio value: USDT equivalent plus earned GRAM. Off by default",

@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { FaChartLine, FaCopy, FaQrcode, FaShareAlt, FaUsers } from 'react-icons/fa';
-import { GramAmount } from '@/components/ui/GramAmount';
+import { GramAmount, GramMark } from '@/components/ui/GramAmount';
 import { useUser } from '@/context/UserContext';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { telegramHaptic } from '@/lib/telegram';
 import { mainMiniAppLink, shareInvitation } from '@/lib/invitations';
 import { copyToClipboard } from '@/lib/clipboard';
+import { formatUsd } from '@/lib/settlement';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { ErrorState } from './ui/ErrorState';
@@ -98,16 +99,38 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
           </div>
           <div className="ui-stat">
             <FaChartLine className="text-brand-muted" size={14} aria-hidden="true" />
-            <p className="ui-stat__value whitespace-nowrap">{referralStats.total_earnings_usdt.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            <p className="ui-stat__meta">{t('earnings_label')} · USDT</p>
+            <p className="ui-stat__value whitespace-nowrap"><bdi>{formatUsd(Math.round(referralStats.total_earnings_usdt * 100))}</bdi><span className="sr-only"> USDT</span></p>
+            <p className="ui-stat__meta">{t('earnings_label')}</p>
           </div>
         </div>
-        <Card variant="solid" className="space-y-2 p-3">
-          <h3 className="t-title-3">{tg("referral_reward")}</h3>
-          <p className="t-caption text-brand-muted">{tg("referral_rules")}</p>
-          {typeof referralStats.qualifying_min_moves === "number" && <p className="t-caption text-brand-muted">{tg("referral_minimum", { moves: referralStats.qualifying_min_moves })}</p>}
-          <GramAmount nano={referralStats.gram_rewards_nano} className="t-label text-brand-action" />
-          {typeof referralStats.gram_rewarded_referrals === "number" && <p className="t-caption text-brand-muted">{tg("referral_qualified", { count: referralStats.gram_rewarded_referrals })}</p>}
+        <Card variant="solid" className="space-y-3 p-3">
+          <div className="flex items-start gap-3">
+            <span className="ui-icon-tile ui-icon-tile--info shrink-0"><GramMark className="h-5 w-5" /></span>
+            <div className="min-w-0 space-y-0.5">
+              <h3 className="t-title-3">{tg('referral_reward')}</h3>
+              <p className="t-caption text-brand-muted">{tg('referral_credited_once')}</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="t-eyebrow text-brand-muted">{tg('referral_needs')}</p>
+            <ol className="ui-steps">
+              <li><span>{tg('referral_step_join')}</span></li>
+              <li><span>{tg('referral_step_deposit')}</span></li>
+              <li>
+                <span>
+                  {tg('referral_step_matches')}
+                  {typeof referralStats.qualifying_min_moves === 'number' && <span className="ui-steps__hint">{tg('referral_minimum', { moves: referralStats.qualifying_min_moves })}</span>}
+                </span>
+              </li>
+            </ol>
+          </div>
+          <div className="flex items-end justify-between gap-3 border-t border-brand-border pt-3">
+            <div className="min-w-0">
+              <p className="t-caption text-brand-muted">{tg('referral_earned')}</p>
+              <GramAmount nano={referralStats.gram_rewards_nano} className="t-numeric text-brand-primary" />
+            </div>
+            {typeof referralStats.gram_rewarded_referrals === 'number' && <p className="t-caption text-end text-brand-muted">{tg('referral_qualified', { count: referralStats.gram_rewarded_referrals })}</p>}
+          </div>
         </Card>
         {Array.isArray(referralStats.earnings_chart) && referralStats.earnings_chart.length > 0 && (
           <Card variant="solid" className="p-3">

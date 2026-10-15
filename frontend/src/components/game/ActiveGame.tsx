@@ -9,6 +9,7 @@ import { FaArrowLeft, FaCopy, FaCheck, FaChessKnight } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import ChessBoardComponent from '@/components/game/ChessBoard';
+import { opponentIdentity } from '@/lib/opponentIdentity';
 import MatchOverModal from '@/components/game/MatchOverModal';
 import RematchChoiceDrawer from '@/components/game/RematchChoiceDrawer';
 import IncomingRematchDrawer from '@/components/game/IncomingRematchDrawer';
@@ -22,7 +23,6 @@ import { requestBotRevengeGame } from '@/lib/botRevenge';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
-import { getGameOpponent, getRandomOpponent } from '@/lib/opponents';
 
 import {
   GamePlayerCard,
@@ -639,21 +639,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const isBotGame = gameState?.black_player_id === -1;
   const isWaiting = gameState && !isBotGame && !gameState.black_player_id;
 
-  const storedOpponent = useMemo(() => {
-    return getGameOpponent(gameId) || getRandomOpponent(userStats?.elo);
-  }, [gameId, userStats?.elo]);
-
-  const opponentDisplayName = isBotGame
-    ? (gameState?.black_username && !gameState.black_username.startsWith("AI Engine")
-        ? gameState.black_username
-        : storedOpponent.name)
-    : (isWhite ? gameState?.black_username : gameState?.white_username) || storedOpponent.name;
-
-  const opponentEloValue = isBotGame
-    ? (gameState?.black_elo && gameState.black_elo !== 1000 && gameState.black_elo !== 800
-        ? gameState.black_elo
-        : storedOpponent.elo)
-    : (isWhite ? gameState?.black_elo : gameState?.white_elo) || storedOpponent.elo;
+  // The opponent is shown as what it is: the real player, or the practice engine with its level. No generated persona.
+  const opponent = opponentIdentity(gameState, isWhite, { aiCoach: tg('ai_coach'), opponent: tg('opponent'), level: { easy: tg('ai_easy'), medium: tg('ai_medium'), hard: tg('ai_hard') } });
 
   // Toggle Navbar — hide completely for the entire active game match lifecycle
   const { hideNavbar, showNavbar } = useNavbarHide();
@@ -806,13 +793,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           {/* Opponent HUD Card */}
           <GamePlayerCard
             userId={opponentId}
-            username={opponentDisplayName}
-            eloText={`${storedOpponent.flag ? `${storedOpponent.flag} ` : ''}ELO ${opponentEloValue}`}
+            username={opponent.name}
+            eloText={opponent.detail}
             isTurn={isOpponentTurn}
             turnLabel={tg('thinking')}
             isWhite={isWhite}
-            isBot={false}
-            botLabel={`ELO ${opponentEloValue}`}
+            isBot={opponent.isBot}
             gameState={gameState}
             onClockWarning={triggerClocksWarnings}
           />
@@ -842,7 +828,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             isMe
             userId={userId}
             username={(isWhite ? gameState?.white_username : gameState?.black_username) || userStats?.first_name || "You"}
-            eloText={`ELO ${(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || 1200}`}
+            eloText={`ELO ${(isWhite ? gameState?.white_elo : gameState?.black_elo) || userStats?.elo || '—'}`}
             isTurn={isMyTurn}
             turnLabel={tg('your_turn')}
             isWhite={isWhite}

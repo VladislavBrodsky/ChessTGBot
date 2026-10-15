@@ -35,7 +35,7 @@ export function LiveStrip({ searching, games24h, loading = false, unavailable = 
         <div className="lobby-live__metric" key={index}>
           <div className="flex items-center gap-1.5 min-w-0">
             {icon}
-            <dt className="t-caption text-brand-muted truncate">{label}</dt>
+            <dt className="t-caption text-brand-muted line-clamp-2">{label}</dt>
           </div>
           <dd className={`t-numeric-sm ${isLive ? 'lobby-live__val--live' : 'lobby-live__val--games'}`}>
             {loading ? (

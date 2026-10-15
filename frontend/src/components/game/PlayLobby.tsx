@@ -19,7 +19,6 @@ import { DailyGoal } from './lobby/DailyGoal';
 import { RecentResults } from './lobby/RecentResults';
 import { useLobbyStats } from '@/hooks/useLobbyStats';
 import { formatUsd, winnerCents } from '@/lib/settlement';
-import { getRandomOpponent, saveGameOpponent } from '@/lib/opponents';
 import ArenaBanner from './ArenaBanner';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
@@ -388,12 +387,10 @@ export default function PlayLobby() {
     setIsCreating(true);
     setMatchmakingError('');
     try {
-      const opponent = getRandomOpponent(stats?.elo);
       const res = await apiFetch(`/api/v1/game/create?type=computer&difficulty=${encodeURIComponent(difficulty)}&time_control=${timeControl}&wager=0`, { method: 'POST' });
       if (!res.ok) throw new Error('AI game creation failed');
       const data = await res.json();
       if (!data?.game_id) throw new Error('Missing game ID');
-      saveGameOpponent(data.game_id, opponent);
       telegramHaptic('success');
       setShowAiDifficulty(false);
       router.push(`/${locale}/game?id=${data.game_id}`);

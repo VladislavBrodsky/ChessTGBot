@@ -322,7 +322,7 @@ export default function MembershipPage() {
           <button type="button"
             onClick={() => { telegramHaptic('selection'); setBillingPeriod('monthly'); }}
             aria-pressed={billingPeriod === 'monthly'}
-            className={`ui-tap-target p-4 rounded-2xl text-start transition-all flex flex-col justify-between gap-4 min-h-40 border ${
+            className={`ui-tap-target p-4 rounded-2xl text-start transition-all flex flex-col justify-between gap-3 min-h-32 border ${
               billingPeriod === 'monthly'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
                 : "bg-brand-surface border-brand-border text-brand-muted hover:border-brand-border-opacity-30"
@@ -332,12 +332,9 @@ export default function MembershipPage() {
               <span className="text-caption font-semibold text-brand-muted">{tm('monthly')}</span>
               {stats?.is_premium && (stats.premium_billing_period || 'monthly') === 'monthly' && <Badge>{tc('current_plan')}</Badge>}
             </BadgeRow>
-            <div>
-              <div className="flex items-end leading-none">
-                <span className="text-2xl font-semibold tracking-tighter">${(MONTHLY_CENTS / 100).toFixed(0)}</span>
-                <span className="text-sm font-semibold text-brand-muted mb-0.5">.00</span>
-              </div>
-              <span className="text-caption font-medium block mt-1 text-brand-muted">{tm('per_month')}</span>
+            <div className="space-y-0.5">
+              <p className="t-numeric-lg"><bdi>${(MONTHLY_CENTS / 100).toFixed(2)}</bdi></p>
+              <p className="t-caption text-brand-muted">{tm('per_month')}</p>
             </div>
           </button>
 
@@ -345,7 +342,7 @@ export default function MembershipPage() {
           <button type="button"
             onClick={() => { telegramHaptic('selection'); setBillingPeriod('annual'); }}
             aria-pressed={billingPeriod === 'annual'}
-            className={`ui-tap-target p-4 rounded-2xl text-start transition-all flex flex-col justify-between gap-4 min-h-40 border ${
+            className={`ui-tap-target p-4 rounded-2xl text-start transition-all flex flex-col justify-between gap-3 min-h-32 border ${
               billingPeriod === 'annual'
                 ? "bg-brand-elevated border-brand-primary/50 text-brand-primary shadow-sm"
                 : "bg-brand-surface border-brand-border text-brand-muted hover:border-brand-border-opacity-30"
@@ -357,14 +354,10 @@ export default function MembershipPage() {
                 ? <Badge>{tc('current_plan')}</Badge>
                 : <Badge variant="purple">{tm('discount')}</Badge>}
             </BadgeRow>
-            <div>
-              <div className="flex items-end leading-none">
-                <span className="text-2xl font-semibold tracking-tighter text-brand-primary">${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</span>
-                <span className="text-sm font-semibold text-brand-muted mb-0.5">{tm('per_month')}</span>
-              </div>
-              <span className="text-caption font-medium block mt-1 text-brand-muted">
-                {tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}
-              </span>
+            <div className="space-y-0.5">
+              <p className="t-numeric-lg text-brand-primary"><bdi>${(ANNUAL_CENTS / 100 / 12).toFixed(2)}</bdi></p>
+              <p className="t-caption text-brand-muted">{tm('per_month')}</p>
+              <p className="t-caption text-brand-muted">{tm('billed_yearly', { amount: (ANNUAL_CENTS / 100).toFixed(0) })}</p>
             </div>
           </button>
         </div>

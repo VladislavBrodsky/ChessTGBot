@@ -7,6 +7,7 @@ import { copyToClipboard } from '@/lib/clipboard';
 import { telegramHaptic } from '@/lib/telegram';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { Button } from '@/components/ui/Button';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { SkeletonList } from '@/components/ui/Skeleton';
@@ -89,7 +90,7 @@ export default function PlayerTrackingPanel() {
       {data.sources.length === 0 && <p className="t-body text-brand-muted">{t('empty_sources')}</p>}
       {data.sources.map(source => <div key={source.campaign} className="space-y-1 border-b border-brand-border pb-3">
         <p className="t-label break-words">{source.campaign}</p>
-        <p className="t-caption text-brand-muted">{t('registrations')}: {number(source.registrations)} · {t('players')}: {number(source.players)}</p>
+        <MetaLine className="t-caption text-brand-muted"><span>{t('registrations')}: {number(source.registrations)}</span><span>{t('players')}: {number(source.players)}</span></MetaLine>
       </div>)}
       <p className="t-caption text-brand-muted">{t('unattributed')}: {number(data.unattributed_players)}</p>
     </Card>

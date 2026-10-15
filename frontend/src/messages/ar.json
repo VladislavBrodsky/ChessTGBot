@@ -94,6 +94,7 @@
     "launch_unavailable": "هذه الدعوة غير متاحة أو انتهت صلاحيتها"
   },
   "Marketplace": {
+    "recent_drops": "جوائزك الأخيرة",
     "cost": "التكلفة",
     "confirm": "تأكيد",
     "title": "المتجر",
@@ -1246,7 +1247,12 @@
     "earned": "مكافآت GRAM المكتسبة",
     "separate": "رصيد مكافآت التطبيق منفصل عن USDT. سحب GRAM غير متاح بعد",
     "referral_reward": "اكسب 1 GRAM لكل صديق مؤهل",
-    "referral_rules": "يجب أن ينضم صديقك عبر رابطك ويودع USDT ويكمل 3 مباريات برهان ضد أشخاص. تُضاف المكافأة مرة واحدة بعد استيفاء الشروط",
+    "referral_needs": "على صديقك أن",
+    "referral_step_join": "الانضمام عبر رابطك",
+    "referral_step_deposit": "إيداع USDT",
+    "referral_step_matches": "إكمال 3 مباريات برهان ضد أشخاص",
+    "referral_credited_once": "تُضاف المكافأة مرة واحدة بعد استيفاء الشروط.",
+    "referral_earned": "المكتسب",
     "referral_qualified": "{count} أصدقاء استوفوا الشروط",
     "privacy_title": "الانضمام إلى ترتيب GRAM",
     "privacy_description": "شارك قيمة محفظتك التقديرية: ما يعادل USDT بالإضافة إلى GRAM المكتسبة. معطل افتراضياً",

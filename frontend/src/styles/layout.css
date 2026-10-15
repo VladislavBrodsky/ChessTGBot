@@ -430,3 +430,16 @@
 /* Full-screen onboarding keeps its step navigation and next action reachable. */
 .ob-top, .ob-actions { flex-shrink: 0; }
 .ob-stage { overflow-y: auto; overscroll-behavior: contain; align-items: safe center; }
+
+/* Meta line: short facts side by side. Every fact carries a hairline on its inline-start edge; the track is pulled back by
+   exactly that hairline plus its padding, so the first fact on every line has its hairline clipped by the wrapper. A
+   separator therefore appears only between facts on the same line and never dangles at a wrap. */
+.ui-meta { overflow: hidden; padding-block: 1px; margin-block: -1px; }
+.ui-meta__track { display: flex; flex-wrap: wrap; column-gap: var(--space-2); row-gap: var(--space-0-5); margin-inline-start: calc(-1 * (var(--space-2) + 1px)); }
+.ui-meta__item { display: inline-flex; align-items: center; min-width: 0; padding-inline-start: var(--space-2); border-inline-start: 1px solid color-mix(in srgb, var(--text-muted) 40%, transparent); }
+
+/* Step list: numbered requirements, e.g. how a referral qualifies. The counter is the only decoration. */
+.ui-steps { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; counter-reset: ui-step; }
+.ui-steps > li { display: flex; align-items: flex-start; gap: var(--space-2); counter-increment: ui-step; font-size: var(--type-body-size); line-height: 1.35; color: var(--text-primary); }
+.ui-steps > li::before { content: counter(ui-step); flex: none; display: inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center; border: 1px solid var(--border-muted); border-radius: var(--radius-pill); background: var(--bg-elevated); color: var(--text-muted); font-size: var(--type-caption-size); font-weight: 700; font-variant-numeric: tabular-nums; }
+.ui-steps__hint { display: block; margin-top: 2px; font-size: var(--type-caption-size); color: var(--text-muted); }

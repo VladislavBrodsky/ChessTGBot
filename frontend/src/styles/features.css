@@ -651,6 +651,24 @@
   text-shadow: 0 0 10px rgba(52, 211, 153, 0.75), 0 0 18px rgba(16, 185, 129, 0.4);
 }
 
+/* Light theme only (dark is unchanged): the white/neon-green figures were invisible on a light surface (1.1:1), and the
+   glow smears them. Use the theme ink tokens and drop the glow. */
+[data-theme='light'] .leaderboard-preview-value--gram,
+[data-theme='light'] .leaderboard-preview-value--xp {
+  color: var(--text-primary);
+  text-shadow: none;
+}
+[data-theme='light'] .leaderboard-preview-gain,
+[data-theme='light'] .leaderboard-preview-gain--hot {
+  color: var(--brand-success);
+  text-shadow: none;
+  animation: none;
+}
+[data-theme='light'] .leaderboard-preview-coin {
+  filter: none;
+  animation: none;
+}
+
 @keyframes gain-neon-pulse {
   0% {
     text-shadow: 0 0 6px rgba(52, 211, 153, 0.45), 0 0 12px rgba(16, 185, 129, 0.2);

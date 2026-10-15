@@ -14,6 +14,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { SectionHeader } from '@/components/ui/PageHeader';
 import { SkeletonList } from '@/components/ui/Skeleton';
 import { Badge } from '@/components/ui/Badge';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { Button } from '@/components/ui/Button';
 
 const TaskSkeleton = () => <SkeletonList count={3} />;
@@ -66,10 +67,10 @@ export default function DailyTasks() {
     };
 
     return (
-        <section aria-labelledby="daily-missions-title" className="w-full space-y-4">
+        <section aria-labelledby="daily-missions-title" className="w-full space-y-2">
             <SectionHeader id="daily-missions-title" title={t('daily_missions')} />
 
-            <div className="space-y-3 w-full">
+            <div className="w-full">
                 {loading ? (
                     <TaskSkeleton />
                     ) : loadError && tasks.length === 0 ? (
@@ -77,7 +78,7 @@ export default function DailyTasks() {
                     ) : tasks.length === 0 ? (
                         <p className="text-center py-4 t-body text-brand-muted">{t('no_missions')}</p>
                     ) : (
-                        <ol role="list" className="space-y-3 list-none m-0 p-0 relative">
+                        <ol role="list" className="space-y-2 list-none m-0 p-0 relative">
 
                             {tasks.map((task) => {
                                 const status = task.claimed ? 'completed' : task.completed ? 'claimable' : 'pending';
@@ -90,16 +91,14 @@ export default function DailyTasks() {
                                             <span className={`ui-icon-tile ${status === 'pending' ? '' : 'ui-icon-tile--success'}`}>
                                                 {status === 'completed' ? <FaCheck className="text-sm" aria-hidden="true" /> : <FaGift className="text-sm" aria-hidden="true" />}
                                             </span>
-                                            <div className="min-w-0 flex-1">
+                                            <div className="min-w-0 flex-1 space-y-0.5">
                                                 <h3 className={`text-sm font-semibold leading-snug break-words ${status === 'completed' ? 'text-brand-muted' : 'text-brand-primary'}`}>
                                                     {t(task.title_key)}
                                                 </h3>
-                                                <div className="flex flex-wrap items-center gap-2 text-caption font-medium text-brand-muted mt-0.5 tabular-nums">
-                                                    <span className="text-brand-gold">+{task.xp_reward} XP</span>
+                                                <MetaLine className="t-caption font-medium tabular-nums text-brand-muted">
+                                                    <span className="text-brand-gold-ink">+{task.xp_reward} XP</span>
                                                     {task.gram_reward_nano && task.gram_reward_nano !== "0" && <GramAmount plus nano={task.gram_reward_nano} className="text-brand-action" />}
-                                                    <span aria-hidden="true">·</span>
-                                                    <span dir="ltr">{task.progress} / {task.target_count}</span>
-                                                </div>
+                                                </MetaLine>
                                             </div>
                                         </div>
 
@@ -115,11 +114,14 @@ export default function DailyTasks() {
 
                                         {status === 'completed' && <Badge variant="emerald">{t('claimed_status')}</Badge>}
                                         {status === 'pending' && (
-                                            <div className="w-16 h-1.5 bg-brand-elevated rounded-full overflow-hidden border border-brand-border-opacity-10 relative" role="progressbar" aria-label={t(task.title_key)} aria-valuemin={0} aria-valuemax={task.target_count} aria-valuenow={task.progress}>
-                                                <div
-                                                    style={{ width: `${Math.min(100, (task.progress / Math.max(task.target_count, 1)) * 100)}%` }}
-                                                    className="h-full bg-brand-action rounded-full absolute start-0 top-0"
-                                                />
+                                            <div className="flex w-20 shrink-0 flex-col items-end gap-1">
+                                                <span className="t-caption font-medium tabular-nums text-brand-muted" dir="ltr">{task.progress} / {task.target_count}</span>
+                                                <div className="relative h-1.5 w-full overflow-hidden rounded-full border border-brand-border-opacity-10 bg-brand-elevated" role="progressbar" aria-label={t(task.title_key)} aria-valuemin={0} aria-valuemax={task.target_count} aria-valuenow={task.progress}>
+                                                    <div
+                                                        style={{ width: `${Math.min(100, (task.progress / Math.max(task.target_count, 1)) * 100)}%` }}
+                                                        className="absolute start-0 top-0 h-full rounded-full bg-brand-action"
+                                                    />
+                                                </div>
                                             </div>
                                         )}
                                     </li>

@@ -94,6 +94,7 @@
     "launch_unavailable": "Cette invitation est indisponible ou a expiré"
   },
   "Marketplace": {
+    "recent_drops": "Vos gains récents",
     "cost": "Coût",
     "confirm": "Confirmer",
     "title": "Marché",
@@ -1246,7 +1247,12 @@
     "earned": "Récompenses GRAM gagnées",
     "separate": "Crédits de récompense de l’app, distincts des USDT. Les retraits de GRAM ne sont pas encore disponibles",
     "referral_reward": "Gagnez 1 GRAM par ami éligible",
-    "referral_rules": "Votre ami doit utiliser votre lien, déposer des USDT et terminer 3 parties avec mise contre des personnes. La récompense est créditée une seule fois après validation",
+    "referral_needs": "Votre ami doit",
+    "referral_step_join": "Utiliser votre lien",
+    "referral_step_deposit": "Déposer des USDT",
+    "referral_step_matches": "Terminer 3 parties avec mise contre des personnes",
+    "referral_credited_once": "La récompense est créditée une seule fois après validation.",
+    "referral_earned": "Gagné",
     "referral_qualified": "{count, plural, one {# ami éligible} other {# amis éligibles}}",
     "privacy_title": "Rejoindre le classement GRAM",
     "privacy_description": "Partagez la valeur estimée de votre portefeuille : équivalent USDT plus GRAM gagnés. Désactivé par défaut",

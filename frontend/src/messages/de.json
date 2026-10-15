@@ -94,6 +94,7 @@
     "launch_unavailable": "Diese Einladung ist nicht verfügbar oder abgelaufen"
   },
   "Marketplace": {
+    "recent_drops": "Deine letzten Gewinne",
     "cost": "Kosten",
     "confirm": "Bestätigen",
     "title": "Marktplatz",
@@ -1246,7 +1247,12 @@
     "earned": "Verdiente GRAM-Prämien",
     "separate": "App-Prämienguthaben, getrennt von USDT. GRAM-Auszahlungen sind noch nicht verfügbar",
     "referral_reward": "1 GRAM je qualifiziertem Freund",
-    "referral_rules": "Dein Freund muss deinem Link folgen, USDT einzahlen und 3 Spiele mit Einsatz gegen Menschen abschließen. Die Prämie wird nach Erfüllung einmal gutgeschrieben",
+    "referral_needs": "Dein Freund muss",
+    "referral_step_join": "Deinem Link folgen",
+    "referral_step_deposit": "USDT einzahlen",
+    "referral_step_matches": "3 Spiele mit Einsatz gegen Menschen abschließen",
+    "referral_credited_once": "Die Prämie wird nach Erfüllung einmal gutgeschrieben.",
+    "referral_earned": "Verdient",
     "referral_qualified": "{count, plural, one {# Freund qualifiziert} other {# Freunde qualifiziert}}",
     "privacy_title": "Der GRAM-Rangliste beitreten",
     "privacy_description": "Teile deinen geschätzten Portfoliowert: USDT-Gegenwert plus verdiente GRAM. Standardmäßig ausgeschaltet",

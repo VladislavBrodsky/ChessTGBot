@@ -94,6 +94,7 @@
     "launch_unavailable": "此邀请不可用或已过期"
   },
   "Marketplace": {
+    "recent_drops": "你最近获得的奖励",
     "cost": "花费",
     "confirm": "确认",
     "title": "商城",
@@ -1246,7 +1247,12 @@
     "earned": "已获得的GRAM奖励",
     "separate": "应用奖励余额与USDT分开。GRAM提现尚未开放",
     "referral_reward": "每位达标好友可获得1 GRAM",
-    "referral_rules": "好友必须通过你的链接加入、充值USDT，并完成3场与真人的有押注对局。达标后奖励仅发放一次",
+    "referral_needs": "好友需要完成",
+    "referral_step_join": "通过你的链接加入",
+    "referral_step_deposit": "充值USDT",
+    "referral_step_matches": "完成3场与真人的有押注对局",
+    "referral_credited_once": "达标后奖励仅发放一次。",
+    "referral_earned": "已获得",
     "referral_qualified": "{count}位好友已达标",
     "privacy_title": "加入GRAM排行榜",
     "privacy_description": "公开你的估算资产价值：USDT等值加已获得的GRAM。默认关闭",

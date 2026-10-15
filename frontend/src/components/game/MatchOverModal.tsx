@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { FaRedo, FaShareAlt } from 'react-icons/fa';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { CountUp } from '@/components/ui/CountUp';
 
 interface MatchOverModalProps {
@@ -29,6 +30,6 @@ export default function MatchOverModal({ matchResultLabel, eloChange, netPayout,
       {xpGained !== undefined && xpGained > 0 && <div><dt>{t('xp_reward')}</dt><dd><bdi>+{xpGained.toLocaleString(locale)} XP</bdi></dd></div>}
     </dl>
     {netPayout === null && <p className="t-caption text-brand-muted" role="status">{t('settlement_pending')}</p>}
-    {wagerAmount > 0 && outcome === 'win' && <p className="t-caption text-brand-muted">{t('includes_stake')} · {t('lobby_payout_note')}</p>}
+    {wagerAmount > 0 && outcome === 'win' && <MetaLine className="t-caption text-brand-muted"><span>{t('includes_stake')}</span><span>{t('lobby_payout_note')}</span></MetaLine>}
   </Modal>;
 }

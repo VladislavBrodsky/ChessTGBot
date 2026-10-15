@@ -94,6 +94,7 @@
     "launch_unavailable": "La invitación no está disponible o ha caducado"
   },
   "Marketplace": {
+    "recent_drops": "Tus premios recientes",
     "cost": "Costo",
     "confirm": "Confirmar",
     "title": "Mercado",
@@ -1246,7 +1247,12 @@
     "earned": "Recompensas GRAM ganadas",
     "separate": "Créditos de recompensa de la app, separados de USDT. Los retiros de GRAM aún no están disponibles",
     "referral_reward": "Gana 1 GRAM por amigo elegible",
-    "referral_rules": "Tu amigo debe entrar con tu enlace, depositar USDT y completar 3 partidas con apuesta contra personas. La recompensa se acredita una sola vez al cumplir los requisitos",
+    "referral_needs": "Tu amigo debe",
+    "referral_step_join": "Entrar con tu enlace",
+    "referral_step_deposit": "Depositar USDT",
+    "referral_step_matches": "Completar 3 partidas con apuesta contra personas",
+    "referral_credited_once": "La recompensa se acredita una sola vez al cumplir los requisitos.",
+    "referral_earned": "Ganado",
     "referral_qualified": "{count, plural, one {# amigo cumplió los requisitos} other {# amigos cumplieron los requisitos}}",
     "privacy_title": "Unirse a la clasificación GRAM",
     "privacy_description": "Comparte el valor estimado de tu cartera: equivalente de USDT más GRAM ganado. Desactivado por defecto",

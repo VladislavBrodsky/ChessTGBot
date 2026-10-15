@@ -90,18 +90,18 @@ Type is expressed as **roles** (tokens `--type-<role>-size/leading/weight/tracki
 
 | Role | Size / leading | Weight | Use |
 | --- | --- | --- | --- |
-| `display` | 40 / 1.1 | 700 | Hero headline, welcome |
-| `title-1` | 28→32 fluid / 1.15 | 700 | **One per page** (`PageHeader`) |
-| `title-2` | 20 / 1.3 | 700 | Section headings (`SectionHeader`), sheet titles |
-| `title-3` | 17 / 1.35 | 650 | Card and list-row titles |
+| `display` | 34 / 1.1 | 700 | Hero headline, welcome |
+| `title-1` | 20→24 fluid / 1.15 | 700 | **One per page** (`PageHeader`) |
+| `title-2` | 18 / 1.3 | 700 | Section headings (`SectionHeader`), sheet titles |
+| `title-3` | 16 / 1.35 | 650 | Card and list-row titles |
 | `body-lg` | 16 / 1.5 | 400 | Reading text, **input text (16px stops iOS zoom)** |
-| `body` | 14 / 1.5 | 400 | Default UI copy |
+| `body` | 14 / 1.45 | 400 | Default UI copy |
 | `label` | 14 / 1.25 | 650 | Buttons, tabs, controls |
 | `caption` | 12 / 1.4 | 500 | Metadata, helper text, badges |
 | `eyebrow` | 12 / 1.4 | 650 · +0.08em | Micro-label above a value. Uppercase only in Latin/Cyrillic (disabled for `ar`, `hi`, `ja`, `zh`) |
-| `numeric-xl` | 40 / 1 | 700 | Balance, rating hero numbers |
-| `numeric-lg` | 28 / 1.1 | 700 | `ui-stat` values |
-| `numeric` | 20 / 1.2 | 700 | Inline key figures |
+| `numeric-xl` | 34 / 1 | 700 | Balance, rating hero numbers |
+| `numeric-lg` | 24 / 1.1 | 700 | `ui-stat` values |
+| `numeric` | 18 / 1.2 | 700 | Inline key figures |
 | `numeric-sm` | 14 / 1.2 | 650 | Prices/XP inside rows |
 
 Rules
@@ -120,13 +120,13 @@ Rules
 | Token | px | Meaning |
 | --- | ---: | --- |
 | `gap-inline` | 8 | Between inline items (icon↔label, badges) |
-| `gap-stack` | 12 | Between stacked related elements |
-| `gap-card` | 16 | Between sibling cards, inside a card between groups |
-| `gap-section` | 24 | Between page sections |
-| `gap-page` | 32 | Between major page zones (desktop) |
-| `pad-sm / md / lg / xl` | 12 / 16 / 20 / 24 | Container padding (rows / cards / hero / sheets) |
+| `gap-stack` | 10 | Between stacked related elements |
+| `gap-card` | 12 | Between sibling cards, inside a card between groups |
+| `gap-section` | 16 | Between page sections |
+| `gap-page` | 24 | Between major page zones (desktop) |
+| `pad-sm / md / lg / xl` | 10 / 12 / 16 / 20 | Container padding (rows / cards / hero / sheets) |
 
-Raw steps: `1`=4 `2`=8 `3`=12 `4`=16 `5`=20 `6`=24 `8`=32 `10`=40 `12`=48 `16`=64. Pair the gap to the **relationship**: closer = related. Within a card 16, between cards 16, between sections 24 — never the same value for both “inside” and “between sections”.
+Raw steps: `1`=4 `2`=8 `3`=12 `4`=16 `5`=20 `6`=24 `8`=32 `10`=40 `12`=48 `16`=64. Pair the gap to the **relationship**: closer = related. Within a card 12, between cards 12, between sections 16 — never the same value for both “inside” and “between sections”. The scale is deliberately compact (Oct 2026): density comes from these tokens, not from per-page overrides.
 
 ### 2.4 Size
 
@@ -134,22 +134,22 @@ All interactive and structural sizes are tokens (`--size-*`).
 
 | Group | Tokens |
 | --- | --- |
-| Controls (hit area) | `control-compact` 36 (only inside a ≥44 row) · `control-sm` **44** · `control-md` 48 · `control-lg` 56 |
+| Controls (hit area) | `control-compact` 36 (only inside a ≥44 row) · `control-sm` **44** · `control-md` 44 · `control-lg` 48 |
 | Icons | `icon-xs` 14 · `sm` 16 · `md` 20 · `lg` 24 · `xl` 32 |
 | Avatars | `xs` 24 · `sm` 32 · `md` 40 · `lg` 48 · `xl` 64 · `2xl` 96 |
-| Icon tiles | `tile-sm` 32 · `md` 40 · `lg` 48 · `xl` 56 |
-| Structure | `row-min` 64 · `stat-min` 96 · `quick-tile-min` 108 · `goal-tile-min` 148 · `nav-height` 68 (+safe area) |
+| Icon tiles | `tile-sm` 28 · `md` 36 · `lg` 44 · `xl` 48 |
+| Structure | `row-min` 56 · `stat-min` 80 · `quick-tile-min` 84 · `goal-tile-min` 124 · `nav-height` 62 (+safe area) |
 | Chips/badges | `chip` 26 · `chip-counter` 20 |
-| Progress | track `sm` 6 · `md` 8 · `lg` 12 · ring `sm` 48 · `md` 64 · `lg` 96 |
+| Progress | track `sm` 6 · `md` 8 · `lg` 12 · ring `sm` 48 · `md` 56 · `lg` 80 |
 
-Rules: every touch control ≥ **44×44** (visually smaller icons get a padded hit area); primary buttons ≥ 48 tall; text fields ≥ 48 tall.
+Rules: every touch control ≥ **44×44** (visually smaller icons get a padded hit area); primary actions use `Button size="lg"` (48); text fields ≥ 48 tall.
 
 ### 2.5 Radius
 
 Radius **follows nesting** — an inner element is always at least one step smaller than its container.
 
-`xs 6 · sm 8 · md 12 · lg 16 · xl 20 · 2xl 24 · 3xl 28 · pill 999`
-Semantic: `chip 8 · control 12 · tile 12 · row 16 · card 20 · hero 24 · sheet 28`.
+`xs 6 · sm 8 · md 12 · lg 14 · xl 16 · 2xl 20 · 3xl 24 · pill 999`
+Semantic: `chip 8 · control 12 · tile 10 · row 14 · card 16 · hero 20 · sheet 24`.
 Board and avatars: the board sits in `.board-frame` (hero radius, 1px border, turn-state ring); avatars are circles; squares are never rounded.
 
 ### 2.6 Elevation & surfaces
@@ -196,7 +196,7 @@ Pages are composed from **semantic recipes**, not utility soup. Each recipe owns
 | `ui-eyebrow` | Eyebrow role | Label above a value |
 | `Backdrop` (`components/ui/Backdrop.tsx`, `.ui-backdrop*`) | Masked grid, tilted checkerboard, two glows, four chess pieces | Entry surfaces only (login, invite/QR, auth splash). Tokens only, so it works in dark/light/nebula; two pieces float (transform), `still` freezes it; never behind app dashboards or the game board |
 
-Compose with the shared primitives: `PageHeader`/`SectionHeader`/`ActionLink`/`PageUtilities`, `Card`, `Button`, `Badge`/`BadgeRow`, `Tabs`/`SegmentedControl`, `Modal`/`Drawer`, `EmptyState`/`ErrorState`, `Skeleton*`, `Toast`, `Switch`, `Input`, `Avatar`, `ProgressRing`, `CountUp`, `Reveal`, `QuickTile`.
+Compose with the shared primitives: `PageHeader`/`SectionHeader`/`ActionLink`, `Card`, `MetaLine`, `Button`, `Badge`/`BadgeRow`, `Tabs`/`SegmentedControl`, `Modal`/`Drawer`, `EmptyState`/`ErrorState`, `Skeleton*`, `Toast`, `Switch`, `Input`, `Avatar`, `ProgressRing`, `CountUp`, `Reveal`, `QuickTile`.
 
 ---
 
@@ -206,7 +206,7 @@ Compose with the shared primitives: `PageHeader`/`SectionHeader`/`ActionLink`/`P
 
 ```text
 ┌ safe-area top (--app-safe-top)
-│ PageHeader        title-1 + one-line purpose + PageUtilities (≤2 icon buttons)
+│ PageHeader        title-1 + one-line purpose + ≤2 icon actions
 │ ── gap-section ──
 │ Hero / live state ui-hero-card OR live game banner     ← ONE hero
 │ ── gap-section ──
@@ -235,7 +235,7 @@ Order: **title → live account/game state → one next action → progress → 
 
 ### 4.3 Vertical rhythm
 
-`gap-section` (24) between sections · `gap-card` (16) between cards and inside cards between groups · `gap-stack` (12) between title and content · `gap-inline` (8) between label and value. Use `space-y-*`/`gap-*` on the **parent**; do not stack `mt-*` on siblings.
+`gap-section` (16) between sections · `gap-card` (12) between cards and inside cards between groups · `gap-stack` (10) between title and content · `gap-inline` (8) between label and value. Use `space-y-*`/`gap-*` on the **parent**; do not stack `mt-*` on siblings.
 
 ### 4.4 Card anatomy
 
@@ -273,13 +273,13 @@ Use logical properties (`ms-*`, `ps-*`, `start-*`, `text-start`, `inset-inline-*
 
 | Component | Sizes / variants | Notes |
 | --- | --- | --- |
-| `Button` | `sm 44 · md 48 · lg 56` · `primary · secondary · action · destructive · outline · ghost` | One `primary`/`action` per view. Busy state keeps width. Haptic on press |
+| `Button` | `sm 44 · md 44 · lg 48` · `primary · secondary · action · destructive · outline · ghost` | One `primary`/`action` per view. Busy state keeps width. Haptic on press |
 | `Input` | height 48, 16px text | Label above, helper/error below, error uses `aria-describedby` |
 | `Switch` | 44 hit area | `role=switch`, optimistic with rollback |
 | `Tabs` / `SegmentedControl` | segment ≥44 | Sliding indicator; `selection` haptic; keyboard arrows |
 | `Badge` / `BadgeRow` | 26 tall, 12/18 type, 8 radius | See §5.1 |
 | `Card` | `solid · glass · premium · cyber · x-panel` | Prefer recipes (`ui-hero-card`, `ui-list-row`) for new work; no `backdrop-blur` in lists |
-| `Modal` / `Drawer` | radius `sheet 28`, max-height respects safe areas | Focus trap, ESC, scroll lock, focus return |
+| `Modal` / `Drawer` | radius `sheet 24`, max-height respects safe areas | Focus trap, ESC, scroll lock, focus return |
 | `PageHeader` / `SectionHeader` | title-1 / title-2 | One per page / per section |
 | `EmptyState` / `ErrorState` | icon tile + title-3 + body + one action | Error text sanitized, retry available |
 | `Skeleton` family | see §6 | Geometry-matched |
@@ -422,3 +422,9 @@ label and control geometry, with disabled/busy state carrying request status.
 SnapPicker recenters on an actual size change, using the latest selection. Keep
 its ResizeObserver mounted during swipes so an intermediate selection cannot
 interrupt scrolling.
+
+### Meta lines, step lists and opponent identity
+
+Short facts that sit side by side (reward and progress, rank and percentile, stake and clock) use `MetaLine` (`ui-meta`), never an inline `·` in one text node. A hairline separates facts only when they share a line; at every wrap it is clipped away, so a separator can never dangle at the end or start of a line. One child per fact; a fact never splits across lines. Requirements that happen in order (how a referral qualifies) use the `ui-steps` numbered list with an optional `ui-steps__hint` under a step, not a paragraph. Money in compact stat cells is a short `$` value with the unit read out for assistive tech, never `value + unit` in a cell that can overflow.
+
+An opponent is shown as what it is. A practice game shows the engine as “A.I. Coach” with its chosen level and a bot avatar; a player game shows the real opponent name and rating, or the neutral “Opponent” label if the profile has none. Nothing generates a human name, flag or rating. The Marketplace “Your recent drops” strip lists only the player’s own server-confirmed prizes and renders nothing until there is one.

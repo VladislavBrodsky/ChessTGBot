@@ -13,7 +13,6 @@ export interface GamePlayerCardProps {
   turnLabel: string;
   isWhite: boolean;
   isBot?: boolean;
-  botLabel?: string;
   gameState: any;
   onClockWarning: (timeLeft: number) => void;
 }
@@ -26,8 +25,7 @@ export function GamePlayerCard({
   isTurn,
   turnLabel,
   isWhite,
-  isBot: _isBot = false,
-  botLabel: _botLabel,
+  isBot = false,
   gameState,
   onClockWarning,
 }: GamePlayerCardProps) {
@@ -79,7 +77,7 @@ export function GamePlayerCard({
           <PlayerAvatar
             userId={userId}
             fallbackText={username ? username.slice(0, 2).toUpperCase() : 'GM'}
-            isBot={false}
+            isBot={isBot}
           />
         </span>
         <div className="flex min-w-0 flex-col">

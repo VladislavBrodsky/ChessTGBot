@@ -410,6 +410,10 @@ function ChessBoardComponent({
                             arrows: toChessboardArrows(customArrows),
                             darkSquareStyle: finalDarkSquareStyle,
                             lightSquareStyle: finalLightSquareStyle,
+                            // Coordinates take the opposite square colour of the ACTIVE board theme (the library default is a fixed
+                            // tan that nearly disappears on light squares), so they stay readable on every theme.
+                            darkSquareNotationStyle: { color: finalLightSquareStyle.backgroundColor, fontWeight: 600 },
+                            lightSquareNotationStyle: { color: finalDarkSquareStyle.backgroundColor, fontWeight: 600 },
                             onSquareClick: handleSquareClick,
                             squareStyles: squareStyles
                         }}

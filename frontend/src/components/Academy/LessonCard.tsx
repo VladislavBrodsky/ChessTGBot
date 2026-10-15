@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/Badge';
 import { motion } from "framer-motion";
-import { FaLock, FaCheckCircle, FaChevronRight } from "react-icons/fa";
+import { FaLock, FaCheckCircle } from "react-icons/fa";
+import { FiChevronRight } from "react-icons/fi";
 
 interface LessonCardProps {
   title: string;
@@ -83,19 +84,14 @@ export default function LessonCard({
             />
           </div>
 
-          {/* Status row */}
+          {/* Progress on the left, the one action on the right (the badge above already says Completed / Locked). */}
           <div className="flex justify-between items-center">
-            <span className={`text-caption font-medium ${isCompleted ? "text-brand-success" : "text-brand-muted"}`}>
-              {isCompleted ? tc('completed') : t('start_learning')}
-            </span>
+            <span className={`text-caption font-medium tabular-nums ${isCompleted ? "text-brand-success" : "text-brand-muted"}`}><bdi>{Math.round(Math.min(100, Math.max(0, progress)))}%</bdi></span>
             {!locked && (
-              <motion.span
-                whileHover={{ x: 2 }}
-                className="flex items-center gap-1 text-caption font-semibold text-brand-muted hover:text-brand-primary transition-colors"
-              >
-                {isCompleted ? t('lesson_review') : t('lesson_start')}
-                <FaChevronRight size={6} />
-              </motion.span>
+              <span className="flex items-center gap-1 text-caption font-semibold text-brand-primary">
+                {isCompleted ? t('lesson_review') : progress > 0 ? t('continue') : t('lesson_start')}
+                <FiChevronRight size={14} className="rtl:rotate-180" aria-hidden="true" />
+              </span>
             )}
           </div>
         </div>

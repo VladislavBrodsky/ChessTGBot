@@ -13,6 +13,7 @@ import { DepositDialog } from '@/components/Wallet/WalletDialogs';
 import { Drawer } from '@/components/ui/Drawer';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 
@@ -195,7 +196,7 @@ export default function QuickMatchModal({ isOpen, onClose, initialWagerCents = 5
         <Card variant="solid" className="p-3 space-y-2">
           <div className="flex flex-wrap justify-between gap-2 text-sm"><span className="text-brand-muted">{tg('stake')}</span><bdi className="numeric-body font-semibold">{money(wagerCents)}</bdi></div>
           <div className="flex flex-wrap justify-between gap-2 text-sm"><span>{t('payout')}</span><bdi className="numeric-body font-semibold text-brand-success">{money(winnerCents(wagerCents))}</bdi></div>
-          <p className="text-caption text-brand-muted">{tg('includes_stake')} · {tg('lobby_payout_note')}</p>
+          <MetaLine className="text-caption text-brand-muted"><span>{tg('includes_stake')}</span><span>{tg('lobby_payout_note')}</span></MetaLine>
         </Card>
         {insufficient && <p className="text-sm text-brand-muted">{t('shortfall', { amount: money(wagerCents - walletBalance) })}</p>}
         {balanceError && <p role="alert" className="text-sm text-brand-danger">{tw('balance_unavailable')}</p>}

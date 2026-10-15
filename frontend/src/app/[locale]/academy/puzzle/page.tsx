@@ -17,6 +17,7 @@ import {
 import LayoutWrapper from '@/components/LayoutWrapper';
 import PuzzleBoard from '@/components/Academy/PuzzleBoard';
 import { ActionLink, PageHeader } from '@/components/ui/PageHeader';
+import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -139,14 +140,8 @@ function PuzzleContent() {
         {puzzle && (
           <div className="flex flex-wrap items-center justify-between gap-2 -mt-2">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="px-2.5 py-0.5 rounded-full text-caption font-bold bg-brand-action/15 text-brand-action border border-brand-action/30">
-                Stage {puzzle.stage || 1}: {puzzle.stage_name || t('beginner')}
-              </span>
-              {puzzle.theme && (
-                <span className="px-2.5 py-0.5 rounded-full text-caption font-semibold bg-brand-elevated text-brand-primary border border-brand-border">
-                  {puzzle.theme}
-                </span>
-              )}
+              <Badge variant="emerald">Stage {puzzle.stage || 1}: {puzzle.stage_name || t('beginner')}</Badge>
+              {puzzle.theme && <Badge variant="secondary">{puzzle.theme}</Badge>}
             </div>
 
             <div className="flex items-center gap-2 text-caption font-semibold text-brand-muted">

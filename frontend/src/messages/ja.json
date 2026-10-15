@@ -94,6 +94,7 @@
     "launch_unavailable": "この招待は利用できないか期限切れです"
   },
   "Marketplace": {
+    "recent_drops": "最近獲得した報酬",
     "cost": "費用",
     "confirm": "確認",
     "title": "マーケット",
@@ -1246,7 +1247,12 @@
     "earned": "獲得したGRAM報酬",
     "separate": "アプリ内報酬はUSDTと別の残高です。GRAMの出金はまだ利用できません",
     "referral_reward": "条件達成した友達ごとに1 GRAM",
-    "referral_rules": "友達が紹介リンクから参加し、USDTを入金して、人間相手の賭け金ありの対局を3回完了する必要があります。条件達成後、報酬は一度だけ付与されます",
+    "referral_needs": "友達に必要なこと",
+    "referral_step_join": "紹介リンクから参加する",
+    "referral_step_deposit": "USDTを入金する",
+    "referral_step_matches": "人間相手の賭け金ありの対局を3回完了する",
+    "referral_credited_once": "条件達成後、報酬は一度だけ付与されます。",
+    "referral_earned": "獲得済み",
     "referral_qualified": "条件達成した友達：{count}人",
     "privacy_title": "GRAMランキングに参加",
     "privacy_description": "USDT換算額と獲得GRAMを合計した推定資産額を公開します。初期設定はオフです",

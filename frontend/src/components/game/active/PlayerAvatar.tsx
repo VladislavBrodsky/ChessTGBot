@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { FaRobot } from 'react-icons/fa';
 import { getFullPhotoUrl } from '@/lib/api';
 
 export interface PlayerAvatarProps {
@@ -10,14 +11,18 @@ export interface PlayerAvatarProps {
   textClassName?: string;
 }
 
-export function PlayerAvatar({ userId, fallbackText, isBot: _isBot, textClassName }: PlayerAvatarProps) {
+export function PlayerAvatar({ userId, fallbackText, isBot = false, textClassName }: PlayerAvatarProps) {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     setHasError(false);
   }, [userId]);
 
-  if (!userId || userId === -1 || hasError) {
+  if (isBot || userId === -1) {
+    return <span className="flex size-full items-center justify-center text-brand-muted"><FaRobot aria-hidden="true" /></span>;
+  }
+
+  if (!userId || hasError) {
     const cleanInitials = fallbackText && fallbackText !== '?' ? fallbackText.slice(0, 2).toUpperCase() : 'GM';
     return (
       <span className={textClassName || "text-sm font-bold tracking-tight text-brand-primary flex size-full items-center justify-center bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20"}>

@@ -21,7 +21,7 @@ import { apiFetch } from '@/lib/api';
 import { FaGem, FaCrown, FaChessBoard, FaEye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { FiShoppingBag, FiGrid, FiSliders } from 'react-icons/fi';
 import MysteryBoxCard from '@/components/Marketplace/MysteryBoxCard';
-import LiveDropsTicker from '@/components/Marketplace/LiveDropsTicker';
+import RecentDrops from '@/components/Marketplace/RecentDrops';
 import UnboxingModal from '@/components/Marketplace/UnboxingModal';
 import UnboxConfirmSheet from '@/components/Marketplace/UnboxConfirmSheet';
 import { BOX_CONFIG, BOX_ORDER, type BoxTier } from '@/components/Marketplace/boxConfig';
@@ -308,10 +308,8 @@ export default function MarketplacePage() {
             <main className="app-page pb-[calc(var(--app-safe-bottom)+6.5rem)]">
                     <PageHeader title={t('title')} description={t('subtitle')} icon={<FiShoppingBag />} tone="gold" />
 
-                    {/* Social Proof Live Drops Marquee Ticker */}
-                    <section aria-label="Live recent drops" className="w-full">
-                        <LiveDropsTicker userDrops={recentWins} />
-                    </section>
+                    {/* The player's own recent drops; absent until there is one. */}
+                    <RecentDrops drops={recentWins} />
 
                     {/* Gamified XP Balance & Goal Progression Card */}
                     <section aria-labelledby="xp-balance-heading" className="w-full">
@@ -555,12 +553,10 @@ export default function MarketplacePage() {
                                         <Card
                                             key={item.id}
                                             variant="solid"
-                                            className={`p-5 transition-colors relative overflow-hidden flex flex-col justify-between ${affordable ? 'ui-stat--premium' : ''}`}
+                                            className={`p-4 transition-colors relative overflow-hidden flex flex-col justify-between gap-3 ${affordable ? 'ui-stat--premium' : ''}`}
                                         >
                                             {isYearly && (
-                                                <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-xl bg-purple-500/20 border-b border-l border-purple-500/30 text-caption font-bold text-purple-300">
-                                                    Best Value · 33% Off
-                                                </div>
+                                                <Badge variant="purple" className="self-start">Best Value · 33% Off</Badge>
                                             )}
                                             <div className="space-y-3">
                                                 <div className="flex items-start justify-between gap-4">

@@ -6,6 +6,7 @@ import { FaFire } from 'react-icons/fa';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
 import { useUser } from '@/context/UserContext';
 import { telegramHaptic } from '@/lib/telegram';
+import { MetaLine } from '@/components/ui/MetaLine';
 
 interface Task { task_id: number; title_key: string; progress: number; target_count: number; xp_reward: number; completed: boolean; claimed: boolean }
 
@@ -27,7 +28,12 @@ export function DailyGoal({ t }: { t: (key: string) => string }) {
         <div className="lobby-goal__text">
           <div className="lobby-goal__row">
             <span>{t('lobby_daily_goal')}</span>
-            <span>{ready ? t('lobby_reward_ready') : `${progress}/${task.target_count} · +${task.xp_reward} XP`}</span>
+            {ready ? <span>{t('lobby_reward_ready')}</span> : (
+              <MetaLine>
+                <span>{progress}/{task.target_count}</span>
+                <span>+{task.xp_reward} XP</span>
+              </MetaLine>
+            )}
           </div>
           <div className="lobby-goal__bar" role="progressbar" aria-label={t('lobby_daily_goal')} aria-valuemin={0} aria-valuemax={task.target_count} aria-valuenow={progress}>
             <div className="lobby-goal__fill" style={{ width: `${percent}%` }} />

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { FaTrophy } from 'react-icons/fa';
 import { Badge } from '@/components/ui/Badge';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -86,7 +87,10 @@ export default function ArenaBanner() {
       <div className="flex-1 min-w-[7rem] space-y-1">
         <h2 className="t-body font-semibold">{t('title')}</h2>
         {!settled ? <Skeleton textRole="caption" width="14ch" /> : !arena || failed ? <p className="t-caption text-brand-muted" role="status">{t('status_unavailable')}</p>
-          : <p className="t-caption text-brand-muted">{live ? `${t('live_now')} · ${t('ends_in')}` : arena.status === 'scheduled' ? t('starts_in') : t('finished')} {['scheduled', 'live'].includes(arena.status) && <bdi className="tabular-nums">{countdown(countdownMs)}</bdi>}</p>}
+          : <MetaLine className="t-caption text-brand-muted">
+              {live && <span>{t('live_now')}</span>}
+              <span>{live ? t('ends_in') : arena.status === 'scheduled' ? t('starts_in') : t('finished')} {['scheduled', 'live'].includes(arena.status) && <bdi className="tabular-nums">{countdown(countdownMs)}</bdi>}</span>
+            </MetaLine>}
       </div>
       {!settled ? <Skeleton textRole="caption" width="12ch" /> : failed ? <Button variant="secondary" size="sm" onClick={() => void refresh()}>{tc('retry')}</Button>
         : live ? <Button variant={joined ? 'secondary' : 'primary'} size="sm" isLoading={pending} onClick={togglePool}>{joined ? t('leave') : t('join')}</Button>

@@ -13,6 +13,7 @@ import { useClaimableTasks } from '@/hooks/useClaimableTasks';
 import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
+import { MetaLine } from '@/components/ui/MetaLine';
 import { PageHeader, SectionHeader, ActionLink } from '@/components/ui/PageHeader';
 import { QuickTile } from '@/components/ui/QuickTile';
 import { CountUp } from '@/components/ui/CountUp';
@@ -80,7 +81,7 @@ export default function Home() {
                   </span>
                   <span className="min-w-0">
                     <span className="t-numeric-lg block text-brand-primary"><CountUp value={stats.elo ?? 0} /></span>
-                    <span className="mt-1 block text-caption font-medium text-brand-muted">{t('elo')} · {t('nav_profile')}</span>
+                    <MetaLine className="mt-1 text-caption font-medium text-brand-muted"><span>{t('elo')}</span><span>{t('nav_profile')}</span></MetaLine>
                   </span>
                 </Link>
                 <Link href={`/${locale}/wallet`} className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-brand-border bg-brand-elevated px-3 transition-colors hover:border-brand-border-opacity-30" onClick={() => telegramHaptic('selection')}>

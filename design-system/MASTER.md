@@ -19,9 +19,9 @@ frontend/src/styles/{theme,tokens,themes,base,components,overlays,features,motio
 |---|---|---|
 | Colour | `bg-brand-void/surface/elevated`, `text-brand-primary/muted`, `border-brand-border`, `var(--action-bg)`, `--grad-action`, `--grad-premium`, `--text-gold`, `--danger-ink` | raw hex, `slate-*`/`zinc-*`, `text-*/60` opacity text |
 | Type | role classes `t-display`, `t-title-1/2/3`, `t-body-lg`, `t-body`, `t-label`, `t-caption`, `t-eyebrow`, `t-numeric-xl/lg/''/sm` | `text-[11px]`, ad-hoc `tracking-[…]`, forced `uppercase` |
-| Space | `gap-inline 8`, `gap-stack 12`, `gap-card 16`, `gap-section 24`, `gap-page 32`; `--pad-sm/md/lg/xl` | stacked `mt-*` on siblings, same gap for inside vs between |
-| Size | `--size-control-sm 44`, `-md 48`, `-lg 56`, `--size-icon-*`, `--size-avatar-*`, `--size-tile-*`, `--size-row-min 64`, `--size-stat-min 96` | arbitrary `h-[37px]` |
-| Radius | `--radius-chip 8 / control 12 / tile 12 / row 16 / card 20 / hero 24 / sheet 28` | inner radius >= outer radius |
+| Space | `gap-inline 8`, `gap-stack 10`, `gap-card 12`, `gap-section 16`, `gap-page 24`; `--pad-sm/md/lg/xl` (10/12/16/20) | stacked `mt-*` on siblings, same gap for inside vs between |
+| Size | `--size-control-sm 44`, `-md 44`, `-lg 48`, `--size-icon-*`, `--size-avatar-*`, `--size-tile-*`, `--size-row-min 56`, `--size-stat-min 80` | arbitrary `h-[37px]` |
+| Radius | `--radius-chip 8 / control 12 / tile 10 / row 14 / card 16 / hero 20 / sheet 24` | inner radius >= outer radius |
 | Z | `--z-nav 50 / overlay 100 / nested 110 / critical 120 / toast 140` | `z-[9999]` |
 | Motion | `--duration-fast 160ms`, `--ease-emphasized`, transform/opacity only | animating width/height/top, infinite loops |
 
@@ -181,7 +181,8 @@ All new pages and feature refactors MUST reuse existing design system primitives
 | **EmptyState** | `EmptyState.tsx` | Centered empty state with icon, title, description, and action CTA. |
 | **ErrorState** | `ErrorState.tsx` | Error banner/card with error icon, title, message, and `onRetry` action. |
 | **Input** | `Input.tsx` | Accessible form text input with `label`, `error`, `helperText`, `leftIcon`, `rightIcon`. |
-| **PageHeader** | `PageHeader.tsx` | PageHeader, SectionHeader, PageUtilities, ActionLink for consistent screen hierarchy. |
+| **PageHeader** | `PageHeader.tsx` | PageHeader, SectionHeader, ActionLink for consistent screen hierarchy. |
+| **MetaLine** | `MetaLine.tsx` | Short facts on one line (reward · progress). Hairline separators only between facts that share a line, never dangling at a wrap; use instead of an inline `·`. |
 | **Modal** | `Modal.tsx` | Accessible dialog modal with ESC key dismiss and backdrop lock. |
 | **SegmentedControl**| `SegmentedControl.tsx`| Sliding pill toggle selector with tactile haptics. |
 | **Skeleton** | `Skeleton.tsx` | `text`, `circular`, `rectangular` shimmers and `SkeletonList`. |
