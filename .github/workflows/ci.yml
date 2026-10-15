@@ -46,6 +46,8 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm run test:ci
+      - name: Alternate-port proxy regression tests
+        run: node --test scripts/port-proxy.spec-node.mjs
       # Blocking: the warning backlog was cleared (DEP-03), so lint is now a merge
       # gate. --max-warnings=0 keeps it at zero — a new warning fails CI. Genuinely
       # intentional cases (e.g. deliberate <img>/effect deps) carry a justified
@@ -97,6 +99,8 @@ jobs:
       # Build first: it is the only step that catches a bad token import from
       # design-system/website/theme.css or a server/client boundary mistake.
       - run: npm run build
+      - name: Standalone request regression tests
+        run: node --test scripts/requests.spec-node.mjs
       - run: npm run seo:check
       - run: npm run typecheck
       - run: npm run lint

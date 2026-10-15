@@ -47,6 +47,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/start-server.mjs ./start-server.mjs
+COPY --from=builder /app/scripts/port-proxy.mjs ./scripts/port-proxy.mjs
 
 EXPOSE 8080
 EXPOSE 3000

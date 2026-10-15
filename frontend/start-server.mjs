@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import net from 'node:net';
+import { createPortProxy } from './scripts/port-proxy.mjs';
 
 const mainPort = parseInt(process.env.PORT || '8080', 10);
 const altPort = mainPort === 8080 ? 3000 : 8080;
@@ -13,12 +13,7 @@ const child = spawn('node', ['server.js'], { stdio: 'inherit' });
 
 // Forward altPort to mainPort so that whether Railway's domain router targets 8080 or 3000,
 // incoming connections always reach Next.js and never fail with 502 Bad Gateway.
-const proxy = net.createServer((socket) => {
-    const client = net.connect(mainPort, '127.0.0.1');
-    socket.pipe(client).pipe(socket);
-    socket.on('error', () => {});
-    client.on('error', () => {});
-});
+const proxy = createPortProxy(mainPort);
 
 proxy.on('error', (err) => {
     // Non-fatal if alt port is already in use
