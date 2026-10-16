@@ -69,6 +69,19 @@ def refundable_stake(state) -> int:
     return max(0, int(getattr(state, "bid_amount", 0) or 0))
 
 
+def flag_fall_result(fen: str, flagged: str) -> tuple[Optional[str], str]:
+    """(winner, result_type) when `flagged` ('w'/'b') runs out of time in the position `fen`.
+
+    FIDE 6.9: the opponent wins on time unless no series of legal moves lets them checkmate
+    (bare king, K+N, K+B); then it is a draw, so a wager refunds both stakes instead of paying out.
+    """
+    opponent = 'b' if flagged == 'w' else 'w'
+    if chess.Board(fen).has_insufficient_material(chess.WHITE if opponent == 'w' else chess.BLACK):
+        logger.info(f"[GameService] Flag fell for {flagged} but {opponent} cannot checkmate (FIDE 6.9): draw. fen={fen}")
+        return None, 'draw'
+    return opponent, 'timeout'
+
+
 class GameService:
     _active_timeout_tasks: Dict[str, asyncio.Task] = {}
     _active_abort_tasks: Dict[str, asyncio.Task] = {}
@@ -133,15 +146,14 @@ class GameService:
         
         new_state.last_move_at = now
 
-        # Check for Timeouts
+        # Check for Timeouts. The flag fell before the late move landed, so judge the
+        # position it was played from: a capture made after time ran out cannot turn a loss into a draw.
         if new_state.white_time_left <= 0:
             new_state.is_game_over = True
-            new_state.winner = 'b'
-            new_state.result_type = 'timeout'
+            new_state.winner, new_state.result_type = flag_fall_result(current_state.fen, 'w')
         elif new_state.black_time_left <= 0:
             new_state.is_game_over = True
-            new_state.winner = 'w'
-            new_state.result_type = 'timeout'
+            new_state.winner, new_state.result_type = flag_fall_result(current_state.fen, 'b')
 
         # If ended by normal checkmate or stalemate
         if new_state.is_game_over and not new_state.result_type:
@@ -196,8 +208,7 @@ class GameService:
                 if time_left <= 0.0:
                     state.white_time_left = 0.0
                     state.is_game_over = True
-                    state.winner = 'b'
-                    state.result_type = 'timeout'
+                    state.winner, state.result_type = flag_fall_result(state.fen, 'w')
                     await self.session_manager.save_game(game_id, state)
                     await self.end_game(game_id, state)
                 else:
@@ -207,8 +218,7 @@ class GameService:
                 if time_left <= 0.0:
                     state.black_time_left = 0.0
                     state.is_game_over = True
-                    state.winner = 'w'
-                    state.result_type = 'timeout'
+                    state.winner, state.result_type = flag_fall_result(state.fen, 'b')
                     await self.session_manager.save_game(game_id, state)
                     await self.end_game(game_id, state)
                 else:
@@ -371,13 +381,11 @@ class GameService:
                 # Update state to reflect timeout
                 if turn == 'w':
                     state.white_time_left = 0.0
-                    state.winner = 'b'
                 else:
                     state.black_time_left = 0.0
-                    state.winner = 'w'
-                    
+
                 state.is_game_over = True
-                state.result_type = 'timeout'
+                state.winner, state.result_type = flag_fall_result(state.fen, turn)
                 
                 # Save to Redis
                 await self.session_manager.save_game(game_id, state)
