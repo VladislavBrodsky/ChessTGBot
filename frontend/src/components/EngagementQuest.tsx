@@ -107,8 +107,12 @@ export default function EngagementQuest() {
       <Button variant="secondary" size="sm" disabled className="shrink-0">{t('brief')}</Button>
     </div>
     <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">
-      <div className="flex items-center gap-3"><Skeleton variant="rectangular" height={8} width="100%" /><Skeleton textRole="numeric-sm" width="3ch" className="shrink-0" /></div>
-      <p className="t-caption text-brand-muted text-right font-medium">{t('qualification')}</p>
+      <Skeleton variant="rectangular" height={8} width="100%" />
+      <div className="flex justify-center items-center gap-2">
+        <Skeleton textRole="numeric-sm" width="3ch" />
+        <span className="text-brand-muted select-none">•</span>
+        <Skeleton textRole="caption" width="16ch" />
+      </div>
     </div>
     <Button variant="secondary" className="w-full font-bold" disabled>{t('loading')}</Button>
   </Card>;
@@ -144,8 +148,15 @@ export default function EngagementQuest() {
       </div>
 
       <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">
-        <div className="flex items-center gap-3" role="progressbar" aria-label={t('progress', { count: data.progress, total: data.target })} aria-valuemin={0} aria-valuemax={data.target} aria-valuenow={data.progress}>
-          <div className="grid flex-1 grid-cols-3 gap-2" aria-hidden="true">
+        <div
+          className="space-y-2.5"
+          role="progressbar"
+          aria-label={t('progress', { count: data.progress, total: data.target })}
+          aria-valuemin={0}
+          aria-valuemax={data.target}
+          aria-valuenow={data.progress}
+        >
+          <div className="grid grid-cols-3 gap-2" aria-hidden="true">
             {Array.from({ length: data.target }, (_, i) => (
               <span
                 key={i}
@@ -157,13 +168,17 @@ export default function EngagementQuest() {
               />
             ))}
           </div>
-          <span className="t-numeric-sm tabular-nums font-bold text-white shrink-0">
-            {data.progress}/{data.target}
-          </span>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-center" aria-live="polite">
+            <span className="t-numeric-sm tabular-nums font-bold text-white shrink-0">
+              {data.progress}/{data.target}
+            </span>
+            <span className="text-brand-muted select-none" aria-hidden="true">•</span>
+            <p className="t-caption text-brand-muted font-medium">
+              {busy ? t('loading') : data.state === 'claimed' && data.reward_key ? rewardLabel(data.reward_key) : data.state === 'active' ? t('remaining', { count: data.target - data.progress }) : t('qualification')}
+            </p>
+          </div>
         </div>
-        <p className="t-caption text-brand-muted text-right font-medium" aria-live="polite">
-          {busy ? t('loading') : data.state === 'claimed' && data.reward_key ? rewardLabel(data.reward_key) : data.state === 'active' ? t('remaining', { count: data.target - data.progress }) : t('qualification')}
-        </p>
       </div>
 
       <Button

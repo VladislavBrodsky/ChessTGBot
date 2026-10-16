@@ -1,3 +1,3 @@
 :HL["/_next/static/css/4373ddba3d9abc4d.css","style"]
-:HL["/_next/static/css/82719e76549c1963.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"locale","param":{"type":"d","key":"ja","siblings":["_not-found","_global-error"]},"prefetchHints":4128,"slots":{"children":{"name":"academy","param":null,"prefetchHints":4160,"slots":{"children":{"name":"achievements","param":null,"prefetchHints":4192,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}}}}}},"staleTime":300,"buildId":"XocUmW1_bW9Mme_fpntFO"}
+:HL["/_next/static/css/dc36626567c4fa85.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"locale","param":{"type":"d","key":"ja","siblings":["_not-found","_global-error"]},"prefetchHints":4128,"slots":{"children":{"name":"academy","param":null,"prefetchHints":4160,"slots":{"children":{"name":"achievements","param":null,"prefetchHints":4192,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}}}}}},"staleTime":300,"buildId":"GAk_Xy4HaFv9saGiuiyQd"}
