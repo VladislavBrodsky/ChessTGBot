@@ -6,15 +6,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FiInfo, FiArrowRight, FiZap } from 'react-icons/fi';
+import { FiInfo, FiArrowRight, FiZap, FiCheckCircle, FiShield } from 'react-icons/fi';
 import { FaFire } from 'react-icons/fa';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { telegramHaptic } from '@/lib/telegram';
+import { useAnimationsEnabled } from '@/hooks/useAnimationsEnabled';
 
 /**
  * Animated "Vibing" GRAM vector icon with ambient pulsing halo and floating motion.
+ * Respects reduced-motion and in-app animation settings.
  */
 export function VibingGramIcon({
   size = 36,
@@ -23,6 +25,8 @@ export function VibingGramIcon({
   size?: number;
   className?: string;
 }) {
+  const animationsEnabled = useAnimationsEnabled();
+
   return (
     <div
       className={`relative inline-flex items-center justify-center shrink-0 ${className}`}
@@ -30,15 +34,21 @@ export function VibingGramIcon({
     >
       {/* Ambient glowing radial halo */}
       <div
-        className="absolute inset-0 rounded-full bg-sky-400/25 blur-md pointer-events-none animate-pulse"
+        className={`absolute inset-0 rounded-full bg-sky-400/25 blur-md pointer-events-none ${
+          animationsEnabled ? 'animate-pulse' : ''
+        }`}
         aria-hidden="true"
       />
       <motion.div
-        animate={{
-          y: [-2.5, 2.5, -2.5],
-          rotate: [-2, 2, -2],
-          scale: [1, 1.05, 1],
-        }}
+        animate={
+          animationsEnabled
+            ? {
+                y: [-2.5, 2.5, -2.5],
+                rotate: [-2, 2, -2],
+                scale: [1, 1.05, 1],
+              }
+            : false
+        }
         transition={{
           duration: 3,
           repeat: Infinity,
@@ -51,7 +61,7 @@ export function VibingGramIcon({
           alt="GRAM Token"
           width={size}
           height={size}
-          className="drop-shadow-[0_0_10px_rgba(48,161,245,0.75)] select-none pointer-events-none"
+          className="drop-shadow-[0_0_12px_rgba(48,161,245,0.85)] select-none pointer-events-none"
           priority
         />
       </motion.div>
@@ -60,10 +70,34 @@ export function VibingGramIcon({
 }
 
 const ELIGIBLE_TIERS = [
-  { name: 'Silver', glyph: '♞', style: 'border-brand-border bg-brand-elevated text-brand-primary' },
-  { name: 'Gold', glyph: '♛', style: 'border-amber-400/40 bg-amber-400/10 text-amber-300' },
-  { name: 'Platinum', glyph: '♚', style: 'border-cyan-400/40 bg-cyan-400/10 text-cyan-300' },
-  { name: 'Ruby', glyph: '♜', style: 'border-rose-500/40 bg-rose-500/10 text-rose-400' },
+  {
+    name: 'Silver',
+    glyph: '♞',
+    boxStyle:
+      'border-brand-border bg-gradient-to-b from-brand-elevated to-brand-surface text-brand-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
+    badgeStyle: 'text-brand-muted bg-brand-surface border-brand-border',
+  },
+  {
+    name: 'Gold',
+    glyph: '♛',
+    boxStyle:
+      'border-amber-400/40 bg-gradient-to-b from-amber-500/15 via-brand-surface to-brand-surface text-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.12),inset_0_1px_0_rgba(245,158,11,0.25)]',
+    badgeStyle: 'text-amber-300 bg-amber-500/20 border-amber-500/30',
+  },
+  {
+    name: 'Platinum',
+    glyph: '♚',
+    boxStyle:
+      'border-cyan-400/40 bg-gradient-to-b from-cyan-500/15 via-brand-surface to-brand-surface text-cyan-300 shadow-[0_0_14px_rgba(6,182,212,0.12),inset_0_1px_0_rgba(6,182,212,0.25)]',
+    badgeStyle: 'text-cyan-300 bg-cyan-500/20 border-cyan-500/30',
+  },
+  {
+    name: 'Ruby',
+    glyph: '♜',
+    boxStyle:
+      'border-rose-500/40 bg-gradient-to-b from-rose-500/15 via-brand-surface to-brand-surface text-rose-400 shadow-[0_0_14px_rgba(244,63,94,0.12),inset_0_1px_0_rgba(244,63,94,0.25)]',
+    badgeStyle: 'text-rose-400 bg-rose-500/20 border-rose-500/30',
+  },
 ];
 
 /**
@@ -100,18 +134,25 @@ export function GramVaultPreview() {
       {/* Home Dashboard Trigger Card */}
       <Card
         variant="solid"
-        className="p-4 cursor-pointer hover:border-sky-500/40 transition-colors group select-none"
+        className="relative overflow-hidden p-4 cursor-pointer border-brand-border hover:border-sky-500/40 transition-all group select-none shadow-[0_0_15px_rgba(56,189,248,0.06)] hover:shadow-[0_0_20px_rgba(56,189,248,0.15)]"
         onClick={handleOpenModal}
         aria-labelledby="gram-vault-preview-title"
       >
-        <div className="flex items-center justify-between gap-3">
+        <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-sky-500/10 blur-2xl pointer-events-none group-hover:bg-sky-500/20 transition-colors" />
+
+        <div className="relative z-10 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <VibingGramIcon size={34} />
+            <VibingGramIcon size={36} />
             <div className="min-w-0">
-              <h2 id="gram-vault-preview-title" className="t-title-3 line-clamp-2">
-                {t('title')}
-              </h2>
-              <p className="t-caption text-brand-muted line-clamp-2">{t('status')}</p>
+              <div className="flex items-center gap-2 mb-0.5">
+                <h2 id="gram-vault-preview-title" className="t-title-3 truncate">
+                  {t('title')}
+                </h2>
+                <span className="shrink-0 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 border border-amber-500/30 text-amber-300">
+                  100 GRAM
+                </span>
+              </div>
+              <p className="t-caption text-brand-muted truncate">{t('status')}</p>
             </div>
           </div>
 
@@ -137,93 +178,151 @@ export function GramVaultPreview() {
         onClose={() => setOpen(false)}
         title={
           <div className="flex items-center gap-2.5">
-            <VibingGramIcon size={24} />
-            <span>{t('title')}</span>
+            <VibingGramIcon size={26} />
+            <span className="font-extrabold">{t('title')}</span>
           </div>
         }
-        description={t('status')}
+        description={
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-brand-muted font-medium">{t('status')}</span>
+            <span className="text-brand-muted select-none" aria-hidden="true">•</span>
+            <span className="text-sky-400 font-semibold">1,000 Draw Cycle</span>
+          </div>
+        }
         maxWidth="md"
       >
         <div className="space-y-4 pt-1">
-          {/* Hero Banner with Large Vibing GRAM */}
-          <div className="relative overflow-hidden rounded-2xl border border-sky-500/25 bg-gradient-to-b from-sky-950/40 via-brand-surface to-brand-surface p-4 sm:p-5 text-center">
-            {/* Concentric aura */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-sky-500/15 blur-2xl pointer-events-none" />
+          {/* Hero Banner with Celestial Glow & Floating Vibing GRAM */}
+          <div className="relative overflow-hidden rounded-3xl border border-sky-500/30 bg-gradient-to-b from-sky-950/40 via-brand-surface to-brand-surface p-5 sm:p-6 text-center shadow-[0_0_30px_rgba(56,189,248,0.12)]">
+            {/* Concentric ambient atmospheric glows */}
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full bg-sky-500/20 blur-3xl pointer-events-none animate-pulse" />
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-36 h-20 rounded-full bg-amber-400/10 blur-2xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col items-center">
-              <VibingGramIcon size={58} className="mb-2" />
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-300 text-xs font-bold mb-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping" />
-                <span>100 GRAM Jackpot Vault</span>
+              {/* Grand Jackpot Live Beacon */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 shadow-[0_0_12px_rgba(56,189,248,0.2)] mb-3">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-400" />
+                </span>
+                <span className="text-xs font-bold text-sky-300">
+                  100 GRAM Jackpot Vault
+                </span>
               </div>
-              <p className="t-body text-brand-muted max-w-sm text-xs sm:text-sm">
+
+              {/* Floating Vibing Icon */}
+              <VibingGramIcon size={64} className="mb-2" />
+
+              {/* Grand Prize Hero Figure */}
+              <div className="flex items-center justify-center gap-2 mt-1 mb-2">
+                <span className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-[0_0_16px_rgba(56,189,248,0.5)]">
+                  100
+                </span>
+                <span className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-sky-300 via-cyan-200 to-amber-300 bg-clip-text text-transparent">
+                  GRAM
+                </span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/40 text-amber-300 self-center">
+                  GRAND PRIZE
+                </span>
+              </div>
+
+              <p className="t-caption text-brand-muted max-w-sm mx-auto leading-relaxed">
                 {t('summary')}
               </p>
             </div>
           </div>
 
-          {/* Vault Mechanics */}
-          <div className="space-y-2.5">
-            {/* Feature 1: Community Vault Meter */}
-            <div className="p-3.5 rounded-2xl bg-brand-surface border border-brand-border space-y-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-sky-500/15 text-sky-400 shrink-0">
-                    <FiZap size={13} aria-hidden="true" />
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-brand-primary">
-                    {t('phase_one_title')}
-                  </span>
-                </div>
-                <span className="px-2 py-0.5 rounded text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30">
-                  ⚡ Live Meter
-                </span>
-              </div>
-              <p className="text-xs text-brand-muted leading-relaxed pl-8">
-                {t('phase_one')}
-              </p>
+          {/* Vault Mechanics: 2-Phase Progression & Benefits */}
+          <div className="rounded-2xl border border-brand-border bg-brand-surface/90 p-3.5 sm:p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-brand-muted">
+                Vault Progression
+              </span>
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-elevated border border-brand-border text-brand-muted">
+                Draws 1–1,000
+              </span>
             </div>
 
-            {/* Feature 2: Hot Zone Surge */}
-            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-brand-surface to-brand-surface border border-amber-500/40 space-y-2 relative overflow-hidden">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
-                    <FaFire size={13} aria-hidden="true" />
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-amber-300">
-                    {t('phase_two_title')}
+            <div className="space-y-2.5">
+              {/* Phase 1: Community Vault Power */}
+              <div className="rounded-xl border border-sky-500/25 bg-gradient-to-r from-sky-950/30 via-brand-elevated/40 to-brand-elevated/40 p-3 space-y-1.5 transition-all">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-sky-500/20 border border-sky-500/35 text-sky-400 shrink-0 shadow-[0_0_10px_rgba(56,189,248,0.2)]">
+                      <FiZap size={14} aria-hidden="true" />
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-brand-primary truncate">
+                      {t('phase_one_title')}
+                    </span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 shrink-0">
+                    ⚡ Live Meter
                   </span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse">
-                  🔥 Jackpot Surge
+                <p className="text-xs text-brand-muted leading-relaxed pl-9">
+                  {t('phase_one')}
+                </p>
+              </div>
+
+              {/* Connecting Step Indicator */}
+              <div className="flex items-center justify-center -my-0.5">
+                <span className="text-xs font-semibold text-brand-muted flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-elevated border border-brand-border">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  80% Charge Unlocks Hot Zone
                 </span>
               </div>
-              <p className="text-xs text-brand-muted leading-relaxed pl-8">
-                {t('phase_two')}
-              </p>
 
-              {/* Player Perk Highlight */}
-              <div className="ml-8 mt-1 p-2.5 rounded-xl bg-brand-void/80 border border-amber-500/20 text-xs space-y-1">
-                <div className="flex items-center justify-between font-bold text-xs text-amber-400">
-                  <span>Guaranteed Rewards & Direct Drop</span>
-                  <span className="text-emerald-400">Instant Credit</span>
+              {/* Phase 2: The Hot Zone Surge */}
+              <div className="relative rounded-xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 via-brand-surface to-brand-elevated/60 p-3 space-y-2 overflow-hidden shadow-[0_0_18px_rgba(245,158,11,0.12)]">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-500/25 border border-amber-500/45 text-amber-400 shrink-0 shadow-[0_0_10px_rgba(245,158,11,0.3)]">
+                      <FaFire size={14} aria-hidden="true" />
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-amber-300 truncate">
+                      {t('phase_two_title')}
+                    </span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/25 text-amber-300 border border-amber-400/40 animate-pulse shrink-0">
+                    🔥 Jackpot Surge
+                  </span>
                 </div>
-                <p className="text-xs text-brand-muted leading-normal">
-                  {t('chance')}
+                <p className="text-xs text-brand-muted leading-relaxed pl-9">
+                  {t('phase_two')}
                 </p>
+              </div>
+
+              {/* Guaranteed Perk Banner */}
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">
+                  <FiCheckCircle size={15} aria-hidden="true" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-white truncate">
+                      Guaranteed Rewards & Direct Drop
+                    </span>
+                    <span className="text-xs font-bold text-emerald-400 shrink-0">
+                      Instant Credit
+                    </span>
+                  </div>
+                  <p className="text-xs text-brand-muted leading-tight mt-0.5">
+                    {t('chance')}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Qualifying Crates Grid */}
-          <div className="p-3 rounded-2xl bg-brand-surface border border-brand-border space-y-2">
+          <div className="rounded-2xl border border-brand-border bg-brand-surface/90 p-3.5 sm:p-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-brand-muted">
                 {t('eligible_tiers')}
               </span>
-              <span className="text-xs font-semibold text-emerald-400">
-                100% Verified RNG
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                <FiShield size={12} aria-hidden="true" />
+                <span>100% Verified RNG</span>
               </span>
             </div>
 
@@ -231,48 +330,66 @@ export function GramVaultPreview() {
               {ELIGIBLE_TIERS.map((tier) => (
                 <div
                   key={tier.name}
-                  className={`flex flex-col items-center justify-center p-2 rounded-xl border ${tier.style} text-center`}
+                  className={`group relative flex flex-col items-center justify-between p-2.5 rounded-xl border ${tier.boxStyle} text-center transition-all hover:scale-[1.03] select-none`}
                 >
-                  <span className="text-base sm:text-lg mb-0.5">
+                  <span className="text-xl sm:text-2xl mb-1 filter drop-shadow select-none">
                     {tier.glyph}
                   </span>
-                  <span className="text-xs font-bold truncate w-full">
+                  <span className="text-xs font-bold text-white truncate w-full">
                     {tier.name}
+                  </span>
+                  <span
+                    className={`mt-1 inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs font-semibold border ${tier.badgeStyle}`}
+                  >
+                    Eligible
                   </span>
                 </div>
               ))}
             </div>
 
-            <p className="text-xs text-brand-muted text-center pt-0.5">
-              {t('current_box')}
-            </p>
+            <div className="flex items-center justify-center gap-2 pt-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-muted shrink-0" aria-hidden="true" />
+              <p className="text-xs text-brand-muted text-center font-medium">
+                {t('current_box')}
+              </p>
+            </div>
           </div>
 
           {/* Action CTAs */}
           <div className="space-y-2 pt-1">
             {isMarketplace ? (
-              <Button
-                variant="premium"
-                className="w-full justify-center gap-2 font-bold py-3 text-sm shadow-[0_0_20px_rgba(255,215,0,0.25)]"
+              <button
+                type="button"
                 onClick={handleGoToMarketplace}
+                className="relative group overflow-hidden w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-black font-extrabold text-sm py-3.5 shadow-[0_0_24px_rgba(245,158,11,0.35)] hover:shadow-[0_0_32px_rgba(245,158,11,0.55)] active:scale-[0.98] transition-all text-center cursor-pointer select-none"
               >
-                <span>{t('cta')}</span>
-                <FiArrowRight size={16} aria-hidden="true" />
-              </Button>
+                <span className="relative z-10">{t('cta')}</span>
+                <FiArrowRight
+                  size={16}
+                  className="relative z-10 transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+              </button>
             ) : (
               <Link
                 href={`/${locale}/marketplace`}
                 onClick={handleGoToMarketplace}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-bold py-3 text-sm shadow-[0_0_20px_rgba(255,215,0,0.25)] hover:brightness-110 active:scale-95 transition-all text-center"
+                className="relative group overflow-hidden w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-black font-extrabold text-sm py-3.5 shadow-[0_0_24px_rgba(245,158,11,0.35)] hover:shadow-[0_0_32px_rgba(245,158,11,0.55)] active:scale-[0.98] transition-all text-center cursor-pointer select-none"
               >
-                <span>{t('cta')}</span>
-                <FiArrowRight size={16} aria-hidden="true" />
+                <span className="relative z-10">{t('cta')}</span>
+                <FiArrowRight
+                  size={16}
+                  className="relative z-10 transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
               </Link>
             )}
 
             <Button
-              variant="secondary"
-              className="w-full text-xs font-semibold"
+              variant="ghost"
+              className="w-full text-xs font-semibold text-brand-muted hover:text-white"
               onClick={() => setOpen(false)}
             >
               {t('close')}
