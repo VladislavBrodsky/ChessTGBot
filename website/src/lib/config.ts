@@ -60,5 +60,18 @@ export const SITE = {
     process.env.NEXT_PUBLIC_TELEGRAM_CHAT ?? "https://t.me/chesshub_chat",
 } as const;
 
-export const TIME_CONTROLS = ["1+0", "3+2", "5+0", "10+0"] as const;
+/**
+ * Player-match rules, verified 2026-10-16.
+ * Clock lengths: frontend/src/components/game/lobby/BetSlip.tsx TIME_CONTROLS (flat, no increment).
+ * First move: backend/app/services/game_service.py monitor_first_move_abort (30s per side, then the
+ * match is aborted and refunded); players matched while the app was closed get
+ * OFFLINE_FIRST_MOVE_GRACE_SECONDS in backend/app/socket_events.py.
+ * In game_service.py a draw refunds both stakes and a flagged clock always loses.
+ */
+export const MATCH_RULES = {
+  clockMinutes: [1, 3, 5, 10, 15, 30, 60],
+  minStakeUsdt: 1,
+  firstMoveSeconds: 30,
+  offlineFirstMoveMinutes: 3,
+} as const;
 export const WAGER_TIERS = [1, 5, 10, 25] as const;

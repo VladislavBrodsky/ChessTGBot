@@ -106,6 +106,7 @@ The remaining language-route and launch recipes describe future work; they are n
 - **Win text on the canvas:** `--fg-win` is 4.35:1 on `#E5E5E5`; small win text sitting directly on the canvas uses `.win-ink` (6:1). On white cards `--fg-win` passes.
 - **Globe:** the light COBE globe uses `diffuse: 0.4`, `mapBrightness: 1.2`, white base; higher diffuse washes the land dots out except at the rim. COBE decodes its land map after the first frame, so a paused or reduced-motion globe still renders a short warm-up (60 frames); a single frame shows an empty sphere.
 - **`HeroContext`** renders its qualifiers with `MetaLine`, so a narrow tablet column never leaves the badge followed by a hanging `·`.
+- **`MatchRules`** (`src/components/MatchRules.tsx`, `.match-sheet`): How it works states the player-match rules (clock, stake, win, draw, first move, disconnect) as static label → value → note cells in one Card, divided by 1px grid gaps at 1 / 2 / 3 columns (640 / 1024px). Every figure comes from `MATCH_RULES` / `SETTLEMENT` in `src/lib/config.ts`, which cite their backend source. It replaced a time-control picker that advertised a 3+2 increment, "FIDE-standard lag compensation" and a 60s disconnect timer; the app's clocks are flat 1–60 minutes with no increment, and a disconnected player's clock simply keeps running.
 - **Piece glyphs:** `ChessPieceIcon` supplies line-art pieces for the ecosystem orbit and the Rules piece cards; pieces are ink, not state colors.
 
 ## 1. Brand foundation

@@ -7,7 +7,7 @@ import { MobileCta } from "@/components/MobileCta";
 import { PlayButton } from "@/components/PlayButton";
 import { PageHero } from "@/components/PageHero";
 import { InfoGrid } from "@/components/InfoGrid";
-import { MatchPreview } from "@/components/MatchPreview";
+import { MatchRules } from "@/components/MatchRules";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
@@ -102,21 +102,19 @@ export default function HowItWorksPage() {
             Free A.I. practice · Human matches from 1 USDT · 18+ wagers
           </p>
         </PageHero>
-        <section
-          aria-labelledby="tempo-heading"
-          className="section-split tempo-split"
-        >
-          <div>
-            <span className="eyebrow">A game that fits your day</span>
-            <h2 id="tempo-heading" className="editorial-title mt-5">
-              Find your tempo
+        <section aria-labelledby="match-rules-heading">
+          <div className="mb-8">
+            <span className="eyebrow">Match rules at a glance</span>
+            <h2 id="match-rules-heading" className="editorial-title mt-5">
+              No surprises at the board
             </h2>
-            <p className="mt-5 max-w-[42ch] section-lead text-fg-muted">
-              A quick burst of bullet or a little more thinking time? Explore
-              the time controls, then choose your match in Telegram.
+            <p className="mt-3 max-w-[52ch] section-lead text-fg-muted">
+              Free or staked, every player match runs on the same server clock
+              and settles the same way. Here is what happens to your time and
+              your stake.
             </p>
           </div>
-          <MatchPreview />
+          <MatchRules />
         </section>
         <section aria-labelledby="journey-heading">
           <div className="section-index">
