@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 PENDING_ACTIVITY = "gameplay:pending_days"
 TOKEN_RE = re.compile(r"^[A-Za-z0-9_-]{16,48}$")
 CAMPAIGN_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
+# Public content links (mk_<channel>_<post>) written by marketing/content-ops.
+MARKETING_RE = re.compile(r"^mk_[A-Za-z0-9_-]{1,61}$")
 
 
 def utcnow():
@@ -66,6 +68,28 @@ async def attribute_launch(db, user, launch):
         "user_id": user.telegram_id, "campaign": launch.campaign,
         "inviter_id": launch.inviter_id, "token": launch.token, "created_at": utcnow(),
     }, ["user_id"])
+
+
+def marketing_campaign(parameter):
+    """Campaign name for an mk_ content link, or None when it is not one.
+
+    mk_ codes are public and unregistered, so they only label first-touch
+    source. They never carry an inviter, a reward or a game.
+    """
+    if not parameter or not MARKETING_RE.fullmatch(parameter):
+        return None
+    campaign = parameter.lower()
+    return campaign if CAMPAIGN_RE.fullmatch(campaign) else None
+
+
+async def attribute_marketing(db, user, parameter):
+    campaign = marketing_campaign(parameter)
+    if not campaign:
+        return False
+    import hashlib
+    from types import SimpleNamespace
+    return await attribute_launch(db, user, SimpleNamespace(campaign=campaign, inviter_id=None,
+        token=hashlib.sha256(campaign.encode()).hexdigest()[:32]))
 
 
 async def flush_activity(client, *, limit=1000):

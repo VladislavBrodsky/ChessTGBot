@@ -345,6 +345,16 @@ class TelegramService:
                             bot_errors_logger.exception('Referral attribution after invitation reply failed')
                 return
 
+            # Content links (mk_) record first-touch source for players this /start created.
+            if created_here and start_param and start_param.startswith('mk_'):
+                from app.services.player_tracking import attribute_marketing
+                try:
+                    async with AsyncSessionLocal() as tracking_db:
+                        if await attribute_marketing(tracking_db, db_user, start_param):
+                            await tracking_db.commit()
+                except Exception:
+                    bot_errors_logger.exception('Content link attribution failed')
+
             # Build webapp URL with the resolved language and cache-busting version
             web_app_url = f"{settings.WEBAPP_URL}/{lang}/home?v={settings.VERSION}"
             if start_param:

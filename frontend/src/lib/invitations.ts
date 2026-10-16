@@ -13,6 +13,11 @@ export function readLaunchParameter(location: Pick<Location, 'search' | 'hash'>,
     || sdkParameter || hash.get('tgWebAppStartParam') || '';
 }
 
+/** Content links (mk_<channel>_<post>) only label where a player came from. */
+export function isCampaignParameter(parameter: string): boolean {
+  return /^mk_[A-Za-z0-9_-]{1,61}$/.test(parameter);
+}
+
 export function shareInvitation(url: string, text: string) {
   const share = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
   if (window.Telegram?.WebApp?.openTelegramLink) window.Telegram.WebApp.openTelegramLink(share);

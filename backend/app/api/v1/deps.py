@@ -155,7 +155,11 @@ async def get_current_user(
             if launch:
                 await attribute_launch(db, user, launch)
                 await db.commit()
-        if start_param and not start_param.startswith("go_"):
+        if start_param and start_param.startswith("mk_"):
+            from app.services.player_tracking import attribute_marketing
+            if await attribute_marketing(db, user, start_param):
+                await db.commit()
+        elif start_param and not start_param.startswith("go_"):
             code = start_param
             if code.startswith("ref_"):
                 code = code[4:]

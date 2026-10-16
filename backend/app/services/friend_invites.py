@@ -89,6 +89,13 @@ async def invitation_view(db, invitation, user, opponents=None):
 async def preview(db, user, parameter):
     if not START_RE.fullmatch(parameter):
         fail('invalid_invitation', 404)
+    if parameter.startswith('mk_'):
+        # Content links label first-touch source only; the player lands on Home.
+        from app.services.player_tracking import attribute_marketing, marketing_campaign
+        if not marketing_campaign(parameter):
+            fail('invalid_invitation', 404)
+        await attribute_marketing(db, user, parameter)
+        return {"kind": "route", "destination": "home"}
     if parameter.startswith('ref_'):
         host = await host_for_code(db, parameter)
         return {"kind": "friend", "opponent": identity(host), "self": host.telegram_id == user.telegram_id,

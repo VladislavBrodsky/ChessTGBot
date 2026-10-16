@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 import { InvitationContext, useInvitations, type Invitation } from '@/context/InvitationContext';
 import { apiFetch } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
-import { readLaunchParameter, shareInvitation } from '@/lib/invitations';
+import { isCampaignParameter, readLaunchParameter, shareInvitation } from '@/lib/invitations';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { MetaLine } from '@/components/ui/MetaLine';
@@ -64,6 +64,8 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
     if (consumed(param)) return;
     // Mark in memory before the request so polling cannot open a second dialog.
     handled.current.add(key(param));
+    // Content links never open a dialog: the server records the source and the player stays on Home.
+    if (isCampaignParameter(param)) { void post('preview', { parameter: param }).then(() => consume(param), () => {}); return; }
     setParameter(param); setExplicit(true); setLoading(true); setError('');
     try {
       if (param === 'arena') { consume(param); setExplicit(false); setNavigating(true); router.push(`/${locale}/game`); return; }
