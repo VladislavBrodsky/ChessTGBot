@@ -1432,3 +1432,25 @@ textarea,
   .live-strip-item > i { width: 6px; height: 6px; flex: none; border-radius: 50%; }
   .live-strip-item strong { font-weight: 600; }
 }
+
+/* App screens (owner-approved 2026-10-16): real Mini App captures with sample data in a restrained
+   phone frame. Below 1024px the row scrolls sideways with snap points; from 1024px it is one even row. */
+@layer components {
+  .app-screens { display: grid; gap: 1.25rem; border: 1px solid var(--line-hairline); }
+  .app-screens-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; padding-block-end: 0.875rem; border-block-end: 1px solid var(--line-hairline); font-size: var(--text-caption); line-height: 1.45; }
+  .app-screens-label { font-weight: 600; }
+  .app-screens-meta .meta-line-item { color: var(--fg-muted); }
+  .app-screens-list { display: grid; grid-auto-flow: column; grid-auto-columns: min(15rem, 72%); gap: 1rem; margin: 0; padding: 0 0 0.75rem; list-style: none; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .app-screens-list:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; border-radius: var(--radius-control); }
+  .app-screens-item { min-width: 0; scroll-snap-align: start; }
+  .app-screens-figure { display: grid; gap: 0.875rem; max-width: 17rem; margin: 0; }
+  .app-screens-frame { padding: 6px; border-radius: var(--radius-frame); background: var(--surface-inverse); }
+  .app-screens-frame img { display: block; width: 100%; height: auto; border-radius: calc(var(--radius-frame) - 6px); }
+  .app-screens-caption { display: grid; gap: 0.25rem; }
+  .app-screens-caption strong { font-size: var(--text-body); line-height: 1.35; font-weight: 600; }
+  .app-screens-caption span { font-size: var(--text-caption); line-height: 1.5; color: var(--fg-muted); }
+  @media (min-width: 1024px) {
+    .app-screens-list { grid-auto-columns: minmax(0, 1fr); gap: 1.5rem; padding-block-end: 0; overflow: visible; scroll-snap-type: none; }
+    .app-screens-figure { margin-inline: auto; }
+  }
+}

@@ -26,6 +26,7 @@ import { ShowcaseSkeleton } from "@/components/ShowcaseSkeleton";
 import { RewardsBento } from "@/components/RewardsBento";
 import { ArenaSection, InfrastructureSection } from "@/components/MarketingSections";
 import { FirstThreeChallenge } from "@/components/FirstThreeChallenge";
+import { AppScreens } from "@/components/AppScreens";
 
 const ChessEcosystemOrbit = dynamic(
   () => import("@/components/ChessEcosystemOrbit").then((m) => m.ChessEcosystemOrbit),
@@ -320,6 +321,20 @@ export default function HomePage() {
               </Link>
             </div>
           </Card>
+        </section>
+
+        {/* Real Mini App screens with sample data, always labelled as examples (see AppScreens). */}
+        <section id="app-screens" className="shell-wide home-section" aria-labelledby="app-screens-heading">
+          <div className="mb-8">
+            <span className="eyebrow">Inside the Mini App</span>
+            <h2 id="app-screens-heading" className="editorial-title mt-4">
+              What you see when you tap Play
+            </h2>
+            <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
+              Pick a stake in the lobby, play on the board, and check your result. The Academy is one tab away for puzzles and lessons.
+            </p>
+          </div>
+          <AppScreens screens={["lobby", "game", "result", "academy"]} />
         </section>
 
         <ArenaSection visual={<GlobeShowcase />} />
