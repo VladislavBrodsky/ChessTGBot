@@ -5,72 +5,7 @@ import { Card } from "./ui/Card";
 import { ShowcaseMotionControl } from "./ui/ShowcaseMotionControl";
 import { useShowcaseActivity } from "./home/useShowcaseActivity";
 import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
-
-// ── 2D Chess Figure Vector Paths (Staunton-inspired Modern Vector Style) ──
-function KingIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M12 2v4M10 4h4" />
-      <path d="M6.5 8.5C8 9.5 9 10 12 10s4-.5 5.5-1.5c.8 3.5-1 6.5-1.5 8.5h-8C7.5 15 5.7 12 6.5 8.5z" fill="currentColor" fillOpacity="0.12" />
-      <path d="M6 17h12M5 20h14" />
-    </svg>
-  );
-}
-
-function QueenIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="5" cy="6" r="1.2" fill="currentColor" />
-      <circle cx="8.5" cy="4.5" r="1.2" fill="currentColor" />
-      <circle cx="12" cy="4" r="1.2" fill="currentColor" />
-      <circle cx="15.5" cy="4.5" r="1.2" fill="currentColor" />
-      <circle cx="19" cy="6" r="1.2" fill="currentColor" />
-      <path d="M5 8l2 9h10l2-9-3.5 2.5L12 6l-3.5 4.5L5 8z" fill="currentColor" fillOpacity="0.12" />
-      <path d="M6 17h12M5 20h14" />
-    </svg>
-  );
-}
-
-function KnightIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M18 19c-.8-4.2-2.8-6.2-3.8-7.2.2-2.5-1-4.8-2.2-5.8-.8-.6-1.5-.2-1.8.2L9 8C7.5 9 6.2 10.8 6 13c-.3 2.5 1 4.5 2 5" fill="currentColor" fillOpacity="0.12" />
-      <path d="M10 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill="currentColor" />
-      <path d="M6 19h13M5 21h14" />
-    </svg>
-  );
-}
-
-function RookIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M6 4v3h2.5V4h3v3h1V4h3v3H18V4" />
-      <path d="M7 7l1 10h8l1-10H7z" fill="currentColor" fillOpacity="0.12" />
-      <path d="M6 17h12M5 20h14" />
-    </svg>
-  );
-}
-
-function BishopIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="12" cy="3.5" r="1.2" fill="currentColor" />
-      <path d="M12 5c-3 0-5 3.2-5 7 0 2.5 1.5 4.5 2.5 5h5c1-.5 2.5-2.5 2.5-5 0-3.8-2-7-5-7z" fill="currentColor" fillOpacity="0.12" />
-      <path d="M10.5 9.5l3 3" />
-      <path d="M6.5 17h11M5.5 20h13" />
-    </svg>
-  );
-}
-
-function PawnIcon({ className = "size-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="12" cy="6.5" r="2.8" fill="currentColor" fillOpacity="0.12" />
-      <path d="M9.5 10.5c0 3-1.8 5.5-2 6.5h9c-.2-1-2-3.5-2-6.5h-5z" fill="currentColor" fillOpacity="0.12" />
-      <path d="M9 11h6M7 17h10M6 20h12" />
-    </svg>
-  );
-}
+import { BishopIcon, KingIcon, KnightIcon, PawnIcon, QueenIcon, RookIcon } from "./ChessPieceIcon";
 
 // ── Official Crypto & Platform Vector Logos ──
 function TetherUsdtBadge({ className = "size-6" }: { className?: string }) {
@@ -128,12 +63,12 @@ interface OrbitItem {
 }
 
 const CHESS_PIECES: OrbitItem[] = [
-  { id: "king", name: "King", tag: "Sovereign 95% Pot", element: <KingIcon className="size-5 text-fg-caution" /> },
-  { id: "queen", name: "Queen", tag: "Tactical Dominance", element: <QueenIcon className="size-5 text-fg-premium" /> },
-  { id: "knight", name: "Knight", tag: "Speed & Mobility", element: <KnightIcon className="size-5 text-fg-muted" /> },
-  { id: "rook", name: "Rook", tag: "Escrow Fortress", element: <RookIcon className="size-5 text-fg-win" /> },
-  { id: "bishop", name: "Bishop", tag: "Long-Range Vision", element: <BishopIcon className="size-5 text-fg-loss" /> },
-  { id: "pawn", name: "Pawn", tag: "Grandmaster Path", element: <PawnIcon className="size-5 text-fg-muted" /> },
+  { id: "king", name: "King", tag: "Sovereign 95% Pot", element: <KingIcon className="size-6 text-fg" /> },
+  { id: "queen", name: "Queen", tag: "Tactical Dominance", element: <QueenIcon className="size-6 text-fg" /> },
+  { id: "knight", name: "Knight", tag: "Speed & Mobility", element: <KnightIcon className="size-6 text-fg" /> },
+  { id: "rook", name: "Rook", tag: "Escrow Fortress", element: <RookIcon className="size-6 text-fg" /> },
+  { id: "bishop", name: "Bishop", tag: "Long-Range Vision", element: <BishopIcon className="size-6 text-fg" /> },
+  { id: "pawn", name: "Pawn", tag: "Grandmaster Path", element: <PawnIcon className="size-6 text-fg" /> },
 ];
 
 const CRYPTO_TOKENS: OrbitItem[] = [
@@ -164,7 +99,7 @@ export function ChessEcosystemOrbit() {
   );
   return (
     <Card className="ecosystem-showcase showcase-panel" data-interactive-workspace>
-      <div className="showcase-panel-heading"><span>USDT Settlement · GRAM Blockchain</span><ShowcaseMotionControl name="ecosystem" paused={paused} onToggle={() => setPaused((value) => !value)} /></div>
+      <div className="showcase-panel-heading"><span>Arena ecosystem</span><ShowcaseMotionControl name="ecosystem" paused={paused} onToggle={() => setPaused((value) => !value)} /></div>
       <div ref={ref} className="ecosystem-orbit" data-active={active && !paused && !hovered}>
         <div className="ecosystem-orbit-stage">
           <div className="ecosystem-core"><KingIcon className="size-7" /><span>ARENA</span></div>

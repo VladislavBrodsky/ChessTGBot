@@ -255,7 +255,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         {/* Breadcrumb Navigation */}
         <nav
           aria-label="Breadcrumb"
-          className="flex flex-wrap items-center gap-2 font-mono text-overline uppercase text-fg-muted [&>a]:inline-flex [&>a]:min-h-11 [&>a]:items-center"
+          className="flex flex-wrap items-center gap-2 text-caption text-fg-muted [&>a]:inline-flex [&>a]:min-h-11 [&>a]:items-center"
         >
           <Link href="/" className="transition-colors hover:text-fg">
             Home
@@ -308,14 +308,14 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           {/* Author Badge */}
           <div className="flex items-center gap-3.5 pt-6 border-t border-line">
-            <div className="grid size-11 place-items-center rounded-full bg-black font-mono text-sm font-bold text-white">
+            <div className="grid size-11 place-items-center rounded-full bg-inverse text-body font-semibold text-fg-inverse">
               {post.author.name.charAt(0)}
             </div>
             <div>
               <p className="text-body-sm font-semibold text-fg leading-tight">
                 {post.author.name}
               </p>
-              <p className="font-mono text-overline text-fg-muted uppercase tracking-wider mt-0.5">
+              <p className="mt-0.5 text-caption text-fg-muted">
                 {post.author.role}
               </p>
             </div>
@@ -468,15 +468,16 @@ export default async function BlogPostPage({ params }: PageProps) {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <h2
                 id="related-heading"
-                className="font-mono text-overline uppercase text-fg-muted"
+                className="eyebrow"
               >
                 Related Articles
               </h2>
               <Link
                 href="/blog"
-                className="inline-flex min-h-11 items-center font-mono text-overline uppercase text-fg hover:underline"
+                className="link-inline inline-flex min-h-11 items-center gap-1.5 text-caption font-semibold"
               >
-                View all articles →
+                View all articles
+                <Icon name="arrow-right" size={14} />
               </Link>
             </div>
 

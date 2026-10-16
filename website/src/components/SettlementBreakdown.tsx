@@ -42,7 +42,7 @@ export function SettlementBreakdown() {
           <Badge tone="neutral" icon="scales">
             Pot Allocation Architecture
           </Badge>
-          <span className="font-mono text-caption font-semibold text-fg-muted bg-inset border border-line px-2.5 py-0.5 rounded-full">
+          <span className="text-caption font-semibold text-fg-muted bg-inset border border-line px-2.5 py-0.5 rounded-full">
             Decided Matches
           </span>
         </div>
@@ -58,7 +58,7 @@ export function SettlementBreakdown() {
 
         {/* Visual Allocation Proportion Bar */}
         <div className="space-y-1.5">
-          <div className="flex justify-between text-caption font-mono text-fg-muted">
+          <div className="flex justify-between text-caption text-fg-muted">
             <span>Combined Pot Distribution</span>
             <span className="text-fg font-semibold">100% Accounted</span>
           </div>
@@ -84,7 +84,7 @@ export function SettlementBreakdown() {
               className="flex items-start gap-3.5 p-3.5 rounded-xl bg-inset/40 border border-line/60 transition-colors hover:bg-inset/70"
             >
               <div
-                className={`shrink-0 flex items-center justify-center size-10 rounded-lg border font-mono font-bold text-base ${part.badgeStyle}`}
+                className={`shrink-0 flex items-center justify-center size-10 rounded-lg border font-bold text-base ${part.badgeStyle}`}
               >
                 {part.percent}%
               </div>
@@ -92,7 +92,7 @@ export function SettlementBreakdown() {
                 <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
                   <h4 className="text-body font-medium text-fg">{part.name}</h4>
                   <span
-                    className={`font-mono text-caption font-semibold px-2 py-0.5 rounded-full border ${part.tagColor}`}
+                    className={`rounded-full border px-2 py-0.5 text-caption font-medium ${part.tagColor}`}
                   >
                     {part.tag}
                   </span>
@@ -107,7 +107,7 @@ export function SettlementBreakdown() {
       </div>
 
       {/* Footer Status Bar */}
-      <div className="mt-5 pt-3.5 border-t border-line flex flex-wrap gap-2 items-center justify-between text-caption font-mono text-fg-muted">
+      <div className="mt-5 pt-3.5 border-t border-line flex flex-wrap gap-2 items-center justify-between text-caption text-fg-muted">
         <span className="flex items-center gap-1.5 text-fg font-semibold">
           <Icon name="shield-check" size={14} />
           Automated match escrow

@@ -55,7 +55,8 @@ export function NumberTicker({
   }, [springValue, decimalPlaces, prefix, suffix, reduced]);
 
   return (
-    <span aria-label={formattedValue} className={`inline-block tabular-nums ${className}`}>
+    <span className={`inline-block tabular-nums ${className}`}>
+      <span className="sr-only">{formattedValue}</span>
       <span ref={ref} aria-hidden="true">{formattedValue}</span>
     </span>
   );

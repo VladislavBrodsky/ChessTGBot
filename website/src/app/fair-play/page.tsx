@@ -1,5 +1,5 @@
-import { Eyebrow, Badge } from "@/components/ui/Badge";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import { Eyebrow } from "@/components/ui/Badge";
+import { DetailCard, DetailGrid } from "@/components/ui/DetailCard";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
@@ -97,127 +97,46 @@ export default function FairPlayPage() {
             Same board. Same rules
           </h2>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* Pillar 1: 2 cols */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
-              <BorderBeam size={280} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="accent" icon="cpu">
-                    Authoritative Backend
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Stockfish 16 verification
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  The server keeps the board
-                </h3>
-                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
-                  The backend validates every move against the position and maintains the authoritative game state. Your device renders the board; it cannot force an illegal position or modify the game clock.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-win-fill" />
-                <span>Deterministic server validation · Anti-tamper state</span>
-              </div>
-            </Card>
-
-            {/* Pillar 2: 1 col */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="neutral" icon="clock">
-                    Clock Integrity
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Monotonic sync
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  The clock is part of the game
-                </h3>
-                <p className="text-body-sm text-fg-muted mb-4">
-                  Play strictly within your selected time control. Server-side timestamps prevent client-side clock tampering, and disconnecting does not artificially pause your match clock.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-fg-muted" />
-                <span>Authoritative timers</span>
-              </div>
-            </Card>
-
-            {/* Pillar 3: 1 col */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="neutral" icon="users-three">
-                    Skill Match
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Fair ELO pairing
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Rating-based matchmaking
-                </h3>
-                <p className="text-body-sm text-fg-muted mb-4">
-                  Matchmaking pools players by dynamic rating brackets, selected time control, and stake tier so you are paired against opponents of comparable strength.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-caution-soft" />
-                <span>Dynamic ELO bracket pool</span>
-              </div>
-            </Card>
-
-            {/* Pillar 4: 2 cols */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
-              <BorderBeam size={280} duration={14} colorFrom="#10b981" colorTo="#f59e0b" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="accent" icon="shield-check">
-                    Zero Engine Tolerance
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Neural &amp; timing analysis
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Your moves must be your own
-                </h3>
-                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
-                  Chess engines, bots, and outside assistance are prohibited in real matches. Heuristic models inspect move entropy, decision timing distributions, and engine correlation to maintain competitive purity.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-win-fill" />
-                <span>Real-time heuristic auditing · Protected prize pools</span>
-              </div>
-            </Card>
-          </div>
+          <DetailGrid>
+            <DetailCard span="wide" tone="accent" icon="cpu" badge="Authoritative Backend" status="Stockfish 16 verification" title="The server keeps the board" meta="Deterministic server validation · Anti-tamper state">
+              <p>The backend validates every move against the position and maintains the authoritative game state. Your device renders the board; it cannot force an illegal position or modify the game clock.</p>
+            </DetailCard>
+            <DetailCard icon="clock" badge="Clock Integrity" status="Monotonic sync" title="The clock is part of the game" meta="Authoritative timers">
+              <p>Play strictly within your selected time control. Server-side timestamps prevent client-side clock tampering, and disconnecting does not artificially pause your match clock.</p>
+            </DetailCard>
+            <DetailCard icon="users-three" badge="Skill Match" status="Fair ELO pairing" title="Rating-based matchmaking" meta="Dynamic ELO bracket pool">
+              <p>Matchmaking pools players by dynamic rating brackets, selected time control, and stake tier so you are paired against opponents of comparable strength.</p>
+            </DetailCard>
+            <DetailCard span="wide" tone="accent" icon="shield-check" badge="Zero Engine Tolerance" status="Neural & timing analysis" title="Your moves must be your own" meta="Real-time heuristic auditing · Protected prize pools">
+              <p>Chess engines, bots, and outside assistance are prohibited in real matches. Heuristic models inspect move entropy, decision timing distributions, and engine correlation to maintain competitive purity.</p>
+            </DetailCard>
+          </DetailGrid>
         </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>A clear distinction</Eyebrow>
-          <h2 className="poster mt-5 text-heading-xl">
-            Legal moves
-            <br />
-            Honest play
-          </h2>
-          <p className="mt-5 max-w-[60ch] section-lead text-fg-muted">
-            Deterministic server validation prevents illegal moves, while multi-layer
-            statistical models continuously analyze move timing distributions and engine correlation.
-            Every cash prize pool is actively monitored to ensure true competitive integrity.
-          </p>
-          <p className="mt-5 max-w-[60ch] text-body text-fg-muted">
-            If you ever notice suspicious play or wish to request an in-depth review, note
-            the match identifier and contact support via the Telegram bot chat. Our integrity team
-            audits flagged games using deep multi-engine heuristics.
-          </p>
+          <div className="statement-cta">
+            <h2 className="poster text-heading-xl">
+              Legal moves
+              <br />
+              Honest play
+            </h2>
+            <div className="statement-cta-copy">
+              <p className="section-lead">
+                Deterministic server validation prevents illegal moves, while multi-layer
+                statistical models continuously analyze move timing distributions and engine correlation.
+                Every cash prize pool is actively monitored to ensure true competitive integrity.
+              </p>
+              <p className="text-body">
+                If you ever notice suspicious play or wish to request an in-depth review, note
+                the match identifier and contact support via the Telegram bot chat. Our integrity team
+                audits flagged games using deep multi-engine heuristics.
+              </p>
+            </div>
+          </div>
         </section>
         <section aria-labelledby="fair-play-faq-heading" className="space-y-6">
           <div className="section-index">
-            <span>04 / Integrity FAQs</span>
+            <span>02 / Integrity FAQs</span>
             <span>Anti-cheat, Stockfish &amp; telemetries</span>
           </div>
           <div className="grid gap-8 lg:grid-cols-[.65fr_1fr]">

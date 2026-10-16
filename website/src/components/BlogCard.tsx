@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/Badge";
-import { BorderBeam } from "@/components/magicui/border-beam";
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/content/blog";
@@ -37,7 +36,6 @@ export function BlogCard({
     <article
       className={`site-card journal-card group min-w-0 bg-surface relative overflow-hidden ${featured ? "journal-featured" : ""}`}
     >
-      {featured && <BorderBeam size={360} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />}
       <div className={`flex flex-col ${featured ? "" : "h-full"}`}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <Badge icon={categoryIcons[post.category]}>{post.category}</Badge>
@@ -60,7 +58,7 @@ export function BlogCard({
           </h3>
         )}
         <p className="mt-3 text-body-sm text-fg-muted">{post.excerpt}</p>
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-1 pt-5">
+        <div className="journal-foot">
           <span className="text-caption text-fg-muted">{post.author.name}</span>
           <span
             aria-hidden="true"

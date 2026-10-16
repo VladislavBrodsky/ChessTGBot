@@ -95,6 +95,18 @@ The remaining language-route and launch recipes describe future work; they are n
 - **Complete motion wiring:** animated lists pause on hover/focus and stop offscreen, in hidden tabs, and under reduced motion. Marquees use the same lifecycle. Settlement, vault, globe, and ecosystem expose native 44px pause controls. JS animation and CSS orbit/keyframe properties must agree; reduced motion must retain a complete static layout.
 - **Build contract:** `npm run ui:check` checks imports/dependencies and compiles the real Tailwind/PostCSS stylesheet to detect undefined utilities. `npm run build` runs it before compilation and again against the production CSS. No broad palette restoration or duplicate Motion/icon dependencies to make a copied demo pass. Shared-component changes require lint/build, phone/desktop visual checks, and the existing copy/SEO checks.
 
+### 0.3 Shared detail recipes and cleanup (2026-10-16)
+
+- **`MetaLine`** (`src/components/ui/MetaLine.tsx`, `.meta-line`): short facts written as `A · B` render as separate items with hairline dividers that are clipped at every line start. Never place an inline `·` in a label that can wrap; it dangles at the line end.
+- **`DetailCard` / `DetailGrid`** (`src/components/ui/DetailCard.tsx`): one recipe for steps, pillars and rules (badge + quiet status or `aside`, 22px title, 16px body, divided `MetaLine` footer). The grid is 1 / 2 / 3 columns at 768 / 1024px and `span="wide"` covers two desktop columns. How it works, Wagers, Fair Play and Rules use it; do not hand-build new card variants.
+- **`statement-cta`**: an ink statement puts the poster heading in the left column and the lead plus action in the right from 1024px, top-aligned, so neither half of the black block is empty.
+- **Monospace** is for chess notation, the move input, counters and system eyebrows only. Badges, statuses, metrics, breadcrumbs and captions use Onest.
+- **Figures:** Onest's tabular `1` has a wide advance (`$1 50.00`, `1 4ms`). Use `tabular-nums` only on Barlow figures and count-ups; leave Onest amounts proportional.
+- **BorderBeam** is for at most one focal ink panel per page, passes its host `radius`, and hides under reduced motion (a frozen beam reads as a broken corner). No beams on content cards, no glow shadows, no ping dots outside the LIVE badge, no emoji in labels.
+- **Win text on the canvas:** `--fg-win` is 4.35:1 on `#E5E5E5`; small win text sitting directly on the canvas uses `.win-ink` (6:1). On white cards `--fg-win` passes.
+- **Globe:** the light COBE globe uses `diffuse: 0.4`, `mapBrightness: 1.2`, white base; higher diffuse washes the land dots out except at the rim.
+- **Piece glyphs:** `ChessPieceIcon` supplies line-art pieces for the ecosystem orbit and the Rules piece cards; pieces are ink, not state colors.
+
 ## 1. Brand foundation
 
 ### 1.1 What Web3Chess is (the facts this site must not overstate)

@@ -11,6 +11,8 @@ interface BorderBeamProps {
   colorFrom?: string;
   colorTo?: string;
   delay?: number;
+  /** Corner radius of the host, so the beam follows its edge instead of cutting the corner. */
+  radius?: number;
 }
 
 export function BorderBeam({
@@ -22,6 +24,7 @@ export function BorderBeam({
   colorFrom = "#10b981",
   colorTo = "#f59e0b",
   delay = 0,
+  radius = 24,
 }: BorderBeamProps) {
   return (
     <div
@@ -34,9 +37,11 @@ export function BorderBeam({
           "--color-from": colorFrom,
           "--color-to": colorTo,
           "--delay": `-${delay}s`,
+          "--radius": `${radius}px`,
         } as React.CSSProperties
       }
-      className={`pointer-events-none absolute inset-0 rounded-[inherit] [border:var(--border-width)_solid_transparent] ![mask-clip:padding-box,border-box] ![mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)] ${className}`}
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-0 rounded-[inherit] motion-reduce:hidden [border:var(--border-width)_solid_transparent] ![mask-clip:padding-box,border-box] ![mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)] ${className}`}
     >
       <div
         className="absolute aspect-square [offset-anchor:calc(var(--anchor))_50%] [offset-path:rect(0_auto_auto_0_round_calc(var(--radius,16px)))] animate-[border-beam_var(--duration)_linear_infinite] [animation-delay:var(--delay)]"

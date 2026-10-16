@@ -36,7 +36,7 @@ export default function TermsPage() {
             <Icon name="arrow-left" size={14} className="flip-rtl" />
             <span>Back to Home</span>
           </Link>
-          <span className="font-mono text-caption text-fg-muted">
+          <span className="text-caption text-fg-muted">
             Last updated: October 2026
           </span>
         </div>

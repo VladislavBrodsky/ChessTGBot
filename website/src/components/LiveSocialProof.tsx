@@ -238,12 +238,12 @@ export function LiveSocialProof({ initial }: { initial: { count: number; hourSlo
               {active.action}
             </span>
             <strong
-              className={`font-mono font-bold shrink-0 ${
+              className={`font-semibold shrink-0 ${
                 active.tone === "amber"
                   ? "text-fg-caution"
                   : active.tone === "cyan"
                   ? "text-fg-muted"
-                  : "text-fg-win"
+                  : "win-ink"
               }`}
             >
               {active.amount}

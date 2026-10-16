@@ -89,32 +89,32 @@ const LIVE_MATCHES = [
   { p1: "Tokyo",        flag1: "🇯🇵", p2: "New York",     flag2: "🇺🇸", stake: "100 USDT", pot: "190 USDT", format: "Rapid 10+0",    tier: "vip",     label: "VIP Duel" },
   { p1: "Dubai",        flag1: "🇦🇪", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
   { p1: "Tashkent",     flag1: "🇺🇿", p2: "Zurich",       flag2: "🇨🇭", stake: "25 USDT",  pot: "47.5 USDT",format: "Blitz 3+2",     tier: "active",  label: "Active" },
-  { p1: "Seoul",        flag1: "🇰🇷", p2: "San Francisco",flag2: "🇺🇸", stake: "250 USDT", pot: "475 USDT", format: "Classical 30+0", tier: "elite",   label: "Elite 💎" },
+  { p1: "Seoul",        flag1: "🇰🇷", p2: "San Francisco",flag2: "🇺🇸", stake: "250 USDT", pot: "475 USDT", format: "Classical 30+0", tier: "elite",   label: "Elite" },
   { p1: "Paris",        flag1: "🇫🇷", p2: "Buenos Aires", flag2: "🇦🇷", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
   { p1: "Mumbai",       flag1: "🇮🇳", p2: "Singapore",    flag2: "🇸🇬", stake: "75 USDT",  pot: "142.5 USDT",format: "Blitz 5+3",    tier: "high",    label: "High Stakes" },
-  { p1: "New York",     flag1: "🇺🇸", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "500 USDT", pot: "950 USDT", format: "Classical 60+0", tier: "whale",   label: "Whale 🐋" },
+  { p1: "New York",     flag1: "🇺🇸", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "500 USDT", pot: "950 USDT", format: "Classical 60+0", tier: "whale",   label: "Whale" },
   { p1: "Berlin",       flag1: "🇩🇪", p2: "Tashkent",     flag2: "🇺🇿", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+5",    tier: "active",  label: "Active" },
   { p1: "Singapore",    flag1: "🇸🇬", p2: "Sydney",       flag2: "🇦🇺", stake: "100 USDT", pot: "190 USDT", format: "Rapid 15+10",   tier: "vip",     label: "VIP Duel" },
-  { p1: "Stockholm",    flag1: "🇸🇪", p2: "Dubai",        flag2: "🇦🇪", stake: "250 USDT", pot: "475 USDT", format: "Classical 30+0", tier: "elite",   label: "Elite 💎" },
+  { p1: "Stockholm",    flag1: "🇸🇪", p2: "Dubai",        flag2: "🇦🇪", stake: "250 USDT", pot: "475 USDT", format: "Classical 30+0", tier: "elite",   label: "Elite" },
   { p1: "Madrid",       flag1: "🇪🇸", p2: "São Paulo",    flag2: "🇧🇷", stake: "50 USDT",  pot: "95 USDT",  format: "Blitz 5+3",     tier: "high",    label: "High Stakes" },
   { p1: "London",       flag1: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", p2: "Mumbai",      flag2: "🇮🇳", stake: "100 USDT", pot: "190 USDT", format: "Rapid 15+10",   tier: "vip",     label: "VIP Duel" },
-  { p1: "Zurich",       flag1: "🇨🇭", p2: "Seoul",        flag2: "🇰🇷", stake: "500 USDT", pot: "950 USDT", format: "Classical 60+0", tier: "whale",   label: "Whale 🐋" },
-  { p1: "São Paulo",    flag1: "🇧🇷", p2: "Lagos",        flag2: "🇳🇬", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular 🔥" },
+  { p1: "Zurich",       flag1: "🇨🇭", p2: "Seoul",        flag2: "🇰🇷", stake: "500 USDT", pot: "950 USDT", format: "Classical 60+0", tier: "whale",   label: "Whale" },
+  { p1: "São Paulo",    flag1: "🇧🇷", p2: "Lagos",        flag2: "🇳🇬", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
   { p1: "Cape Town",    flag1: "🇿🇦", p2: "Amsterdam",    flag2: "🇳🇱", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+0",    tier: "active",  label: "Active" },
   { p1: "Cairo",        flag1: "🇪🇬", p2: "Istanbul",     flag2: "🇹🇷", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+5",    tier: "active",  label: "Active" },
-  { p1: "Baku",         flag1: "🇦🇿", p2: "Vienna",       flag2: "🇦🇹", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular 🔥" },
+  { p1: "Baku",         flag1: "🇦🇿", p2: "Vienna",       flag2: "🇦🇹", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
   { p1: "Nairobi",      flag1: "🇰🇪", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "5 USDT",   pot: "9.5 USDT", format: "Blitz 3+2",     tier: "starter", label: "Starter" },
   { p1: "Accra",        flag1: "🇬🇭", p2: "Dakar",        flag2: "🇸🇳", stake: "1 USDT",   pot: "1.9 USDT", format: "Bullet 1+1",    tier: "micro",   label: "Micro" },
-  { p1: "Bangkok",      flag1: "🇹🇭", p2: "Tokyo",        flag2: "🇯🇵", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+3",     tier: "popular", label: "Popular 🔥" },
+  { p1: "Bangkok",      flag1: "🇹🇭", p2: "Tokyo",        flag2: "🇯🇵", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+3",     tier: "popular", label: "Popular" },
   { p1: "Riyadh",       flag1: "🇸🇦", p2: "Berlin",       flag2: "🇩🇪", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
   { p1: "Prague",       flag1: "🇨🇿", p2: "New York",     flag2: "🇺🇸", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+0",    tier: "active",  label: "Active" },
-  { p1: "Rome",         flag1: "🇮🇹", p2: "Cairo",        flag2: "🇪🇬", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular 🔥" },
+  { p1: "Rome",         flag1: "🇮🇹", p2: "Cairo",        flag2: "🇪🇬", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
   { p1: "Amsterdam",    flag1: "🇳🇱", p2: "Singapore",    flag2: "🇸🇬", stake: "100 USDT", pot: "190 USDT", format: "Classical 30+0", tier: "vip",     label: "VIP Duel" },
   { p1: "Los Angeles",  flag1: "🇺🇸", p2: "Seoul",        flag2: "🇰🇷", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
-  { p1: "Santiago",     flag1: "🇨🇱", p2: "Madrid",       flag2: "🇪🇸", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+3",     tier: "popular", label: "Popular 🔥" },
+  { p1: "Santiago",     flag1: "🇨🇱", p2: "Madrid",       flag2: "🇪🇸", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+3",     tier: "popular", label: "Popular" },
   { p1: "Yerevan",      flag1: "🇦🇲", p2: "Dubai",        flag2: "🇦🇪", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+0",    tier: "active",  label: "Active" },
   { p1: "Toronto",      flag1: "🇨🇦", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
-  { p1: "Warsaw",       flag1: "🇵🇱", p2: "Tashkent",     flag2: "🇺🇿", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular 🔥" },
+  { p1: "Warsaw",       flag1: "🇵🇱", p2: "Tashkent",     flag2: "🇺🇿", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
   { p1: "Sydney",       flag1: "🇦🇺", p2: "San Francisco",flag2: "🇺🇸", stake: "100 USDT", pot: "190 USDT", format: "Classical 30+0", tier: "vip",     label: "VIP Duel" },
 ];
 
@@ -244,7 +244,7 @@ export function GlobeShowcase() {
 
     const isMobile = typeof window !== "undefined" && (window.innerWidth < 768 || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 1));
     const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, isMobile ? 1.4 : 1.8);
-    const mapSamples = isMobile ? 3600 : 8000;
+    const mapSamples = isMobile ? 9000 : 16000;
 
     let globe: ReturnType<typeof createGlobe>;
     try { globe = createGlobe(canvas, {
@@ -253,13 +253,14 @@ export function GlobeShowcase() {
       height: (width || 320) * dpr,
       phi: phiRef.current,
       theta: 0.22,
+      // Light globe: low diffuse keeps the land dots legible across the face, not only at the rim.
       dark: 0,
-      diffuse: 1.4,
+      diffuse: 0.4,
       mapSamples,
-      mapBrightness: 3.6,
-      baseColor: [0.89, 0.91, 0.93],
+      mapBrightness: 1.2,
+      baseColor: [1, 1, 1],
       markerColor: [16 / 255, 185 / 255, 129 / 255],
-      glowColor: [0.90, 0.92, 0.95],
+      glowColor: [0.94, 0.94, 0.94],
       offset: [0, 0],
       markers: BASE_MARKERS,
       arcs: AMBIENT_ARCS,

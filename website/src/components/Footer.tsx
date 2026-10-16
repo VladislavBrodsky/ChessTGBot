@@ -149,7 +149,7 @@ export async function Footer() {
               />
             </div>
             <p className="mt-3 text-caption font-medium text-fg">Scan to play</p>
-            <p className="mt-1 font-mono text-caption text-fg-muted">
+            <p className="mt-1 text-caption text-fg-muted">
               Opens in Telegram
             </p>
           </div>

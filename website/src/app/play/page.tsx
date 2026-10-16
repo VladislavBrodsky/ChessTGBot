@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 import { buttonClass } from "@/components/ui/button-styles";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import { MetaLine } from "@/components/ui/MetaLine";
 import { Icon } from "@/icons";
 import { qrSvg } from "@/lib/qr";
 import { telegramLink, SITE } from "@/lib/config";
@@ -84,10 +84,7 @@ export default async function PlayPage() {
             <Badge tone="accent" icon="lightning">
               Instant Launch
             </Badge>
-            <span className="font-mono text-caption text-fg-win flex items-center gap-1.5 font-semibold">
-              <span className="size-2 rounded-full bg-win-fill animate-pulse" />
-              Live Arena · 3,840+ Active Rivals
-            </span>
+            <MetaLine className="font-semibold win-ink" items="Live Arena · 3,840+ Active Rivals" />
           </div>
           <h1 id="page-title" className="poster play-heading">Play Chess Online: Telegram Chess Bot &amp; Web Arena</h1>
           <p className="max-w-[50ch] hero-lead text-fg-muted">
@@ -99,7 +96,6 @@ export default async function PlayPage() {
         <div className="grid gap-4 md:grid-cols-2">
           {/* Card 1: Telegram Mini App (Recommended) */}
           <Card className="flex flex-col justify-between p-4 sm:p-6 bg-surface border border-line rounded-2xl relative overflow-hidden group">
-            <BorderBeam size={260} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
             <div className="relative z-10 w-full flex flex-col flex-1 items-start">
               <div className="flex w-full items-center justify-between gap-3">
                 <div className="flex size-11 items-center justify-center rounded-xl bg-fg-muted/10 text-fg-muted border border-line/20">
@@ -112,21 +108,11 @@ export default async function PlayPage() {
                 Open the Mini App with your Telegram profile. Zero friction, zero passwords, and no separate app download.
               </p>
 
-              <div className="my-5 w-full space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-win-fill" />
-                  <span>One-tap launch with Telegram profile</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-win-fill" />
-                  <span>GRAM wallet deposit and withdrawal rails</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-win-fill" />
-                  <span>Push notification when rival is paired</span>
-                </div>
-              </div>
-
+              <ul className="play-checks">
+                <li><Icon name="check" size={14} /><span>One-tap launch with Telegram profile</span></li>
+                <li><Icon name="check" size={14} /><span>GRAM wallet deposit and withdrawal rails</span></li>
+                <li><Icon name="check" size={14} /><span>Push notification when rival is paired</span></li>
+              </ul>
               <div className="mt-auto w-full">
                 <PlayButton size="lg" startapp="arena" label="Open in Telegram" className="w-full" pulsating trackingLocation="play_arena_card" />
               </div>
@@ -140,30 +126,18 @@ export default async function PlayPage() {
                 <div className="flex size-11 items-center justify-center rounded-xl bg-inset text-fg border border-line">
                   <Icon name="globe" size={24} />
                 </div>
-                <span className="font-mono text-caption text-fg-muted bg-inset px-2.5 py-0.5 rounded-full border border-line">
-                  Desktop Web
-                </span>
+                <Badge tone="outline">Desktop Web</Badge>
               </div>
               <h2 className="mt-5 text-heading-sm font-medium tracking-tight">In your browser</h2>
               <p className="mt-2 text-body-sm text-fg-muted">
                 More room for the board on desktop screens. Sign in via Telegram to sync your rating, pieces, and match history.
               </p>
 
-              <div className="my-5 w-full space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-fg-muted" />
-                  <span>Expanded widescreen board layout</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-fg-muted" />
-                  <span>Stockfish 16 engine analysis</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-fg-muted" />
-                  <span>Synchronized cloud profile state</span>
-                </div>
-              </div>
-
+              <ul className="play-checks">
+                <li><Icon name="check" size={14} /><span>Expanded widescreen board layout</span></li>
+                <li><Icon name="check" size={14} /><span>Stockfish 16 engine analysis</span></li>
+                <li><Icon name="check" size={14} /><span>Synchronized cloud profile state</span></li>
+              </ul>
               <div className="mt-auto w-full">
                 <a
                   href={`${SITE.appUrl}/en/login`}
@@ -186,18 +160,16 @@ export default async function PlayPage() {
               <div className="size-24 [&>svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} role="img" aria-label="QR code that opens Web3Chess in Telegram" />
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
+              <div className="mb-1 flex flex-wrap items-center gap-2">
                 <h2 className="text-title">Take the board with you</h2>
-                <span className="font-mono text-caption text-fg-win bg-win-fill/10 px-2 py-0.5 rounded-full border border-win/20 font-semibold">
-                  Instant mobile handoff
-                </span>
+                <Badge tone="accent">Instant mobile handoff</Badge>
               </div>
               <p className="max-w-[44ch] text-body-sm text-fg-muted">
                 Scan with your phone camera to launch Web3Chess in Telegram. No login required.
               </p>
             </div>
           </div>
-          <div className="hidden lg:flex items-center gap-4 text-caption font-mono text-fg-muted pr-2">
+          <div className="hidden items-center gap-4 pe-2 text-caption text-fg-muted lg:flex">
             <div className="text-right">
               <span className="block font-semibold text-fg">iOS &amp; Android</span>
               <span className="text-caption">Bot API 8.0+ Ready</span>
@@ -206,7 +178,7 @@ export default async function PlayPage() {
         </div>
 
         {/* Trust & Safe Space Guarantees */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 rounded-xl border border-line bg-inset p-3.5 text-center font-mono text-caption">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 rounded-xl border border-line bg-inset p-3.5 text-center text-caption">
           <div className="flex items-center justify-center gap-1.5 text-fg font-medium py-1 sm:py-0">
             <Icon name="shield-check" size={16} className="text-fg-win shrink-0" />
             <span>Automated Match Escrow</span>
@@ -225,7 +197,7 @@ export default async function PlayPage() {
         <div className="mt-8 space-y-4">
           <div className="flex items-center justify-between">
             <span className="eyebrow">Instant Help</span>
-            <span className="text-caption font-mono text-fg-muted">Play &amp; Matchmaking FAQs</span>
+            <span className="text-caption text-fg-muted">Play &amp; Matchmaking FAQs</span>
           </div>
           <Card>
             <div>

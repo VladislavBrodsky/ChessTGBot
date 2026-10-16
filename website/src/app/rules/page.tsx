@@ -1,5 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import { DetailCard, DetailGrid } from "@/components/ui/DetailCard";
+import { ChessPieceIcon } from "@/components/ChessPieceIcon";
+import { InfoGrid } from "@/components/InfoGrid";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { PlayButton } from "@/components/PlayButton";
@@ -136,66 +138,57 @@ export default function RulesPage() {
             How each chess piece moves
           </h2>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <DetailGrid>
             {[
               {
                 piece: "Pawn",
-                icon: "shield-check" as const,
+                glyph: "pawn" as const,
                 rule: "Moves forward 1 square (or 2 on its first move). Captures 1 square diagonally forward. Promotes upon reaching the 8th rank.",
                 tip: "The soul of chess · Controls key central outposts",
               },
               {
                 piece: "Knight",
-                icon: "lightning" as const,
+                glyph: "knight" as const,
                 rule: "Moves in an 'L-shape' (2 squares in one direction, then 1 square perpendicular). The only piece that can jump over others.",
                 tip: "Tricky forks · Excels in closed, congested positions",
               },
               {
                 piece: "Bishop",
-                icon: "strategy" as const,
+                glyph: "bishop" as const,
                 rule: "Moves any number of vacant squares diagonally. Always stays on squares of its starting color (light-square or dark-square).",
                 tip: "Long-range sniper · Controls open diagonals",
               },
               {
                 piece: "Rook",
-                icon: "lock" as const,
+                glyph: "rook" as const,
                 rule: "Moves any number of vacant squares horizontally or vertically along ranks and files. Powerful in open files and endgames.",
                 tip: "Major piece (5 points) · Dominates the 7th rank",
               },
               {
                 piece: "Queen",
-                icon: "crown-simple" as const,
+                glyph: "queen" as const,
                 rule: "Combines the power of a rook and bishop. Moves any number of vacant squares horizontally, vertically, or diagonally.",
                 tip: "Most powerful piece (9 points) · Protect her early on",
               },
               {
                 piece: "King",
-                icon: "medal" as const,
+                glyph: "king" as const,
                 rule: "Moves exactly 1 square in any direction. The most vital piece: must never move into check. Checkmate ends the match.",
                 tip: "Priceless piece · Active fighter in the endgame",
               },
             ].map((item) => (
-              <Card key={item.piece} className="flex flex-col justify-between p-5 bg-surface border border-line">
-                <div>
-                  <div className="flex items-center justify-between gap-3 mb-3">
-                    <Badge tone="accent">
-                      {item.piece}
-                    </Badge>
-                    <Icon name={item.icon} size={18} className="text-fg-muted" />
-                  </div>
-                  <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                    {item.piece} Movement
-                  </h3>
-                  <p className="text-body-sm text-fg-muted leading-relaxed">
-                    {item.rule}
-                  </p>
-                </div>
-                <div className="pt-3 mt-4 border-t border-line text-caption font-mono text-fg-muted">
-                  {item.tip}
-                </div>
-              </Card>
+              <DetailCard
+                key={item.piece}
+                tone="accent"
+                badge={item.piece}
+                aside={<span className="piece-tile" aria-hidden="true"><ChessPieceIcon piece={item.glyph} className="size-7" /></span>}
+                title={`${item.piece} Movement`}
+                meta={item.tip}
+              >
+                <p>{item.rule}</p>
+              </DetailCard>
             ))}
-          </div>
+          </DetailGrid>
         </section>
 
         {/* ── Section 2: Special Moves (Castling & En Passant) ── */}
@@ -209,74 +202,40 @@ export default function RulesPage() {
           </h2>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
-              <BorderBeam size={260} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="accent" icon="shield-check">
-                    King Safety Move
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-win font-semibold">
-                    Kingside &amp; Queenside
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  How to Castle in Chess
-                </h3>
-                <p className="text-body text-fg-muted mb-4 leading-relaxed">
-                  Castling is the only move where you move two pieces in a single turn. The king moves two squares toward a rook, and that rook hops over the king to the adjacent square.
-                </p>
-
-                <div className="space-y-2 border-t border-line pt-3 font-mono text-caption text-fg-muted">
-                  <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
-                    <span>Neither the king nor the castling rook has moved yet.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
-                    <span>All squares between the king and rook are empty.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
-                    <span>The king is not currently in check, and does not cross or land on attacked squares.</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="neutral" icon="lightning">
-                    Pawn Rule
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-semibold">
-                    In Passing
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  En Passant Explained Simply
-                </h3>
-                <p className="text-body text-fg-muted mb-4 leading-relaxed">
-                  When an enemy pawn moves two squares forward from its starting rank and lands directly beside your pawn on the 5th rank (4th for Black), you can capture it diagonally behind it as if it had only moved one square.
-                </p>
-
-                <div className="space-y-2 border-t border-line pt-3 font-mono text-caption text-fg-muted">
-                  <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
-                    <span>Applies strictly to pawns on the adjacent file.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
-                    <span>Must be played on the immediate next turn, or the right is forfeited.</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Icon name="check" size={14} className="text-fg-win shrink-0 mt-0.5" />
-                    <span>Prevents pawns from bypassing enemy control squares untouched.</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <DetailCard tone="accent" icon="shield-check" badge="King Safety Move" status="Kingside & Queenside" title="How to Castle in Chess">
+              <p>Castling is the only move where you move two pieces in a single turn. The king moves two squares toward a rook, and that rook hops over the king to the adjacent square.</p>
+              <ul className="detail-checks">
+                <li>
+                  <Icon name="check" size={14} />
+                  <span>Neither the king nor the castling rook has moved yet.</span>
+                </li>
+                <li>
+                  <Icon name="check" size={14} />
+                  <span>All squares between the king and rook are empty.</span>
+                </li>
+                <li>
+                  <Icon name="check" size={14} />
+                  <span>The king is not currently in check, and does not cross or land on attacked squares.</span>
+                </li>
+              </ul>
+            </DetailCard>
+            <DetailCard icon="lightning" badge="Pawn Rule" status="In Passing" title="En Passant Explained Simply">
+              <p>When an enemy pawn moves two squares forward from its starting rank and lands directly beside your pawn on the 5th rank (4th for Black), you can capture it diagonally behind it as if it had only moved one square.</p>
+              <ul className="detail-checks">
+                <li>
+                  <Icon name="check" size={14} />
+                  <span>Applies strictly to pawns on the adjacent file.</span>
+                </li>
+                <li>
+                  <Icon name="check" size={14} />
+                  <span>Must be played on the immediate next turn, or the right is forfeited.</span>
+                </li>
+                <li>
+                  <Icon name="check" size={14} />
+                  <span>Prevents pawns from bypassing enemy control squares untouched.</span>
+                </li>
+              </ul>
+            </DetailCard>
           </div>
         </section>
 
@@ -290,31 +249,17 @@ export default function RulesPage() {
             How checkmate, stalemate &amp; draws work in chess
           </h2>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card className="p-6 bg-surface border border-line">
-              <Badge tone="accent" className="mb-3">Victory (1 - 0)</Badge>
-              <h3 className="text-heading-sm font-medium mb-2">How Checkmate Works</h3>
-              <p className="text-body-sm text-fg-muted leading-relaxed">
-                Checkmate happens when a king is placed in check (under attack) and has no legal escape: it cannot move away, cannot block the checking line, and cannot capture the attacker. The game ends instantly in victory.
-              </p>
-            </Card>
-
-            <Card className="p-6 bg-surface border border-line">
-              <Badge tone="neutral" className="mb-3">Draw (½ - ½)</Badge>
-              <h3 className="text-heading-sm font-medium mb-2">How Stalemate Works</h3>
-              <p className="text-body-sm text-fg-muted leading-relaxed">
-                Stalemate occurs when the player whose turn it is is NOT in check, but has zero legal moves anywhere on the board. Stalemate is a draw. Be careful not to accidentally stalemate an opponent when up material!
-              </p>
-            </Card>
-
-            <Card className="p-6 bg-surface border border-line">
-              <Badge tone="neutral" className="mb-3">Draw Conditions</Badge>
-              <h3 className="text-heading-sm font-medium mb-2">What is a Draw in Chess</h3>
-              <p className="text-body-sm text-fg-muted leading-relaxed">
-                Draws also occur via threefold repetition (same position occurs 3 times), the 50-move rule (50 moves without a capture or pawn push), mutual agreement, or insufficient mating material (e.g. King vs King).
-              </p>
-            </Card>
-          </div>
+          <DetailGrid>
+            <DetailCard tone="accent" badge="Victory (1 - 0)" title="How Checkmate Works">
+              <p>Checkmate happens when a king is placed in check (under attack) and has no legal escape: it cannot move away, cannot block the checking line, and cannot capture the attacker. The game ends instantly in victory.</p>
+            </DetailCard>
+            <DetailCard badge="Draw (½ - ½)" title="How Stalemate Works">
+              <p>Stalemate occurs when the player whose turn it is is NOT in check, but has zero legal moves anywhere on the board. Stalemate is a draw. Be careful not to accidentally stalemate an opponent when up material!</p>
+            </DetailCard>
+            <DetailCard badge="Draw Conditions" title="What is a Draw in Chess">
+              <p>Draws also occur via threefold repetition (same position occurs 3 times), the 50-move rule (50 moves without a capture or pawn push), mutual agreement, or insufficient mating material (e.g. King vs King).</p>
+            </DetailCard>
+          </DetailGrid>
         </section>
 
         {/* ── Section 4: Chess Clocks & Time Controls ── */}
@@ -328,43 +273,22 @@ export default function RulesPage() {
           </h2>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="p-6 bg-surface border border-line">
-              <div className="flex items-center justify-between gap-3 mb-3">
-                <Badge tone="accent" icon="clock">Time Controls</Badge>
-                <span className="font-mono text-caption text-fg-muted">Bullet · Blitz · Rapid</span>
-              </div>
-              <h3 className="text-heading-sm font-medium mb-2">Chess Time Controls Explained</h3>
-              <p className="text-body-sm text-fg-muted leading-relaxed mb-4">
-                Each player has an individual clock that counts down only when it is their turn to move. In Web3Chess, choose from standard FIDE paces:
-              </p>
-              <ul className="space-y-2 text-caption font-mono text-fg-muted border-t border-line pt-3">
-                <li><strong>1+0 Bullet:</strong> 1 minute total per player. Lightning pace.</li>
-                <li><strong>3+2 Blitz:</strong> 3 minutes + 2 seconds added per move. Standard competitive format.</li>
-                <li><strong>5+0 Blitz:</strong> 5 minutes flat. High tactical intensity.</li>
-                <li><strong>10+0 Rapid:</strong> 10 minutes total. Strategic room for calculation.</li>
+            <DetailCard tone="accent" icon="clock" badge="Time Controls" status="Bullet · Blitz · Rapid" title="Chess Time Controls Explained">
+              <p>Each player has an individual clock that counts down only when it is their turn to move. In Web3Chess, choose from standard FIDE paces:</p>
+              <ul className="detail-checks">
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">1+0 Bullet:</strong> 1 minute total per player. Lightning pace.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">3+2 Blitz:</strong> 3 minutes + 2 seconds added per move. Standard competitive format.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">5+0 Blitz:</strong> 5 minutes flat. High tactical intensity.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">10+0 Rapid:</strong> 10 minutes total. Strategic room for calculation.</span></li>
               </ul>
-            </Card>
-
-            <Card className="p-6 bg-surface border border-line">
-              <div className="flex items-center justify-between gap-3 mb-3">
-                <Badge tone="neutral" icon="lightning">Flagging</Badge>
-                <span className="font-mono text-caption text-fg-caution font-semibold">0:00 Timeout</span>
-              </div>
-              <h3 className="text-heading-sm font-medium mb-2">What Happens When Clock Runs Out</h3>
-              <p className="text-body-sm text-fg-muted leading-relaxed mb-4">
-                When your timer hits 0:00, you are &quot;flagged&quot;. The match result depends on the remaining board material:
-              </p>
-              <div className="space-y-2.5 text-caption font-mono text-fg-muted border-t border-line pt-3">
-                <div className="flex items-start gap-2">
-                  <span className="size-1.5 rounded-full bg-loss-fill mt-1.5 shrink-0" />
-                  <span><strong>Opponent has mating material:</strong> You lose the game on time.</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="size-1.5 rounded-full bg-win-fill mt-1.5 shrink-0" />
-                  <span><strong>Opponent has insufficient material:</strong> The game is declared a Draw (FIDE 6.9).</span>
-                </div>
-              </div>
-            </Card>
+            </DetailCard>
+            <DetailCard icon="lightning" badge="Flagging" status="0:00 Timeout" title="What Happens When Clock Runs Out">
+              <p>When your timer hits 0:00, you are &quot;flagged&quot;. The match result depends on the remaining board material:</p>
+              <ul className="detail-checks">
+                <li><Icon name="x" size={14} className="text-fg-loss" /><span><strong className="text-fg">Opponent has mating material:</strong> You lose the game on time.</span></li>
+                <li><Icon name="check" size={14} /><span><strong className="text-fg">Opponent has insufficient material:</strong> The game is declared a Draw (FIDE 6.9).</span></li>
+              </ul>
+            </DetailCard>
           </div>
         </section>
 
@@ -378,23 +302,12 @@ export default function RulesPage() {
             Frequently asked chess rules questions
           </h2>
 
-          <div className="space-y-3">
-            {rulesFaqs.map((faq) => (
-              <Card key={faq.question} className="p-5 bg-surface border border-line">
-                <h3 className="text-title font-semibold text-fg mb-2">
-                  {faq.question}
-                </h3>
-                <p className="text-body-sm text-fg-muted leading-relaxed">
-                  {faq.answer}
-                </p>
-              </Card>
-            ))}
-          </div>
+          <InfoGrid items={rulesFaqs.map(({ question, answer }) => ({ title: question, body: answer }))} />
         </section>
 
         {/* ── Section 6: Next Steps / Practice CTA ── */}
-        <section className="shell-wide my-8">
-          <Card className="p-8 text-center bg-surface border border-line flex flex-col items-center">
+        <section aria-label="Practise the rules">
+          <Card className="flex flex-col items-center border border-line text-center sm:p-10">
             <Badge tone="accent" icon="graduation-cap" className="mb-4">
               Put Rules Into Practice
             </Badge>

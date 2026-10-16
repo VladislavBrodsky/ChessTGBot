@@ -37,11 +37,11 @@
   .settlement-player > :first-child { font-weight: 600; overflow-wrap: anywhere; }
   .settlement-player > :last-child, .settlement-amount > :last-child { color: var(--fg-muted); font-weight: 400; }
   .settlement-amount { text-align: end; }
-  .settlement-amount strong { font-size: var(--text-body); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .settlement-amount strong { font-size: var(--text-body); font-weight: 600; white-space: nowrap; }
   .stake-preview-list, .referral-preview-list, .economics-preview-list { display: grid; gap: 0.5rem; }
   .stake-preview-list > li { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.75rem; background: var(--surface-card); border: 1px solid var(--line-hairline); border-radius: var(--radius-control); }
   .stake-preview-list > li > div { display: grid; gap: 0.25rem; }
-  .stake-preview-list strong { font-size: var(--text-body); line-height: 1.4; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stake-preview-list strong { font-size: var(--text-body); line-height: 1.4; font-weight: 600; white-space: nowrap; }
   .stake-preview-list span { font-size: var(--text-caption); line-height: 1.4; color: var(--fg-muted); }
   .stake-preview-value { text-align: end; }
   .stake-preview-list > li[data-featured] { border-color: var(--line-strong); }
@@ -51,7 +51,7 @@
   .stake-preview-track i { display: block; width: 40%; height: 100%; background: var(--fg-muted); }
   .referral-preview-list > li { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr) auto; align-items: center; gap: 0.625rem; padding: 0.625rem 0; font-size: var(--text-caption); line-height: 1.5; border-block-end: 1px solid var(--line-hairline); }
   .referral-preview-list > li:last-child { border: 0; }
-  .referral-preview-list strong { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+  .referral-preview-list strong { font-weight: 600; white-space: nowrap; }
   .referral-marker { display: grid; place-items: center; width: 28px; height: 28px; font-weight: 500; white-space: nowrap; border-radius: 50%; background: var(--surface-card); color: var(--fg-muted); }
   [data-featured] .referral-marker { background: var(--color-mint); color: var(--fg-default); }
   .economics-preview-list > li { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr) auto; align-items: center; gap: 0.625rem; padding: 0.875rem 0; border-block-end: 1px solid var(--line-hairline); }
@@ -119,7 +119,7 @@
   .globe-node-list { display: grid; gap: 0.75rem; padding-block-start: 1rem; border-block-start: 1px solid var(--line-hairline); }
   .globe-node-list li { display: grid; gap: 0.25rem; min-width: 0; font-size: var(--text-caption); line-height: 1.4; }
   .globe-node-list li > :first-child { font-weight: 500; }
-  .globe-node-list li > :last-child { color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+  .globe-node-list li > :last-child { color: var(--fg-muted); }
   .ecosystem-orbit { min-width: 0; container-type: inline-size; container-name: ecosystem; }
   .ecosystem-chess-ring { display: none; }
   @container ecosystem (min-width: 340px) { .ecosystem-orbit .ecosystem-chess-ring { display: contents; } .ecosystem-orbit .ecosystem-piece-grid { display: none; } }

@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Icon } from "@/icons";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import { MetaLine } from "@/components/ui/MetaLine";
 import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
 import { AnimatedList } from "@/components/magicui/animated-list";
 
@@ -67,282 +67,209 @@ const liveFeed = [
 
 export function ArenaBento() {
   return (
-    <div className="marketing-bento grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {/* ── BENTO 1: Real Crypto PvP Wagers (Hero 2-Col Card) ── */}
-      <Card className="flex flex-col justify-between sm:col-span-2 p-4 sm:p-6 lg:p-8 bg-surface border border-line relative overflow-hidden group">
-        <BorderBeam size={320} duration={14} colorFrom="#10b981" colorTo="#059669" />
-        <div className="relative z-10">
-          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
+    <div className="arena-bento">
+      {/* ── 1. Real crypto PvP wagers ── */}
+      <Card className="arena-card sm:col-span-2">
+        <div className="arena-card-copy">
+          <div className="arena-card-meta">
             <Badge tone="accent" icon="lightning">
               Real-time PvP Arena
             </Badge>
-            <span className="font-mono text-caption sm:text-caption text-fg-muted">
-              From 1 USDT · 95% Winner Payout
-            </span>
+            <MetaLine items="From 1 USDT · 95% Winner Payout" />
           </div>
-          <h3 className="text-heading-sm sm:text-heading-md font-medium tracking-tight mb-2 sm:mb-3">
+          <h3 className="arena-card-title arena-card-title-lg">
             Real crypto chess with instant Telegram matchmaking
           </h3>
-          <p className="text-body text-fg-muted max-w-[55ch] mb-4 sm:mb-6">
+          <p>
             Put your tactical mind to work. Choose Bullet, Blitz, or Rapid, set your stake, and play rivals worldwide. Both players commit equal USDT — the winner claims 95% of the combined pot directly to their platform balance.
           </p>
         </div>
 
-        {/* Live Match Settlement Visualization with NumberTicker */}
-        <div className="relative z-10 rounded-2xl border border-line bg-inset p-3 sm:p-5">
-          <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 border-b border-line pb-2 sm:pb-3 mb-2 sm:mb-3 text-caption sm:text-caption text-fg-muted">
-            <span className="flex items-center gap-1.5 font-semibold text-fg">
-              <span className="size-1.5 sm:size-2 rounded-full bg-inset animate-pulse" />
+        {/* Decided match settlement with count-up figures */}
+        <div className="arena-panel">
+          <div className="arena-panel-heading">
+            <span className="flex items-center gap-2 font-semibold text-fg">
+              <i className="size-2 rounded-full bg-win-fill" aria-hidden="true" />
               Live Blitz Match 3+2
             </span>
-            <span className="font-mono text-caption sm:text-caption">Match ID #48291 · Decided</span>
+            <MetaLine items="Match ID #48291 · Decided" />
           </div>
-          <div className="grid grid-cols-3 gap-1.5 sm:gap-4 text-center">
-            <div className="p-1.5 sm:p-3 rounded-xl bg-surface border border-line min-w-0">
-              <span className="text-caption sm:text-overline uppercase text-fg-muted block mb-0.5 sm:mb-1">Player Stake</span>
-              <span className="poster text-sm sm:text-heading-sm block font-bold">
-                <NumberTicker value={25} prefix="$" decimalPlaces={2} />
-              </span>
-              <span className="text-caption sm:text-caption text-fg-muted block">Equal stake</span>
+          <dl className="arena-pot">
+            <div>
+              <dt>Player Stake</dt>
+              <dd><NumberTicker value={25} prefix="$" decimalPlaces={2} /></dd>
+              <dd>Equal stake</dd>
             </div>
-            <div className="p-1.5 sm:p-3 rounded-xl bg-surface border border-line min-w-0">
-              <span className="text-caption sm:text-overline uppercase text-fg-muted block mb-0.5 sm:mb-1">Combined Pot</span>
-              <span className="poster text-sm sm:text-heading-sm block font-bold">
-                <NumberTicker value={50} prefix="$" decimalPlaces={2} />
-              </span>
-              <span className="text-caption sm:text-caption text-fg-muted block">Locked in pot</span>
+            <div>
+              <dt>Combined Pot</dt>
+              <dd><NumberTicker value={50} prefix="$" decimalPlaces={2} /></dd>
+              <dd>Locked in pot</dd>
             </div>
-            <div className="p-1.5 sm:p-3 rounded-xl bg-inset border border-line text-fg min-w-0">
-              <span className="text-caption sm:text-overline uppercase font-bold text-fg block mb-0.5 sm:mb-1">Winner Payout</span>
-              <span className="poster text-sm sm:text-heading-sm text-fg block font-bold">
-                <NumberTicker value={47.5} prefix="+$" decimalPlaces={2} />
-              </span>
-              <span className="text-caption sm:text-caption font-semibold text-fg block">95% payout</span>
+            <div data-highlight>
+              <dt>Winner Payout</dt>
+              <dd><NumberTicker value={47.5} prefix="+$" decimalPlaces={2} /></dd>
+              <dd>95% payout</dd>
             </div>
-          </div>
+          </dl>
         </div>
       </Card>
 
-      {/* ── BENTO 2: Mystery Boxes with 1,000 GRAM Jackpots & Orbiting Circles ── */}
-      <Card className="flex flex-col justify-between col-span-1 p-3 sm:p-6 bg-surface border border-line relative overflow-hidden group">
-        <BorderBeam size={240} duration={10} colorFrom="#f59e0b" colorTo="#d97706" />
-        <div className="relative z-10">
-          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2 sm:mb-4">
+      {/* ── 2. Mystery boxes: two rows tall on desktop so the wide card beside it has no empty band ── */}
+      <Card className="arena-card arena-vault-card lg:row-span-2">
+        <div className="arena-card-copy">
+          <div className="arena-card-meta">
             <Badge tone="accent" icon="gift">
               Mystery Vaults
             </Badge>
-            <span className="font-mono text-caption sm:text-caption text-fg-muted">Daily Drops</span>
+            <span className="arena-card-status">Daily Drops</span>
           </div>
-          <h3 className="text-heading-sm font-medium tracking-tight mb-1 sm:mb-2 leading-tight">
+          <h3 className="arena-card-title">
             Win up to 1,000 GRAM in Mystery Boxes
           </h3>
-          <p className="text-body text-fg-muted mb-2 sm:mb-3">
+          <p>
             Turn your earned XP into real rewards. Unlock mystery chests with chances to unbox GRAM prizes, 2× XP boosts, and exclusive 3D board pieces.
           </p>
-
-          {/* Orbiting Vault Reward Visualization */}
-          <div className="relative my-3 flex h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-inset border border-line">
-            <div className="z-10 flex size-9 items-center justify-center rounded-full bg-inset border border-line text-fg shadow-none">
-              <Icon name="gift" size={18} />
-            </div>
-
-            <OrbitingCircles radius={38} duration={12} iconSize={22} path>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
-                💎
-              </span>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
-                ⚡
-              </span>
-            </OrbitingCircles>
-
-            <OrbitingCircles radius={56} reverse duration={18} iconSize={22} path>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
-                👑
-              </span>
-              <span className="flex size-5 items-center justify-center rounded-full bg-surface border border-line shadow-none text-caption">
-                🏆
-              </span>
-            </OrbitingCircles>
-          </div>
         </div>
 
-        {/* Vault Tier Badges with NumberTicker */}
-        <div className="space-y-2 rounded-xl bg-inset p-3.5 border border-line text-caption relative z-10">
-          <div className="flex items-center justify-between font-medium">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-inset" />
-              King’s Dominion Chest
-            </span>
-            <span className="font-bold text-fg">
-              <NumberTicker value={1000} suffix=" GRAM" /> Jackpot
-            </span>
-          </div>
-          <div className="flex items-center justify-between font-medium">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-caution-soft" />
-              Queen’s Treasury Chest
-            </span>
-            <span className="font-bold text-fg">1-Month Premium + Drops</span>
-          </div>
-          <div className="flex items-center justify-between font-medium">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2 rounded-full bg-fg-muted" />
-              Knight’s Gambit Chest
-            </span>
-            <span className="font-bold text-fg">2× XP Boosts &amp; Skins</span>
-          </div>
+        <div className="arena-vault" aria-hidden="true">
+          <span className="arena-vault-core"><Icon name="gift" size={18} /></span>
+          <OrbitingCircles radius={38} duration={12} iconSize={24} path>
+            <span className="arena-vault-token"><Icon name="sparkle" size={12} /></span>
+            <span className="arena-vault-token"><Icon name="lightning" size={12} /></span>
+          </OrbitingCircles>
+          <OrbitingCircles radius={58} reverse duration={18} iconSize={24} path>
+            <span className="arena-vault-token"><Icon name="crown-simple" size={12} /></span>
+            <span className="arena-vault-token"><Icon name="trophy" size={12} /></span>
+          </OrbitingCircles>
         </div>
+
+        <ul className="arena-list">
+          <li>
+            <span><i className="bg-caution-soft" aria-hidden="true" />King’s Dominion Chest</span>
+            <strong><NumberTicker value={1000} suffix=" GRAM" /> Jackpot</strong>
+          </li>
+          <li>
+            <span><i className="bg-premium-soft" aria-hidden="true" />Queen’s Treasury Chest</span>
+            <strong>1-Month Premium + Drops</strong>
+          </li>
+          <li>
+            <span><i className="bg-fg-muted" aria-hidden="true" />Knight’s Gambit Chest</span>
+            <strong>2× XP Boosts &amp; Skins</strong>
+          </li>
+        </ul>
       </Card>
 
-      {/* ── BENTO 3: Live Global Leaderboards & Tournaments ── */}
-      <Card className="flex flex-col justify-between col-span-1 p-3 sm:p-6 bg-surface border border-line relative overflow-hidden group">
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2 sm:mb-4">
+      {/* ── 3. Leaderboards ── */}
+      <Card className="arena-card">
+        <div className="arena-card-copy">
+          <div className="arena-card-meta">
             <Badge tone="neutral" icon="trophy">
               Global ELO
             </Badge>
-            <span className="font-mono text-caption sm:text-caption text-fg-muted">Season 1</span>
+            <span className="arena-card-status">Season 1</span>
           </div>
-          <h3 className="text-heading-sm font-medium tracking-tight mb-1 sm:mb-2 leading-tight">
-            Climb the Leaderboard
-          </h3>
-          <p className="text-body text-fg-muted mb-2 sm:mb-5">
+          <h3 className="arena-card-title">Climb the Leaderboard</h3>
+          <p>
             Every rated victory builds your ELO ranking and pushes you up the ladder toward weekly tournament prizes.
           </p>
         </div>
-
-        {/* Leaderboard Micro Ticker */}
-        <div className="space-y-1 sm:space-y-2 rounded-xl bg-inset p-2 sm:p-3.5 border border-line text-caption sm:text-caption font-mono">
-          <div className="flex items-center justify-between">
+        <ol className="arena-list arena-leaderboard">
+          <li>
             <span className="font-semibold text-fg">#1 Morphy · 2480</span>
-            <span className="font-bold text-fg shrink-0">
-              <NumberTicker value={2450} prefix="+$" suffix="" />
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-fg-muted">
-            <span className="truncate">#2 Magnus · 2415</span>
-            <span className="font-semibold text-fg shrink-0">
-              <NumberTicker value={1890} prefix="+$" suffix="" />
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-fg-muted">
-            <span className="truncate">#3 Pawn · 2380</span>
-            <span className="font-semibold text-fg shrink-0">
-              <NumberTicker value={1240} prefix="+$" suffix="" />
-            </span>
-          </div>
-        </div>
+            <strong><NumberTicker value={2450} prefix="+$" /></strong>
+          </li>
+          <li>
+            <span>#2 Magnus · 2415</span>
+            <strong><NumberTicker value={1890} prefix="+$" /></strong>
+          </li>
+          <li>
+            <span>#3 Pawn · 2380</span>
+            <strong><NumberTicker value={1240} prefix="+$" /></strong>
+          </li>
+        </ol>
       </Card>
 
-      {/* ── BENTO 4: 6-Tier Referral Affiliate Engine ── */}
-      <Card className="flex flex-col justify-between col-span-1 p-3 sm:p-6 bg-surface border border-line relative overflow-hidden group">
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2 sm:mb-4">
+      {/* ── 4. Referral tiers ── */}
+      <Card className="arena-card">
+        <div className="arena-card-copy">
+          <div className="arena-card-meta">
             <Badge tone="accent" icon="users-three">
               Affiliate
             </Badge>
-            <span className="font-mono text-caption sm:text-caption text-fg-muted">Passive</span>
+            <span className="arena-card-status">Passive</span>
           </div>
-          <h3 className="text-heading-sm font-medium tracking-tight mb-1 sm:mb-2 leading-tight">
-            Earn 2% Match Rake
-          </h3>
-          <p className="text-body text-fg-muted mb-2 sm:mb-5">
+          <h3 className="arena-card-title">Earn 2% Match Rake</h3>
+          <p>
             Share your personal invite link once and collect lifetime commissions across 6 tiers.
           </p>
         </div>
-
-        <div className="flex items-center justify-between rounded-xl bg-inset p-2 sm:p-3.5 border border-line text-caption sm:text-caption">
-          <div className="space-y-0.5">
-            <span className="font-semibold text-fg block text-caption sm:text-caption">6 Levels</span>
-            <span className="text-fg-muted text-caption">To tier 6</span>
+        <div className="arena-panel arena-panel-row">
+          <div>
+            <strong className="block text-fg">6 Levels</strong>
+            <span className="text-fg-muted">To tier 6</span>
           </div>
-          <span className="poster text-title sm:text-stat text-fg">
+          <span className="poster text-stat text-fg">
             <NumberTicker value={2} suffix="%" />
           </span>
         </div>
       </Card>
 
-      {/* ── BENTO 5: 100-Level Academy & Stockfish AI ── */}
-      <Card className="flex flex-col justify-between col-span-1 p-3 sm:p-6 bg-surface border border-line relative overflow-hidden group">
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2 sm:mb-4">
+      {/* ── 5. Academy ── */}
+      <Card className="arena-card">
+        <div className="arena-card-copy">
+          <div className="arena-card-meta">
             <Badge tone="neutral" icon="graduation-cap">
               Academy
             </Badge>
-            <span className="font-mono text-caption sm:text-caption text-fg-muted">
-              100 Levels
-            </span>
+            <span className="arena-card-status">100 Levels</span>
           </div>
-          <h3 className="text-heading-sm font-medium tracking-tight mb-1 sm:mb-2 leading-tight">
-            100 Levels &amp; AI
-          </h3>
-          <p className="text-body text-fg-muted mb-2 sm:mb-5">
+          <h3 className="arena-card-title">100 Levels &amp; AI</h3>
+          <p>
             Sharpen openings, forks, pins, and endgames with unlimited free Stockfish A.I. practice.
           </p>
         </div>
-
-        <Link
-          href="/academy"
-          className="inline-flex items-center justify-between rounded-xl bg-inset p-2 sm:p-3.5 border border-line text-caption sm:text-caption font-semibold text-fg hover:bg-canvas transition-colors"
-        >
+        <Link href="/academy" className="arena-panel arena-panel-row arena-panel-link">
           <span>Explore tracks</span>
-          <Icon name="arrow-right" size={13} />
+          <Icon name="arrow-right" size={16} />
         </Link>
       </Card>
 
-      {/* ── BENTO 6: Live Arena Activity & Instant Payouts with AnimatedList ── */}
-      <Card className="flex flex-col justify-between col-span-2 md:col-span-1 p-3.5 sm:p-6 bg-surface border border-line relative overflow-hidden group">
-        <BorderBeam size={240} duration={12} colorFrom="#10b981" colorTo="#3b82f6" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
+      {/* ── 6. Live arena activity: closes the grid beside the Academy card, copy beside the stream ── */}
+      <Card className="arena-card arena-activity sm:col-span-2">
+        <div className="arena-card-copy">
+          <div className="arena-card-meta">
             <Badge tone="accent" icon="lightning">
               Live Arena Activity
             </Badge>
-            <span className="flex items-center gap-1.5 font-mono text-caption sm:text-caption text-fg font-semibold">
-              <span className="size-1.5 sm:size-2 rounded-full bg-inset animate-pulse" />
+            <span className="flex items-center gap-1.5 text-caption font-semibold text-fg">
+              <i className="size-2 rounded-full bg-win-fill" aria-hidden="true" />
               Real-time
             </span>
           </div>
-          <h3 className="text-heading-sm font-medium tracking-tight mb-1 sm:mb-1.5 leading-snug">
+          <h3 className="arena-card-title">
             Real players. Instant on-chain payouts
           </h3>
-          <p className="text-body text-fg-muted mb-2 sm:mb-3">
+          <p>
             Live matches finishing, pots settled, and mystery chests unboxed around the clock.
           </p>
+          <div className="arena-activity-foot">
+            <span>95% winner pot</span>
+            <strong>Decided instantly</strong>
+          </div>
         </div>
 
-        {/* Live Event Stream via AnimatedList */}
-        <div className="arena-event-stream relative my-1 w-full">
+        <div className="arena-event-stream">
           <AnimatedList delay={2400} maxItems={3}>
             {liveFeed.map((item) => (
-              <figure
-                key={item.id}
-                className="relative mx-auto w-full overflow-hidden rounded-xl border border-line bg-inset p-2 sm:p-2.5 transition-all duration-200 hover:border-fg-muted/40 shadow-none"
-              >
-                <div className="flex items-center gap-2 sm:gap-2.5">
-                  <div className="flex size-6 sm:size-7 shrink-0 items-center justify-center rounded-lg bg-inset border border-line text-fg">
-                    <Icon name={item.icon} size={13} />
-                  </div>
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center justify-between text-caption gap-2">
-                      <span className="font-semibold text-fg text-caption">{item.player}</span>
-                      <span className="font-mono text-caption text-fg-muted shrink-0">{item.time}</span>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-between text-caption gap-2 mt-0.5">
-                      <span className="text-fg-muted">{item.action}</span>
-                      <span className="font-bold text-fg shrink-0 font-mono text-caption">{item.payout}</span>
-                    </div>
-                  </div>
+              <figure key={item.id} className="arena-event">
+                <span className="arena-event-icon"><Icon name={item.icon} size={14} /></span>
+                <div className="arena-event-main">
+                  <div><strong>{item.player}</strong><span>{item.time}</span></div>
+                  <div><span>{item.action}</span><strong>{item.payout}</strong></div>
                 </div>
               </figure>
             ))}
           </AnimatedList>
-          {/* Progressive blur bottom edge for infinite stream depth */}
-        </div>
-
-        <div className="relative z-10 w-full pt-2 sm:pt-2.5 border-t border-line text-caption sm:text-caption text-fg-muted flex items-center justify-between font-mono">
-          <span>95% winner pot</span>
-          <span className="text-fg font-semibold">Decided instantly</span>
         </div>
       </Card>
     </div>

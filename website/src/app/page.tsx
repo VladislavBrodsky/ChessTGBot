@@ -18,6 +18,7 @@ import { NumberTicker } from "@/components/magicui/number-ticker";
 import { socialProofSnapshot } from "@/lib/social-proof";
 import { LiveSocialProof } from "@/components/LiveSocialProof";
 import { BorderBeam } from "@/components/magicui/border-beam";
+import { MetaLine } from "@/components/ui/MetaLine";
 import { AnimatedList } from "@/components/magicui/animated-list";
 import { UsdtIcon } from "@/components/UsdtIcon";
 
@@ -36,7 +37,7 @@ const GlobeShowcase = dynamic(
 );
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
-import { SITE, SETTLEMENT } from "@/lib/config";
+import { SITE, SETTLEMENT, winnerReceives } from "@/lib/config";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
@@ -60,6 +61,68 @@ export const metadata = pageMetadata(
 
 // Re-render regularly so newly scheduled articles reach the home page on time.
 export const revalidate = 60;
+
+const LIVE_STRIP = [
+  { amount: "+$47.50 USDT", text: "GM_Morphy won 3+2 Blitz duel", dot: "bg-win-fill", tone: "text-fg-win" },
+  { amount: "1,000 GRAM", text: "King’s Dominion Mystery Jackpot unlocked", dot: "bg-caution-soft", tone: "text-fg-caution" },
+  { amount: "+$95.00 USDT", text: "Magnus_99 won 5+3 Rapid table", dot: "bg-win-fill", tone: "text-fg-win" },
+  { amount: "2.0% Rake", text: "6-Tier Affiliate passive commissions credited", dot: "bg-fg-muted", tone: "text-fg-muted" },
+  { amount: "95 USDT", text: "@gm_vlad on-chain withdrawal settled (3.8s)", dot: "bg-premium-soft", tone: "text-fg-premium" },
+  { amount: "+$190.00 USDT", text: "Kasparov_X won 10+0 Classical match", dot: "bg-win-fill", tone: "text-fg-win" },
+] as const;
+
+const FAIR_PILLARS = [
+  {
+    icon: "cpu" as const,
+    tag: "Stockfish 16 Engine",
+    title: "Authoritative server moves",
+    body: "Stockfish 16 engine validates every single ply deterministically server-side. Zero client-side manipulation, impossible moves, or clock spoofing.",
+    metric: "< 45ms Latency · Deterministic",
+  },
+  {
+    icon: "users-three" as const,
+    tag: "Verified Rival Only",
+    title: "Fair ELO matchmaking",
+    body: "Compete exclusively against verified rivals within your rating bracket, time control, and wager tier. Anti-smurf rating algorithms protect every match.",
+    metric: "±50 ELO Window · Anti-Smurf",
+  },
+  {
+    icon: "scales" as const,
+    tag: "Smart Escrow Split",
+    title: "Instant 95% pot settlement",
+    body: "Both players deposit equal USDT before move 1 into smart escrow. Checkmate or resignation instantly credits 95% to the victor on-chain.",
+    metric: `${SETTLEMENT.winnerPercent}% Victor · ${SETTLEMENT.platformFeePercent}% Platform · ${SETTLEMENT.referralFeePercent}% Affiliate`,
+  },
+];
+
+const ACADEMY_TRACKS = [
+  { name: "Origins & Motivation", desc: "Board geometry · Core rules", tag: "Start here", icon: "graduation-cap" as const },
+  { name: "Opening Principles", desc: "Center control · King safety", tag: "Develop", icon: "strategy" as const },
+  { name: "Tactical Patterns", desc: "Forks · Pins · Skewers · Nets", tag: "Calculate", icon: "lightning" as const },
+  { name: "Endgame Magic", desc: "King activity · Passed pawns", tag: "Convert", icon: "crown-simple" as const },
+];
+
+// Winner credit and net gain come from the shared settlement split, so the ladder can never drift from it.
+const STAKE_LADDER = [
+  { tier: "Micro Duel", pace: "Bullet 1+0", stake: 1, tag: "1-Min Duel" },
+  { tier: "Blitz Favorite", pace: "Blitz 3+2", stake: 5, tag: "Most Popular" },
+  { tier: "Arena Contender", pace: "Blitz 5+0", stake: 10, tag: "Active Pool" },
+  { tier: "High Roller", pace: "Rapid 10+0", stake: 25, tag: "Trending" },
+  { tier: "Championship Pot", pace: "Blitz 3+2", stake: 50, tag: "+90% Net ROI" },
+  { tier: "Grandmaster Table", pace: "Rapid 15+10", stake: 100, tag: "VIP Table" },
+  { tier: "Whales Arena", pace: "Blitz 5+3", stake: 250, tag: "Whales Club" },
+];
+
+const TRENDING_GUIDES = [
+  { title: "Can You Make Money on Chess.com?", href: "/blog/can-you-make-money-on-chess-com", cat: "Chess Culture" },
+  { title: "The Fried Liver Attack: Punish f7", href: "/blog/the-fried-liver-attack-punish-weak-f7-pawns", cat: "Openings" },
+  { title: "Dirty Blitz Tricks & Mind Games", href: "/blog/dirty-blitz-tricks-and-psychological-warfare", cat: "Tactics" },
+  { title: "Smith-Morra Gambit: Beat Sicilian", href: "/blog/smith-morra-gambit-crush-the-sicilian-defense", cat: "Openings" },
+  { title: "Chess Rules for Beginners (Step-by-Step)", href: "/rules", cat: "FIDE Rules" },
+  { title: "Chess Cheating Scandals & Telemetry", href: "/blog/chess-cheating-scandals-and-stockfish-telemetry", cat: "Chess News" },
+];
+
+const usd = (value: number) => `$${value.toFixed(2)}`;
 
 export default function HomePage() {
   const structuredData = {
@@ -162,50 +225,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── MAGIC UI MARQUEE: Live Crypto Match Wins & Vault Drops ── */}
+        {/* ── Live strip: match wins and vault drops ── */}
         <section className="shell-wide my-3" aria-label="Live PvP match activity">
-          <div className="relative rounded-full border border-line bg-surface/70 py-2 px-3 overflow-hidden shadow-none backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
-            {/* Smooth optical edge fades */}
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-4 sm:w-16 bg-gradient-to-r from-surface via-surface/80 to-transparent z-10" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-4 sm:w-16 bg-gradient-to-l from-surface via-surface/80 to-transparent z-10" />
-
+          <div className="relative overflow-hidden rounded-full border border-line bg-surface/70 px-2 py-2 backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
             <Marquee duration={35} pauseOnHover>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
-                <strong className="text-fg-win font-bold">+$47.50 USDT</strong>
-                <span className="text-fg-muted">·</span>
-                <span>GM_Morphy won 3+2 Blitz duel</span>
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-caution-soft" />
-                <strong className="text-fg-caution font-bold">1,000 GRAM</strong>
-                <span className="text-fg-muted">·</span>
-                <span>King’s Dominion Mystery Jackpot unlocked</span>
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
-                <strong className="text-fg-win font-bold">+$95.00 USDT</strong>
-                <span className="text-fg-muted">·</span>
-                <span>Magnus_99 won 5+3 Rapid table</span>
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-fg-muted" />
-                <strong className="text-fg-muted font-bold">2.0% Rake</strong>
-                <span className="text-fg-muted">·</span>
-                <span>6-Tier Affiliate passive commissions credited</span>
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-premium-soft" />
-                <strong className="text-fg-premium font-bold">95 USDT</strong>
-                <span className="text-fg-muted">·</span>
-                <span>@gm_vlad on-chain withdrawal settled (3.8s)</span>
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-surface border border-line/80 px-3.5 py-1 font-mono text-caption text-fg shadow-none shrink-0 mx-1">
-                <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
-                <strong className="text-fg-win font-bold">+$190.00 USDT</strong>
-                <span className="text-fg-muted">·</span>
-                <span>Kasparov_X won 10+0 Classical match</span>
-              </span>
+              {LIVE_STRIP.map((item) => (
+                <span key={item.text} className="live-strip-item">
+                  <i className={item.dot} aria-hidden="true" />
+                  <strong className={item.tone}>{item.amount}</strong>
+                  <span>{item.text}</span>
+                </span>
+              ))}
             </Marquee>
           </div>
         </section>
@@ -314,73 +344,19 @@ export default function HomePage() {
                 Every piece follows identical rules. No pay-to-win cards, no unfair boosts. Only your preparation, your clock management, and your board vision determine who takes the pot.
               </p>
             </div>
-            <div className="relative z-10 mt-6 grid gap-4 border-t border-line/40 pt-6 md:mt-10 md:pt-8 lg:grid-cols-3">
-              {[
-                {
-                  icon: "cpu" as const,
-                  tag: "Stockfish 16 Engine",
-                  title: "Authoritative server moves",
-                  body: "Stockfish 16 engine validates every single ply deterministically server-side. Zero client-side manipulation, impossible moves, or clock spoofing.",
-                  metric: "< 45ms Latency · Deterministic",
-                },
-                {
-                  icon: "users-three" as const,
-                  tag: "Verified Rival Only",
-                  title: "Fair ELO matchmaking",
-                  body: "Compete exclusively against verified rivals within your rating bracket, time control, and wager tier. Anti-smurf rating algorithms protect every match.",
-                  metric: "±50 ELO Window · Anti-Smurf",
-                },
-                {
-                  icon: "scales" as const,
-                  tag: "Smart Escrow Split",
-                  title: "Instant 95% pot settlement",
-                  body: "Both players deposit equal USDT before move 1 into smart escrow. Checkmate or resignation instantly credits 95% to the victor on-chain.",
-                  metric: "95% Victor · 3% Platform · 2% Affiliate",
-                },
-              ].map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-5.5 space-y-4 transition-all duration-300 hover:border-win/40 hover:bg-white/[0.07] hover:shadow-[0_12px_35px_-10px_rgba(16,185,129,0.18)] shadow-none backdrop-blur-xs flex flex-col justify-between"
-                >
-                  <div className="space-y-3.5">
-                    {/* Top Eyebrow Badge with Glowing Live Dot */}
-                    <div>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-caption font-mono font-bold tracking-wider uppercase bg-win-fill/15 text-fg-win border border-win/30 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
-                        <span className="relative flex size-1.5">
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win-fill opacity-75" />
-                          <span className="relative inline-flex size-1.5 rounded-full bg-win-fill" />
-                        </span>
-                        {item.tag}
-                      </span>
-                    </div>
-
-                    {/* Icon + Title on the SAME LINE */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-win-fill/15 border border-win/30 text-fg-win shadow-[0_0_12px_rgba(16,185,129,0.12)]">
-                        <Icon name={item.icon} size={20} />
-                      </div>
-                      <h3 className="text-title font-semibold text-white tracking-tight leading-snug">
-                        {item.title}
-                      </h3>
-                    </div>
-
-                    {/* Body explanation */}
-                    <p className="text-body-sm text-fg-muted/85 leading-relaxed">
-                      {item.body}
-                    </p>
+            <ul className="fair-pillars relative z-10">
+              {FAIR_PILLARS.map((item) => (
+                <li key={item.title} className="fair-pillar">
+                  <div className="fair-pillar-head">
+                    <span className="fair-pillar-icon"><Icon name={item.icon} size={20} /></span>
+                    <span className="fair-pillar-tag">{item.tag}</span>
                   </div>
-
-                  {/* Footer Guarantee */}
-                  <div className="pt-3 border-t border-white/10 font-mono text-caption text-fg-muted flex flex-col xl:flex-row xl:items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-fg-muted">
-                      <Icon name="shield-check" size={13} className="text-fg-win shrink-0" />
-                      Guarantee:
-                    </span>
-                    <span className="text-fg-win font-semibold">{item.metric}</span>
-                  </div>
-                </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                  <MetaLine items={item.metric} />
+                </li>
               ))}
-            </div>
+            </ul>
             <div className="relative z-10 pt-2">
               <ButtonLink href="/fair-play" variant="secondary" className="mt-8">
                 Read our fair play approach
@@ -408,84 +384,28 @@ export default function HomePage() {
                 <Icon name="arrow-right" size={18} />
               </ButtonLink>
             </div>
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group">
-              <BorderBeam size={280} duration={14} colorFrom="#3b82f6" colorTo="#10b981" />
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <Badge tone="accent" icon="graduation-cap">
-                    100 Tactical Levels
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-win font-semibold">
-                    100% Free
-                  </span>
-                </div>
-                <span className="font-mono text-caption sm:text-caption text-fg-muted">
-                  Stockfish 16 Engine
-                </span>
+            <Card className="academy-preview border border-line">
+              <div className="academy-preview-head">
+                <Badge tone="accent" icon="graduation-cap">
+                  100 Tactical Levels
+                </Badge>
+                <MetaLine items={[<span key="free" className="font-semibold text-fg-win">100% Free</span>, "Stockfish 16 Engine"]} />
               </div>
-
-              <div className="space-y-2.5">
-                {[
-                  {
-                    num: "01",
-                    name: "Origins & Motivation",
-                    desc: "Board geometry · Core rules",
-                    tag: "Start here",
-                    icon: "graduation-cap" as const,
-                    color: "text-fg-muted bg-fg-muted/10 border-line/20",
-                  },
-                  {
-                    num: "02",
-                    name: "Opening Principles",
-                    desc: "Center control · King safety",
-                    tag: "Develop",
-                    icon: "strategy" as const,
-                    color: "text-fg-win bg-win-fill/10 border-win/20",
-                  },
-                  {
-                    num: "03",
-                    name: "Tactical Patterns",
-                    desc: "Forks · Pins · Skewers · Nets",
-                    tag: "Calculate",
-                    icon: "lightning" as const,
-                    color: "text-fg-caution bg-caution-soft/10 border-caution/20",
-                  },
-                  {
-                    num: "04",
-                    name: "Endgame Magic",
-                    desc: "King activity · Passed pawns",
-                    tag: "Convert",
-                    icon: "crown-simple" as const,
-                    color: "text-fg-premium bg-premium-soft/10 border-premium/20",
-                  },
-                ].map((track) => (
-                  <div
-                    key={track.name}
-                    className="flex items-center justify-between p-3 rounded-xl border border-line bg-inset/75 transition-colors hover:bg-surface"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg border ${track.color}`}>
-                        <Icon name={track.icon} size={16} />
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-semibold text-fg text-caption truncate">
-                          {track.name}
-                        </span>
-                        <span className="text-caption text-fg-muted font-mono truncate">
-                          {track.desc}
-                        </span>
-                      </div>
+              <ul className="academy-preview-list">
+                {ACADEMY_TRACKS.map((track) => (
+                  <li key={track.name}>
+                    <span className="academy-preview-icon"><Icon name={track.icon} size={18} /></span>
+                    <div className="min-w-0">
+                      <strong>{track.name}</strong>
+                      <MetaLine items={track.desc} />
                     </div>
-                    <span className="shrink-0 font-mono text-caption font-semibold text-fg-muted bg-surface border border-line px-2 py-0.5 rounded-full">
-                      {track.tag}
-                    </span>
-                  </div>
+                    <span className="academy-preview-tag">{track.tag}</span>
+                  </li>
                 ))}
-              </div>
-
-              <div className="pt-4 mt-4 border-t border-line flex flex-col xl:flex-row xl:items-center justify-between gap-2 text-caption font-mono text-fg-muted">
-                <span>Stockfish A.I. Practice · Unlimited games</span>
-                <span className="text-fg-win font-semibold">Zero stake needed</span>
+              </ul>
+              <div className="academy-preview-foot">
+                <MetaLine items="Stockfish A.I. Practice · Unlimited games" />
+                <strong>Zero stake needed</strong>
               </div>
             </Card>
           </div>
@@ -498,7 +418,6 @@ export default function HomePage() {
           </div>
 
           <div className="relative overflow-hidden rounded-3xl border border-line bg-surface p-6 sm:p-8 lg:p-10">
-            <BorderBeam size={340} duration={12} colorFrom="#10b981" colorTo="#059669" />
 
             <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-start relative z-10">
               <div className="space-y-5">
@@ -506,8 +425,7 @@ export default function HomePage() {
                   <Badge tone="accent" icon="lightning">
                     95% Winner Payout
                   </Badge>
-                  <span className="font-mono text-caption text-fg-win flex items-center gap-1.5 font-semibold">
-                    <span className="size-2 rounded-full bg-win-fill animate-pulse" />
+                  <span className="text-caption font-semibold text-fg-win">
                     Lowest rake in Web3
                   </span>
                 </div>
@@ -536,134 +454,41 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* Dynamic Viral Wager & Prize Matrix powered by AnimatedList */}
-              <div className="relative rounded-2xl border border-line bg-inset p-5 sm:p-6 overflow-hidden space-y-3.5">
-                <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-caption font-semibold text-fg">
-                      Popular Stakes &amp; Payouts
-                    </span>
-                    <span className="flex items-center gap-1 font-mono text-caption font-semibold text-fg-win bg-win-fill/10 px-2 py-0.5 rounded-full">
-                      <span className="size-1.5 rounded-full bg-win-fill animate-pulse" />
-                      Live Pools
-                    </span>
-                  </div>
-                  <span className="font-mono text-caption sm:text-caption text-fg-win font-medium">
-                    +90% Net ROI on win
+              {/* Stake ladder: amounts derive from SETTLEMENT */}
+              <div className="grid gap-3.5 rounded-2xl border border-line bg-inset p-5 sm:p-6">
+                <div className="stake-stream-heading">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <strong>Popular Stakes &amp; Payouts</strong>
+                    <Badge tone="accent">Live Pools</Badge>
                   </span>
+                  <span>+90% Net ROI on win</span>
                 </div>
-
-                {/* AnimatedList stream of diverse stakes & prizes */}
-                <div className="home-payout-stream relative z-10 w-full">
+                <div className="home-payout-stream w-full">
                   <AnimatedList delay={2200} maxItems={4}>
-                    {[
-                      {
-                        tier: "Micro Duel",
-                        pace: "Bullet 1+0",
-                        stake: 1,
-                        win: 1.90,
-                        net: "+$0.90",
-                        tag: "1-Min Duel",
-                        tagColor: "bg-surface border-line text-fg-muted",
-                      },
-                      {
-                        tier: "Blitz Favorite",
-                        pace: "Blitz 3+2",
-                        stake: 5,
-                        win: 9.50,
-                        net: "+$4.50",
-                        tag: "Most Popular 🔥",
-                        tagColor: "bg-win-fill/15 border-win/30 text-fg-win",
-                      },
-                      {
-                        tier: "Arena Contender",
-                        pace: "Blitz 5+0",
-                        stake: 10,
-                        win: 19.00,
-                        net: "+$9.00",
-                        tag: "Active Pool ⚡",
-                        tagColor: "bg-fg-muted/15 border-line/30 text-fg-muted",
-                      },
-                      {
-                        tier: "High Roller",
-                        pace: "Rapid 10+0",
-                        stake: 25,
-                        win: 47.50,
-                        net: "+$22.50",
-                        tag: "Trending 🚀",
-                        tagColor: "bg-caution-soft/15 border-caution/30 text-fg-caution",
-                      },
-                      {
-                        tier: "Championship Pot",
-                        pace: "Blitz 3+2",
-                        stake: 50,
-                        win: 95.00,
-                        net: "+$45.00",
-                        tag: "+90% Net ROI",
-                        tagColor: "bg-win-fill/15 border-win/30 text-fg-win",
-                      },
-                      {
-                        tier: "Grandmaster Table",
-                        pace: "Rapid 15+10",
-                        stake: 100,
-                        win: 190.00,
-                        net: "+$90.00",
-                        tag: "VIP Table 👑",
-                        tagColor: "bg-premium-soft/15 border-premium/30 text-fg-premium",
-                      },
-                      {
-                        tier: "Whales Arena",
-                        pace: "Blitz 5+3",
-                        stake: 250,
-                        win: 475.00,
-                        net: "+$225.00",
-                        tag: "Whales Club 💎",
-                        tagColor: "bg-win-fill/15 border-win/30 text-fg-win",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.tier}
-                        className="flex items-center justify-between p-3 rounded-xl border border-line bg-surface/90 transition-all duration-200 hover:scale-[101%] hover:border-fg-muted/40 shadow-none"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#26A17B]/15 border border-[#26A17B]/30 text-[#26A17B]">
-                            <UsdtIcon className="size-4" />
-                          </div>
-                          <div className="flex flex-col min-w-0">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-semibold text-fg text-caption">
-                                ${item.stake} USDT
-                              </span>
-                              <span className="text-fg-muted text-caption hidden sm:inline">
-                                ({item.tier})
-                              </span>
-                              <span className={`rounded-full border px-1.5 py-0.2 text-caption font-semibold ${item.tagColor}`}>
-                                {item.tag}
-                              </span>
+                    {STAKE_LADDER.map((item) => {
+                      const win = winnerReceives(item.stake);
+                      return (
+                        <div key={item.tier} className="stake-row">
+                          <span className="stake-row-mark"><UsdtIcon /></span>
+                          <div className="stake-row-main">
+                            <div className="stake-row-title">
+                              <strong>${item.stake} USDT</strong>
+                              <span>{item.tier}</span>
                             </div>
-                            <span className="font-mono text-caption text-fg-muted">
-                              Pace: {item.pace}
-                            </span>
+                            <MetaLine items={[`Pace: ${item.pace}`, item.tag]} />
+                          </div>
+                          <div className="stake-row-value">
+                            <strong>{usd(win)} USDT</strong>
+                            <span>Net: +{usd(win - item.stake)}</span>
                           </div>
                         </div>
-
-                        <div className="text-right shrink-0 ps-2">
-                          <span className="font-mono font-bold text-fg-win block text-caption">
-                            ${item.win.toFixed(2)} USDT
-                          </span>
-                          <span className="text-caption font-mono text-fg-muted">
-                            Net: {item.net}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </AnimatedList>
-
                 </div>
-
-                <div className="relative z-10 flex flex-wrap gap-3 items-center justify-between border-t border-line pt-3 text-caption text-fg-muted font-mono">
-                  <span>Fee split: 3% platform · 2% affiliate</span>
-                  <Link href="/wagers" className="text-fg-link hover:underline inline-flex items-center gap-1 font-sans font-semibold">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3 text-caption text-fg-muted">
+                  <MetaLine items={["Fee split: " + SETTLEMENT.platformFeePercent + "% platform", SETTLEMENT.referralFeePercent + "% affiliate"]} />
+                  <Link href="/wagers" className="link-inline inline-flex min-h-11 items-center gap-1.5 font-semibold text-fg">
                     Full math breakdown
                     <Icon name="arrow-right" size={14} />
                   </Link>
@@ -694,37 +519,26 @@ export default function HomePage() {
           </div>
 
           <div className="mt-6 rounded-2xl border border-line bg-surface p-5 sm:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <span className="eyebrow">Trending Guides &amp; Opening Weapons</span>
-              <Link href="/blog" className="text-caption font-mono font-semibold text-fg-link hover:underline inline-flex items-center gap-1">
-                Explore all 34 guides
-                <Icon name="arrow-right" size={13} />
+              <Link href="/blog" className="link-inline inline-flex min-h-11 items-center gap-1.5 text-caption font-semibold">
+                Explore all {getPublishedPosts().length} guides
+                <Icon name="arrow-right" size={14} />
               </Link>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { title: "Can You Make Money on Chess.com?", href: "/blog/can-you-make-money-on-chess-com", cat: "Chess Culture" },
-                { title: "The Fried Liver Attack: Punish f7", href: "/blog/the-fried-liver-attack-punish-weak-f7-pawns", cat: "Openings" },
-                { title: "Dirty Blitz Tricks & Mind Games", href: "/blog/dirty-blitz-tricks-and-psychological-warfare", cat: "Tactics" },
-                { title: "Smith-Morra Gambit: Beat Sicilian", href: "/blog/smith-morra-gambit-crush-the-sicilian-defense", cat: "Openings" },
-                { title: "Chess Rules for Beginners (Step-by-Step)", href: "/rules", cat: "FIDE Rules" },
-                { title: "Chess Cheating Scandals & Telemetry", href: "/blog/chess-cheating-scandals-and-stockfish-telemetry", cat: "Chess News" },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="group flex flex-col justify-between p-3.5 rounded-xl border border-line bg-inset/50 hover:bg-surface hover:border-line-strong transition-all"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-caption font-mono text-fg-muted uppercase tracking-wider">{item.cat}</span>
-                    <Icon name="arrow-up-right" size={14} className="text-fg-muted group-hover:text-fg transition-colors" />
-                  </div>
-                  <span className="text-body-sm font-medium text-fg group-hover:text-fg-link transition-colors line-clamp-1">
-                    {item.title}
-                  </span>
-                </Link>
+            <ul className="guide-links">
+              {TRENDING_GUIDES.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="guide-link">
+                    <span className="guide-link-cat">
+                      <span>{item.cat}</span>
+                      <Icon name="arrow-up-right" size={14} />
+                    </span>
+                    <span className="guide-link-title">{item.title}</span>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
 
@@ -761,7 +575,7 @@ export default function HomePage() {
             {/* Ambient atmospheric lighting */}
             <div className="pointer-events-none absolute -top-20 -left-20 size-80 rounded-full bg-win-fill/10 blur-3xl" aria-hidden="true" />
             <div className="pointer-events-none absolute -bottom-20 -right-20 size-80 rounded-full bg-fg-muted/10 blur-3xl" aria-hidden="true" />
-            <BorderBeam size={360} duration={14} colorFrom="#10b981" colorTo="#3b82f6" />
+            <BorderBeam size={360} duration={14} colorFrom="#10b981" colorTo="#3b82f6" radius={32} />
             <Badge tone="accent" icon="trophy" className="mb-4 relative z-10 self-center mx-auto">
               The Board Is Set
             </Badge>

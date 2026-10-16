@@ -27,7 +27,7 @@ export function WagerDemo() {
           <Badge tone="accent" icon="coins">
             Interactive Prize Calculator
           </Badge>
-          <span className="font-mono text-caption font-semibold text-fg bg-inset border border-line px-2.5 py-0.5 rounded-full">
+          <span className="text-caption font-semibold text-fg bg-inset border border-line px-2.5 py-0.5 rounded-full">
             95% Winner Payout
           </span>
         </div>
@@ -48,7 +48,7 @@ export function WagerDemo() {
           value={stake}
           onChange={setStake}
           renderLabel={(tier) => (
-            <span className="flex items-center gap-1 font-mono">
+            <span className="flex items-center gap-1">
               <UsdtIcon className="size-3.5 text-fg inline-block" />
               <span>{tier}</span>
             </span>
@@ -59,13 +59,13 @@ export function WagerDemo() {
         <dl className="wager-ledger grid gap-2.5 border-t border-line pt-4 text-body-sm tabular-nums [&_dd]:shrink-0 [&_dd]:whitespace-nowrap">
           <div className="flex justify-between items-center gap-4">
             <dt className="text-fg-muted">Combined pot (2 players)</dt>
-            <dd className="font-mono font-semibold text-fg">{fmt(pot)}</dd>
+            <dd className="font-semibold text-fg">{fmt(pot)}</dd>
           </div>
           <div className="flex justify-between items-center gap-4">
             <dt className="text-fg-muted">
               Platform infrastructure fee ({SETTLEMENT.platformFeePercent}%)
             </dt>
-            <dd className="font-mono text-fg-muted">
+            <dd className="text-fg-muted">
               {fmt((pot * SETTLEMENT.platformFeePercent) / 100)}
             </dd>
           </div>
@@ -73,21 +73,19 @@ export function WagerDemo() {
             <dt className="text-fg-muted">
               6-tier referral community pool ({SETTLEMENT.referralFeePercent}%)
             </dt>
-            <dd className="font-mono text-fg font-semibold">
+            <dd className="text-fg font-semibold">
               {fmt((pot * SETTLEMENT.referralFeePercent) / 100)}
             </dd>
           </div>
 
           {/* Winner Take Callout Box */}
           <div className="rounded-xl border border-line bg-inset p-4 my-1">
-            <div className="flex flex-wrap gap-2 items-center justify-between">
-              <dt className="text-caption text-fg-muted font-sans font-medium">
-                Winner claims (95% of pot)
-              </dt>
-              <span className="font-mono text-caption font-bold text-fg bg-inset px-2.5 py-0.5 rounded-full border border-line">
+            <dt className="flex flex-wrap items-center justify-between gap-2 text-caption font-medium text-fg-muted">
+              Winner claims (95% of pot)
+              <span className="rounded-full border border-line bg-inset px-2.5 py-0.5 text-caption font-bold text-fg">
                 +90% Net ROI
               </span>
-            </div>
+            </dt>
             <dd
               className="wager-result poster mt-1 text-fg font-bold flex items-baseline gap-2"
               aria-live="polite"
@@ -99,17 +97,17 @@ export function WagerDemo() {
 
           <div className="flex justify-between items-center gap-4 pt-1">
             <dt className="text-fg-muted">Net profit on win</dt>
-            <dd className="font-mono font-semibold text-fg">+{fmt(netGain)}</dd>
+            <dd className="font-semibold text-fg">+{fmt(netGain)}</dd>
           </div>
           <div className="flex justify-between items-center gap-4">
             <dt className="text-fg-muted">Max risk on defeat</dt>
-            <dd className="font-mono font-semibold text-fg">−{fmt(stake)}</dd>
+            <dd className="font-semibold text-fg">−{fmt(stake)}</dd>
           </div>
         </dl>
       </div>
 
       {/* Footer Status Bar */}
-      <div className="mt-5 pt-3.5 border-t border-line flex flex-wrap gap-2 items-center justify-between text-caption font-mono text-fg-muted">
+      <div className="mt-5 pt-3.5 border-t border-line flex flex-wrap gap-2 items-center justify-between text-caption text-fg-muted">
         <span className="flex items-center gap-1.5 text-fg font-semibold">
           <Icon name="shield-check" size={14} />
           Automated match escrow

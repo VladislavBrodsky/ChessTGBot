@@ -1,6 +1,5 @@
-import { Eyebrow, Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
-import { BorderBeam } from "@/components/magicui/border-beam";
+import { Eyebrow } from "@/components/ui/Badge";
+import { DetailCard, DetailGrid } from "@/components/ui/DetailCard";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { QrDock } from "@/components/QrDock";
@@ -105,7 +104,7 @@ export default function HowItWorksPage() {
         </PageHero>
         <section
           aria-labelledby="tempo-heading"
-          className="section-split"
+          className="section-split tempo-split"
         >
           <div>
             <span className="eyebrow">A game that fits your day</span>
@@ -127,105 +126,20 @@ export default function HowItWorksPage() {
           <h2 id="journey-heading" className="editorial-title mb-6">
             An opening anyone can learn
           </h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* Step 1: 2 cols */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
-              <BorderBeam size={280} duration={12} colorFrom="#3b82f6" colorTo="#10b981" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="accent" icon="lightning">
-                    Step 01
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Instant onboarding
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Open your new arena
-                </h3>
-                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
-                  Tap Play in Telegram. Web3Chess opens as a Mini App, with your Telegram profile ready to get started. No passwords, seed phrases, or separate app downloads required.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-win-fill" />
-                <span>One-tap Telegram launch · Zero friction</span>
-              </div>
-            </Card>
-
-            {/* Step 2: 1 col */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="neutral" icon="coins">
-                    Step 02
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Sub-cent fees
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Pick your pace
-                </h3>
-                <p className="text-body-sm text-fg-muted mb-4">
-                  Choose your time control and match stake. Practise against Stockfish A.I. for free, or join a real-money player match with a USDT stake on GRAM rails.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-fg-muted" />
-                <span>Free A.I. or USDT on GRAM</span>
-              </div>
-            </Card>
-
-            {/* Step 3: 1 col */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-1">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="neutral" icon="clock">
-                    Step 03
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    Bullet · Blitz · Rapid
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Meet your next rival
-                </h3>
-                <p className="text-body-sm text-fg-muted mb-4">
-                  Matchmaking considers your rating, time control, and stake. You can close the Mini App while you wait; the bot notifies you in chat the second an opponent is paired.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-caution-soft" />
-                <span>Smart ELO matchmaking</span>
-              </div>
-            </Card>
-
-            {/* Step 4: 2 cols */}
-            <Card className="flex flex-col justify-between p-6 bg-surface border border-line relative overflow-hidden group lg:col-span-2">
-              <BorderBeam size={280} duration={14} colorFrom="#10b981" colorTo="#059669" />
-              <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <Badge tone="accent" icon="shield-check">
-                    Step 04
-                  </Badge>
-                  <span className="font-mono text-caption text-fg-muted font-medium">
-                    95% winner payout
-                  </span>
-                </div>
-                <h3 className="text-heading-sm font-medium tracking-tight mb-2">
-                  Make every move count
-                </h3>
-                <p className="text-body text-fg-muted max-w-[50ch] mb-4">
-                  Play on the board while the backend engine validates legal moves and tracks the clock. Decided matches immediately settle 95% of the pot to your balance. Withdraw with one tap in bot chat.
-                </p>
-              </div>
-              <div className="relative z-10 flex items-center gap-2 pt-3 border-t border-line text-caption font-mono text-fg-muted">
-                <span className="size-2 rounded-full bg-win-fill" />
-                <span>Instant pot credit · Bot confirmed withdrawal</span>
-              </div>
-            </Card>
-          </div>
+          <DetailGrid>
+            <DetailCard span="wide" tone="accent" icon="lightning" badge="Step 01" status="Instant onboarding" title="Open your new arena" meta="One-tap Telegram launch · Zero friction">
+              <p>Tap Play in Telegram. Web3Chess opens as a Mini App, with your Telegram profile ready to get started. No passwords, seed phrases, or separate app downloads required.</p>
+            </DetailCard>
+            <DetailCard icon="coins" badge="Step 02" status="Sub-cent fees" title="Pick your pace" meta="Free A.I. or USDT on GRAM">
+              <p>Choose your time control and match stake. Practise against Stockfish A.I. for free, or join a real-money player match with a USDT stake on GRAM rails.</p>
+            </DetailCard>
+            <DetailCard icon="clock" badge="Step 03" status="Bullet · Blitz · Rapid" title="Meet your next rival" meta="Smart ELO matchmaking">
+              <p>Matchmaking considers your rating, time control, and stake. You can close the Mini App while you wait; the bot notifies you in chat the second an opponent is paired.</p>
+            </DetailCard>
+            <DetailCard span="wide" tone="accent" icon="shield-check" badge="Step 04" status="95% winner payout" title="Make every move count" meta="Instant pot credit · Bot confirmed withdrawal">
+              <p>Play on the board while the backend engine validates legal moves and tracks the clock. Decided matches immediately settle 95% of the pot to your balance. Withdraw with one tap in bot chat.</p>
+            </DetailCard>
+          </DetailGrid>
         </section>
         <section id="ecosystem" aria-labelledby="ecosystem-heading">
           <div className="section-index">
@@ -264,24 +178,24 @@ export default function HowItWorksPage() {
         </section>
         <section data-surface="ink" className="statement-panel">
           <Eyebrow>Before you sit down</Eyebrow>
-          <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_.7fr] lg:items-end">
-            <div>
-              <h2 className="poster text-heading-xl">
-                Know the rules
-                <br />
-                Enjoy the game
-              </h2>
-              <p className="mt-5 max-w-[48ch] text-body text-fg-muted">
+          <div className="statement-cta">
+            <h2 className="poster text-heading-xl">
+              Know the rules
+              <br />
+              Enjoy the game
+            </h2>
+            <div className="statement-cta-copy">
+              <p className="text-body">
                 Matches run on authoritative server clocks. If your connection
                 drops, reconnect promptly — the clock keeps ticking to guarantee
                 fair pacing for both sides. Support is available 24/7 in the
                 Telegram bot chat.
               </p>
+              <ButtonLink href="/fair-play" variant="secondary">
+                Read fair play &amp; match rules
+                <Icon name="arrow-right" size={16} />
+              </ButtonLink>
             </div>
-            <ButtonLink href="/fair-play" variant="secondary">
-              Read fair play &amp; match rules
-              <Icon name="arrow-right" size={16} />
-            </ButtonLink>
           </div>
         </section>
       </main>

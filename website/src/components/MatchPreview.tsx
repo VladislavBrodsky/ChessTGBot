@@ -35,14 +35,14 @@ export function MatchPreview() {
     <Card className="match-preview p-6 bg-surface border border-line rounded-2xl relative overflow-hidden" data-interactive-workspace>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Eyebrow>Matchmaker tempo selector</Eyebrow>
-        <span className={`font-mono text-caption font-semibold px-2 py-0.5 rounded-full border ${badges[time].color}`}>
+        <span className={`rounded-full border px-2.5 py-0.5 text-caption font-semibold ${badges[time].color}`}>
           {badges[time].tag}
         </span>
       </div>
 
       <div className="my-5 flex flex-wrap gap-2 items-center justify-between">
         <div>
-          <p className="font-mono text-overline uppercase text-fg-muted">
+          <p className="text-caption font-medium text-fg-muted">
             {names[time]}
           </p>
           <p
@@ -71,23 +71,17 @@ export function MatchPreview() {
         {descriptions[time]}
       </p>
 
-      {/* Safe Space Clock & Matchmaking Guarantees */}
-      <div className="space-y-2 border-t border-line pt-4 text-caption font-mono text-fg-muted">
-        <div className="flex flex-wrap gap-2 items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-inset" />
-            Lag compensation
-          </span>
-          <span className="text-fg font-semibold">FIDE-standard</span>
+      {/* Clock and connection rules */}
+      <dl className="match-preview-rules">
+        <div>
+          <dt><Icon name="clock" size={16} />Lag compensation</dt>
+          <dd>FIDE-standard</dd>
         </div>
-        <div className="flex flex-wrap gap-2 items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <Icon name="shield-check" size={13} className="text-fg" />
-            Disconnect protection
-          </span>
-          <span className="text-fg font-semibold">60s forfeit timer</span>
+        <div>
+          <dt><Icon name="shield-check" size={16} />Disconnect protection</dt>
+          <dd>60s forfeit timer</dd>
         </div>
-      </div>
+      </dl>
     </Card>
   );
 }
