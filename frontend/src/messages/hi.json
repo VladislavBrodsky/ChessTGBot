@@ -632,6 +632,8 @@
     "system_warning": "सिस्टम चेतावनी",
     "waiting_opponent_title": "प्रतिद्वंद्वी की प्रतीक्षा",
     "share_invite_hint": "शुरू करने के लिए आमंत्रण लिंक शेयर करें",
+    "share_invite_link": "आमंत्रण लिंक शेयर करें",
+    "invite_link_copied": "आमंत्रण लिंक कॉपी हो गया",
     "free_match": "मुफ़्त मैच",
     "invite_on_telegram": "Telegram पर आमंत्रित करें",
     "cancel_refund_match": "रद्द करें और राशि वापस पाएँ",

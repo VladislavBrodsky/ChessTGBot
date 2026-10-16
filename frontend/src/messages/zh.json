@@ -632,6 +632,8 @@
     "system_warning": "系统警告",
     "waiting_opponent_title": "等待对手",
     "share_invite_hint": "分享邀请链接以开始",
+    "share_invite_link": "分享邀请链接",
+    "invite_link_copied": "邀请链接已复制",
     "free_match": "免费对局",
     "invite_on_telegram": "在 Telegram 上邀请",
     "cancel_refund_match": "取消并退还赌注",

@@ -632,6 +632,8 @@
     "system_warning": "Aviso del sistema",
     "waiting_opponent_title": "Esperando al rival",
     "share_invite_hint": "Comparte el enlace de invitación para empezar",
+    "share_invite_link": "Compartir enlace de invitación",
+    "invite_link_copied": "Enlace de invitación copiado",
     "free_match": "Partida gratis",
     "invite_on_telegram": "Invitar por Telegram",
     "cancel_refund_match": "Cancelar y reembolsar",

@@ -33,6 +33,13 @@
 .app-content { padding-top: calc(12px + var(--app-safe-top)); }
 .app-content--mobile { padding-bottom: calc(var(--nav-height) + 24px + var(--app-safe-bottom)); }
 .app-content--desktop { padding-inline-start: var(--sidebar-width); padding-bottom: 40px; }
+/*
+ * A live game swaps the navbar for the fixed Resign/Draw tray (GameActionBar), so content clears the tray's measured
+ * footprint (--action-tray-space: bottom offset + height) plus a 16px gap. The fallback is the tallest default tray
+ * (Telegram Web offset) for the frame before the first measurement. Utility pb-* classes cannot do this: they lose to
+ * the unlayered rules above.
+ */
+.app-content.app-content--action-tray { padding-bottom: calc(var(--action-tray-space, 142px) + 16px + var(--app-safe-bottom)); }
 .app-page {
   width: 100%;
   max-width: var(--page-width);

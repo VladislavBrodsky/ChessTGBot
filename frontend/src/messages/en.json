@@ -632,6 +632,8 @@
     "system_warning": "System Warning",
     "waiting_opponent_title": "Waiting for Opponent",
     "share_invite_hint": "Share the invite code to begin",
+    "share_invite_link": "Share invite link",
+    "invite_link_copied": "Invite link copied",
     "free_match": "Free Match",
     "invite_on_telegram": "Invite on Telegram",
     "cancel_refund_match": "Cancel & Refund Match",

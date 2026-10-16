@@ -632,6 +632,8 @@
     "system_warning": "Системное предупреждение",
     "waiting_opponent_title": "Ожидание оппонента",
     "share_invite_hint": "Поделитесь ссылкой для дуэли",
+    "share_invite_link": "Поделиться ссылкой-приглашением",
+    "invite_link_copied": "Ссылка-приглашение скопирована",
     "free_match": "Бесплатно",
     "invite_on_telegram": "Пригласить в Telegram",
     "cancel_refund_match": "Отменить и вернуть средства",

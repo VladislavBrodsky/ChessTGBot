@@ -632,6 +632,8 @@
     "system_warning": "システム警告",
     "waiting_opponent_title": "対戦相手を待っています",
     "share_invite_hint": "招待リンクを共有して開始",
+    "share_invite_link": "招待リンクをシェア",
+    "invite_link_copied": "招待リンクをコピーしました",
     "free_match": "フリーマッチ",
     "invite_on_telegram": "Telegramで招待",
     "cancel_refund_match": "キャンセルして返金",

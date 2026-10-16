@@ -50,6 +50,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
 
   const [copied, setCopied] = useState(false);
+  const [actionTrayFootprint, setActionTrayFootprint] = useState<number | null>(null);
   const [showCrashOverlay, setShowCrashOverlay] = useState(false);
   const [autoPromote, setAutoPromote] = useState<boolean>(false);
   const [gameNotice, setGameNotice] = useState<{
@@ -679,8 +680,16 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     );
   }
 
+  // The fixed Resign/Draw tray covers the bottom of the screen during play; the content pads by its measured footprint.
+  const showActionTray = !isGameOver && !isWaiting;
+
   return (
-    <LayoutWrapper className="pb-[calc(112px+var(--app-safe-bottom))]">
+    <LayoutWrapper
+      className={showActionTray ? 'app-content--action-tray' : ''}
+      contentStyle={showActionTray && actionTrayFootprint !== null
+        ? { '--action-tray-space': `${actionTrayFootprint}px` } as React.CSSProperties
+        : undefined}
+    >
       {/* Header / Nav */}
       <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex justify-between items-center mb-4 relative z-10 px-2 mt-2 mx-auto">
         <div className="flex items-center gap-3">
@@ -845,7 +854,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               className="ui-tap-target w-full action-button py-[18px] rounded-2xl normal-case flex items-center justify-center gap-3 cursor-pointer shadow-sm"
             >
               {copied ? <FaCheck /> : <FaCopy />}
-              <span>{copied ? "Invite link copied" : "Share invite link"}</span>
+              <span>{copied ? tg('invite_link_copied') : tg('share_invite_link')}</span>
             </motion.button>
           )}
         </div>
@@ -902,9 +911,10 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       />
 
       {/* Bottom Action Bar — replacing Navbar during match */}
-      {!isGameOver && !isWaiting && (
+      {showActionTray && (
         <GameActionBar
           isTelegramWeb={isTelegramWeb}
+          onFootprintChange={setActionTrayFootprint}
           onResign={handleResign}
           onOfferDraw={handleOfferDraw}
           tResign={tg('resign')}

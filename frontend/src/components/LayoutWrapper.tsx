@@ -20,12 +20,14 @@ import { useTelegramBackButton } from '@/hooks/useTelegramBackButton';
 interface LayoutWrapperProps {
     children: React.ReactNode;
     className?: string;
+    /** Inline style for the content column, e.g. CSS custom properties a page's className reads. */
+    contentStyle?: React.CSSProperties;
     bgClass?: string;
     hideHeaderControls?: boolean;
 }
 
 
-export default function LayoutWrapper({ children, className = "", bgClass = "bg-brand-void", hideHeaderControls = false }: LayoutWrapperProps) {
+export default function LayoutWrapper({ children, className = "", contentStyle, bgClass = "bg-brand-void", hideHeaderControls = false }: LayoutWrapperProps) {
     const locale = useLocale();
     const t = useTranslations('Index');
   const tc = useTranslations('Common');
@@ -89,7 +91,7 @@ export default function LayoutWrapper({ children, className = "", bgClass = "bg-
                 isDesktopBrowser
                     ? 'app-content--desktop'
                     : 'app-content--mobile'
-            } ${className}`}>
+            } ${className}`} style={contentStyle}>
                 {children}
             </div>
 

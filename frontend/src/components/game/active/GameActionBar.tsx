@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FaFlag, FaHandshake } from 'react-icons/fa';
 
@@ -10,6 +10,11 @@ export interface GameActionBarProps {
   onOfferDraw: () => void;
   tResign: string;
   tOfferDraw: string;
+  /**
+   * Reports how much of the viewport bottom the tray covers, in px, excluding --app-safe-bottom (bottom offset + the
+   * tray's own height). The page pads its content by this so nothing scrolls to a resting place underneath the tray.
+   */
+  onFootprintChange?: (px: number) => void;
 }
 
 export function GameActionBar({
@@ -18,14 +23,32 @@ export function GameActionBar({
   onOfferDraw,
   tResign,
   tOfferDraw,
+  onFootprintChange,
 }: GameActionBarProps) {
+  const bottomOffset = isTelegramWeb ? 66 : 16;
+  const trayRef = useRef<HTMLDivElement>(null);
+
+  // offsetHeight ignores the slide-in transform, so the footprint is the resting one from the first frame.
+  // ResizeObserver catches font loading and labels that wrap in longer locales.
+  useLayoutEffect(() => {
+    const tray = trayRef.current;
+    if (!tray || !onFootprintChange) return;
+    const report = () => onFootprintChange(bottomOffset + tray.offsetHeight);
+    report();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(report);
+    observer.observe(tray);
+    return () => observer.disconnect();
+  }, [bottomOffset, onFootprintChange]);
+
   return (
     <motion.div
+      ref={trayRef}
       initial={{ x: "-50%", y: 80, opacity: 0 }}
       animate={{ x: "-50%", y: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       style={{
-        bottom: `calc(${isTelegramWeb ? '66px' : '16px'} + var(--app-safe-bottom))`
+        bottom: `calc(${bottomOffset}px + var(--app-safe-bottom))`
       }}
       className="fixed left-1/2 w-[92%] max-w-md z-50 flex gap-3 bg-brand-surface border border-brand-border p-3 rounded-2xl shadow-premium"
     >
