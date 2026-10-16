@@ -843,8 +843,7 @@ textarea,
 @layer components {
   .hero-context { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.5rem; max-width: 100%; font-size: var(--text-caption); line-height: 1.5; }
   .hero-context > .site-badge { align-self: center; }
-  .hero-context-details { color: var(--fg-muted); text-wrap: balance; }
-  .hero-context-divider { color: var(--fg-muted); }
+  .hero-context-details { min-width: 0; color: var(--fg-muted); }
   .site-currency-badge { display: inline-flex; flex: none; align-items: center; gap: 0.3125rem; min-height: 1.75rem; padding: 0.125rem 0.5rem; border: 1px solid color-mix(in srgb, var(--currency-color) 24%, transparent); border-radius: var(--radius-pill); background: color-mix(in srgb, var(--currency-color) 8%, var(--surface-canvas)); color: var(--currency-ink); font-family: var(--font-sans); font-size: var(--text-caption); line-height: 1.4; font-weight: 600; white-space: nowrap; }
   .site-currency-mark { display: grid; place-items: center; flex: none; width: 1rem; height: 1rem; border-radius: 50%; background: var(--currency-color); color: var(--color-white); }
   .site-currency-mark svg { width: 0.6875rem; height: 0.6875rem; }
@@ -856,7 +855,7 @@ textarea,
   .page-flow, .home-main { padding-block-end: max(4.5rem, calc(4.75rem + var(--site-safe-bottom))); }
   @media (max-width: 767px) {
     .hero-context { flex-direction: column; gap: 0.5rem; width: 100%; text-align: center; }
-    .hero-context-divider { display: none; }
+    .hero-context-details .meta-line-track { justify-content: center; }
     .hero-context-details { max-width: 100%; }
     .hero-payment-support { flex-direction: column; gap: 0.5rem; }
   }
@@ -1415,6 +1414,8 @@ textarea,
   /* --fg-win (#047857) is 4.35:1 on the gray canvas; small win text placed directly on the canvas uses this
      darker ink (6:1). On white cards --fg-win already passes. */
   .win-ink { color: #065f46; }
+
+  @media (min-width: 640px) { .site-dock { flex-wrap: nowrap; } }
 
   /* Live strip items: proportional figures read better than mono in a moving row. */
   .live-strip-item { display: inline-flex; align-items: center; gap: 0.5rem; flex: none; margin-inline: 0.25rem; padding: 0.25rem 0.875rem; border: 1px solid var(--line-hairline); border-radius: var(--radius-pill); background: var(--surface-card); font-size: var(--text-caption); line-height: 1.5; white-space: nowrap; }

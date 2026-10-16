@@ -1,5 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import { Icon, type IconName } from "@/icons";
+import { MetaLine } from "./MetaLine";
 
 type BadgeProps = Omit<ComponentProps<"span">, "onClick"> & {
   tone?: "neutral" | "accent" | "outline";
@@ -16,15 +17,15 @@ export function Badge({ tone = "neutral", icon, className = "", children, ...pro
   );
 }
 
-/** A short product label with separate, readable qualifiers; copy stays verbatim. */
+/** A short product label with separate, readable qualifiers; copy stays verbatim. The qualifiers use
+ *  MetaLine, so a narrow column never leaves a "·" hanging at the end of a line. */
 export function HeroContext({ children, ...props }: BadgeProps & { children: string }) {
   const [primary, ...details] = children.split(" · ");
   if (details.length === 0) return <Badge {...props}>{children}</Badge>;
   return (
     <div className="hero-context">
       <Badge {...props}>{primary}</Badge>
-      <span className="hero-context-divider" aria-hidden="true"> · </span>
-      <span className="hero-context-details">{details.join(" · ")}</span>
+      <MetaLine className="hero-context-details" items={details} />
     </div>
   );
 }

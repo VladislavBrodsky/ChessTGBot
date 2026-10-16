@@ -131,7 +131,7 @@ export function RewardsBento() {
         </div>
       </Card>
       <Card className="reward-panel" role="article" aria-labelledby="economics-card-title">
-        <FeatureCardIntro id="economics-card-title" label="Modern Edge" status="Web3 vs 2" icon="lightning" title="Chess That Pays" body="Legacy chess keeps 100%. Web3Chess returns 95% of pot to winners." href="/fair-play" action="Fair-play" neutral />
+        <FeatureCardIntro id="economics-card-title" label="Modern Edge" status="Web3 vs 2" icon="lightning" title="Chess That Pays" body="Legacy chess keeps 100%. Web3Chess returns 95% of pot to winners." href="/fair-play" action="Fair-play" />
         <div className="reward-demo">
           <div className="demo-heading"><span>Economics</span><span>95% vs 0%</span></div>
           <ul className="economics-preview-list">

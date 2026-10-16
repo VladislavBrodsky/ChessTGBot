@@ -104,7 +104,8 @@ The remaining language-route and launch recipes describe future work; they are n
 - **Figures:** Onest's tabular `1` has a wide advance (`$1 50.00`, `1 4ms`). Use `tabular-nums` only on Barlow figures and count-ups; leave Onest amounts proportional.
 - **BorderBeam** is for at most one focal ink panel per page, passes its host `radius`, and hides under reduced motion (a frozen beam reads as a broken corner). No beams on content cards, no glow shadows, no ping dots outside the LIVE badge, no emoji in labels.
 - **Win text on the canvas:** `--fg-win` is 4.35:1 on `#E5E5E5`; small win text sitting directly on the canvas uses `.win-ink` (6:1). On white cards `--fg-win` passes.
-- **Globe:** the light COBE globe uses `diffuse: 0.4`, `mapBrightness: 1.2`, white base; higher diffuse washes the land dots out except at the rim.
+- **Globe:** the light COBE globe uses `diffuse: 0.4`, `mapBrightness: 1.2`, white base; higher diffuse washes the land dots out except at the rim. COBE decodes its land map after the first frame, so a paused or reduced-motion globe still renders a short warm-up (60 frames); a single frame shows an empty sphere.
+- **`HeroContext`** renders its qualifiers with `MetaLine`, so a narrow tablet column never leaves the badge followed by a hanging `·`.
 - **Piece glyphs:** `ChessPieceIcon` supplies line-art pieces for the ecosystem orbit and the Rules piece cards; pieces are ink, not state colors.
 
 ## 1. Brand foundation

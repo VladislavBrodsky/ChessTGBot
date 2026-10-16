@@ -275,6 +275,9 @@ export function GlobeShowcase() {
       return;
     }
 
+    // COBE decodes its land map asynchronously. A paused or reduced-motion globe still draws for a short
+    // warm-up so the continents appear; otherwise the single first frame shows an empty sphere.
+    let warmupFrames = 60;
     const animate = () => {
       if (document.hidden) {
         animationRef.current = requestAnimationFrame(animate);
@@ -303,7 +306,8 @@ export function GlobeShowcase() {
       });
 
       pointerInteractionMovement.current *= 0.94;
-      if (!reduced && !paused) animationRef.current = requestAnimationFrame(animate);
+      warmupFrames -= 1;
+      if ((!reduced && !paused) || warmupFrames > 0) animationRef.current = requestAnimationFrame(animate);
     };
 
     animate();

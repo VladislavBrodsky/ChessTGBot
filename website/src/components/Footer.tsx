@@ -31,7 +31,7 @@ export async function Footer() {
             </p>
           </div>
 
-          <div className="w-full md:w-auto flex justify-center sm:justify-end">
+          <div className="flex w-full justify-center sm:justify-end md:w-auto md:shrink-0">
             <Dock iconMagnification={50} iconDistance={90} className="bg-inset/80 border-line">
               <a
                 href={telegramLink()}

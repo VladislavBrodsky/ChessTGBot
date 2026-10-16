@@ -1,5 +1,6 @@
 import { Card } from "./Card";
 import { Icon, type IconName } from "@/icons";
+import { MetaLine } from "./MetaLine";
 
 export function FeatureList({ items }: { items: { icon: IconName; title: string; body: string; status?: string }[] }) {
   return (
@@ -9,7 +10,7 @@ export function FeatureList({ items }: { items: { icon: IconName; title: string;
           <span className="feature-list-icon"><Icon name={item.icon} size={20} /></span>
           <div className="feature-list-content">
             <h3>{item.title}</h3>
-            {item.status && <span className="feature-list-status">{item.status}</span>}
+            {item.status && <MetaLine className="feature-list-status" items={item.status} />}
             <p>{item.body}</p>
           </div>
         </li>
