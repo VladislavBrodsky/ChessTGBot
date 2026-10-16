@@ -11,7 +11,7 @@ import { CountUp } from '@/components/ui/CountUp';
 interface MatchOverModalProps {
   matchResultLabel: string; resultColor: string; eloChange?: string; netPayout: number | null; wagerAmount: number;
   outcome?: 'win' | 'loss' | 'draw' | 'aborted'; rematchStatus: 'idle' | 'offered_by_me' | 'waiting';
-  onShowRematchChoice: () => void; onShareGame: () => void; newElo?: number; copied?: boolean; xpGained?: number; isBotGame?: boolean;
+  onShowRematchChoice: () => void; onShareGame?: () => void; newElo?: number; copied?: boolean; xpGained?: number; isBotGame?: boolean;
 }
 /** One accessible result surface; all readouts start at their confirmed value. */
 export default function MatchOverModal({ matchResultLabel, eloChange, netPayout, wagerAmount, outcome = 'draw', rematchStatus, onShowRematchChoice, onShareGame, newElo, copied = false, xpGained }: MatchOverModalProps) {
@@ -22,7 +22,7 @@ export default function MatchOverModal({ matchResultLabel, eloChange, netPayout,
   return <Modal isOpen onClose={leave} title={matchResultLabel} description={t('verification_complete')} maxWidth="sm"
     footer={<div className="space-y-3">
       <Button variant="primary" className="w-full" disabled={rematchStatus === 'waiting'} onClick={onShowRematchChoice}>{rematchStatus === 'waiting' ? t('pending_opponent') : t('revenge_match')}</Button>
-      <div className="grid grid-cols-2 gap-2"><Button variant="secondary" leftIcon={<FaRedo />} onClick={leave}>{t('to_lobby')}</Button><Button variant="secondary" leftIcon={<FaShareAlt />} onClick={onShareGame}>{copied ? t('copied_success') : t('share_ledger')}</Button></div>
+      <div className={`grid gap-2 ${onShareGame ? 'grid-cols-2' : ''}`}><Button variant="secondary" leftIcon={<FaRedo />} onClick={leave}>{t('to_lobby')}</Button>{onShareGame && <Button variant="secondary" leftIcon={<FaShareAlt />} onClick={onShareGame}>{copied ? t('copied_success') : t('share_ledger')}</Button>}</div>
     </div>}>
     <dl className="result-metrics">
       <div><dt>{t('global_elo')}</dt><dd>{newElo === undefined ? '—' : <><CountUp value={newElo} /> ELO</>}{eloChange && <span className="t-caption text-brand-muted"> ({eloChange})</span>}</dd></div>

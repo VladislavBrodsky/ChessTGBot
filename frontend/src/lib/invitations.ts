@@ -6,6 +6,12 @@ export function mainMiniAppLink(bot: string, parameter: string): string {
   return `https://t.me/${username}?startapp=${encodeURIComponent(parameter)}`;
 }
 
+/** A player's personal invitation (ref_): the friend can send a free play request. Null without a valid code. */
+export function friendInvitationLink(bot: string, referralCode: unknown): string | null {
+  if (typeof referralCode !== 'string' || !/^[A-Za-z0-9_-]{1,60}$/.test(referralCode)) return null;
+  try { return mainMiniAppLink(bot, `ref_${referralCode}`); } catch { return null; }
+}
+
 export function readLaunchParameter(location: Pick<Location, 'search' | 'hash'>, sdkParameter?: string): string {
   const query = new URLSearchParams(location.search);
   const hash = new URLSearchParams(location.hash.replace(/^#/, ''));

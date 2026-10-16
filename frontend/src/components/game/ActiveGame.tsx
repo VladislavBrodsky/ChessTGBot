@@ -1,4 +1,4 @@
-import { mainMiniAppLink } from '@/lib/invitations';
+import { friendInvitationLink, mainMiniAppLink, shareInvitation } from '@/lib/invitations';
 import { gameResultSummary } from '@/lib/gameResult';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -616,21 +616,17 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     });
   };
 
-  const shareGame = () => {
-    const link = typeof window !== 'undefined' ? window.location.href : "";
-    const shareText = `I played a chess match on Web3Chess! ♟️⚡️`;
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`;
+  // Once both players are in, there is nothing left to join and no spectator view (the server
+  // refuses non-players), and the page URL opens outside Telegram. The in-game and result
+  // shares send the player's personal invitation instead, so a friend can ask for the next game.
+  const friendInviteLink = friendInvitationLink(botUsername, userStats?.referral_code);
+  const shareFriendInvite = (shareText: string) => {
+    if (!friendInviteLink) return;
+    telegramHaptic('selection');
+    shareInvitation(friendInviteLink, shareText);
 
-    if (window.Telegram?.WebApp) {
-      try {
-        window.Telegram.WebApp.openTelegramLink(shareUrl);
-      } catch (err) {
-        console.warn("Telegram openTelegramLink failed", err);
-      }
-    }
-    
     // Copy to clipboard as backup / confirmation
-    copyToClipboard(link).then((ok) => {
+    copyToClipboard(friendInviteLink).then((ok) => {
       if (!ok) return;
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -846,15 +842,15 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           />
 
           {/* Action Bar */}
-          {!isBotGame && !isGameOver && (
+          {!isBotGame && !isGameOver && friendInviteLink && (
             <motion.button type="button"
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
-              onClick={shareGame}
+              onClick={() => shareFriendInvite(tg('share_text_live'))}
               className="ui-tap-target w-full action-button py-[18px] rounded-2xl normal-case flex items-center justify-center gap-3 cursor-pointer shadow-sm"
             >
               {copied ? <FaCheck /> : <FaCopy />}
-              <span>{copied ? tg('invite_link_copied') : tg('share_invite_link')}</span>
+              <span>{copied ? tg('invite_link_copied') : tg('invite_friend_next')}</span>
             </motion.button>
           )}
         </div>
@@ -872,7 +868,9 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             wagerAmount={gameState?.wager_amount || 0}
             rematchStatus={rematchStatus}
             onShowRematchChoice={isBotGame ? startBotGameRevenge : () => setShowRematchChoice(true)}
-            onShareGame={shareGame}
+            onShareGame={friendInviteLink
+              ? () => shareFriendInvite(tg(outcome === 'win' && !isBotGame ? 'share_text_won' : 'share_text_played'))
+              : undefined}
             newElo={myNewElo}
             copied={copied}
             xpGained={gameState ? (isWhite ? gameState.white_xp_gained : gameState.black_xp_gained) : undefined}

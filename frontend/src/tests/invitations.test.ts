@@ -1,4 +1,4 @@
-import { isCampaignParameter, mainMiniAppLink, readLaunchParameter } from '@/lib/invitations';
+import { friendInvitationLink, isCampaignParameter, mainMiniAppLink, readLaunchParameter } from '@/lib/invitations';
 
 test('normalizes the reported @bot URL and uses the configured Main Mini App', () => {
   expect(mainMiniAppLink('@chess_matbot', '4e044c66')).toBe('https://t.me/chess_matbot?startapp=4e044c66');
@@ -6,6 +6,15 @@ test('normalizes the reported @bot URL and uses the configured Main Mini App', (
   expect(() => mainMiniAppLink('bot/evil', 'ref_friend')).toThrow();
   expect(() => mainMiniAppLink('chess_matbot', '../game')).toThrow();
   expect(() => mainMiniAppLink('chess_matbot', 'a'.repeat(65))).toThrow();
+});
+
+test('builds the personal ref_ invitation only from a valid referral code', () => {
+  expect(friendInvitationLink('@chess_matbot', 'AbC_12-x')).toBe('https://t.me/chess_matbot?startapp=ref_AbC_12-x');
+  expect(friendInvitationLink('chess_matbot', undefined)).toBeNull();
+  expect(friendInvitationLink('chess_matbot', '')).toBeNull();
+  expect(friendInvitationLink('chess_matbot', 'bad code')).toBeNull();
+  expect(friendInvitationLink('chess_matbot', 'a'.repeat(61))).toBeNull();
+  expect(friendInvitationLink('bot/evil', 'friend')).toBeNull();
 });
 
 test('preserves URL intent before a stale SDK parameter and accepts Telegram query/hash formats', () => {
