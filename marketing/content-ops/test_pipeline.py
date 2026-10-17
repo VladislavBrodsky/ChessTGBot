@@ -58,6 +58,23 @@ class Creative(unittest.TestCase):
     def test_consistent_creative_passes(self):
         self.assertEqual(renderer.check(self.post), [])
 
+    def test_intel_template_passes(self):
+        post = {
+            "creative": {
+                "template": "intel",
+                "headline": "Why Masters NEVER Premove",
+                "cta_label": "Analyze live position",
+                "category": "ENDGAME DISCIPLINE",
+                "score": "98.4 / 100",
+                "metrics": [
+                    {"val": "+3.42", "label": "EVAL CRUSH"},
+                    {"val": "0.04s", "label": "LATENCY"},
+                ],
+                "blueprint": "24.Rd7! cuts the king along the 7th rank",
+            }
+        }
+        self.assertEqual(renderer.check(post), [])
+
     def test_image_must_show_the_checked_position(self):
         other = {**self.post, "creative": {**self.post["creative"], "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1"}}
         self.assertTrue(any("differs" in i for i in renderer.check(other)))

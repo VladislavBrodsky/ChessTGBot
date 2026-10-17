@@ -1,0 +1,22 @@
+{
+  "template": "intel",
+  "size": "square",
+  "theme": "ink",
+  "tag": "Intel #4092",
+  "tracker": "✦ INTEL #4092 · TACTICAL RADAR",
+  "telemetry": "Stockfish 17 · 0.04s",
+  "headline": "Why Masters NEVER Premove in *Rook* Endgames",
+  "subhead": "The microsecond difference between a winning cut and a stalemate",
+  "category": "ENDGAME DISCIPLINE / ROOK VS PAWN",
+  "score": "98.4 / 100 TACTICAL EDGE",
+  "title": "THE 7TH RANK SEIGE MATRIX",
+  "metrics": [
+    { "val": "+3.42", "label": "EVAL CRUSH", "accent": false },
+    { "val": "0.04s", "label": "LATENCY GATE", "accent": false },
+    { "val": "94.2%", "label": "CONVERSION", "accent": false },
+    { "val": "$500", "label": "ARENA POT", "accent": true }
+  ],
+  "blueprint": "24.Rd7! cuts the black king along the 7th rank with decisive initiative",
+  "command": "tg /intel 4092",
+  "cta_label": "Analyze live position"
+}

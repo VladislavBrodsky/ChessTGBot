@@ -12,15 +12,16 @@ from pathlib import Path
 from . import brand, queue
 
 ENGINE = queue.ROOT / "marketing" / "templates" / "tg"
-TEMPLATES = {"puzzle", "trap", "poll", "news", "culture", "tip", "rules", "product", "cover", "reward"}
+TEMPLATES = {"puzzle", "trap", "poll", "news", "culture", "tip", "rules", "product", "cover", "reward", "intel"}
 FEN_TEMPLATES = {"puzzle", "poll"}  # the position is the point of these templates
-SPEC_TEXT_FIELDS = ("headline", "subhead", "tag", "cta_label", "footer", "source", "reward_note")
+SPEC_TEXT_FIELDS = ("headline", "subhead", "tag", "cta_label", "footer", "source", "reward_note", "tracker", "category", "score", "title", "blueprint", "command", "telemetry")
 
 def _text(spec: dict) -> str:
     parts = [str(spec.get(k, "")) for k in SPEC_TEXT_FIELDS]
     parts += [str(o.get("label", "")) for o in spec.get("options", []) if isinstance(o, dict)]
     parts += [str(s) for s in spec.get("steps", [])]
     parts += [str(p.get("text", "")) + " " + str(p.get("label", "")) for p in spec.get("panels", []) if isinstance(p, dict)]
+    parts += [str(m.get("val", "")) + " " + str(m.get("label", "")) for m in spec.get("metrics", []) if isinstance(m, dict)]
     return re.sub(r"[*{}]", "", " ".join(parts).replace("\\n", " "))
 
 def check(post: dict) -> list[str]:

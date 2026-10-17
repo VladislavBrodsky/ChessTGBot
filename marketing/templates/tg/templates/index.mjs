@@ -10,5 +10,6 @@ import rules from './rules.mjs';
 import product from './product.mjs';
 import cover from './cover.mjs';
 import reward from './reward.mjs';
+import intel from './intel.mjs';
 
-export const TEMPLATES = Object.fromEntries([puzzle, trap, poll, news, culture, tip, rules, product, cover, reward].map((t) => [t.id, t]));
+export const TEMPLATES = Object.fromEntries([puzzle, trap, poll, news, culture, tip, rules, product, cover, reward, intel].map((t) => [t.id, t]));

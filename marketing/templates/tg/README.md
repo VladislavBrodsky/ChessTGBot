@@ -63,6 +63,7 @@ Per template:
   where permitted. You can lose your stake." is always rendered and cannot be removed. Also shows net win / loss.
 * **product** `steps` (3 titles) around the website's 3D sculpture. If the image mentions USDT matches, put the 18+ line in `footer`.
 * **reward** `steps` (exactly 3, 1–40 characters) + `reward_note` (1–120 characters). Ink theme only, using the game's existing Epic chess-chest art. The reward note must include the advertised odds; the caption must include qualification, duplicate handling, and virtual-only terms. `marketing/engagement/render-kit.mjs` exports the release kit in portrait, square and wide sizes. Never publish a free-box claim before the live campaign contract is enabled.
+* **intel** High-density visual intelligence bento card for educational, motivational, and treasury dispatches. `category` (breadcrumb hierarchy), `score` (tactical/stamina badge), `metrics` (2-4 items with `val`, `label`, optional `accent`), `blueprint` (actionable takeaway), optional `tracker` (eyebrow ID), `telemetry` (header latency/engine badge), `title` (card header), `command` (CLI bot instruction).
 * **cover** 1200x630 blog cover: `tag` = category, `headline` = title, optional `fen` (else the sculpture).
 
 ## QA gate (render fails with a list of problems)
