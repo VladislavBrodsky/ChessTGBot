@@ -5,7 +5,7 @@
   "category": "Tactical Matrix",
   "hook": "Checks. Captures. Threats. The 2-second scan that stops blunders",
   "text": "Checks. Captures. Threats. The 2-second scan that stops blunders\n\nGrandmasters do not calculate 15 moves deep in blitz.\n\nThey run a strict 3-step forcing filter before touching any piece.\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -48,5 +48,17 @@
     "ok": true,
     "skipped": false,
     "images": 1
+  },
+  "updated_at": "2026-10-17T06:39:27Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111346328080920739",
+    "reply_id": "2111346330803003826",
+    "root_url": "https://x.com/defi_ambassador/status/2111346328080920739"
+  },
+  "published": {
+    "root_id": "2111346328080920739",
+    "root_url": "https://x.com/defi_ambassador/status/2111346328080920739",
+    "at": "2026-10-17T06:39:27Z"
   }
 }

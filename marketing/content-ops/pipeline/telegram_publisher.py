@@ -178,3 +178,29 @@ def publish_due(now=None, dry_run: bool | None = None, limit: int = 5, day: str 
             queue.set_status(post, "published", published={"message_id": outcome["message_id"], "at": queue.iso(queue.utcnow())})
         report.append({"id": post["id"], **outcome})
     return report
+
+
+def notify_x_post_in_channel(post_id: str, hook: str, x_url: str, dry_run: bool | None = None) -> dict:
+    """Sends a cross-pollination notification to the Telegram channel linking to a new X post."""
+    token, channel = _credentials()
+    live = bool(token and channel) and dry_run is not True
+    clean_hook = hook.strip()
+    if clean_hook.endswith("."):
+        clean_hook = clean_hook[:-1]
+
+    text = (
+        f"⚡️ <b>New on X</b>\n\n"
+        f"<i>\"{clean_hook}\"</i>\n\n"
+        f"Jump in and test your calculation with the community on X 👇"
+    )
+    markup = {
+        "inline_keyboard": [
+            [{"text": "Solve & Debate on X ↗", "url": x_url}]
+        ]
+    }
+    if not live:
+        return {"dry_run": True, "post_id": post_id, "hook": clean_hook, "x_url": x_url}
+
+    msg_id = _deliver(token, channel, text, None, markup)
+    return {"dry_run": False, "post_id": post_id, "message_id": msg_id, "x_url": x_url}
+

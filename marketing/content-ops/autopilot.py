@@ -29,7 +29,7 @@ sys.path.insert(0, str(HERE))
 
 from agents.orchestrator import ContentEngineOrchestrator
 from agents.publisher import PublisherAgent
-from pipeline import queue, renderer, site_publisher, telegram_publisher
+from pipeline import analytics, queue, renderer, reply_sniper, site_publisher, telegram_publisher
 
 LOG_DIR = HERE / "state"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -179,6 +179,11 @@ def run_tick(
     force_next: bool = False,
     force_next_tg: bool = False,
     auto_replenish: Optional[bool] = None,
+    enable_sniper: bool = True,
+    min_sniper_spacing_minutes: int = 120,
+    force_sniper: bool = False,
+    audit_analytics: bool = False,
+    min_audit_spacing_minutes: int = 180,
 ) -> Dict[str, Any]:
     """Executes a single check-and-dispatch pass across all content channels."""
     now = queue.utcnow()
@@ -199,6 +204,8 @@ def run_tick(
         "articles_staged": 0,
         "next_up_x": None,
         "next_up_tg": None,
+        "sniper": None,
+        "audit": None,
     }
 
     # 1. Stage any approved blog articles to website
@@ -320,6 +327,49 @@ def run_tick(
         except Exception as e:
             logger.warning(f"Telegram reveals error: {e}")
 
+    # 4. Reply Sniper: comment on viral high-reach target tweets to siphon audience reach
+    if enable_sniper:
+        try:
+            sniper_res = reply_sniper.snipe_next_target(
+                dry_run=dry_run,
+                min_cooldown_minutes=min_sniper_spacing_minutes,
+                force=force_sniper,
+            )
+            results["sniper"] = sniper_res
+            if sniper_res.get("sniped"):
+                state["last_snipe_at"] = now_iso
+                if not dry_run:
+                    logger.info(f"Reply Sniper dispatched under {sniper_res.get('target')}: {sniper_res.get('reply_comment')}")
+        except Exception as e:
+            logger.warning(f"Reply sniper error: {e}")
+
+    # 5. Periodic CMO Analytics Audit: track live reach, impressions, and follower velocity
+    last_audit_str = state.get("last_audit_at")
+    can_audit = audit_analytics
+    if not can_audit:
+        if not last_audit_str:
+            can_audit = True
+        else:
+            try:
+                last_audit_dt = datetime.strptime(last_audit_str[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+                if (now - last_audit_dt).total_seconds() / 60.0 >= min_audit_spacing_minutes:
+                    can_audit = True
+            except Exception:
+                can_audit = True
+
+    if can_audit and not dry_run:
+        try:
+            logger.info("Executing periodic CMO performance audit...")
+            audit_report = analytics.audit_performance()
+            results["audit"] = {
+                "timestamp": audit_report.get("timestamp"),
+                "x_impressions": audit_report.get("x_reach", {}).get("total_impressions"),
+                "tg_members": audit_report.get("telegram_reach", {}).get("members"),
+            }
+            state["last_audit_at"] = now_iso
+        except Exception as e:
+            logger.warning(f"Analytics audit error: {e}")
+
     save_state(state)
     return results
 
@@ -328,12 +378,16 @@ def daemon_loop(
     interval_seconds: int = 60,
     min_spacing_minutes: int = 30,
     min_tg_spacing_minutes: int = 180,
+    min_sniper_spacing_minutes: int = 120,
+    min_audit_spacing_minutes: int = 180,
+    enable_sniper: bool = True,
     dry_run: bool = True,
 ) -> None:
     """Runs continuous background polling loop."""
     logger.info(
         f"Starting Autopilot Daemon (interval={interval_seconds}s, "
-        f"min_x_spacing={min_spacing_minutes}m, min_tg_spacing={min_tg_spacing_minutes}m, dry_run={dry_run})"
+        f"min_x_spacing={min_spacing_minutes}m, min_tg_spacing={min_tg_spacing_minutes}m, "
+        f"min_sniper_spacing={min_sniper_spacing_minutes}m, dry_run={dry_run})"
     )
 
     running = True
@@ -352,10 +406,15 @@ def daemon_loop(
                 dry_run=dry_run,
                 min_spacing_minutes=min_spacing_minutes,
                 min_tg_spacing_minutes=min_tg_spacing_minutes,
+                enable_sniper=enable_sniper,
+                min_sniper_spacing_minutes=min_sniper_spacing_minutes,
+                min_audit_spacing_minutes=min_audit_spacing_minutes,
             )
             dispatched_count = len(res.get("x_dispatched", [])) + len(res.get("tg_dispatched", []))
             if dispatched_count > 0:
                 logger.info(f"Tick completed: {dispatched_count} posts dispatched.")
+            if res.get("sniper") and res["sniper"].get("sniped"):
+                logger.info(f"Tick completed: Sniper replied to {res['sniper'].get('target_handle')}.")
         except Exception as e:
             logger.error(f"Autopilot tick failure: {e}", exc_info=True)
 
@@ -374,8 +433,13 @@ def main():
     parser.add_argument("--interval-seconds", type=int, default=60, help="Daemon sleep interval (default: 60s)")
     parser.add_argument("--min-spacing", type=int, default=30, help="Min minutes between X posts (default: 30)")
     parser.add_argument("--min-tg-spacing", type=int, default=180, help="Min minutes between Telegram posts (default: 180)")
+    parser.add_argument("--min-sniper-spacing", type=int, default=120, help="Min minutes between reply snipes (default: 120)")
+    parser.add_argument("--min-audit-spacing", type=int, default=180, help="Min minutes between analytics audits (default: 180)")
     parser.add_argument("--force-next", action="store_true", help="Bypass spacing cooldown to dispatch next due X item")
     parser.add_argument("--force-next-tg", action="store_true", help="Bypass spacing cooldown to dispatch next due Telegram item")
+    parser.add_argument("--snipe-now", action="store_true", help="Force an immediate Reply Sniper check and dispatch")
+    parser.add_argument("--no-sniper", action="store_true", help="Disable the Reply Sniper")
+    parser.add_argument("--audit", action="store_true", help="Run an immediate CMO analytics audit")
     parser.add_argument("--live", dest="dry_run", action="store_false", default=True, help="Live mode (post to real APIs)")
 
     args = parser.parse_args()
@@ -385,6 +449,9 @@ def main():
             interval_seconds=args.interval_seconds,
             min_spacing_minutes=args.min_spacing,
             min_tg_spacing_minutes=args.min_tg_spacing,
+            min_sniper_spacing_minutes=args.min_sniper_spacing,
+            min_audit_spacing_minutes=args.min_audit_spacing,
+            enable_sniper=not args.no_sniper,
             dry_run=args.dry_run,
         )
     else:
@@ -392,12 +459,18 @@ def main():
             dry_run=args.dry_run,
             min_spacing_minutes=args.min_spacing,
             min_tg_spacing_minutes=args.min_tg_spacing,
+            min_sniper_spacing_minutes=args.min_sniper_spacing,
+            min_audit_spacing_minutes=args.min_audit_spacing,
             force_next=args.force_next,
             force_next_tg=args.force_next_tg,
+            enable_sniper=not args.no_sniper,
+            force_sniper=args.snipe_now,
+            audit_analytics=args.audit,
         )
         print(json.dumps(res, indent=2))
 
 
 if __name__ == "__main__":
     main()
+
 

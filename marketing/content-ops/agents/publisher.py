@@ -6,10 +6,13 @@ and coordinates Telegram broadcast dispatching with receipts and idempotent stat
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from pipeline import queue, site_publisher, telegram_publisher
+
+logger = logging.getLogger(__name__)
 
 
 class PublisherAgent:
@@ -136,7 +139,23 @@ class PublisherAgent:
                         item["receipt"] = res
                         item["status"] = "published"
                         e["x_receipt"] = res
-                        queue.set_status(e, "published", published={"root_id": res.get("root_id"), "at": queue.iso(queue.utcnow())})
+                        root_id = res.get("root_id") or (res.get("data") or {}).get("id")
+                        root_url = res.get("root_url") or (f"https://x.com/defi_ambassador/status/{root_id}" if root_id else None)
+                        queue.set_status(e, "published", published={"root_id": root_id, "root_url": root_url, "at": queue.iso(queue.utcnow())})
+
+                        # Cross-pollinate to Telegram channel to ignite initial velocity
+                        if root_url and e.get("cross_post_tg", True):
+                            try:
+                                hook = e.get("hook") or e.get("topic") or e.get("text", "")[:80]
+                                tg_res = telegram_publisher.notify_x_post_in_channel(
+                                    post_id=eid,
+                                    hook=hook,
+                                    x_url=root_url,
+                                    dry_run=dry_run,
+                                )
+                                item["tg_cross_post"] = tg_res
+                            except Exception as tg_err:
+                                logger.warning(f"Failed to cross-post X post to Telegram: {tg_err}")
                     except Exception as err:
                         item["status"] = "failed"
                         item["error"] = str(err)
@@ -178,7 +197,23 @@ class PublisherAgent:
                         item["receipt"] = res
                         item["status"] = "published"
                         e["x_receipt"] = res
-                        queue.set_status(e, "published", published={"root_id": res.get("root_id"), "all_ids": res.get("all_ids"), "at": queue.iso(queue.utcnow())})
+                        root_id = res.get("root_id")
+                        root_url = res.get("root_url") or (f"https://x.com/defi_ambassador/status/{root_id}" if root_id else None)
+                        queue.set_status(e, "published", published={"root_id": root_id, "root_url": root_url, "all_ids": res.get("all_ids"), "at": queue.iso(queue.utcnow())})
+
+                        # Cross-pollinate to Telegram channel
+                        if root_url and e.get("cross_post_tg", True):
+                            try:
+                                hook = e.get("topic") or tweet_texts[0][:80]
+                                tg_res = telegram_publisher.notify_x_post_in_channel(
+                                    post_id=eid,
+                                    hook=hook,
+                                    x_url=root_url,
+                                    dry_run=dry_run,
+                                )
+                                item["tg_cross_post"] = tg_res
+                            except Exception as tg_err:
+                                logger.warning(f"Failed to cross-post X thread to Telegram: {tg_err}")
                     except x_publisher.ThreadPublishError as t_err:
                         item["status"] = "partially_published"
                         item["error"] = str(t_err)
