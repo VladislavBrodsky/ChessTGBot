@@ -69,9 +69,13 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
     setParameter(param); setExplicit(true); setLoading(true); setError('');
     try {
       if (param === 'arena') { consume(param); setExplicit(false); setNavigating(true); router.push(`/${locale}/game`); return; }
+      if (param === 'academy') { consume(param); setExplicit(false); setNavigating(true); router.push(`/${locale}/academy`); return; }
+      if (param === 'box' || param === 'marketplace') { consume(param); setExplicit(false); setNavigating(true); router.push(`/${locale}/marketplace`); return; }
+      if (param === 'practice') { consume(param); setExplicit(false); setNavigating(true); router.push(`/${locale}/game`); return; }
+      if (param === 'home') { consume(param); setExplicit(false); router.push(`/${locale}/home`); return; }
       const view = await post('preview', { parameter: param });
       if (view.kind === 'route') {
-        const destinations: Record<string, string> = { home: 'home', arena: 'game', practice: 'game?practice=1', academy: 'academy' };
+        const destinations: Record<string, string> = { home: 'home', arena: 'game', practice: 'game', academy: 'academy', box: 'marketplace', marketplace: 'marketplace' };
         if (!destinations[view.destination]) throw new Error('invalid_invitation');
         consume(param); setExplicit(false);
         if (view.destination !== 'home') setNavigating(true);

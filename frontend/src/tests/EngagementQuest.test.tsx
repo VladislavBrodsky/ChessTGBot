@@ -56,7 +56,7 @@ test('active quest opens the match lobby without an invented cash prize or activ
   mockFetch.mockResolvedValue(response({ ...quest, progress: 1, state: 'active' }));
   mount();
   fireEvent.click(await screen.findByRole('button', { name: 'play' }));
-  expect(mockPush).toHaveBeenCalledWith('/en/game?practice=1');
+  expect(mockPush).toHaveBeenCalledWith('/en/game');
   expect(screen.queryByText(/TON|mystery boxes unlocked today/i)).not.toBeInTheDocument();
 });
 

@@ -894,29 +894,24 @@ class ContentEngineOrchestrator:
 
         slots_utc = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"]
 
-        # 1. TG-1: Tactics
-        p1 = self.copywriter.draft_viral_telegram_post(
+        # 1. TG-1: Tactics Interactive Academy Drill
+        p1 = self.copywriter.draft_interactive_academy_drill(
             slot_id=f"{d_str}-tg-1",
-            category="Tactics",
+            fen="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+            solution=["Ra8#"],
+            tactic_name="Back Rank Corridor",
+            claim="mate_in_1",
             hook="White to move. Black's king is boxed in. Spot the 1-move mate",
             body=(
                 "Black's king on g8 has three pawns acting as walls.\n"
                 "One rook move delivers instant checkmate.\n\n"
                 "❤ Ra8#   🔥 Rd1   👏 f4\n"
-                "Answer reveals in 7 hours."
-            ),
-            cta="play",
-            fen="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
-            solution=["Ra8#"],
-            claim="mate_in_1",
-            reveal_text=(
-                "<b>Solved: 1. Ra8#.</b>\n\n"
-                "The back rank is completely undefended, delivering instantaneous checkmate."
+                "Answer reveals in 6 hours."
             ),
         )
         p1["scheduled_at"] = f"{d_str}T{slots_utc[0]}:00Z"
 
-        # 2. TG-2: Opening Trap
+        # 2. TG-2: Opening Trap Refutation (Academy)
         p2 = self.copywriter.draft_opening_trap_telegram_post(
             slot_id=f"{d_str}-tg-2",
             trap_name="Blackburne-Shilling Gambit",
@@ -932,13 +927,10 @@ class ContentEngineOrchestrator:
         )
         p2["scheduled_at"] = f"{d_str}T{slots_utc[1]}:00Z"
 
-        # 3. TG-3: Arena Vault FOMO
-        p3 = self.copywriter.draft_fomo_arena_alert(
+        # 3. TG-3: Mystery Vault Drop
+        p3 = self.copywriter.draft_mystery_box_drop(
             slot_id=f"{d_str}-tg-3",
-            tournament_name="Morning Blitz Vault ($250 USDT)",
-            start_time_utc="08:00 UTC",
-            minutes_remaining=15,
-            wager_entry=5,
+            box_tier="Epic",
         )
         p3["scheduled_at"] = f"{d_str}T{slots_utc[2]}:00Z"
 
@@ -958,34 +950,23 @@ class ContentEngineOrchestrator:
         )
         p4["scheduled_at"] = f"{d_str}T{slots_utc[3]}:00Z"
 
-        # 5. TG-5: Speed Chess Culture
-        p5 = self.copywriter.draft_blitz_culture_telegram_post(
+        # 5. TG-5: 1-Tap Viral Friend Duel
+        p5 = self.copywriter.draft_viral_friend_duel(
             slot_id=f"{d_str}-tg-5",
-            hook="You premoved a recapture. Your opponent found an in-between check. Familiar pain?",
-            body=(
-                "The German masters named it a century ago: <i>Zwischenzug</i> (the in-between move).\n"
-                "In 3-minute blitz, 80% of lost pieces come from assuming the opponent will play the expected recapture.\n\n"
-                "Before snatching a piece back, always ask: Can they check me first?\n"
-                "Train your eye to spot intermediate moves before your opponent spots them for you."
-            ),
         )
         p5["scheduled_at"] = f"{d_str}T{slots_utc[4]}:00Z"
 
-        # 6. TG-6: Match Rules & Fair Play
-        p6 = self.copywriter.draft_match_rules_telegram_post(
+        # 6. TG-6: Arena Vault Countdown ($500 USDT)
+        p6 = self.copywriter.draft_fomo_arena_alert(
             slot_id=f"{d_str}-tg-6",
-            hook="How Web3Chess eliminates luck: 100% skill-based speed duels with instant settlement",
-            body=(
-                "Online chess platforms often suffer from bots, hidden fees, or delayed payouts.\n\n"
-                "Web3Chess is built on zero-cheat transparency:\n"
-                "• Microsecond monotonic server clocks prevent lag manipulation\n"
-                "• 95% of every entry fee pool goes directly to the winner\n"
-                "• Instant TON wallet delivery upon match finish"
-            ),
+            tournament_name="Daily Blitz Vault ($500 USDT)",
+            start_time_utc="18:00 UTC",
+            minutes_remaining=15,
+            wager_entry=5,
         )
         p6["scheduled_at"] = f"{d_str}T{slots_utc[5]}:00Z"
 
-        # 7. TG-7: Product Engineering
+        # 7. TG-7: Product Engineering & Zero-Cheat
         p7 = self.copywriter.draft_engineering_telegram_post(
             slot_id=f"{d_str}-tg-7",
             hook="How we built sub-50ms board sync inside Telegram Mini Apps",
@@ -998,24 +979,19 @@ class ContentEngineOrchestrator:
         )
         p7["scheduled_at"] = f"{d_str}T{slots_utc[6]}:00Z"
 
-        # 8. TG-8: Evening Tactics Puzzle
-        p8 = self.copywriter.draft_viral_telegram_post(
+        # 8. TG-8: Evening Tactics Interactive Drill
+        p8 = self.copywriter.draft_interactive_academy_drill(
             slot_id=f"{d_str}-tg-8",
-            category="Tactics",
+            fen="7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+            solution=["Rh7#"],
+            tactic_name="Arabian Mate",
+            claim="mate_in_1",
             hook="White to move. The knight guards the escape squares. Find the mate",
             body=(
                 "Black's king on h8 is locked down by White's knight on f6.\n"
                 "One rook move delivers instant checkmate.\n\n"
                 "❤ Rh7#   🔥 Ra8+   👏 Ne8\n"
-                "Answer reveals in 7 hours."
-            ),
-            cta="play",
-            fen="7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
-            solution=["Rh7#"],
-            claim="mate_in_1",
-            reveal_text=(
-                "<b>Solved: 1. Rh7#. The Arabian Mate.</b>\n\n"
-                "The knight on f6 covers g8 and h7, defending the rook while sealing all flight squares."
+                "Answer reveals in 6 hours."
             ),
         )
         p8["scheduled_at"] = f"{d_str}T{slots_utc[7]}:00Z"

@@ -21,7 +21,8 @@ def utcnow():
 
 
 async def insert_once(db, model, values, columns):
-    if db.bind.dialect.name == "postgresql":
+    dialect = getattr(getattr(db, "bind", None), "dialect", None)
+    if dialect and getattr(dialect, "name", "") == "postgresql":
         from sqlalchemy.dialects.postgresql import insert
     else:
         from sqlalchemy.dialects.sqlite import insert
@@ -31,7 +32,7 @@ async def insert_once(db, model, values, columns):
 
 
 async def create_launch(db, *, destination="home", game_id=None, campaign="community", inviter_id=None):
-    if destination not in {"home", "game", "practice", "academy", "arena"}:
+    if destination not in {"home", "game", "practice", "academy", "arena", "marketplace", "box"}:
         raise ValueError("Unknown launch destination")
     if destination == "game" and not game_id:
         raise ValueError("Game destination requires a game")

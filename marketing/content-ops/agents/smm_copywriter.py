@@ -321,6 +321,160 @@ class SmmCopywriterAgent:
             },
         }
 
+    def draft_mystery_box_drop(
+        self,
+        slot_id: str,
+        box_tier: str = "Epic",
+        value_hint: str = "Rare piece skins, rating shields, and XP multipliers",
+        expires_hours: int = 24,
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Crafts a gamified Mystery Box unboxing broadcast for Telegram channel."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        hook = f"Mystery Vault Drop: Unlock your {box_tier} Chess Chest with earned XP"
+        body = (
+            f"🎁 <b>The {box_tier} Vault Drop is now claimable on Home.</b>\n\n"
+            f"Spend your earned gameplay XP to unlock rare piece skins, rating protection shields, and XP multipliers.\n\n"
+            f"No deposit or wagering required: finish today's tactical drill or win 1 blitz game to claim your keys.\n\n"
+            f"Every box opens instantly inside the Telegram Mini App."
+        )
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Product",
+            "format": "product",
+            "hook": hook[:110],
+            "cta": "mystery_box",
+            "text": body,
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}"}],
+            "creative": {
+                "template": "product",
+                "size": canvas_size,
+                "tag": f"{box_tier} Vault Drop",
+                "headline": f"{box_tier.upper()} CHEST DROP\n*XP UNLOCK PASS*",
+                "subhead": "Earned through gameplay · Instant reveal",
+                "cta_label": "Claim Mystery Box",
+                "steps": [
+                    "Solve daily drill for XP",
+                    "Unlock your Mystery Chest",
+                    "Equip custom piece skins",
+                ],
+                "footer": "Earned through gameplay XP · Web3Chess Telegram Mini App",
+            },
+        }
+
+    def draft_viral_friend_duel(
+        self,
+        slot_id: str,
+        challenger_angle: str = "speed",
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Crafts a 1-tap peer-to-peer viral challenge post with instant Telegram sharing."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        hook = "Challenge a Friend: Settle your chess debates in 3 minutes"
+        body = (
+            "⚡ <b>Stop arguing about chess in group chats.</b>\n\n"
+            "Put 3 minutes on the clock and prove your move. Tap below to generate an instant challenge link you can send directly to any friend or group chat.\n\n"
+            "Zero app download. Sub-100ms clock synchronization powered by Telegram Bot API 8.0."
+        )
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Chess Culture",
+            "format": "product",
+            "hook": hook[:110],
+            "cta": "duel_friend",
+            "text": body,
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}"}],
+            "creative": {
+                "template": "product",
+                "size": canvas_size,
+                "art": "clock",
+                "tag": "1-Tap Friend Match",
+                "headline": "CHALLENGE A FRIEND\n*3-MINUTE SPEED BLITZ*",
+                "subhead": "Sub-100ms sync · Monotonic clocks",
+                "cta_label": "Challenge a Friend",
+                "steps": [
+                    "Send invite in 1 tap",
+                    "Friend opens in Telegram",
+                    "Match starts with zero delay",
+                ],
+                "footer": "Play directly in Telegram · No app download required",
+            },
+        }
+
+    def draft_interactive_academy_drill(
+        self,
+        slot_id: str,
+        fen: str,
+        solution: List[str],
+        tactic_name: str = "Tactical Precision",
+        hook: Optional[str] = None,
+        body: Optional[str] = None,
+        claim: str = "mate_in_1",
+        reveal_text: Optional[str] = None,
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Crafts an interactive Academy drill with verified board and 6-hour delayed answer reveal."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        default_hook = f"Academy Drill: White to strike in {claim.replace('_', ' ')}"
+        clean_hook = (hook or default_hook).rstrip(".")
+        clean_body = body or (
+            "Most club players glance at this position and play the obvious recapture. Grandmasters see the geometric flaw.\n\n"
+            "Drop your candidate move in the comments below. The master refutation line will be revealed in 6 hours.\n\n"
+            "Study full master interactive courses inside the Web3Chess Academy."
+        )
+        default_reveal = (
+            f"<b>Academy Drill Solution: {' '.join(solution)}</b>\n\n"
+            "Calculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation."
+        )
+        return {
+            "id": slot_id,
+            "kind": "telegram",
+            "date": slot_id[:10],
+            "category": "Tactics",
+            "format": "puzzle",
+            "hook": clean_hook[:110],
+            "cta": "academy_app",
+            "text": f"<b>{clean_hook}</b>\n\n{clean_body.strip()}",
+            "status": "draft",
+            "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/academy"}],
+            "chess": {
+                "fen": fen,
+                "solution": solution,
+                "claim": claim,
+            },
+            "creative": {
+                "template": "puzzle",
+                "size": canvas_size,
+                "tag": f"Academy Drill: {tactic_name}",
+                "headline": "White to play\n*One decisive move*",
+                "subhead": "Spot the tactical finish",
+                "fen": fen,
+                "cta_label": "Solve in Academy",
+                "footer": "Answer in replies. Full analysis in Web3Chess Academy.",
+            },
+            "reveal": {
+                "after_hours": 6,
+                "text": (reveal_text or default_reveal).strip(),
+                "creative": {
+                    "template": "puzzle",
+                    "size": canvas_size,
+                    "reveal": True,
+                    "moves": solution,
+                    "tag": "Solved",
+                    "headline": "Decisive Strike.\n*The winning line.*",
+                    "subhead": "Calculated to the end.",
+                    "fen": fen,
+                    "cta_label": "Solve More in Academy",
+                },
+            },
+        }
+
     def draft_player_spotlight_post(
         self,
         slot_id: str,

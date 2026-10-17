@@ -77,9 +77,6 @@ export default function PlayLobby() {
       }
       
       const params = new URLSearchParams(window.location.search);
-      if (params.get('practice') === '1') {
-        setShowAiDifficulty(true);
-      }
       if (params.get('status') === 'success' && params.get('session_id')) {
         setShowDepositDrawer(true);
       }
@@ -544,15 +541,6 @@ export default function PlayLobby() {
                     <span className="lobby-payout__label">{tg('win_up_to')}</span>
                     <span className="lobby-payout__value lobby-payout__value--win">{formatUsd(winnerCents(chosenWager))}</span>
                   </div>
-                </div>
-              )}
-
-              {searchTimer >= 15 && (
-                <div className="flex w-full flex-col gap-2 rounded-2xl border border-brand-border bg-brand-void p-3">
-                  <p className="text-caption text-brand-muted">{tg('lobby_no_opponent')}</p>
-                  <Button variant="secondary" className="w-full" leftIcon={<FaChessKnight />} onClick={() => { cancelMatchmaking(); setShowAiDifficulty(true); }}>
-                    {tg('lobby_switch_ai')}
-                  </Button>
                 </div>
               )}
 

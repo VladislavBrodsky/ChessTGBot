@@ -59,7 +59,7 @@ Tailwind 4 only reads `@theme` (see `styles/theme.css`); `tailwind.config.js` no
 
 Keep the primary action within the first viewport, secondary routes reachable without guessing, and transactional confirmations explicit. A loading or failed request must not be presented as a value of zero. Refreshing data should preserve the last confirmed value until a new response succeeds.
 
-Home may include `EngagementQuest` as a secondary Card below the main Play action. Its server-recorded progress, pre-enrollment odds/rules Modal, optimistic rollback and confirmed reward reveal use shared primitives. The quest’s play action opens `/[locale]/game?practice=1` to select free AI difficulty directly. A disabled campaign stays hidden; existing enrolled players keep their claim rights when enrollment pauses.
+Home may include `EngagementQuest` as a secondary Card below the main Play action. Its server-recorded progress, pre-enrollment odds/rules Modal, optimistic rollback and confirmed reward reveal use shared primitives. The quest’s play action opens `/[locale]/game` to navigate directly to the game lobby. A disabled campaign stays hidden; existing enrolled players keep their claim rights when enrollment pauses.
 
 Free friend challenges remain actionable when the balance service is loading or unavailable. Use the shared lobby action and localized free-invite copy; free rematches show one play-again action. Server-resolved `go_` launch tokens route only to known destinations after authentication. Expired invitations use `ErrorState` with retry and leave navigation available.
 

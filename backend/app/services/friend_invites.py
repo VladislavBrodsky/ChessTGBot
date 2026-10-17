@@ -37,7 +37,9 @@ async def remember_launch(db, user, parameter, version=None):
     # A replayed signed session must not overwrite a newer bot/browser intent.
     from sqlalchemy.dialects.postgresql import insert as pg_insert
     from sqlalchemy.dialects.sqlite import insert as sqlite_insert
-    statement = (pg_insert if db.bind.dialect.name == 'postgresql' else sqlite_insert)(PlayerLaunchIntent).values(
+    dialect = getattr(getattr(db, 'bind', None), 'dialect', None)
+    is_pg = dialect and getattr(dialect, 'name', '') == 'postgresql'
+    statement = (pg_insert if is_pg else sqlite_insert)(PlayerLaunchIntent).values(
         user_id=user.telegram_id, parameter=parameter, version=version if version is not None else time.time_ns() // 1000,
         dismissed='0', expires_at=utcnow() + timedelta(days=1))
     await db.execute(statement.on_conflict_do_update(index_elements=['user_id'], set_={
@@ -89,6 +91,16 @@ async def invitation_view(db, invitation, user, opponents=None):
 async def preview(db, user, parameter):
     if not START_RE.fullmatch(parameter):
         fail('invalid_invitation', 404)
+    if parameter in {"arena", "academy", "practice", "marketplace", "box", "home"}:
+        dest_map = {
+            "arena": "arena",
+            "academy": "academy",
+            "practice": "practice",
+            "marketplace": "marketplace",
+            "box": "marketplace",
+            "home": "home",
+        }
+        return {"kind": "route", "destination": dest_map[parameter]}
     if parameter.startswith('mk_'):
         # Content links label first-touch source only; the player lands on Home.
         from app.services.player_tracking import attribute_marketing, marketing_campaign

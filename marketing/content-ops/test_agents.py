@@ -350,6 +350,45 @@ class TestAgents(unittest.TestCase):
         self.assertEqual(showcase["posts_created"], 4)
         self.assertTrue(all(p["qa_passed"] for p in showcase["posts"]))
 
+    def test_viral_telegram_mystery_box(self):
+        cw = self.orchestrator.copywriter
+        qa = self.orchestrator.qa
+        post = cw.draft_mystery_box_drop("2099-01-01-tg-box", "Epic")
+        res = qa.inspect_telegram_post(post)
+        self.assertTrue(res["passed"], res["issues"])
+        self.assertEqual(post["cta"], "mystery_box")
+        self.assertEqual(post["category"], "Product")
+
+    def test_viral_telegram_friend_duel(self):
+        cw = self.orchestrator.copywriter
+        qa = self.orchestrator.qa
+        post = cw.draft_viral_friend_duel("2099-01-01-tg-duel")
+        res = qa.inspect_telegram_post(post)
+        self.assertTrue(res["passed"], res["issues"])
+        self.assertEqual(post["cta"], "duel_friend")
+        self.assertEqual(post["category"], "Chess Culture")
+
+    def test_viral_telegram_interactive_academy_drill(self):
+        cw = self.orchestrator.copywriter
+        qa = self.orchestrator.qa
+        post = cw.draft_interactive_academy_drill(
+            slot_id="2099-01-01-tg-drill",
+            fen="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+            solution=["Ra8#"],
+            tactic_name="Back Rank",
+            claim="mate_in_1"
+        )
+        res = qa.inspect_telegram_post(post)
+        self.assertTrue(res["passed"], res["issues"])
+        self.assertEqual(post["cta"], "academy_app")
+        self.assertIn("reveal", post)
+
+    def test_viral_telegram_daily_batch(self):
+        batch = self.orchestrator.generate_telegram_daily_batch(target_date=date(2099, 1, 1), render_images=False)
+        self.assertEqual(batch["status"], "success")
+        self.assertEqual(batch["posts_created"], 8)
+        self.assertTrue(all(p["qa_passed"] for p in batch["posts"]))
+
 
 if __name__ == "__main__":
     unittest.main()

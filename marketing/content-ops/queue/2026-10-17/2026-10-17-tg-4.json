@@ -7,7 +7,7 @@
   "hook": "Stop looking for the best move before you calculate all forcing checks",
   "cta": "academy",
   "text": "<b>Stop looking for the best move before you calculate all forcing checks</b>\n\nIn 3-minute blitz, players jump at the first plausible recapture.\n\nMaster players scan three things in under 2 seconds:\n1. Checks (every check must be calculated)\n2. Captures (every piece tension)\n3. Threats (forcing queen or rook moves)\n\nReview candidate calculation inside the free Web3Chess Academy.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -35,10 +35,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T02:50:33Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-4.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T21:19:09Z",
+  "published": {
+    "message_id": 40,
+    "at": "2026-10-17T21:19:09Z"
+  },
+  "media_cleaned": true
 }

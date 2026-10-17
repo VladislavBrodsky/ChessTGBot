@@ -1,0 +1,65 @@
+{
+  "id": "2026-10-18-tg-8",
+  "kind": "telegram",
+  "date": "2026-10-18",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. The knight guards the escape squares. Find the mate",
+  "cta": "academy_app",
+  "text": "<b>White to move. The knight guards the escape squares. Find the mate</b>\n\nBlack's king on h8 is locked down by White's knight on f6.\nOne rook move delivers instant checkmate.\n\n❤ Rh7#   🔥 Ra8+   👏 Ne8\nAnswer reveals in 6 hours.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+    "solution": [
+      "Rh7#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Arabian Mate",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Rh7#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Rh7#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+      "cta_label": "Solve More in Academy"
+    },
+    "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-8.reveal.png"
+  },
+  "scheduled_at": "2026-10-18T21:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-17T21:33:45Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-8.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  }
+}

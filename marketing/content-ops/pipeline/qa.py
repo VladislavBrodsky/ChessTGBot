@@ -74,7 +74,7 @@ def check_link(url: str) -> list[str]:
     if host == "t.me":
         if not p.path.startswith(brand.ALLOWED_TME_PATHS): issues.append(f"t.me path not allowed: {p.path}")
         sa = dict(parse_qsl(p.query)).get("startapp")
-        if sa and sa != "arena" and not (sa.startswith("mk_") or sa.startswith("ref_")):
+        if sa and sa not in {"arena", "academy", "box", "marketplace", "practice", "home"} and not (sa.startswith("mk_") or sa.startswith("ref_")):
             issues.append(f"startapp value not permitted: {sa}")
     return issues
 

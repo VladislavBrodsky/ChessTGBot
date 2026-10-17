@@ -36,6 +36,18 @@ IDEAS = [
      "fen": "b2r3r/k4p1p/p2q1np1/NppP4/3p4/P1Q3P1/1PP4P/1K1RR3 w - - 0 24",
      "solution": ["Rxd4"], "claim": "line_legal",
      "lesson": "Kasparov vs Topalov (1999). 24.Rxd4!! demolishes Black's center and triggers the greatest king hunt in chess history."},
+    {"id": "morphy-opera-finish", "kind": "puzzle", "theme": "historical brilliancy", "level": "intermediate",
+     "fen": "4kb1r/p2rqppp/5n2/1B2p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 0 14",
+     "solution": ["Bxd7+", "Nxd7", "Qb8+", "Nxb8", "Rd8#"], "claim": "mate_in_3",
+     "lesson": "Morphy vs Duke of Brunswick (1858). A textbook queen sacrifice and back-rank rook mate demonstrating total piece coordination."},
+    {"id": "anastasia-mate", "kind": "puzzle", "theme": "anastasia mate", "level": "intermediate",
+     "fen": "4r2k/4N1pp/5p2/8/8/7R/5Q2/7K w - - 0 1",
+     "solution": ["Rxh7+", "Kxh7", "Qh4#"], "claim": "mate_in_2",
+     "lesson": "The knight on e7 controls escape squares g8 and g6, sealing the enemy king before the queen delivers mate on the h-file."},
+    {"id": "epaulette-mate", "kind": "puzzle", "theme": "epaulette mate", "level": "beginner",
+     "fen": "3rkr2/8/8/3Q4/8/8/8/6K1 w - - 0 1",
+     "solution": ["Qe6#"], "claim": "mate_in_1",
+     "lesson": "The rooks on d8 and f8 trap their own king like epaulettes on a uniform. Queen lands on e6 with decisive mate."},
 ]
 
 def _board_for(item):

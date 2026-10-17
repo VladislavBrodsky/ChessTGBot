@@ -1,0 +1,45 @@
+{
+  "id": "2026-10-18-tg-5",
+  "kind": "telegram",
+  "date": "2026-10-18",
+  "category": "Chess Culture",
+  "format": "product",
+  "hook": "Challenge a Friend: Settle your chess debates in 3 minutes",
+  "cta": "duel_friend",
+  "text": "⚡ <b>Stop arguing about chess in group chats.</b>\n\nPut 3 minutes on the clock and prove your move. Tap below to generate an instant challenge link you can send directly to any friend or group chat.\n\nZero app download. Sub-100ms clock synchronization powered by Telegram Bot API 8.0.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "art": "clock",
+    "tag": "1-Tap Friend Match",
+    "headline": "CHALLENGE A FRIEND\n*3-MINUTE SPEED BLITZ*",
+    "subhead": "Sub-100ms sync · Monotonic clocks",
+    "cta_label": "Challenge a Friend",
+    "steps": [
+      "Send invite in 1 tap",
+      "Friend opens in Telegram",
+      "Match starts with zero delay"
+    ],
+    "footer": "Play directly in Telegram · No app download required"
+  },
+  "scheduled_at": "2026-10-18T12:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-17T21:33:44Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-5.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

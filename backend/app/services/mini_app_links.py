@@ -8,7 +8,7 @@ START_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 def is_invite_parameter(parameter):
     return bool(parameter and START_RE.fullmatch(parameter) and (parameter.startswith(("ref_", "go_", "fi_"))
-        or parameter == "arena" or re.fullmatch(r"(?:[a-f0-9]{8}|[a-f0-9]{32}|(?:match_|arena\d+_)[A-Za-z0-9_-]+)", parameter)))
+        or parameter in {"arena", "academy", "box", "marketplace", "practice", "home"} or re.fullmatch(r"(?:[a-f0-9]{8}|[a-f0-9]{32}|(?:match_|arena\d+_)[A-Za-z0-9_-]+)", parameter)))
 
 
 def app_link(parameter=None):

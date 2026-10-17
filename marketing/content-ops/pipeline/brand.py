@@ -11,6 +11,9 @@ BOT = "chess_matbot"
 # startapp accepts only: omitted, "arena", "ref_<code>", or a reserved "mk_..." id. Never invent values.
 TG_APP = f"https://t.me/{BOT}/Web3Chess"
 TG_ARENA = f"{TG_APP}?startapp=arena"
+TG_BOX = f"{TG_APP}?startapp=box"
+TG_ACADEMY = f"{TG_APP}?startapp=academy"
+TG_SHARE_DUEL = f"https://t.me/share/url?url={TG_APP}&text=I%20challenge%20you%20to%20a%20speed%20chess%20duel.%20Accept%20or%20flag%20out!"
 CHANNEL = "https://t.me/chess_hub"
 CHAT = "https://t.me/chesshub_chat"
 
@@ -91,7 +94,12 @@ AUDIENCE_TAG_PRESETS = {
 CTAS = {
     "play": ("Play a free game", TG_APP, False),
     "arena": ("Open the Arena", TG_ARENA, True),
+    "arena_vault": ("Enter $500 Arena", TG_ARENA, True),
     "academy": ("Open the Academy", f"{SITE}/academy", False),
+    "academy_app": ("Solve in Academy", TG_ACADEMY, False),
+    "mystery_box": ("Claim Mystery Box", TG_BOX, False),
+    "streak_pass": ("Unlock Streak Pass", TG_BOX, False),
+    "duel_friend": ("Challenge a Friend", TG_SHARE_DUEL, False),
     "puzzle": ("Try today's puzzle", f"{SITE}/?puzzle=back-rank#challenge", False),
     "rules": ("Read the match rules", f"{SITE}/wagers", True),
     "journal": ("Read the full story", f"{SITE}/blog", False),
@@ -103,7 +111,7 @@ ALLOWED_LINK_HOSTS = {
     "web3chess.online", "www.web3chess.online", "app.web3chess.online",
     "t.me"
 }
-ALLOWED_TME_PATHS = (f"/{BOT}", "/chess_hub", "/chesshub_chat")
+ALLOWED_TME_PATHS = (f"/{BOT}", "/chess_hub", "/chesshub_chat", "/share/url", "/share")
 
 WAGER_DISCLOSURE = "USDT matches are for adults (18+) where permitted. You can lose your stake."
 WAGER_WORDS = ("usdt", "wager", "stake", "arena", "pot", "payout", "cash match", "real money")

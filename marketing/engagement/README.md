@@ -14,7 +14,7 @@ Prepared 11 October 2026 for **@chess_hub**. Virtual rewards are approved; TON p
 
 A duplicate border becomes 250 XP. The server makes the random selection; the client never rerolls it. Enrollment, reward, and receipt use the existing XP ledger. PostgreSQL user-row locking serializes enrollment and claims, and rewards commit with the receipt. Retrying a claim returns its original reward. No new database migration is needed. Pausing enrollment preserves existing players’ right to finish and claim.
 
-The Home card displays progress and odds, rolls back failed optimistic actions, and opens free AI difficulty selection through `/[locale]/game?practice=1`. Copy covers all ten app languages. The disabled campaign stays hidden.
+The Home card displays progress and odds, rolls back failed optimistic actions, and opens the game lobby through `/[locale]/game`. Copy covers all ten app languages. The disabled campaign stays hidden.
 
 ## Offers and viral loops
 
