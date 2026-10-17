@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "Who is the sharpest tactical mind in your group chat?",
   "text": "Who is the sharpest tactical mind in your group chat?\n\nDrop this board in your chat. First to find the mate in 1 wins bragging rights.\n\nWhite to move. The clock is ticking ♟️\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -40,10 +40,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T06:16:50Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-viral-group-duel.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T18:49:50Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111530138001092910",
+    "reply_id": "2111530140454764762",
+    "root_url": "https://x.com/defi_ambassador/status/2111530138001092910"
+  },
+  "published": {
+    "root_id": "2111530138001092910",
+    "root_url": "https://x.com/defi_ambassador/status/2111530138001092910",
+    "at": "2026-10-17T18:49:50Z"
+  },
+  "media_cleaned": true
 }

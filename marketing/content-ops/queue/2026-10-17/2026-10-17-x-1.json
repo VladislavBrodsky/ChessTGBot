@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "Morphy's Opera House finish: White to move and mate in 2",
   "text": "Morphy's Opera House finish: White to move and mate in 2\n\nBlack's king on e8 is pinned down by the d1 rook and g5 bishop.\n\nFind the queen sacrifice that forces mate ♟️\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -42,10 +42,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T02:25:38Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-1.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T15:10:07Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111474845732979084",
+    "reply_id": "2111474848299888773",
+    "root_url": "https://x.com/defi_ambassador/status/2111474845732979084"
+  },
+  "published": {
+    "root_id": "2111474845732979084",
+    "root_url": "https://x.com/defi_ambassador/status/2111474845732979084",
+    "at": "2026-10-17T15:10:07Z"
+  },
+  "media_cleaned": true
 }

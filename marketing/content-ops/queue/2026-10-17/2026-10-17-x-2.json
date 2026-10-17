@@ -5,7 +5,7 @@
   "category": "Chess Culture",
   "hook": "Up +5.0 on the eval bar with 3 seconds left on the clock",
   "text": "Up +5.0 on the eval bar with 3 seconds left on the clock\n\nIn sudden-death blitz, a complex win is harder than a simple draw.\n\nWhen the clock turns red, trade queens and simplify.\n\n#Chess #BlitzChess #ChessLife",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -43,10 +43,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T02:25:38Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-2.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T16:10:37Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111490067386499336",
+    "reply_id": "2111490070783922602",
+    "root_url": "https://x.com/defi_ambassador/status/2111490067386499336"
+  },
+  "published": {
+    "root_id": "2111490067386499336",
+    "root_url": "https://x.com/defi_ambassador/status/2111490067386499336",
+    "at": "2026-10-17T16:10:37Z"
+  },
+  "media_cleaned": true
 }

@@ -5,7 +5,7 @@
   "category": "Chess Debate",
   "hook": "Tap-to-earn was an illusion. 100M clicked coins for dust",
   "text": "Tap-to-earn was an illusion. 100M clicked coins for dust\n\nThe next wave of Web3 is intellectual speed chess.\n\nRating cannot be bought. Every win is calculated under a 3-minute clock.\n\n#Chess #SpeedChess #ChessCommunity",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -43,10 +43,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T06:16:50Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-viral-manifesto.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T17:28:55Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111509773929627989",
+    "reply_id": "2111509776525852707",
+    "root_url": "https://x.com/defi_ambassador/status/2111509773929627989"
+  },
+  "published": {
+    "root_id": "2111509773929627989",
+    "root_url": "https://x.com/defi_ambassador/status/2111509773929627989",
+    "at": "2026-10-17T17:28:55Z"
+  },
+  "media_cleaned": true
 }

@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "3 seconds left on the digital clock. White to move",
   "text": "3 seconds left on the digital clock. White to move\n\nBlack looks completely solid. 92% of club players panic and flag here.\n\nResign or spot the only winning move ♟️\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -42,10 +42,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T06:16:50Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-viral-scramble.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T16:40:51Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111497678076944598",
+    "reply_id": "2111497680480350620",
+    "root_url": "https://x.com/defi_ambassador/status/2111497678076944598"
+  },
+  "published": {
+    "root_id": "2111497678076944598",
+    "root_url": "https://x.com/defi_ambassador/status/2111497678076944598",
+    "at": "2026-10-17T16:40:51Z"
+  },
+  "media_cleaned": true
 }

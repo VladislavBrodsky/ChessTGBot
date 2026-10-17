@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "Guess the ELO: White just played Qh7#",
   "text": "Guess the ELO: White just played Qh7#\n\nBrilliant grandmaster preparation or desperate time-scramble hallucination?\n\nDrop your rating guess in replies 👇\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -40,10 +40,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T06:16:49Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-viral-guess-elo.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T15:40:22Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111482453638443155",
+    "reply_id": "2111482456612262094",
+    "root_url": "https://x.com/defi_ambassador/status/2111482453638443155"
+  },
+  "published": {
+    "root_id": "2111482453638443155",
+    "root_url": "https://x.com/defi_ambassador/status/2111482453638443155",
+    "at": "2026-10-17T15:40:22Z"
+  },
+  "media_cleaned": true
 }

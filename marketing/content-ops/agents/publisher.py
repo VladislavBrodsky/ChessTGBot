@@ -150,8 +150,8 @@ class PublisherAgent:
                         except Exception as clean_err:
                             logger.warning(f"Failed to cleanup media for {eid}: {clean_err}")
 
-                        # Cross-pollinate to Telegram channel to ignite initial velocity
-                        if root_url and e.get("cross_post_tg", True):
+                        # Cross-pollinate to Telegram channel only if explicitly requested
+                        if root_url and e.get("cross_post_tg", False):
                             try:
                                 hook = e.get("hook") or e.get("topic") or e.get("text", "")[:80]
                                 tg_res = telegram_publisher.notify_x_post_in_channel(
@@ -215,8 +215,8 @@ class PublisherAgent:
                         except Exception as clean_err:
                             logger.warning(f"Failed to cleanup media for thread {eid}: {clean_err}")
 
-                        # Cross-pollinate to Telegram channel
-                        if root_url and e.get("cross_post_tg", True):
+                        # Cross-pollinate to Telegram channel only if explicitly requested
+                        if root_url and e.get("cross_post_tg", False):
                             try:
                                 hook = e.get("topic") or tweet_texts[0][:80]
                                 tg_res = telegram_publisher.notify_x_post_in_channel(

@@ -1,0 +1,51 @@
+{
+  "id": "2026-10-18-x-1",
+  "kind": "x_post",
+  "date": "2026-10-18",
+  "category": "Tactics",
+  "hook": "White to move. Force Black's rook to build the smothered mate box",
+  "text": "White to move. Force Black's rook to build the smothered mate box\n\nThe g8 square is covered by both White's queen on b3 and knight on e7.\n\nCalculate the 2-move finish ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "5r1k/4N1pp/8/6N1/8/1Q6/8/6K1 w - - 0 1",
+    "solution": [
+      "Qg8+",
+      "Rxg8",
+      "Nf7#"
+    ],
+    "claim": "mate_in_2"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "5r1k/4N1pp/8/6N1/8/1Q6/8/6K1 w - - 0 1",
+    "tag": "Mate In 2",
+    "headline": "PHILIDOR'S LEGACY\n*QUEEN SAC IN 2*",
+    "subhead": "White to move • Forced Mate in 2",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Qg8+! Rxg8 2. Nf7# (Philidor's Legacy).\nBlack's king cannot take on g8 because e7 guards it, forcing Rxg8.\n\nTrain tactical vision at:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-18T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T18:55:49Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-x-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

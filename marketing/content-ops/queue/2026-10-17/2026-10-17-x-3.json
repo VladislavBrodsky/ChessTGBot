@@ -5,7 +5,7 @@
   "category": "Product",
   "hook": "Why Web3Chess runs 4 daily Arena windows instead of dead queues",
   "text": "Why Web3Chess runs 4 daily Arena windows instead of dead queues\n\nMatchmaking at 02:00, 08:00, 14:00, and 20:00 UTC guarantees tight Elo pairings.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -37,10 +37,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T02:25:39Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-3.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-17T18:18:42Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111522303041270134",
+    "reply_id": "2111522305054494744",
+    "root_url": "https://x.com/defi_ambassador/status/2111522303041270134"
+  },
+  "published": {
+    "root_id": "2111522303041270134",
+    "root_url": "https://x.com/defi_ambassador/status/2111522303041270134",
+    "at": "2026-10-17T18:18:42Z"
+  },
+  "media_cleaned": true
 }
