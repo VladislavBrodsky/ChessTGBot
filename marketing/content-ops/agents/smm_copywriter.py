@@ -779,3 +779,141 @@ class SmmCopywriterAgent:
             docked_reply_text=reply_text,
         )
 
+    def draft_guess_the_elo_post(
+        self,
+        slot_id: str,
+        fen: str,
+        move_played: str,
+        options: List[str],
+        actual_rating_context: str,
+        platform: str = "x",
+    ) -> Dict[str, Any]:
+        """Crafts a high-comment velocity 'Guess the Elo' post tapping ego and rating validation."""
+        clean_hook = f"Guess the ELO: White just played {move_played}"
+        body_lines = [
+            "Brilliant grandmaster preparation or desperate time-scramble hallucination?",
+            "",
+            "Drop your rating guess in replies 👇",
+        ]
+        docked_solution = (
+            f"The Answer: {actual_rating_context}\n\n"
+            f"Think you can calculate faster than your rating? Test your reflexes in 3-minute blitz:\n{brand.TG_APP}"
+        )
+        post = self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Tactics",
+            hook=clean_hook,
+            body="\n".join(body_lines),
+            docked_reply_text=docked_solution,
+            fen=fen,
+            solution=[move_played],
+            claim="line_legal",
+            size="square",
+        )
+        post["creative"]["tag"] = "Guess The ELO"
+        post["creative"]["headline"] = f"GUESS THE ELO\n*{move_played.upper()} PLAYED*"
+        post["creative"]["subhead"] = "Brilliant sacrifice or complete blunder?"
+        post["creative"]["cta_label"] = "Vote in Replies"
+        return post
+
+    def draft_scramble_instinct_post(
+        self,
+        slot_id: str,
+        fen: str,
+        seconds_left: int,
+        solution: List[str],
+        claim: str,
+        platform: str = "x",
+    ) -> Dict[str, Any]:
+        """Crafts a 3-second scramble dilemma triggering loop calculations and comments."""
+        clean_hook = f"{seconds_left} seconds left on the digital clock. White to move"
+        body = (
+            "Black looks completely solid. 92% of club players panic and flag here.\n\n"
+            "Resign or spot the only winning move ♟️"
+        )
+        sol_text = ", ".join(solution)
+        docked = (
+            f"Solution: 1. {sol_text}.\n\n"
+            f"Under 5 seconds, calculation collapses into subconscious pattern recognition.\n\n"
+            f"Sharpen your time scramble survival in our free Academy:\nhttps://{self.primary_domain}/academy"
+        )
+        post = self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Tactics",
+            hook=clean_hook,
+            body=body,
+            docked_reply_text=docked,
+            fen=fen,
+            solution=solution,
+            claim=claim,
+            size="square",
+        )
+        post["creative"]["tag"] = f"{seconds_left}s Scramble Dilemma"
+        post["creative"]["headline"] = f"{seconds_left} SECONDS LEFT\n*SPOT THE MIRACLE*"
+        post["creative"]["subhead"] = "Resign or find the forced finish"
+        post["creative"]["cta_label"] = "Calculate Line"
+        return post
+
+    def draft_contrarian_manifesto_post(
+        self,
+        slot_id: str,
+        hook: str,
+        body: str,
+        docked_reply: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Crafts a contrarian thesis post challenging the status quo to ignite retweets and replies."""
+        clean_hook = hook.rstrip(".")
+        reply = docked_reply or (
+            "Whether you agree or disagree, rating is decided on the 64 squares.\n\n"
+            f"Challenge a live opponent in Telegram:\n{brand.TG_APP}"
+        )
+        post = self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Chess Debate",
+            hook=clean_hook,
+            body=body,
+            docked_reply_text=reply,
+            size="square",
+        )
+        post["creative"]["tag"] = "Contrarian Thesis"
+        post["creative"]["headline"] = "INTELLECTUAL PVP\n*TAP-TO-EARN IS DEAD*"
+        post["creative"]["subhead"] = "Skill and calculation replace mindless tapping"
+        post["creative"]["cta_label"] = "Join The Debate"
+        return post
+
+    def draft_group_pvp_challenge_post(
+        self,
+        slot_id: str,
+        fen: str,
+        solution: List[str],
+        claim: str,
+    ) -> Dict[str, Any]:
+        """Crafts an interactive challenge post engineered for sharing into Telegram group chats."""
+        clean_hook = "Who is the sharpest tactical mind in your group chat?"
+        body = (
+            "Drop this board in your chat. First to find the mate in 1 wins bragging rights.\n\n"
+            "White to move. The clock is ticking ♟️"
+        )
+        first_move = solution[0] if solution else "Qh7#"
+        docked = (
+            f"Solution: 1. {first_move}.\n\n"
+            f"Challenge your friends to a 3-minute blitz duel directly in Telegram:\n{brand.TG_APP}?startapp=mk_group_duel"
+        )
+        post = self.draft_x_single_post(
+            slot_id=slot_id,
+            category="Tactics",
+            hook=clean_hook,
+            body=body,
+            docked_reply_text=docked,
+            fen=fen,
+            solution=solution,
+            claim=claim,
+            size="square",
+        )
+        post["creative"]["tag"] = "Group Chat Duel"
+        post["creative"]["headline"] = "SPEED CHALLENGE\n*CHALLENGE YOUR CHAT*"
+        post["creative"]["subhead"] = "Drop this board in your group and see who solves it"
+        post["creative"]["cta_label"] = "Start Group Duel"
+        return post
+
+

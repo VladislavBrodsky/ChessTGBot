@@ -1643,5 +1643,87 @@ class ContentEngineOrchestrator:
             "x_post_id": x_slot,
         }
 
+    def generate_viral_showcase_batch(
+        self,
+        target_date: Optional[date] = None,
+        render_images: bool = True,
+    ) -> Dict[str, Any]:
+        """Generates, QA-gates, renders, and stages 4 cutting-edge viral engagement formats.
+
+        1. Guess The ELO / Blunder Roast (Kramnik 2006 blindspot)
+        2. 3-Second Scramble Instinct Test (Morphy Opera sacrifice)
+        3. Contrarian Anti-Tap Manifesto (Ideological debate)
+        4. Group Chat 1v1 PvP Challenge (Direct Telegram challenge loop)
+        """
+        d = target_date or self.plan_date
+        d_str = d.isoformat()
+        posts: List[Dict[str, Any]] = []
+
+        # 1. Guess the Elo: Kramnik Blunder Mate
+        p1 = self.copywriter.draft_guess_the_elo_post(
+            slot_id=f"{d_str}-x-viral-guess-elo",
+            fen="5N1k/6p1/7p/4P3/pp2Q3/4q3/1P4PP/2b4K w - - 1 35",
+            move_played="Qh7#",
+            options=["900 Blitz Hallucination", "1600 Time-Scramble Tilt", "2780 World Champion Blindspot"],
+            actual_rating_context="Vladimir Kramnik vs Deep Fritz (2006). A 2780-rated World Champion overlooked mate in 1 in a drawn endgame.",
+        )
+        p1["scheduled_at"] = f"{d_str}T04:00:00Z"
+
+        # 2. 3-Second Scramble Instinct Dilemma
+        p2 = self.copywriter.draft_scramble_instinct_post(
+            slot_id=f"{d_str}-x-viral-scramble",
+            fen="4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+            seconds_left=3,
+            solution=["Qb8+", "Nxb8", "Rd8#"],
+            claim="mate_in_2",
+        )
+        p2["scheduled_at"] = f"{d_str}T10:00:00Z"
+
+        # 3. Contrarian Manifesto
+        p3 = self.copywriter.draft_contrarian_manifesto_post(
+            slot_id=f"{d_str}-x-viral-manifesto",
+            hook="Tap-to-earn was an illusion. 100M clicked coins for dust",
+            body=(
+                "The next wave of Web3 is intellectual speed chess.\n\n"
+                "Rating cannot be bought. Every win is calculated under a 3-minute clock."
+            ),
+        )
+        p3["scheduled_at"] = f"{d_str}T14:00:00Z"
+
+        # 4. Group Chat 1v1 PvP Challenge
+        p4 = self.copywriter.draft_group_pvp_challenge_post(
+            slot_id=f"{d_str}-x-viral-group-duel",
+            fen="7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+            solution=["Rh7#"],
+            claim="mate_in_1",
+        )
+        p4["scheduled_at"] = f"{d_str}T18:00:00Z"
+
+        results = []
+        for p in [p1, p2, p3, p4]:
+            qa_res = self.qa.inspect_x_post(p)
+            if not qa_res["passed"]:
+                raise RuntimeError(f"Viral showcase post {p['id']} QA failed: {qa_res['issues']}")
+            p["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
+            p["status"] = "approved"
+            if render_images:
+                renderer.render(p)
+            queue.save(p)
+            results.append({
+                "id": p["id"],
+                "hook": p["hook"],
+                "category": p["category"],
+                "qa_passed": True,
+                "image": p.get("image"),
+            })
+
+        return {
+            "status": "success",
+            "campaign": "Viral Engagement Showcase",
+            "date": d_str,
+            "posts_created": len(results),
+            "posts": results,
+        }
+
 
 

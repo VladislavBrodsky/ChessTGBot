@@ -60,6 +60,7 @@ def main():
     parser.add_argument("--spotlight", action="store_true", help="Generate and queue high-FOMO Player Spotlight campaign across Telegram and X")
     parser.add_argument("--player", default="@grandmaestro", help="Player handle for spotlight (default: @grandmaestro)")
     parser.add_argument("--streak", type=int, default=9, help="Win streak count for spotlight (default: 9)")
+    parser.add_argument("--viral-showcase", action="store_true", help="Generate and render cutting-edge viral formats: Guess the Elo, 3s Scramble, Contrarian Manifesto, and Group Duel")
 
     args = parser.parse_args()
     orchestrator = ContentEngineOrchestrator(primary_domain=args.domain)
@@ -133,6 +134,17 @@ def main():
             streak_count=args.streak,
         )
         print("\n✅ Successfully generated, QA-validated, rendered, and queued Player Spotlight:")
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+
+    elif args.viral_showcase:
+        target_day = (
+            datetime.strptime(args.date, "%Y-%m-%d").date()
+            if args.date
+            else queue.utcnow().date()
+        )
+        print(f"\n🔥 Generating Cutting-Edge Viral Formats (Guess the Elo, 3s Scramble, Contrarian Manifesto, Group Duel for {target_day})...")
+        res = orchestrator.generate_viral_showcase_batch(target_date=target_day, render_images=True)
+        print("\n✅ Successfully generated, QA-approved, rendered, and queued Viral Showcase Batch:")
         print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.run_strategy:

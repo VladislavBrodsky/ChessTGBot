@@ -1,0 +1,49 @@
+{
+  "id": "2026-10-17-x-viral-group-duel",
+  "kind": "x_post",
+  "date": "2026-10-17",
+  "category": "Tactics",
+  "hook": "Who is the sharpest tactical mind in your group chat?",
+  "text": "Who is the sharpest tactical mind in your group chat?\n\nDrop this board in your chat. First to find the mate in 1 wins bragging rights.\n\nWhite to move. The clock is ticking ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+    "solution": [
+      "Rh7#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+    "tag": "Group Chat Duel",
+    "headline": "SPEED CHALLENGE\n*CHALLENGE YOUR CHAT*",
+    "subhead": "Drop this board in your group and see who solves it",
+    "cta_label": "Start Group Duel",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Rh7#.\n\nChallenge your friends to a 3-minute blitz duel directly in Telegram:\nhttps://t.me/chess_matbot/Web3Chess?startapp=mk_group_duel",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-17T18:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T06:16:50Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-viral-group-duel.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

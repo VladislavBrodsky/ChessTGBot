@@ -1,0 +1,10 @@
+{
+  "template": "puzzle",
+  "size": "square",
+  "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+  "tag": "3s Scramble Dilemma",
+  "headline": "3 SECONDS LEFT\n*SPOT THE MIRACLE*",
+  "subhead": "Resign or find the forced finish",
+  "cta_label": "Calculate Line",
+  "footer": "Answer with reactions or in replies."
+}

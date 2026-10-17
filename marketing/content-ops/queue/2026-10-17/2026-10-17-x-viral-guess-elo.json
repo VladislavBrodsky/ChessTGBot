@@ -1,0 +1,49 @@
+{
+  "id": "2026-10-17-x-viral-guess-elo",
+  "kind": "x_post",
+  "date": "2026-10-17",
+  "category": "Tactics",
+  "hook": "Guess the ELO: White just played Qh7#",
+  "text": "Guess the ELO: White just played Qh7#\n\nBrilliant grandmaster preparation or desperate time-scramble hallucination?\n\nDrop your rating guess in replies 👇\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "5N1k/6p1/7p/4P3/pp2Q3/4q3/1P4PP/2b4K w - - 1 35",
+    "solution": [
+      "Qh7#"
+    ],
+    "claim": "line_legal"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "5N1k/6p1/7p/4P3/pp2Q3/4q3/1P4PP/2b4K w - - 1 35",
+    "tag": "Guess The ELO",
+    "headline": "GUESS THE ELO\n*QH7# PLAYED*",
+    "subhead": "Brilliant sacrifice or complete blunder?",
+    "cta_label": "Vote in Replies",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "The Answer: Vladimir Kramnik vs Deep Fritz (2006). A 2780-rated World Champion overlooked mate in 1 in a drawn endgame.\n\nThink you can calculate faster than your rating? Test your reflexes in 3-minute blitz:\nhttps://t.me/chess_matbot/Web3Chess",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-17T04:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T06:16:49Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-viral-guess-elo.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

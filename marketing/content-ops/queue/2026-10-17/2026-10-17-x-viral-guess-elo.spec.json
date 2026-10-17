@@ -1,0 +1,10 @@
+{
+  "template": "puzzle",
+  "size": "square",
+  "fen": "5N1k/6p1/7p/4P3/pp2Q3/4q3/1P4PP/2b4K w - - 1 35",
+  "tag": "Guess The ELO",
+  "headline": "GUESS THE ELO\n*QH7# PLAYED*",
+  "subhead": "Brilliant sacrifice or complete blunder?",
+  "cta_label": "Vote in Replies",
+  "footer": "Answer with reactions or in replies."
+}

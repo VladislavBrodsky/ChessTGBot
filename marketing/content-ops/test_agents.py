@@ -344,6 +344,12 @@ class TestAgents(unittest.TestCase):
         self.assertTrue(res_spot_x["passed"], res_spot_x["issues"])
         self.assertIn("#SpeedChess", spot_x["text"])
 
+    def test_viral_showcase_formats(self):
+        showcase = self.orchestrator.generate_viral_showcase_batch(render_images=False)
+        self.assertEqual(showcase["status"], "success")
+        self.assertEqual(showcase["posts_created"], 4)
+        self.assertTrue(all(p["qa_passed"] for p in showcase["posts"]))
+
 
 if __name__ == "__main__":
     unittest.main()

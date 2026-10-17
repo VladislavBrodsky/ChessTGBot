@@ -28,6 +28,14 @@ IDEAS = [
      "claim": "line_legal", "lesson": "The knight lands on f7 and forks queen and rook. Black's king is pulled into the open after the capture."},
     {"id": "stafford-bishop-trap", "kind": "trap", "theme": "opening trap", "level": "intermediate", "setup": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5 Bg5 Bxf2+ Kxf2 Ng4+ Kg1 Qxg5",
      "claim": "line_legal", "lesson": "Bxf2+ drags the king forward, Ng4+ forks the king and the bishop on g5, and the queen collects it."},
+    {"id": "kramnik-blunder-mate", "kind": "puzzle", "theme": "historical blunder", "level": "intermediate",
+     "fen": "5N1k/6p1/7p/4P3/pp2Q3/4q3/1P4PP/2b4K w - - 1 35",
+     "solution": ["Qh7#"], "claim": "mate_in_1",
+     "lesson": "Kramnik vs Deep Fritz (2006). A world champion misses mate in 1 due to tunnel vision in a drawn endgame."},
+    {"id": "kasparov-immortal-rxd4", "kind": "trap", "theme": "historical brilliancy", "level": "advanced",
+     "fen": "b2r3r/k4p1p/p2q1np1/NppP4/3p4/P1Q3P1/1PP4P/1K1RR3 w - - 0 24",
+     "solution": ["Rxd4"], "claim": "line_legal",
+     "lesson": "Kasparov vs Topalov (1999). 24.Rxd4!! demolishes Black's center and triggers the greatest king hunt in chess history."},
 ]
 
 def _board_for(item):

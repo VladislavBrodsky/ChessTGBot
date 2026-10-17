@@ -1,0 +1,10 @@
+{
+  "template": "puzzle",
+  "size": "square",
+  "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+  "tag": "Group Chat Duel",
+  "headline": "SPEED CHALLENGE\n*CHALLENGE YOUR CHAT*",
+  "subhead": "Drop this board in your group and see who solves it",
+  "cta_label": "Start Group Duel",
+  "footer": "Answer with reactions or in replies."
+}

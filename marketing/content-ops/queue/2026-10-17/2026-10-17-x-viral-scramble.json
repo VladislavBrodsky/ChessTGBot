@@ -1,0 +1,51 @@
+{
+  "id": "2026-10-17-x-viral-scramble",
+  "kind": "x_post",
+  "date": "2026-10-17",
+  "category": "Tactics",
+  "hook": "3 seconds left on the digital clock. White to move",
+  "text": "3 seconds left on the digital clock. White to move\n\nBlack looks completely solid. 92% of club players panic and flag here.\n\nResign or spot the only winning move ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+    "solution": [
+      "Qb8+",
+      "Nxb8",
+      "Rd8#"
+    ],
+    "claim": "mate_in_2"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+    "tag": "3s Scramble Dilemma",
+    "headline": "3 SECONDS LEFT\n*SPOT THE MIRACLE*",
+    "subhead": "Resign or find the forced finish",
+    "cta_label": "Calculate Line",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Qb8+, Nxb8, Rd8#.\n\nUnder 5 seconds, calculation collapses into subconscious pattern recognition.\n\nSharpen your time scramble survival in our free Academy:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-17T10:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T06:16:50Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-viral-scramble.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}
