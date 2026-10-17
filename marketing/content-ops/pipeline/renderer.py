@@ -88,6 +88,7 @@ def _render_spec(entry: dict, spec: dict, suffix: str, timeout: int) -> dict:
     spec_path.write_text(json.dumps(spec, ensure_ascii=False, indent=2) + "\n")
     png.unlink(missing_ok=True)
     proc = subprocess.run(["node", str(ENGINE / "render.mjs"), str(spec_path), str(png)], capture_output=True, text=True, timeout=timeout)
+    spec_path.unlink(missing_ok=True)
     if proc.returncode != 0 or not png.exists():
         return {"ok": False, "skipped": False, "error": (proc.stderr or proc.stdout).strip()[-600:]}
     return {"ok": True, "image": str(png.relative_to(queue.ROOT)), "size": png.stat().st_size, "template": spec["template"]}
@@ -114,4 +115,6 @@ def render(entry: dict, timeout: int = 120) -> dict:
     elif reveal: entry["reveal"].pop("image", None)
     failed = [r for r in results.values() if not r["ok"]]
     entry["render"] = {"ok": not failed, "skipped": False, **({"error": failed[0]["error"]} if failed else {"images": len(results)})}
+    import gc
+    gc.collect()
     return entry

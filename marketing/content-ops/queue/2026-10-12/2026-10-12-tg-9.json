@@ -34,7 +34,6 @@
     "issues": [],
     "checked_at": "2026-10-14T00:06:40Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-9.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -44,5 +43,6 @@
   "published": {
     "message_id": 25,
     "at": "2026-10-14T08:46:26Z"
-  }
+  },
+  "media_cleaned": true
 }

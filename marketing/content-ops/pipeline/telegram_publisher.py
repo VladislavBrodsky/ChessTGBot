@@ -121,6 +121,11 @@ def publish_post_by_id(post_id: str, dry_run: bool | None = None) -> dict:
         raise
     if not outcome.get("dry_run"):
         queue.set_status(post, "published", published={"message_id": outcome["message_id"], "at": queue.iso(queue.utcnow())})
+        try:
+            from . import cleanup
+            cleanup.cleanup_post_media(post, delete_reveal=False)
+        except Exception:
+            pass
     return {"id": post_id, **outcome}
 
 def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:
@@ -159,6 +164,11 @@ def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:
             reveal.pop("sent"); queue.save(post)
             report.append({"id": post["id"], "error": str(exc)[:200]}); continue
         reveal["sent"]["message_id"] = message_id; queue.save(post)
+        try:
+            from . import cleanup
+            cleanup.cleanup_post_media(post, delete_reveal=True)
+        except Exception:
+            pass
         report.append({"id": post["id"], "revealed": message_id})
     return report
 
@@ -176,6 +186,11 @@ def publish_due(now=None, dry_run: bool | None = None, limit: int = 5, day: str 
             report.append({"id": post["id"], "error": str(exc)[:200]}); continue
         if not outcome["dry_run"]:
             queue.set_status(post, "published", published={"message_id": outcome["message_id"], "at": queue.iso(queue.utcnow())})
+            try:
+                from . import cleanup
+                cleanup.cleanup_post_media(post, delete_reveal=False)
+            except Exception:
+                pass
         report.append({"id": post["id"], **outcome})
     return report
 

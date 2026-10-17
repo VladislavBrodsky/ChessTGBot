@@ -37,7 +37,6 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-14T00:32:59Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-14/2026-10-14-tg-spotlight.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -47,5 +46,6 @@
   "published": {
     "message_id": 26,
     "at": "2026-10-14T11:49:40Z"
-  }
+  },
+  "media_cleaned": true
 }

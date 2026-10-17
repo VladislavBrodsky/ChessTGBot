@@ -113,5 +113,6 @@
   },
   "approved_by": "cmo_orchestrator",
   "updated_at": "2026-10-12T13:56:13Z",
-  "staged_path": "website/src/content/articles/survive-the-blackburne-shilling-gambit-trap.json"
+  "staged_path": "website/src/content/articles/survive-the-blackburne-shilling-gambit-trap.json",
+  "media_cleaned": true
 }

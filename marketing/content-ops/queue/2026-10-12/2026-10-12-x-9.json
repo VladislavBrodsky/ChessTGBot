@@ -39,7 +39,6 @@
     "issues": [],
     "checked_at": "2026-10-14T00:06:38Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-9.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -55,5 +54,6 @@
   "published": {
     "root_id": "2110190353198240216",
     "at": "2026-10-14T02:06:01Z"
-  }
+  },
+  "media_cleaned": true
 }

@@ -144,6 +144,11 @@ def cmd_cmo_report(args):
     entries = queue.all_entries(day=day)
     print(cmo.generate_executive_report(entries))
 
+def cmd_clean_media(args):
+    from pipeline import cleanup
+    res = cleanup.purge_published_media(dry_run=args.dry_run)
+    print(json.dumps(res, indent=2))
+
 def cmd_status(args):
     for entry in queue.all_entries(day=_day(args).isoformat()):
         issues = len((entry.get("qa") or {}).get("issues", []))
@@ -166,6 +171,9 @@ def main():
     p_x.add_argument("--due-only", action="store_true")
     p_x.add_argument("--limit", type=int, default=None)
     p_x.set_defaults(run=cmd_publish_x)
+    p_clean = sub.add_parser("clean-media")
+    p_clean.add_argument("--dry-run", action="store_true")
+    p_clean.set_defaults(run=cmd_clean_media)
     p = sub.add_parser("submit"); p.add_argument("id"); p.add_argument("file"); p.set_defaults(run=cmd_submit)
     for name in ("approve", "reject"):
         p = sub.add_parser(name); p.add_argument("id"); p.set_defaults(run=cmd_decide)

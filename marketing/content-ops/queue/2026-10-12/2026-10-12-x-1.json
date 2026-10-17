@@ -39,7 +39,6 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-12T19:59:50Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-1.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -51,5 +50,6 @@
     "reply_id": "2109741222604558409",
     "root_url": "https://x.com/defi_ambassador/status/2109741220180148653"
   },
-  "updated_at": "2026-10-12T20:21:19Z"
+  "updated_at": "2026-10-12T20:21:19Z",
+  "media_cleaned": true
 }

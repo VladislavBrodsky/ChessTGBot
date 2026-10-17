@@ -29,7 +29,7 @@ sys.path.insert(0, str(HERE))
 
 from agents.orchestrator import ContentEngineOrchestrator
 from agents.publisher import PublisherAgent
-from pipeline import analytics, queue, renderer, reply_sniper, site_publisher, telegram_publisher
+from pipeline import analytics, cleanup, queue, renderer, reply_sniper, site_publisher, telegram_publisher
 
 LOG_DIR = HERE / "state"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -369,6 +369,15 @@ def run_tick(
             state["last_audit_at"] = now_iso
         except Exception as e:
             logger.warning(f"Analytics audit error: {e}")
+
+    # 6. Zero-bloat cleanup: continuously purge any published media and release memory
+    try:
+        clean_res = cleanup.purge_published_media(dry_run=dry_run)
+        results["media_cleaned"] = clean_res.get("files_deleted", 0)
+        if clean_res.get("files_deleted", 0) > 0 and not dry_run:
+            logger.info(f"Purged {clean_res['files_deleted']} published media files ({clean_res['mb_freed']} MB freed).")
+    except Exception as e:
+        logger.warning(f"Media cleanup error: {e}")
 
     save_state(state)
     return results

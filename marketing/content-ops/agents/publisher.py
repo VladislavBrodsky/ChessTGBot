@@ -143,6 +143,13 @@ class PublisherAgent:
                         root_url = res.get("root_url") or (f"https://x.com/defi_ambassador/status/{root_id}" if root_id else None)
                         queue.set_status(e, "published", published={"root_id": root_id, "root_url": root_url, "at": queue.iso(queue.utcnow())})
 
+                        # Immediately delete rendered image from disk and clear memory
+                        try:
+                            from pipeline import cleanup
+                            cleanup.cleanup_post_media(e)
+                        except Exception as clean_err:
+                            logger.warning(f"Failed to cleanup media for {eid}: {clean_err}")
+
                         # Cross-pollinate to Telegram channel to ignite initial velocity
                         if root_url and e.get("cross_post_tg", True):
                             try:
@@ -200,6 +207,13 @@ class PublisherAgent:
                         root_id = res.get("root_id")
                         root_url = res.get("root_url") or (f"https://x.com/defi_ambassador/status/{root_id}" if root_id else None)
                         queue.set_status(e, "published", published={"root_id": root_id, "root_url": root_url, "all_ids": res.get("all_ids"), "at": queue.iso(queue.utcnow())})
+
+                        # Immediately delete rendered image from disk and clear memory
+                        try:
+                            from pipeline import cleanup
+                            cleanup.cleanup_post_media(e)
+                        except Exception as clean_err:
+                            logger.warning(f"Failed to cleanup media for thread {eid}: {clean_err}")
 
                         # Cross-pollinate to Telegram channel
                         if root_url and e.get("cross_post_tg", True):

@@ -39,7 +39,6 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-14T00:33:00Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-14/2026-10-14-x-spotlight.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -55,5 +54,6 @@
   "published": {
     "root_id": "2110387147777651013",
     "at": "2026-10-14T15:08:00Z"
-  }
+  },
+  "media_cleaned": true
 }

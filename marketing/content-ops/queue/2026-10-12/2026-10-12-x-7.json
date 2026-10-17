@@ -38,7 +38,6 @@
     "passed": true,
     "issues": []
   },
-  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-x-7.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -54,5 +53,6 @@
   "published": {
     "root_id": "2110159949623972243",
     "at": "2026-10-14T00:05:12Z"
-  }
+  },
+  "media_cleaned": true
 }

@@ -37,10 +37,10 @@
     "skipped": false,
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-7.png",
   "updated_at": "2026-10-14T02:05:40Z",
   "published": {
     "message_id": 21,
     "at": "2026-10-14T02:05:40Z"
-  }
+  },
+  "media_cleaned": true
 }

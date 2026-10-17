@@ -43,9 +43,9 @@
     "skipped": false,
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-12/2026-10-12-tg-5.png",
   "published": {
     "message_id": 16,
     "at": "2026-10-12T14:23:58Z"
-  }
+  },
+  "media_cleaned": true
 }

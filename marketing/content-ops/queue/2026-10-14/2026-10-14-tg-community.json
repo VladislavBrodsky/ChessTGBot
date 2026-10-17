@@ -42,7 +42,6 @@
     "issues": [],
     "gate_summary": "Passed all deterministic Telegram gates"
   },
-  "image": "marketing/content-ops/queue/2026-10-14/2026-10-14-tg-community.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -52,5 +51,6 @@
   "published": {
     "message_id": 22,
     "at": "2026-10-14T02:18:30Z"
-  }
+  },
+  "media_cleaned": true
 }

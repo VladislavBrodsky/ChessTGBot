@@ -47,7 +47,11 @@
       "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
       "cta_label": "Play Next Puzzle"
     },
-    "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-1.reveal.png"
+    "sent": {
+      "at": "2026-10-17T14:39:47Z",
+      "claimed": true,
+      "message_id": 31
+    }
   },
   "scheduled_at": "2026-10-17T00:00:00Z",
   "qa": {
@@ -56,7 +60,6 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T02:50:31Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-1.png",
   "render": {
     "ok": true,
     "skipped": false,
@@ -66,5 +69,6 @@
   "published": {
     "message_id": 27,
     "at": "2026-10-17T06:08:52Z"
-  }
+  },
+  "media_cleaned": true
 }
