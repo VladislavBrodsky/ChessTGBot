@@ -20,6 +20,7 @@ jest.mock('@/hooks/useLobbyStats', () => ({ useLobbyStats: () => ({ loaded: true
 jest.mock('@/components/game/lobby/BetSlip', () => ({ BetSlip: ({ onStart }: { onStart: () => void }) => <button onClick={onStart}>start-match</button> }));
 jest.mock('@/components/game/lobby/DailyGoal', () => ({ DailyGoal: () => null }));
 jest.mock('@/components/game/ArenaBanner', () => () => null);
+jest.mock('@/components/EngagementQuest', () => () => null);
 jest.mock('@/components/game/AiDifficultyDrawer', () => () => null);
 jest.mock('@/components/game/RakeInfoDrawer', () => () => null);
 jest.mock('@/components/Wallet/WalletDialogs', () => ({ DepositDialog: ({ onSuccess, onClose }: { onSuccess: () => void; onClose: () => void }) => <div role="dialog"><button onClick={onSuccess}>verified-deposit</button><button onClick={onClose}>close-deposit</button></div> }));

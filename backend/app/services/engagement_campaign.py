@@ -7,7 +7,7 @@ import json
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
@@ -20,6 +20,7 @@ CAMPAIGN_ID = "first-three-v1"
 TARGET = 3
 MIN_PLIES = 20
 PREMIUM_CAP = 100
+_CAMPAIGN_LOCK_ID = 881234567
 REWARDS = (
     {"key": "xp_250", "probability_percent": 60},
     {"key": "boost_24h", "probability_percent": 30},
@@ -145,6 +146,11 @@ def draw_reward(premium_claimed: int = PREMIUM_CAP):
 
 
 async def claim(db: AsyncSession, user: User):
+    if db.get_bind().dialect.name == "postgresql":
+        await db.execute(
+            text("SELECT pg_advisory_xact_lock(:lock_id)"),
+            {"lock_id": _CAMPAIGN_LOCK_ID},
+        )
     user = await _locked_user(db, user)
     previous = await _receipt(db, user)
     if previous:

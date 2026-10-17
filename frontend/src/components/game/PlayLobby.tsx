@@ -20,6 +20,7 @@ import { RecentResults } from './lobby/RecentResults';
 import { useLobbyStats } from '@/hooks/useLobbyStats';
 import { formatUsd, winnerCents } from '@/lib/settlement';
 import ArenaBanner from './ArenaBanner';
+import EngagementQuest from '@/components/EngagementQuest';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
 import { Button } from '@/components/ui/Button';
@@ -594,6 +595,8 @@ export default function PlayLobby() {
 
               {/* Keep the wager action and its risk disclosure together before secondary events. */}
               <ArenaBanner />
+
+              <EngagementQuest />
 
               {matchmakingError && (
                 <div role="alert" className="rounded-2xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 p-3 text-center text-caption font-semibold normal-case tracking-normal text-rose-400">
