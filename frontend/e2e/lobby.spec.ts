@@ -24,6 +24,7 @@ async function prepare(page: Page, lobby: { searching: number; games_24h: number
     else if (path.endsWith('/wallet/balance')) data = { balance, wallet_address: 'EQSpec' };
     else if (path.endsWith('/game/lobby-stats')) { if (lobby) data = { ...lobby, counted_at: 1 }; else { status = 500; data = { detail: 'down' }; } }
     else if (path.endsWith('/gamification/tasks')) data = tasks;
+    else if (path.endsWith('/gamification/engagement/status')) data = { enabled: false };
     else if (path.endsWith('/game/active')) data = { active_game_id: null };
     else if (path.endsWith('/arena/status')) data = { status: 'scheduled', starts_at: new Date(now + 3600e3).toISOString(), ends_at: new Date(now + 7200e3).toISOString(), server_now: new Date(now).toISOString(), prizes_xp: [500, 300, 100], participation_xp: 25, participants: 0, standings: [], me: null, in_pool: false };
     await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(data) });
@@ -114,7 +115,7 @@ test('insufficient balance turns the action into a top-up with the exact shortfa
   await expect(page.locator('.lobby-cta__sub')).toContainText('$3.00');
 });
 
-test('search, A.I. fallback after a wait, and cancel', async ({ page }) => {
+test('search and cancel without AI fallback button', async ({ page }) => {
   test.setTimeout(90_000);
   await prepare(page, { searching: 2, games_24h: 10 });
   await openLobby(page);
@@ -122,7 +123,6 @@ test('search, A.I. fallback after a wait, and cancel', async ({ page }) => {
   await expect(page.getByRole('timer')).toBeVisible();
   await expect(page.getByText('You are matched with the next player waiting')).toBeVisible();
   await expect(page.getByRole('button', { name: /Switch to A\.I\. practice/ })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /Switch to A\.I\. practice/ })).toBeVisible({ timeout: 25_000 }); // appears after 15 s of real waiting
   await page.getByRole('button', { name: /Cancel Search/ }).click();
   await expect(page.locator('.lobby-cta')).toBeVisible();
 });

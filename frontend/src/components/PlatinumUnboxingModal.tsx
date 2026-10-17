@@ -56,7 +56,6 @@ export default function PlatinumUnboxingModal({
         particleCount: 90,
         spread: 80,
         origin: { y: 0.55 },
-        colors: ['#E5E4E2', '#B9F2FF', '#FFD700', '#10B981', '#FFFFFF'],
       });
 
       setTimeout(() => {
@@ -65,14 +64,12 @@ export default function PlatinumUnboxingModal({
           angle: 60,
           spread: 55,
           origin: { x: 0.1, y: 0.65 },
-          colors: ['#00F0FF', '#B9F2FF', '#FFFFFF'],
         });
         void fireGlobalConfetti({
           particleCount: 50,
           angle: 120,
           spread: 55,
           origin: { x: 0.9, y: 0.65 },
-          colors: ['#FFD700', '#E5E4E2', '#FFFFFF'],
         });
       }, 260);
     }, 1000);
@@ -101,7 +98,7 @@ export default function PlatinumUnboxingModal({
       <button
         type="button"
         onClick={handleShareToTelegram}
-        className="ui-tap-target w-full py-3.5 px-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 bg-[#24A1DE] hover:bg-[#208fC6] text-white transition-all shadow-[0_4px_16px_rgba(36,161,222,0.35)] active:scale-98 cursor-pointer"
+        className="ui-tap-target w-full py-3.5 px-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white transition-all shadow-[0_4px_16px_rgba(36,161,222,0.35)] active:scale-98 cursor-pointer"
       >
         <FaTelegram size={17} />
         <span>{t('share_win')}</span>
@@ -131,7 +128,7 @@ export default function PlatinumUnboxingModal({
                 : { scale: [0.9, 1.1, 0.9], opacity: [0.2, 0.4, 0.2] }
             }
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/30 via-slate-200/25 to-blue-500/30 blur-2xl pointer-events-none"
+            className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/30 via-cyan-200/25 to-blue-500/30 blur-2xl pointer-events-none"
           />
 
           <motion.div
@@ -172,17 +169,17 @@ export default function PlatinumUnboxingModal({
             {/* VIP Drop Badge */}
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-cyan-500/20 to-amber-500/20 border border-cyan-400/40 shadow-xs">
               <FiStar className="text-amber-400" size={13} />
-              <span className="text-xs font-bold tracking-wide uppercase text-cyan-200">
+              <span className="ui-eyebrow font-bold text-cyan-200">
                 {t('pioneer_badge')}
               </span>
             </div>
 
             {/* Prize Title & Free Value */}
             <div className="space-y-1">
-              <h3 className="t-title-1 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-slate-300">
+              <h3 className="t-title-1 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-200">
                 {t('rewards.premium_1m')}
               </h3>
-              <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+              <p className="ui-eyebrow font-semibold text-emerald-400">
                 100% Free · $9.99 Value · 30 Days Full Access
               </p>
             </div>

@@ -46,7 +46,12 @@ async function readQuest(): Promise<Quest> {
   return quest;
 }
 
-export default function EngagementQuest() {
+interface EngagementQuestProps {
+  /** Override the "Play a match" action. When omitted, navigates to /{locale}/game. */
+  onPlayMatch?: () => void;
+}
+
+export default function EngagementQuest({ onPlayMatch }: EngagementQuestProps = {}) {
   const t = useTranslations('Engagement');
   const tReferral = useTranslations('Referral');
   const locale = useLocale();
@@ -170,7 +175,7 @@ export default function EngagementQuest() {
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           {isPlatinum ? (
-            <div className="relative w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-cyan-500/20 via-slate-800 to-blue-500/20 border border-cyan-400/40 flex items-center justify-center overflow-hidden shadow-xs">
+            <div className="relative w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-cyan-500/20 via-brand-elevated to-blue-500/20 border border-cyan-400/40 flex items-center justify-center overflow-hidden shadow-xs">
               <Image
                 src="/boxes/legendary.webp"
                 alt="Platinum Sovereign Mystery Box"
@@ -191,7 +196,7 @@ export default function EngagementQuest() {
                 {isPlatinum ? t('platinum_title') : t('title')}
               </h2>
               {isPlatinum && typeof data.premium_slots_remaining === 'number' && data.premium_slots_remaining > 0 && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 shrink-0">
+                <span className="ui-eyebrow inline-flex items-center px-2 py-0.5 rounded-full font-bold bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 shrink-0">
                   {t('pioneer_badge')}
                 </span>
               )}
@@ -223,7 +228,7 @@ export default function EngagementQuest() {
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             {t('pioneer_remaining', { count: data.premium_slots_remaining })}
           </span>
-          <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
+          <span className="text-xs font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
             $9.99 Value · 100% Free
           </span>
         </div>
@@ -287,7 +292,11 @@ export default function EngagementQuest() {
             void act('claim');
           } else {
             telegramHaptic('selection');
-            router.push(`/${locale}/game`);
+            if (onPlayMatch) {
+              onPlayMatch();
+            } else {
+              router.push(`/${locale}/game`);
+            }
           }
         }}
       >
@@ -349,14 +358,14 @@ export default function EngagementQuest() {
         {isPlatinum && (
           <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-400/30 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-cyan-300 uppercase tracking-wider">{t('pioneer_badge')}</span>
+              <span className="ui-eyebrow font-bold text-cyan-300">{t('pioneer_badge')}</span>
               {typeof data.premium_slots_remaining === 'number' && (
                 <span className="text-xs font-semibold text-emerald-400">
                   {t('pioneer_remaining', { count: data.premium_slots_remaining })}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-brand-muted leading-relaxed">
               {t('perk_academy')} · {t('perk_boost')} · {t('perk_border')} · {t('perk_vip')}
             </p>
           </div>

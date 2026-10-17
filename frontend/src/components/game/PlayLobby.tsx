@@ -596,7 +596,7 @@ export default function PlayLobby() {
               {/* Keep the wager action and its risk disclosure together before secondary events. */}
               <ArenaBanner />
 
-              <EngagementQuest />
+              <EngagementQuest onPlayMatch={handleLauncherClick} />
 
               {matchmakingError && (
                 <div role="alert" className="rounded-2xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 p-3 text-center text-caption font-semibold normal-case tracking-normal text-rose-400">
