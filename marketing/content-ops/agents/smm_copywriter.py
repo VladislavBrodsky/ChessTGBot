@@ -147,6 +147,7 @@ class SmmCopywriterAgent:
         canvas_size = size if size in ("square", "wide") else "square"
         clean_hook = hook.rstrip(".")
         clean_fen = fen or "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+        trap_moves = solution if (solution and len(solution) >= 2) else ["e4", "e5", "Nf3", "Nc6", "Bc4", "Nd4"]
         return {
             "id": slot_id,
             "kind": "telegram",
@@ -170,6 +171,7 @@ class SmmCopywriterAgent:
                 "headline": f"{trap_name.upper()}\n*PUNISH GREED*",
                 "subhead": "Can you spot the refutation line?",
                 "fen": clean_fen,
+                "moves": trap_moves,
                 "cta_label": "Learn in Academy",
                 "footer": "Study full lines in the Web3Chess Academy.",
             },
@@ -241,6 +243,11 @@ class SmmCopywriterAgent:
                 "headline": f"{topic.upper()}\n*MASTER PATTERN*",
                 "subhead": "Three candidate moves before any capture",
                 "cta_label": "Open Academy",
+                "steps": [
+                    "Scan every check first",
+                    "List all direct captures",
+                    "Calculate forcing threats",
+                ],
                 "footer": "Free structured lessons inside Web3Chess Academy.",
             },
         }
@@ -273,8 +280,9 @@ class SmmCopywriterAgent:
                 "template": "rules",
                 "size": canvas_size,
                 "tag": "PvP Match Integrity",
-                "headline": "SPEED ARENA\n*FAIR PLAY RULES*",
-                "subhead": "Zero bots • 95% pot return • Instant TON payout",
+                "headline": "*FAIR PLAY RULES*",
+                "subhead": "95% of pot goes to the winner.",
+                "stake": 5,
                 "cta_label": "Read Full Rules",
                 "footer": f"18+ only · You can lose your stake · web3chess.online/wagers",
             },

@@ -1,0 +1,40 @@
+{
+  "id": "2026-10-17-tg-7",
+  "kind": "telegram",
+  "date": "2026-10-17",
+  "category": "Product",
+  "format": "news",
+  "hook": "How we built sub-50ms board sync inside Telegram Mini Apps",
+  "cta": "play",
+  "text": "<b>How we built sub-50ms board sync inside Telegram Mini Apps</b>\n\nFastAPI + Socket.IO real-time engine built for Bot API 8.0.\n\n• Microsecond server monotonic timestamps\n• Zero board lag on high-frequency mobile connections\n• Instant PvP matchmaking without leaving Telegram chats",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "news",
+    "size": "square",
+    "tag": "Architecture Update",
+    "headline": "SUB-50MS ENGINE\n*ZERO BOARD LAG*",
+    "subhead": "FastAPI + Socket.IO real-time sync on Bot API 8.0",
+    "cta_label": "Test Engine",
+    "source": "Web3Chess Core Engineering",
+    "footer": "Built for competitive blitz on high-frequency mobile connections."
+  },
+  "scheduled_at": "2026-10-17T18:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-17T02:50:34Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-7.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

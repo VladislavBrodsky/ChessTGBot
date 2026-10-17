@@ -1048,93 +1048,403 @@ class ContentEngineOrchestrator:
             "posts": results,
         }
 
-    def generate_x_daily_batch(self, target_date: Optional[date] = None) -> Dict[str, Any]:
+    def generate_x_daily_batch(
+        self,
+        target_date: Optional[date] = None,
+        render_images: bool = False,
+    ) -> Dict[str, Any]:
         """Generates, QA-gates, approves, and queues 3 high-impact daily posts for X (Twitter).
-        
-        - X-1 (Morning): Tactics & Calculation Bookmark Magnet
-        - X-2 (Afternoon): Blitz Scramble & Spectator Drama
-        - X-3 (Evening): Synchronized Arena Vault Alert (18+ compliant)
+
+        - X-1 (00:00 UTC): Tactics & Calculation Bookmark Magnet
+        - X-2 (08:00 UTC): Blitz Scramble, Psychology, Debate & Engineering
+        - X-3 (16:00 UTC): Synchronized Arena & Competitive Integrity (18+ compliant)
         """
         d = target_date or self.plan_date
         d_str = d.isoformat()
+        date_badge = d.strftime("%b %d")
         results: List[Dict[str, Any]] = []
 
-        # Slot X-1: Tactics
+        # Collect already-published or queued hooks/texts from other dates to guarantee zero X 403 duplicates
+        used_hooks = set()
+        used_texts = set()
+        for existing in queue.all_entries():
+            if existing.get("kind") == "x_post" and existing.get("date") != d_str:
+                if existing.get("hook"):
+                    used_hooks.add(existing["hook"].strip().lower())
+                if existing.get("text"):
+                    used_texts.add(existing["text"].strip().lower())
+
+        tactics_pool = [
+            {
+                "theme": "Ladder Mate",
+                "fen": "7k/1R6/8/8/8/8/8/R5K1 w - - 0 1",
+                "solution": ["Ra8#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Two rooks seal every flight square",
+                "body": (
+                    "Black's king on h8 is trapped behind the 7th-rank barrier.\n\n"
+                    "Spot the 1-move finish ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Ra8# (Ladder Mate).\n"
+                    "One rook holds the 7th rank while the second delivers checkmate on the 8th.\n\n"
+                    f"Practise 50+ master patterns in our free Academy:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "LADDER MATE\n*SEAL THE 8TH RANK*",
+                "subhead": "White to move • Mate in 1",
+            },
+            {
+                "theme": "Legal's Mate",
+                "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+                "solution": ["Bxf7+", "Ke7", "Nd5#"],
+                "claim": "mate_in_2",
+                "hook": "Black just grabbed White's queen on d1. Punish it in 2 moves",
+                "body": (
+                    "Taking the queen looks winning, but Black's king has only one flight square.\n\n"
+                    "Spot the forced mate in 2 ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Bxf7+ Ke7 2. Nd5# (Legal's Mate).\n"
+                    "Three minor pieces weave an inescapable mating net in the center.\n\n"
+                    f"Master opening traps in our free Academy:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "LEGAL'S MATE\n*QUEEN SACRIFICE*",
+                "subhead": "White to move • Forced Mate in 2",
+            },
+            {
+                "theme": "Opera Mate",
+                "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+                "solution": ["Qb8+", "Nxb8", "Rd8#"],
+                "claim": "mate_in_2",
+                "hook": "Morphy's Opera House finish: White to move and mate in 2",
+                "body": (
+                    "Black's king on e8 is pinned down by the d1 rook and g5 bishop.\n\n"
+                    "Find the queen sacrifice that forces mate ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Qb8+! Nxb8 2. Rd8# (The Opera Mate).\n"
+                    "The queen deflection drags the b8 knight away from defending d8.\n\n"
+                    f"Study classical combinations at:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "OPERA MATE\n*DEFLECTION SAC*",
+                "subhead": "White to move • Forced Mate in 2",
+            },
+            {
+                "theme": "Philidor's Legacy",
+                "fen": "5r1k/4N1pp/8/6N1/8/1Q6/8/6K1 w - - 0 1",
+                "solution": ["Qg8+", "Rxg8", "Nf7#"],
+                "claim": "mate_in_2",
+                "hook": "White to move. Force Black's rook to build the smothered mate box",
+                "body": (
+                    "The g8 square is covered by both White's queen on b3 and knight on e7.\n\n"
+                    "Calculate the 2-move finish ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Qg8+! Rxg8 2. Nf7# (Philidor's Legacy).\n"
+                    "Black's king cannot take on g8 because e7 guards it, forcing Rxg8.\n\n"
+                    f"Train tactical vision at:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "PHILIDOR'S LEGACY\n*QUEEN SAC IN 2*",
+                "subhead": "White to move • Forced Mate in 2",
+            },
+            {
+                "theme": "Anastasia's Mate",
+                "fen": "5r2/4Nppk/8/8/8/4R3/5PPP/6K1 w - - 0 1",
+                "solution": ["Rh3#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. The knight on e7 seals g8 and g6",
+                "body": (
+                    "Black's own f7 pawn blocks the king while the knight locks the escape squares.\n\n"
+                    "Find the 1-move checkmate ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Rh3# (Anastasia's Mate).\n"
+                    "The knight on e7 and rook on the h-file form a lethal vertical corridor.\n\n"
+                    f"Practise blitz finishes at:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "ANASTASIA'S MATE\n*H-FILE CORRIDOR*",
+                "subhead": "White to move • Mate in 1",
+            },
+            {
+                "theme": "Boden's Mate",
+                "fen": "2kr1b1r/p2npppp/1pp5/8/5B2/2N5/PPP1BPPP/2KR3R w - - 0 1",
+                "solution": ["Ba6#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Criss-cross bishops slice the queenside castle",
+                "body": (
+                    "The f4 bishop controls b8 and d6. One diagonal strike ends the game.\n\n"
+                    "Spot the winning bishop move ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Ba6# (Boden's Mate).\n"
+                    "Two crisscrossing bishops lock down every queenside escape square.\n\n"
+                    f"Sharpen your pattern recognition at:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "BODEN'S MATE\n*TWO BISHOPS NET*",
+                "subhead": "White to move • Mate in 1",
+            },
+            {
+                "theme": "Epaulette Mate",
+                "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+                "solution": ["Qe6#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Black's rooks on d8 and f8 trap their own king",
+                "body": (
+                    "The king on e8 is flanked by two friendly rooks blocking sideways flight.\n\n"
+                    "Find the queen mate in 1 ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Qe6# (Epaulette Mate).\n"
+                    "The queen covers d7, e7, and f7 while Black's rooks block d8 and f8.\n\n"
+                    f"Explore mating motifs in our free Academy:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "EPAULETTE MATE\n*TRAPPED BY ROOKS*",
+                "subhead": "White to move • Mate in 1",
+            },
+            {
+                "theme": "Lolli's Mate",
+                "fen": "5rk1/5p1p/5PpQ/8/8/8/5PPP/6K1 w - - 0 1",
+                "solution": ["Qg7#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. An advanced f6 pawn turns g7 into checkmate",
+                "body": (
+                    "Dark-square holes around a castled king are fatal once the queen enters.\n\n"
+                    "Deliver the 1-move finish ♟️"
+                ),
+                "reply": (
+                    "Solution: 1. Qg7# (Lolli's Mate).\n"
+                    "The pawn on f6 defends the queen at point-blank range.\n\n"
+                    f"Train dark-square attacks at:\nhttps://{self.primary_domain}/academy"
+                ),
+                "headline": "LOLLI'S MATE\n*DARK SQUARE STRIKE*",
+                "subhead": "White to move • Mate in 1",
+            },
+        ]
+
+        culture_pool = [
+            {
+                "category": "Chess Culture",
+                "hook": "You premoved a recapture. Your opponent played an in-between check",
+                "body": (
+                    "The masters call it Zwischenzug.\n\n"
+                    "In 3-minute blitz, 80% of blunders come from assuming an automatic recapture."
+                ),
+                "reply": (
+                    "Before snatching a piece back, always ask: do they have a forcing check first?\n\n"
+                    f"Test your blitz reflexes inside Telegram:\n{brand.TG_APP}"
+                ),
+            },
+            {
+                "category": "Psychology",
+                "hook": "Bank 25 seconds in the first 10 moves or lose the scramble",
+                "body": (
+                    "In 3+0 blitz, each move averages 4.5 seconds.\n\n"
+                    "Burning 40 seconds on move 8 guarantees panic when the endgame gets sharp."
+                ),
+                "reply": (
+                    "Time on the digital clock is a physical piece on the board.\n\n"
+                    f"Play zero-lag 3+0 blitz inside Telegram:\n{brand.TG_APP}"
+                ),
+            },
+            {
+                "category": "Chess Debate",
+                "hook": "Endgame technique beats opening memory under a 3-minute clock",
+                "body": (
+                    "Club players spend 90% of study time memorizing 15 moves of theory.\n\n"
+                    "Then move 16 arrives and rook endgames decide everything."
+                ),
+                "reply": (
+                    "Do you study openings or endgame patterns more for blitz?\n\n"
+                    f"Sharpen your practical conversion at:\nhttps://{self.primary_domain}/academy"
+                ),
+            },
+            {
+                "category": "Engineering",
+                "hook": "How server-side monotonic clocks stop lag manipulation in blitz",
+                "body": (
+                    "Client timers can be spoofed by packet drops.\n\n"
+                    "Our FastAPI + Socket.IO engine timestamps every move with sub-50ms precision."
+                ),
+                "reply": (
+                    "Read our engineering breakdown and test the real-time board:\n"
+                    f"https://{self.primary_domain}/blog"
+                ),
+            },
+            {
+                "category": "Tactical Matrix",
+                "hook": "Checks. Captures. Threats. The 2-second scan that stops blunders",
+                "body": (
+                    "Grandmasters do not calculate 15 moves deep in blitz.\n\n"
+                    "They run a strict 3-step forcing filter before touching any piece."
+                ),
+                "reply": (
+                    "Drill candidate move selection in the free Web3Chess Academy:\n"
+                    f"https://{self.primary_domain}/academy"
+                ),
+            },
+            {
+                "category": "Chess Culture",
+                "hook": "Up +5.0 on the eval bar with 3 seconds left on the clock",
+                "body": (
+                    "In sudden-death blitz, a complex win is harder than a simple draw.\n\n"
+                    "When the clock turns red, trade queens and simplify."
+                ),
+                "reply": (
+                    "Can you hold your nerve under the 10-second countdown?\n\n"
+                    f"Launch a 3-minute match in Telegram:\n{brand.TG_APP}"
+                ),
+            },
+        ]
+
+        arena_pool = [
+            {
+                "category": "Product",
+                "hook": "Why Web3Chess runs 4 daily Arena windows instead of dead queues",
+                "body": (
+                    "Matchmaking at 02:00, 08:00, 14:00, and 20:00 UTC guarantees tight Elo pairings.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
+                ),
+                "reply": (
+                    "Enter the next scheduled Arena window inside Telegram:\n"
+                    f"{brand.TG_ARENA}"
+                ),
+            },
+            {
+                "category": "Product",
+                "hook": "Skill-gated PvP: 95% of every match pool goes to the winner",
+                "body": (
+                    "Zero house-edge luck, zero bots, and server-validated moves on every turn.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
+                ),
+                "reply": (
+                    "Review our transparent match rules and fair-play architecture:\n"
+                    f"https://{self.primary_domain}/wagers"
+                ),
+            },
+            {
+                "category": "Product",
+                "hook": "Double-elimination Blitz Brackets lock at 20:00 UTC tonight",
+                "body": (
+                    "One slip never ends your run—battle through the lower bracket live.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
+                ),
+                "reply": (
+                    "Join the Arena lobby or spectate top boards free in Telegram:\n"
+                    f"{brand.TG_ARENA}"
+                ),
+            },
+            {
+                "category": "Product",
+                "hook": "From checkmate on the board to instant TON wallet settlement",
+                "body": (
+                    "Every move is verified by python-chess and settled transparently.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
+                ),
+                "reply": (
+                    "Open the Web3Chess Mini App and play free or competitive matches:\n"
+                    f"{brand.TG_APP}"
+                ),
+            },
+            {
+                "category": "Product",
+                "hook": "The 14:00 UTC Midday Arena is open for blitz registration",
+                "body": (
+                    "3-Minute Blitz • Real-time Elo pairings • Live spectator lounge.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
+                ),
+                "reply": (
+                    "Step onto the board inside Telegram:\n"
+                    f"{brand.TG_ARENA}"
+                ),
+            },
+            {
+                "category": "Product",
+                "hook": "Zero engine assistance: real-time timing & move integrity checks",
+                "body": (
+                    "Every rated Arena duel runs automated fair-play screening before payout.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
+                ),
+                "reply": (
+                    "Read how we protect competitive integrity at:\n"
+                    f"https://{self.primary_domain}/wagers"
+                ),
+            },
+        ]
+
+        def _pick_unique(pool: List[Dict[str, Any]], seed_offset: int) -> Dict[str, Any]:
+            start_idx = (d.toordinal() + seed_offset) % len(pool)
+            for i in range(len(pool)):
+                candidate = dict(pool[(start_idx + i) % len(pool)])
+                if candidate["hook"].strip().lower() not in used_hooks:
+                    return candidate
+            # Fallback if entire pool has been used across history: stamp with date badge
+            fallback = dict(pool[start_idx])
+            fallback["hook"] = f"{fallback['hook']} ({date_badge})"
+            return fallback
+
+        # Slot X-1: Morning Tactics (00:00 UTC)
         x1_id = f"{d_str}-x-1"
-        x1_tactics = self.chess_editor.get_stock_viral_position("smothered_mate")
+        t_spec = _pick_unique(tactics_pool, 0)
         x1_post = self.copywriter.draft_x_single_post(
             slot_id=x1_id,
             category="Tactics",
-            hook="White to move. One knight move ends the game on the spot",
-            body=(
-                "Black's king is boxed in on h8 by its own rook and pawns.\n\n"
-                "What is White's only winning move? ♟️"
-            ),
-            docked_reply_text=(
-                "Solution: 1. Nf7# (Smothered Mate).\n"
-                "The knight delivers check, and the king cannot escape because g8, g7, and h7 are blocked.\n\n"
-                f"Practise 50+ master patterns in our free Academy:\nhttps://{self.primary_domain}/academy"
-            ),
-            fen=x1_tactics["fen"],
-            solution=x1_tactics["solution"],
-            claim=x1_tactics["claim"],
+            hook=t_spec["hook"],
+            body=t_spec["body"],
+            docked_reply_text=t_spec["reply"],
+            fen=t_spec["fen"],
+            solution=t_spec["solution"],
+            claim=t_spec["claim"],
             size="square",
         )
-        x1_qa = self.qa.inspect_x_post(x1_post)
-        if not x1_qa["passed"]:
-            raise RuntimeError(f"X-1 QA failed: {x1_qa['issues']}")
-        x1_post["qa"] = {**x1_qa, "checked_at": queue.iso(queue.utcnow())}
-        x1_post["status"] = "approved"
-        queue.save(x1_post)
-        results.append({"id": x1_id, "pillar": "Tactics", "qa_passed": True})
+        x1_post["creative"]["headline"] = t_spec["headline"]
+        x1_post["creative"]["subhead"] = t_spec["subhead"]
+        x1_post["scheduled_at"] = f"{d_str}T00:00:00Z"
 
-        # Slot X-2: Culture / Blitz Scramble
+        # Slot X-2: Midday Culture / Psychology / Debate / Engineering (08:00 UTC)
         x2_id = f"{d_str}-x-2"
+        c_spec = _pick_unique(culture_pool, 1)
         x2_post = self.copywriter.draft_x_single_post(
             slot_id=x2_id,
-            category="Chess Culture",
-            hook="4 seconds left on the clock. Up a full queen",
-            body=(
-                "Black premoves into a back-rank mate.\n\n"
-                "The clock does not care about your theoretical rating. Under 5 seconds, calculation collapses into survival."
-            ),
-            docked_reply_text=(
-                "Speed chess is 20% opening theory, 80% nervous system control.\n\n"
-                f"Challenge a friend to a 3-minute blitz duel in Telegram:\n{brand.TG_APP}"
-            ),
+            category=c_spec["category"],
+            hook=c_spec["hook"],
+            body=c_spec["body"],
+            docked_reply_text=c_spec["reply"],
             size="square",
         )
-        x2_qa = self.qa.inspect_x_post(x2_post)
-        if not x2_qa["passed"]:
-            raise RuntimeError(f"X-2 QA failed: {x2_qa['issues']}")
-        x2_post["qa"] = {**x2_qa, "checked_at": queue.iso(queue.utcnow())}
-        x2_post["status"] = "approved"
-        queue.save(x2_post)
-        results.append({"id": x2_id, "pillar": "Chess Culture", "qa_passed": True})
+        x2_post["scheduled_at"] = f"{d_str}T08:00:00Z"
 
-        # Slot X-3: Arena Drop FOMO
+        # Slot X-3: Evening Arena / Product (16:00 UTC)
         x3_id = f"{d_str}-x-3"
+        a_spec = _pick_unique(arena_pool, 2)
         x3_post = self.copywriter.draft_x_single_post(
             slot_id=x3_id,
-            category="Product",
-            hook="The 20:00 UTC Arena Vault opens in 15 minutes",
-            body=(
-                "$500 Prize Vault. Once the round timer starts, brackets lock.\n\n"
-                "USDT matches are for adults (18+) where permitted. You can lose your stake."
-            ),
-            docked_reply_text=(
-                "Enter the arena lobby inside Telegram:\n"
-                f"{brand.TG_ARENA}"
-            ),
+            category=a_spec["category"],
+            hook=a_spec["hook"],
+            body=a_spec["body"],
+            docked_reply_text=a_spec["reply"],
             size="square",
         )
-        x3_qa = self.qa.inspect_x_post(x3_post)
-        if not x3_qa["passed"]:
-            raise RuntimeError(f"X-3 QA failed: {x3_qa['issues']}")
-        x3_post["qa"] = {**x3_qa, "checked_at": queue.iso(queue.utcnow())}
-        x3_post["status"] = "approved"
-        queue.save(x3_post)
-        results.append({"id": x3_id, "pillar": "Product", "qa_passed": True})
+        x3_post["scheduled_at"] = f"{d_str}T16:00:00Z"
+
+        for idx, (post, pillar) in enumerate(
+            [(x1_post, "Tactics"), (x2_post, c_spec["category"]), (x3_post, "Product")],
+            start=1,
+        ):
+            qa_res = self.qa.inspect_x_post(post)
+            if not qa_res["passed"]:
+                raise RuntimeError(f"X-{idx} QA failed: {qa_res['issues']}")
+            post["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
+            post["status"] = "approved"
+            if render_images:
+                renderer.render(post)
+            queue.save(post)
+            results.append({
+                "id": post["id"],
+                "pillar": pillar,
+                "scheduled_at": post.get("scheduled_at"),
+                "qa_passed": True,
+                "image": post.get("image"),
+            })
 
         return {
             "status": "success",

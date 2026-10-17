@@ -1,0 +1,62 @@
+{
+  "id": "2026-10-16-x-1",
+  "kind": "x_post",
+  "date": "2026-10-16",
+  "category": "Tactics",
+  "hook": "Black just grabbed White's queen on d1. Punish it in 2 moves",
+  "text": "Black just grabbed White's queen on d1. Punish it in 2 moves\n\nTaking the queen looks winning, but Black's king has only one flight square.\n\nSpot the forced mate in 2 ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+    "solution": [
+      "Bxf7+",
+      "Ke7",
+      "Nd5#"
+    ],
+    "claim": "mate_in_2"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+    "tag": "Mate In 2",
+    "headline": "LEGAL'S MATE\n*QUEEN SACRIFICE*",
+    "subhead": "White to move • Forced Mate in 2",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Bxf7+ Ke7 2. Nd5# (Legal's Mate).\nThree minor pieces weave an inescapable mating net in the center.\n\nMaster opening traps in our free Academy:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-16T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T02:26:00Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-16/2026-10-16-x-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "updated_at": "2026-10-17T06:08:49Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111338620787326994",
+    "reply_id": "2111338623362613708",
+    "root_url": "https://x.com/defi_ambassador/status/2111338620787326994"
+  },
+  "published": {
+    "root_id": "2111338620787326994",
+    "at": "2026-10-17T06:08:49Z"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "2026-10-17-tg-3",
+  "kind": "telegram",
+  "date": "2026-10-17",
+  "category": "Product",
+  "format": "product",
+  "hook": "Arena Alert: Morning Blitz Vault ($250 USDT) locks in 15 minutes",
+  "cta": "arena",
+  "text": "⚡ <b>The 08:00 UTC Arena countdown is live.</b>\n\n3-Minute Blitz • Double-elimination bracket • Instant TON settlement.\nFree spectator lounge open for all community members.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.\nRegistration locks the second the round clock starts.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/wagers"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Daily Arena",
+    "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
+    "subhead": "08:00 UTC • Instant PvP Matchmaking",
+    "cta_label": "Enter Arena",
+    "steps": [
+      "Open Mini App",
+      "Choose stake tier",
+      "Win 95% of the pot"
+    ],
+    "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+  },
+  "scheduled_at": "2026-10-17T06:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-17T02:50:33Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-3.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

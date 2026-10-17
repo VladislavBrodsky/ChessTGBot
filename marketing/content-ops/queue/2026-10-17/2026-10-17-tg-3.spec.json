@@ -1,0 +1,14 @@
+{
+  "template": "product",
+  "size": "square",
+  "tag": "Daily Arena",
+  "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
+  "subhead": "08:00 UTC • Instant PvP Matchmaking",
+  "cta_label": "Enter Arena",
+  "steps": [
+    "Open Mini App",
+    "Choose stake tier",
+    "Win 95% of the pot"
+  ],
+  "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+}

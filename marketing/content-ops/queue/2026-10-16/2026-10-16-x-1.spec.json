@@ -1,0 +1,10 @@
+{
+  "template": "puzzle",
+  "size": "square",
+  "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+  "tag": "Mate In 2",
+  "headline": "LEGAL'S MATE\n*QUEEN SACRIFICE*",
+  "subhead": "White to move • Forced Mate in 2",
+  "cta_label": "Solve in Mini App",
+  "footer": "Answer with reactions or in replies."
+}

@@ -1,0 +1,52 @@
+{
+  "id": "2026-10-17-x-2",
+  "kind": "x_post",
+  "date": "2026-10-17",
+  "category": "Chess Culture",
+  "hook": "Up +5.0 on the eval bar with 3 seconds left on the clock",
+  "text": "Up +5.0 on the eval bar with 3 seconds left on the clock\n\nIn sudden-death blitz, a complex win is harder than a simple draw.\n\nWhen the clock turns red, trade queens and simplify.\n\n#Chess #BlitzChess #ChessLife",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Blitz Culture",
+    "headline": "4 SECONDS LEFT\n*PREMOVE COLLAPSE*",
+    "subhead": "Under 5 seconds, calculation collapses into survival",
+    "cta_label": "Play in Telegram",
+    "panels": [
+      {
+        "label": "You",
+        "text": "Premove a queen recapture",
+        "piece": "Q"
+      },
+      {
+        "label": "Opponent",
+        "text": "Find an in-between check",
+        "piece": "K"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Can you hold your nerve under the 10-second countdown?\n\nLaunch a 3-minute match in Telegram:\nhttps://t.me/chess_matbot/Web3Chess",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-17T08:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T02:25:38Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

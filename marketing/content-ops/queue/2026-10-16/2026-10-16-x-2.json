@@ -1,0 +1,52 @@
+{
+  "id": "2026-10-16-x-2",
+  "kind": "x_post",
+  "date": "2026-10-16",
+  "category": "Tactical Matrix",
+  "hook": "Checks. Captures. Threats. The 2-second scan that stops blunders",
+  "text": "Checks. Captures. Threats. The 2-second scan that stops blunders\n\nGrandmasters do not calculate 15 moves deep in blitz.\n\nThey run a strict 3-step forcing filter before touching any piece.\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Pattern Matrix",
+    "headline": "4 MOTIFS MATRIX\n*85% OF BLITZ WINS*",
+    "subhead": "The core tactical patterns every 1500+ player must master",
+    "cta_label": "Save Pattern",
+    "panels": [
+      {
+        "label": "Deflection",
+        "text": "Remove defender",
+        "piece": "R"
+      },
+      {
+        "label": "Fork / Pin",
+        "text": "Double attack geometry",
+        "piece": "N"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Drill candidate move selection in the free Web3Chess Academy:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-16T08:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T02:26:01Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-16/2026-10-16-x-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

@@ -27,8 +27,9 @@ from typing import Any, Dict, List, Optional
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+from agents.orchestrator import ContentEngineOrchestrator
 from agents.publisher import PublisherAgent
-from pipeline import queue, site_publisher, telegram_publisher
+from pipeline import queue, renderer, site_publisher, telegram_publisher
 
 LOG_DIR = HERE / "state"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -97,16 +98,92 @@ def get_last_published_tg_time() -> Optional[datetime]:
     return latest
 
 
+def _has_valid_image(entry: Dict[str, Any]) -> bool:
+    """Checks if an entry with a creative spec has its rendered PNG on disk."""
+    if not entry.get("creative"):
+        return True
+    img_path = entry.get("image")
+    if not img_path:
+        cand = queue.QUEUE / entry.get("date", entry["id"][:10]) / f"{entry['id']}.png"
+        if cand.exists():
+            return True
+        return False
+    p = Path(img_path)
+    return bool(p.exists() or (queue.ROOT / p).exists() or (queue.HERE / p).exists())
+
+
+def ensure_x_queue_replenished(now: datetime, render_images: bool = True) -> int:
+    """Auto-generates today's X daily batch when no approved X posts remain in queue."""
+    approved_x = [
+        e for e in queue.all_entries()
+        if e.get("kind") in ("x_post", "x_thread") and e.get("status") == "approved"
+    ]
+    if approved_x:
+        if render_images:
+            for entry in approved_x:
+                if entry.get("kind") == "x_post" and entry.get("creative") and not _has_valid_image(entry):
+                    try:
+                        logger.info(f"Rendering missing X creative for {entry['id']}...")
+                        renderer.render(entry)
+                        queue.save(entry)
+                    except Exception as e:
+                        logger.error(f"Failed rendering X creative for {entry['id']}: {e}")
+        return 0
+
+    target_day = now.date()
+    while queue.path_for(f"{target_day.isoformat()}-x-1").exists():
+        target_day += timedelta(days=1)
+
+    logger.info(f"X queue depleted. Auto-generating fresh X daily batch for {target_day.isoformat()}...")
+    orchestrator = ContentEngineOrchestrator(plan_date=target_day)
+    batch = orchestrator.generate_x_daily_batch(target_date=target_day, render_images=render_images)
+    created = int(batch.get("posts_created", 0))
+    logger.info(f"Auto-replenished {created} approved X posts for {target_day.isoformat()}.")
+    return created
+
+
+def ensure_tg_queue_replenished(now: datetime, render_images: bool = True) -> int:
+    """Auto-generates today's Telegram daily batch when no approved Telegram posts remain in queue."""
+    approved_tg = [
+        e for e in queue.all_entries()
+        if e.get("kind") == "telegram" and e.get("status") == "approved"
+    ]
+    if approved_tg:
+        if render_images:
+            for entry in approved_tg:
+                if entry.get("creative") and not _has_valid_image(entry):
+                    try:
+                        logger.info(f"Rendering missing Telegram creative for {entry['id']}...")
+                        renderer.render(entry)
+                        queue.save(entry)
+                    except Exception as e:
+                        logger.error(f"Failed rendering Telegram creative for {entry['id']}: {e}")
+        return 0
+
+    target_day = now.date()
+    while queue.path_for(f"{target_day.isoformat()}-tg-1").exists():
+        target_day += timedelta(days=1)
+
+    logger.info(f"Telegram queue depleted. Auto-generating fresh Telegram daily batch for {target_day.isoformat()}...")
+    orchestrator = ContentEngineOrchestrator(plan_date=target_day)
+    batch = orchestrator.generate_telegram_daily_batch(target_date=target_day, render_images=render_images)
+    created = int(batch.get("posts_created", 0))
+    logger.info(f"Auto-replenished {created} approved Telegram posts for {target_day.isoformat()}.")
+    return created
+
+
 def run_tick(
     dry_run: bool = True,
     min_spacing_minutes: int = 30,
     min_tg_spacing_minutes: int = 180,
     force_next: bool = False,
     force_next_tg: bool = False,
+    auto_replenish: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """Executes a single check-and-dispatch pass across all content channels."""
     now = queue.utcnow()
     now_iso = queue.iso(now)
+    should_replenish = (not dry_run) if auto_replenish is None else auto_replenish
     state = load_state()
     state["ticks"] = state.get("ticks", 0) + 1
     state["last_tick_at"] = now_iso
@@ -114,6 +191,8 @@ def run_tick(
     results: Dict[str, Any] = {
         "timestamp": now_iso,
         "dry_run": dry_run,
+        "x_replenished": 0,
+        "tg_replenished": 0,
         "x_dispatched": [],
         "tg_dispatched": [],
         "reveals_dispatched": [],
@@ -129,7 +208,13 @@ def run_tick(
     except Exception as e:
         logger.warning(f"Blog staging error: {e}")
 
-    # 2. Check X publication queue
+    # 2. Check X publication queue (and auto-replenish if empty)
+    if should_replenish:
+        try:
+            results["x_replenished"] = ensure_x_queue_replenished(now, render_images=True)
+        except Exception as e:
+            logger.error(f"X queue auto-replenish error: {e}", exc_info=True)
+
     last_x = get_last_published_x_time()
     can_post_x = True
     if last_x:
@@ -147,18 +232,10 @@ def run_tick(
     for entry in queue.all_entries():
         if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") == "approved":
             sched = entry.get("scheduled_at")
-            if sched and sched > now_iso:
+            if sched and sched > now_iso and not force_next:
                 continue
             if entry.get("kind") == "x_post" and entry.get("creative"):
-                img_path = entry.get("image")
-                if not img_path:
-                    cand = queue.QUEUE / entry.get("date", entry["id"][:10]) / f"{entry['id']}.png"
-                    if cand.exists():
-                        img_path = str(cand)
-                if not img_path:
-                    continue
-                p = Path(img_path)
-                if not (p.exists() or (queue.ROOT / p).exists() or (queue.HERE / p).exists()):
+                if not _has_valid_image(entry):
                     continue
             due_x_entries.append(entry)
 
@@ -184,9 +261,15 @@ def run_tick(
     else:
         logger.info("No due approved X posts waiting in queue.")
 
-    # 3. Check Telegram publication queue
+    # 3. Check Telegram publication queue (and auto-replenish if empty)
     token, channel = telegram_publisher._credentials()
     if token and channel:
+        if should_replenish:
+            try:
+                results["tg_replenished"] = ensure_tg_queue_replenished(now, render_images=True)
+            except Exception as e:
+                logger.error(f"Telegram queue auto-replenish error: {e}", exc_info=True)
+
         last_tg = get_last_published_tg_time()
         can_post_tg = True
         if last_tg:
@@ -202,19 +285,10 @@ def run_tick(
         for entry in queue.all_entries():
             if entry.get("kind") == "telegram" and entry.get("status") == "approved":
                 sched = entry.get("scheduled_at")
-                if sched and sched > now_iso:
+                if sched and sched > now_iso and not force_next_tg:
                     continue
-                if entry.get("creative"):
-                    img_path = entry.get("image")
-                    if not img_path:
-                        cand = queue.QUEUE / entry.get("date", entry["id"][:10]) / f"{entry['id']}.png"
-                        if cand.exists():
-                            img_path = str(cand)
-                    if not img_path:
-                        continue
-                    p = Path(img_path)
-                    if not (p.exists() or (queue.ROOT / p).exists() or (queue.HERE / p).exists()):
-                        continue
+                if entry.get("creative") and not _has_valid_image(entry):
+                    continue
                 due_tg_entries.append(entry)
 
         if due_tg_entries:

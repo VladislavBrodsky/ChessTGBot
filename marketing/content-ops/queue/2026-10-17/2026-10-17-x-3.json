@@ -1,0 +1,46 @@
+{
+  "id": "2026-10-17-x-3",
+  "kind": "x_post",
+  "date": "2026-10-17",
+  "category": "Product",
+  "hook": "Why Web3Chess runs 4 daily Arena windows instead of dead queues",
+  "text": "Why Web3Chess runs 4 daily Arena windows instead of dead queues\n\nMatchmaking at 02:00, 08:00, 14:00, and 20:00 UTC guarantees tight Elo pairings.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Daily Arena",
+    "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
+    "subhead": "20:00 UTC • Instant PvP Matchmaking",
+    "cta_label": "Enter Arena",
+    "steps": [
+      "Open Mini App",
+      "Choose stake tier",
+      "Win 95% of the pot"
+    ],
+    "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+  },
+  "docked_reply": {
+    "text": "Enter the next scheduled Arena window inside Telegram:\nhttps://t.me/chess_matbot/Web3Chess?startapp=arena",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-17T16:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-17T02:25:39Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-x-3.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

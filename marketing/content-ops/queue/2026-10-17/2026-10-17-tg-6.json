@@ -1,0 +1,40 @@
+{
+  "id": "2026-10-17-tg-6",
+  "kind": "telegram",
+  "date": "2026-10-17",
+  "category": "Match Rules",
+  "format": "rules",
+  "hook": "How Web3Chess eliminates luck: 100% skill-based speed duels with instant settlement",
+  "cta": "rules",
+  "text": "<b>How Web3Chess eliminates luck: 100% skill-based speed duels with instant settlement</b>\n\nOnline chess platforms often suffer from bots, hidden fees, or delayed payouts.\n\nWeb3Chess is built on zero-cheat transparency:\n• Microsecond monotonic server clocks prevent lag manipulation\n• 95% of every entry fee pool goes directly to the winner\n• Instant TON wallet delivery upon match finish\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/wagers"
+    }
+  ],
+  "creative": {
+    "template": "rules",
+    "size": "square",
+    "tag": "PvP Match Integrity",
+    "headline": "*FAIR PLAY RULES*",
+    "subhead": "95% of pot goes to the winner.",
+    "stake": 5,
+    "cta_label": "Read Full Rules",
+    "footer": "18+ only · You can lose your stake · web3chess.online/wagers"
+  },
+  "scheduled_at": "2026-10-17T15:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-17T02:50:34Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-6.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

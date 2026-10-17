@@ -1,0 +1,20 @@
+{
+  "template": "culture",
+  "size": "square",
+  "tag": "Blitz Culture",
+  "headline": "4 SECONDS LEFT\n*PREMOVE COLLAPSE*",
+  "subhead": "Under 5 seconds, calculation collapses into survival",
+  "cta_label": "Play in Telegram",
+  "panels": [
+    {
+      "label": "You",
+      "text": "Premove a queen recapture",
+      "piece": "Q"
+    },
+    {
+      "label": "Opponent",
+      "text": "Find an in-between check",
+      "piece": "K"
+    }
+  ]
+}

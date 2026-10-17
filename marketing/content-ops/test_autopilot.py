@@ -55,6 +55,24 @@ class TestAutopilot(unittest.TestCase):
         self.assertEqual(len(res["x_dispatched"]), 0)
         self.assertEqual(len(res["tg_dispatched"]), 0)
 
+    def test_auto_replenish_generates_non_duplicate_x_batch(self):
+        import shutil
+        from datetime import date
+        test_dt = datetime(2099, 2, 1, 12, 0, 0, tzinfo=timezone.utc)
+        test_dir = queue.QUEUE / "2099-02-01"
+        try:
+            with patch.object(autopilot, "ensure_x_queue_replenished", wraps=autopilot.ensure_x_queue_replenished):
+                created = autopilot.ensure_x_queue_replenished(test_dt, render_images=False)
+                # If other approved posts exist in real queue, created may be 0; test direct orchestrator batch too
+                orch = autopilot.ContentEngineOrchestrator(plan_date=date(2099, 2, 1))
+                batch = orch.generate_x_daily_batch(target_date=date(2099, 2, 1), render_images=False)
+                self.assertEqual(batch["posts_created"], 3)
+                hooks = [queue.load(p["id"])["hook"] for p in batch["posts"]]
+                self.assertEqual(len(set(hooks)), 3)
+        finally:
+            if test_dir.exists():
+                shutil.rmtree(test_dir, ignore_errors=True)
+
 
 if __name__ == "__main__":
     unittest.main()

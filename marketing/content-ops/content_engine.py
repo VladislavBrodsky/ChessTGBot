@@ -105,9 +105,14 @@ def main():
         print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.x_batch:
-        print("\n🚀 Generating X (Twitter) Daily Batch (3 slots: Tactics, Culture, Arena)...")
-        res = orchestrator.generate_x_daily_batch()
-        print("\n✅ Successfully generated and queued X posts:")
+        target_day = (
+            datetime.strptime(args.date, "%Y-%m-%d").date()
+            if args.date
+            else queue.utcnow().date()
+        )
+        print(f"\n🚀 Generating X (Twitter) Daily Batch (3 slots: Tactics, Culture, Arena for {target_day})...")
+        res = orchestrator.generate_x_daily_batch(target_date=target_day, render_images=True)
+        print("\n✅ Successfully generated, rendered, and queued X posts:")
         print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.x_thread:
