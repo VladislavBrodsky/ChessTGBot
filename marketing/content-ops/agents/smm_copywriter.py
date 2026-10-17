@@ -1070,4 +1070,104 @@ class SmmCopywriterAgent:
         post["creative"]["cta_label"] = "Start Group Duel"
         return post
 
+    def draft_viral_youtube_breakdown(
+        self,
+        slot_id: str,
+        video_entry: Dict[str, Any],
+        platform: str = "telegram",
+        size: str = "square",
+    ) -> Dict[str, Any]:
+        """Crafts a high-value breakdown of a trending viral YouTube chess clip for Telegram or X."""
+        canvas_size = size if size in ("square", "wide") else "square"
+        creator = video_entry.get("creator", "Grandmaster")
+        creator_handle = video_entry.get("creator_handle", "@Chess")
+        title = video_entry.get("title", "Viral Speed Chess Moment")
+        yt_url = video_entry.get("youtube_url", "https://www.youtube.com")
+        timestamp = video_entry.get("timestamp", "02:00")
+        hook = video_entry.get("hook", f"Viral Breakdown: How {creator} punished an opening trap")
+        takeaway = video_entry.get("takeaway", "Calculation collapses when players premove without looking.")
+        category = video_entry.get("category", "Openings")
+        fen = video_entry.get("fen")
+        solution = video_entry.get("solution", [])
+        claim = video_entry.get("claim", "line_legal")
+
+        clean_hook = hook.rstrip(".")
+
+        if platform == "telegram":
+            body = (
+                f"🎬 <b>Breakdown: {title} ({creator_handle})</b>\n\n"
+                f"In this viral clip, the game swings at [{timestamp}]:\n"
+                f"{takeaway}\n\n"
+                f"Watch the original moment:\n"
+                f"{yt_url}\n\n"
+                f"Can you spot the master refutation on the board below?"
+            )
+            post = {
+                "id": slot_id,
+                "kind": "telegram",
+                "date": slot_id[:10],
+                "category": category,
+                "format": "trap" if fen else "news",
+                "hook": clean_hook[:110],
+                "cta": "academy_app",
+                "text": f"<b>{clean_hook}</b>\n\n{body.strip()}",
+                "status": "draft",
+                "sources": [
+                    {"kind": "competitor", "url": yt_url, "excerpt": f"{creator} viral analysis"},
+                    {"kind": "own", "url": f"https://{self.primary_domain}/academy"}
+                ],
+            }
+            if fen:
+                post["chess"] = {
+                    "fen": fen,
+                    "solution": solution,
+                    "claim": claim,
+                }
+                post["creative"] = {
+                    "template": "trap" if claim == "line_legal" else "puzzle",
+                    "size": canvas_size,
+                    "tag": f"YouTube Breakdown · {creator}",
+                    "headline": f"{creator.upper()}\n*VIRAL MASTERCLASS*",
+                    "subhead": f"Clip at {timestamp} · {takeaway[:60]}",
+                    "fen": fen,
+                    "moves": solution if len(solution) >= 2 else ["e4", "e5", "Nf3"],
+                    "cta_label": "Solve in Academy",
+                    "footer": f"Breakdown inspired by {creator_handle} · Web3Chess Academy",
+                }
+            else:
+                post["creative"] = {
+                    "template": "news",
+                    "size": canvas_size,
+                    "tag": f"YouTube Breakdown · {creator}",
+                    "headline": f"{creator.upper()}\n*VIRAL ANALYSIS*",
+                    "subhead": f"Key lesson at {timestamp}",
+                    "summary": takeaway[:120],
+                    "cta_label": "Open Academy",
+                    "footer": "Study speed chess mastery on Web3Chess",
+                }
+            return post
+
+        # Platform: X (links docked in reply to maintain maximum algorithmic reach)
+        tags = video_entry.get("hashtags", ["#Chess", "#SpeedChess", "#ChessTactics"])
+        tags_str = " ".join(tags[:3])
+        x_body = (
+            f"{takeaway[:130].rstrip('.')}.\n\n"
+            f"{tags_str}"
+        )
+        docked = (
+            f"Watch the breakdown from {creator_handle} ({timestamp}):\n{yt_url}\n\n"
+            f"Practice this interactive board:\n{brand.TG_ACADEMY}"
+        )
+        return self.draft_x_single_post(
+            slot_id=slot_id,
+            category=category,
+            hook=clean_hook[:90],
+            body=x_body,
+            docked_reply_text=docked,
+            fen=fen,
+            solution=solution,
+            claim=claim,
+            size="wide",
+        )
+
 

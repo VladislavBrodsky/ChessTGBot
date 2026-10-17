@@ -109,7 +109,7 @@ CTAS = {
 
 ALLOWED_LINK_HOSTS = {
     "web3chess.online", "www.web3chess.online", "app.web3chess.online",
-    "t.me"
+    "t.me", "youtube.com", "www.youtube.com", "youtu.be"
 }
 ALLOWED_TME_PATHS = (f"/{BOT}", "/chess_hub", "/chesshub_chat", "/share/url", "/share")
 

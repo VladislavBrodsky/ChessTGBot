@@ -389,6 +389,19 @@ class TestAgents(unittest.TestCase):
         self.assertEqual(batch["posts_created"], 8)
         self.assertTrue(all(p["qa_passed"] for p in batch["posts"]))
 
+    def test_viral_youtube_breakdowns(self):
+        from pipeline.idea_bank import VIRAL_YOUTUBE_VAULT
+        cw = self.orchestrator.copywriter
+        qa = self.orchestrator.qa
+        for i, entry in enumerate(VIRAL_YOUTUBE_VAULT):
+            tg_post = cw.draft_viral_youtube_breakdown(f"2099-01-01-tg-yt-{i}", entry, platform="telegram")
+            res_tg = qa.inspect_telegram_post(tg_post)
+            self.assertTrue(res_tg["passed"], f"TG {entry['id']} issues: {res_tg['issues']}")
+
+            x_post = cw.draft_viral_youtube_breakdown(f"2099-01-01-x-yt-{i}", entry, platform="x")
+            res_x = qa.inspect_x_post(x_post)
+            self.assertTrue(res_x["passed"], f"X {entry['id']} issues: {res_x['issues']}")
+
 
 if __name__ == "__main__":
     unittest.main()
