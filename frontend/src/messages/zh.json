@@ -1125,9 +1125,23 @@
       "xp_250": "250 XP",
       "boost_24h": "1.5倍XP加成 · 24小时",
       "border_gold": "金色头像框",
-      "gold_duplicate": "250 XP · 重复金色头像框"
+      "gold_duplicate": "250 XP · 重复金色头像框",
+      "premium_1m": "1 个月高级 VIP 会员资格"
     },
-    "brief": "规则"
+    "brief": "规则",
+    "platinum_title": "免费白金神秘宝箱",
+    "platinum_subtitle": "1 个月高级 VIP · 前 100 名玩家",
+    "pioneer_remaining": "{count, plural, other {剩余 # 个先锋名额}}",
+    "pioneer_badge": "前 100 名玩家",
+    "claim_platinum": "开启白金宝箱",
+    "unboxing_title": "正在开启白金神秘宝箱…",
+    "unboxed_title": "白金奖励已解锁！",
+    "perk_academy": "畅享棋院所有课程与战术题",
+    "perk_boost": "所有对局享 2 倍经验值加成",
+    "perk_border": "君王级白金头像框",
+    "perk_vip": "尊享平台所有 VIP 特权",
+    "share_win": "分享奖励至 Telegram",
+    "awesome": "立即领取并开局"
   },
   "GramVaultPreview": {
     "badge": "超级大奖",

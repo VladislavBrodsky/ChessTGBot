@@ -2,7 +2,8 @@
 
 import { mainMiniAppLink } from '@/lib/invitations';
 
-import { useState } from 'react';
+import Image from 'next/image';
+import { useState, useEffect, useCallback } from 'react';
 import useSWR from 'swr';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -15,6 +16,7 @@ import { Card } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Skeleton } from '@/components/ui/Skeleton';
+import PlatinumUnboxingModal from '@/components/PlatinumUnboxingModal';
 
 interface Quest {
   enabled: boolean;
@@ -25,6 +27,10 @@ interface Quest {
   state: 'available' | 'active' | 'claimable' | 'claimed';
   reward_key: string | null;
   rewards: { key: string; probability_percent: number }[];
+  premium_slots_total?: number;
+  premium_slots_claimed?: number;
+  premium_slots_remaining?: number;
+  is_platinum_tier?: boolean;
 }
 const PATH = '/api/v1/gamification/engagement';
 async function readQuest(): Promise<Quest> {
@@ -54,22 +60,13 @@ export default function EngagementQuest() {
   const referralCode = stats?.referral_code;
   const canShare = typeof referralCode === 'string' && /^[A-Za-z0-9_-]{1,60}$/.test(referralCode);
 
-  function shareInvite() {
-    if (!canShare || !referralCode) return;
-    const bot = (stats?.bot_username || process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').replace(/^@+/, '');
-    if (!/^[A-Za-z0-9_]{5,32}$/.test(bot)) return;
-    const inviteLink = mainMiniAppLink(bot, `ref_${referralCode}`);
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}`;
-    telegramHaptic('selection');
-    void sendTelemetryEvent('engagement_quest_share', { campaign_id: 'first-three-v1' });
-    if (window.Telegram?.WebApp?.openTelegramLink) {
-      window.Telegram.WebApp.openTelegramLink(shareUrl);
-    } else {
-      window.open(shareUrl, '_blank', 'noopener,noreferrer');
-    }
-  }
+  const isPlatinum = Boolean(
+    data?.is_platinum_tier ||
+    data?.reward_key === 'premium_1m' ||
+    (typeof data?.premium_slots_remaining === 'number' && data.premium_slots_remaining > 0)
+  );
 
-  async function act(action: 'join' | 'claim') {
+  const act = useCallback(async (action: 'join' | 'claim') => {
     if (!data || busy) return;
     setBusy(true);
     setFailed(false);
@@ -79,7 +76,12 @@ export default function EngagementQuest() {
         if (!response.ok) throw new Error('Quest action unavailable');
         return response.json();
       }, {
-        optimisticData: { ...data, enrolled: true, state: action === 'claim' ? 'claimed' : 'active', reward_key: null },
+        optimisticData: {
+          ...data,
+          enrolled: true,
+          state: action === 'claim' ? 'claimed' : 'active',
+          reward_key: action === 'claim' && isPlatinum ? 'premium_1m' : null,
+        },
         rollbackOnError: true,
         revalidate: false,
       });
@@ -93,6 +95,29 @@ export default function EngagementQuest() {
       telegramHaptic('error');
     } finally {
       setBusy(false);
+    }
+  }, [data, busy, mutate, isPlatinum, syncStats]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !data || busy) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('claim_box') === '1' && data.state === 'claimable') {
+      void act('claim');
+    }
+  }, [data, busy, act]);
+
+  function shareInvite() {
+    if (!canShare || !referralCode) return;
+    const bot = (stats?.bot_username || process.env.NEXT_PUBLIC_BOT_USERNAME || 'chess_matbot').replace(/^@+/, '');
+    if (!/^[A-Za-z0-9_]{5,32}$/.test(bot)) return;
+    const inviteLink = mainMiniAppLink(bot, `ref_${referralCode}`);
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}`;
+    telegramHaptic('selection');
+    void sendTelemetryEvent('engagement_quest_share', { campaign_id: 'first-three-v1' });
+    if (window.Telegram?.WebApp?.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(shareUrl);
+    } else {
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
     }
   }
 
@@ -117,18 +142,63 @@ export default function EngagementQuest() {
     <Button variant="secondary" className="w-full font-bold" disabled>{t('loading')}</Button>
   </Card>;
 
-  const label = data.state === 'available' ? t('join') : data.state === 'claimable' ? t('claim') : data.state === 'claimed' ? t('claimed') : t('play');
+  const label =
+    data.state === 'available'
+      ? t('join')
+      : data.state === 'claimable'
+      ? isPlatinum
+        ? t('claim_platinum')
+        : t('claim')
+      : data.state === 'claimed'
+      ? t('claimed')
+      : t('play');
+
   const rewardLabel = (key: string) => t(`rewards.${key}`);
   return <>
-    <Card variant="solid" className="p-4 space-y-3 relative overflow-hidden" aria-labelledby="engagement-title" aria-busy={busy}>
+    <Card
+      variant="solid"
+      className={`p-4 space-y-3 relative overflow-hidden transition-all duration-300 ${
+        data.state === 'claimable'
+          ? 'border-cyan-400/80 shadow-[0_0_24px_rgba(0,240,255,0.22)] ring-1 ring-cyan-400/50'
+          : isPlatinum
+          ? 'border-cyan-500/30 hover:border-cyan-400/50'
+          : ''
+      }`}
+      aria-labelledby="engagement-title"
+      aria-busy={busy}
+    >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="ui-icon-tile ui-icon-tile--gold">
-            <FiGift size={20} aria-hidden="true" />
-          </span>
+          {isPlatinum ? (
+            <div className="relative w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-cyan-500/20 via-slate-800 to-blue-500/20 border border-cyan-400/40 flex items-center justify-center overflow-hidden shadow-xs">
+              <Image
+                src="/boxes/legendary.webp"
+                alt="Platinum Sovereign Mystery Box"
+                width={38}
+                height={38}
+                priority
+                className="object-contain drop-shadow-[0_2px_8px_rgba(0,240,255,0.35)]"
+              />
+            </div>
+          ) : (
+            <span className="ui-icon-tile ui-icon-tile--gold">
+              <FiGift size={20} aria-hidden="true" />
+            </span>
+          )}
           <div className="min-w-0">
-            <h2 id="engagement-title" className="t-title-3 truncate">{t('title')}</h2>
-            <p className="t-caption text-brand-muted">{t('subtitle')}</p>
+            <div className="flex items-center gap-2">
+              <h2 id="engagement-title" className="t-title-3 truncate">
+                {isPlatinum ? t('platinum_title') : t('title')}
+              </h2>
+              {isPlatinum && typeof data.premium_slots_remaining === 'number' && data.premium_slots_remaining > 0 && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 shrink-0">
+                  {t('pioneer_badge')}
+                </span>
+              )}
+            </div>
+            <p className="t-caption text-brand-muted truncate">
+              {isPlatinum ? t('platinum_subtitle') : t('subtitle')}
+            </p>
           </div>
         </div>
 
@@ -147,6 +217,18 @@ export default function EngagementQuest() {
         </Button>
       </div>
 
+      {isPlatinum && typeof data.premium_slots_remaining === 'number' && data.premium_slots_remaining > 0 && (
+        <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs">
+          <span className="flex items-center gap-1.5 text-cyan-300 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            {t('pioneer_remaining', { count: data.premium_slots_remaining })}
+          </span>
+          <span className="text-[11px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
+            $9.99 Value · 100% Free
+          </span>
+        </div>
+      )}
+
       <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">
         <div
           className="space-y-2.5"
@@ -162,7 +244,9 @@ export default function EngagementQuest() {
                 key={i}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   i < data.progress
-                    ? 'bg-brand-action shadow-xs'
+                    ? isPlatinum
+                      ? 'bg-gradient-to-r from-cyan-400 to-blue-400 shadow-xs'
+                      : 'bg-brand-action shadow-xs'
                     : 'bg-brand-elevated border border-brand-border/80'
                 }`}
               />
@@ -175,15 +259,25 @@ export default function EngagementQuest() {
             </span>
             <span className="text-brand-muted select-none" aria-hidden="true">•</span>
             <p className="t-caption text-brand-muted font-medium">
-              {busy ? t('loading') : data.state === 'claimed' && data.reward_key ? rewardLabel(data.reward_key) : data.state === 'active' ? t('remaining', { count: data.target - data.progress }) : t('qualification')}
+              {busy
+                ? t('loading')
+                : data.state === 'claimed' && data.reward_key
+                ? rewardLabel(data.reward_key)
+                : data.state === 'active'
+                ? t('remaining', { count: data.target - data.progress })
+                : t('qualification')}
             </p>
           </div>
         </div>
       </div>
 
       <Button
-        variant="secondary"
-        className="w-full font-bold"
+        variant={data.state === 'claimable' && isPlatinum ? 'primary' : 'secondary'}
+        className={`w-full font-bold ${
+          data.state === 'claimable' && isPlatinum
+            ? 'shadow-[0_0_20px_rgba(0,240,255,0.25)]'
+            : ''
+        }`}
         disabled={data.state === 'claimed'}
         isLoading={busy}
         onClick={() => {
@@ -200,26 +294,74 @@ export default function EngagementQuest() {
         {label}
       </Button>
 
-      {data.state === 'claimed' && canShare && (
-        <Button variant="secondary" className="w-full" onClick={shareInvite}>
-          {tReferral('share_invite')}
-        </Button>
+      {data.state === 'claimed' && (
+        <div className="flex flex-col sm:flex-row gap-2">
+          {canShare && (
+            <Button variant="secondary" className="w-full" onClick={shareInvite}>
+              {tReferral('share_invite')}
+            </Button>
+          )}
+          {isPlatinum && (
+            <Button
+              variant="secondary"
+              className="w-full font-semibold"
+              onClick={() => {
+                telegramHaptic('selection');
+                setRevealed(true);
+              }}
+            >
+              {t('unboxed_title')}
+            </Button>
+          )}
+        </div>
       )}
 
       {isValidating && !busy && <p className="t-caption text-brand-muted" role="status">{t('refreshing')}</p>}
       {failed && <ErrorState title={t('action_error')} message={t('retry_message')} onRetry={() => void mutate()} retryLabel={t('retry')} />}
     </Card>
 
+    {/* Platinum Unboxing Modal */}
+    {isPlatinum && (
+      <PlatinumUnboxingModal
+        isOpen={revealed && (data.reward_key === 'premium_1m' || isPlatinum)}
+        onClose={() => setRevealed(false)}
+        referralCode={referralCode}
+        botUsername={stats?.bot_username}
+        rewardKey={data.reward_key}
+      />
+    )}
+
     {/* Odds, Prizes & Rules Modal */}
-    <Modal isOpen={details || revealed} onClose={() => { setDetails(false); setRevealed(false); }} title={revealed ? t('revealed') : t('title')} description={!revealed ? t('description') : undefined}>
+    <Modal
+      isOpen={details || (revealed && !isPlatinum)}
+      onClose={() => { setDetails(false); setRevealed(false); }}
+      title={revealed && !isPlatinum ? t('revealed') : isPlatinum ? t('platinum_title') : t('title')}
+      description={!revealed ? (isPlatinum ? t('platinum_subtitle') : t('description')) : undefined}
+    >
       <div className="space-y-4">
-        {revealed && data.reward_key && (
+        {revealed && !isPlatinum && data.reward_key && (
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-center space-y-1">
             <span className="ui-eyebrow text-brand-muted block">{t('revealed')}</span>
             <p className="t-title-2 text-white" role="status">{rewardLabel(data.reward_key)}</p>
           </div>
         )}
-        
+
+        {isPlatinum && (
+          <div className="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-400/30 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-cyan-300 uppercase tracking-wider">{t('pioneer_badge')}</span>
+              {typeof data.premium_slots_remaining === 'number' && (
+                <span className="text-xs font-semibold text-emerald-400">
+                  {t('pioneer_remaining', { count: data.premium_slots_remaining })}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {t('perk_academy')} · {t('perk_boost')} · {t('perk_border')} · {t('perk_vip')}
+            </p>
+          </div>
+        )}
+
         <p className="t-body text-brand-muted">{t('rules')}</p>
         <ul className="space-y-2">
           {data.rewards.map(reward => (

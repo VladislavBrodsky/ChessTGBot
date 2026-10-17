@@ -1125,9 +1125,23 @@
       "xp_250": "250 XP",
       "boost_24h": "1.5× XP boost · 24 hours",
       "border_gold": "Gold profile border",
-      "gold_duplicate": "250 XP · duplicate gold border"
+      "gold_duplicate": "250 XP · duplicate gold border",
+      "premium_1m": "1-Month Premium VIP Membership"
     },
-    "brief": "Brief"
+    "brief": "Brief",
+    "platinum_title": "Free Platinum Mystery Box",
+    "platinum_subtitle": "1-Month Premium VIP · First 100 Players",
+    "pioneer_remaining": "{count, plural, one {# Pioneer slot left} other {# Pioneer slots left}}",
+    "pioneer_badge": "First 100 Players",
+    "claim_platinum": "Open Platinum Mystery Box",
+    "unboxing_title": "Opening Platinum Mystery Box…",
+    "unboxed_title": "Platinum Reward Unlocked!",
+    "perk_academy": "Full Academy & Master Tactics Access",
+    "perk_boost": "2× XP Boost on all Matches",
+    "perk_border": "Platinum Sovereign Profile Border",
+    "perk_vip": "Full VIP Platform Privileges",
+    "share_win": "Share Win to Telegram",
+    "awesome": "Claim & Enter Arena"
   },
   "GramVaultPreview": {
     "badge": "Grand Jackpot",

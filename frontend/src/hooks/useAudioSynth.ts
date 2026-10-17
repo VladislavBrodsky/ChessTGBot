@@ -1,4 +1,4 @@
-'use client';
+import { useCallback } from 'react';
 
 // Reusable singleton AudioContext to prevent iOS WKWebView instance limits & audio cutoffs
 let sharedSynthAudioCtx: AudioContext | null = null;
@@ -17,7 +17,7 @@ function getSynthAudioContext(): AudioContext | null {
 }
 
 export function useAudioSynth() {
-  const playTickSound = (type: 'tick' | 'warning' | 'timeout') => {
+  const playTickSound = useCallback((type: 'tick' | 'warning' | 'timeout') => {
     if (typeof window === 'undefined') return;
     try {
       const ctx = getSynthAudioContext();
@@ -54,7 +54,7 @@ export function useAudioSynth() {
     } catch (err) {
       console.error("Audio error:", err);
     }
-  };
+  }, []);
 
   return { playTickSound };
 }

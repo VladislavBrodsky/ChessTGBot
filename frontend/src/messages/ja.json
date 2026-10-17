@@ -1125,9 +1125,23 @@
       "xp_250": "250 XP",
       "boost_24h": "XP 1.5倍ブースト・24時間",
       "border_gold": "ゴールドのプロフィール枠",
-      "gold_duplicate": "250 XP・ゴールド枠重複"
+      "gold_duplicate": "250 XP・ゴールド枠重複",
+      "premium_1m": "1か月間プレミアムVIPメンバーシップ"
     },
-    "brief": "詳細"
+    "brief": "詳細",
+    "platinum_title": "無料のプラチナミステリーボックス",
+    "platinum_subtitle": "1か月プレミアムVIP · 先着100名",
+    "pioneer_remaining": "{count, plural, other {残り # 枠}}",
+    "pioneer_badge": "先着100名",
+    "claim_platinum": "プラチナボックスを開ける",
+    "unboxing_title": "プラチナミステリーボックスを開封中…",
+    "unboxed_title": "プラチナ報酬がアンロックされました！",
+    "perk_academy": "アカデミーと戦術問題へのフルアクセス",
+    "perk_boost": "全対局でXPが2倍",
+    "perk_border": "プラチナ・ソブリンのプロフィール枠",
+    "perk_vip": "全VIPプラットフォーム特権",
+    "share_win": "Telegram で勝利をシェア",
+    "awesome": "受け取って対局へ"
   },
   "GramVaultPreview": {
     "badge": "グランドジャックポット",

@@ -10,7 +10,7 @@ jest.mock('next/navigation', () => ({ useRouter: () => ({ push: mockPush }) }));
 jest.mock('@/lib/api', () => ({ apiFetch: jest.fn(), sendTelemetryEvent: jest.fn() }));
 jest.mock('@/lib/telegram', () => ({ telegramHaptic: jest.fn() }));
 jest.mock('@/context/UserContext', () => ({ useUser: () => ({ stats: { telegram_id: 7, referral_code: 'invite7', bot_username: 'chess_matbot' }, syncStats: jest.fn() }) }));
-jest.mock('@/components/ui/Modal', () => ({ Modal: ({ isOpen, title, children }: any) => isOpen ? <div role="dialog" aria-label={title}>{children}</div> : null }));
+jest.mock('@/components/ui/Modal', () => ({ Modal: ({ isOpen, title, children, footer }: any) => isOpen ? <div role="dialog" aria-label={title}>{children}{footer}</div> : null }));
 
 const quest = { enabled: true, accepting_enrollments: true, enrolled: true, progress: 3, target: 3,
   state: 'claimable', reward_key: null, rewards: [{ key: 'xp_250', probability_percent: 60 }, { key: 'boost_24h', probability_percent: 30 }, { key: 'border_gold', probability_percent: 10 }] };
@@ -75,3 +75,38 @@ test('claimed reward offers an optional tracked Telegram invite using the real r
     open.mockRestore();
   }
 });
+
+test('platinum mystery box displays pioneer badge, remaining slots, and triggers unboxing modal on claim', async () => {
+  const platinumQuest = {
+    ...quest,
+    is_platinum_tier: true,
+    premium_slots_total: 100,
+    premium_slots_claimed: 15,
+    premium_slots_remaining: 85,
+  };
+  mockFetch
+    .mockResolvedValueOnce(response(platinumQuest))
+    .mockResolvedValueOnce(response({ ...platinumQuest, state: 'claimed', reward_key: 'premium_1m' }));
+
+  mount();
+
+  expect(await screen.findByText('platinum_title')).toBeVisible();
+  expect(screen.getByText('pioneer_badge')).toBeVisible();
+  expect(screen.getByText('pioneer_remaining')).toBeVisible();
+
+  const claimBtn = screen.getByRole('button', { name: 'claim_platinum' });
+  expect(claimBtn).toBeVisible();
+
+  fireEvent.click(claimBtn);
+
+  await waitFor(() => {
+    expect(mockFetch).toHaveBeenCalledWith('/api/v1/gamification/engagement/claim', expect.anything());
+  });
+
+  await waitFor(() => {
+    expect(screen.getByText('share_win')).toBeVisible();
+  }, { timeout: 2500 });
+  expect(screen.getByText('awesome')).toBeVisible();
+});
+
+

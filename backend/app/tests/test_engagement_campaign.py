@@ -168,3 +168,27 @@ async def test_real_ai_completion_keeps_start_time_and_quest_eligibility(quest, 
     pvp_state.move_history = ["e2e4", "e7e5", "g1f3", "b8c6"] * 5
     await service.end_game(pvp_id, pvp_state)
     assert (await campaign.status(db, user))["progress"] == 2
+
+
+@pytest.mark.asyncio
+async def test_first_100_premium_accounts_and_platinum_mystery_box(quest):
+    db, user = quest
+    await campaign.enroll(db, user)
+    await games(db, user)
+
+    # Within the first 100 claims, user receives 1-month premium + platinum border + 500 XP
+    result = await campaign.claim(db, user)
+    assert result["reward_key"] == "premium_1m"
+    assert result["state"] == "claimed"
+    assert result["is_platinum_tier"] is True
+    assert result["premium_slots_claimed"] == 1
+    assert result["premium_slots_remaining"] == 99
+
+    assert user.is_premium is True
+    assert user.is_premium_active is True
+    assert user.premium_tier == "premium"
+    assert user.premium_billing_period == "monthly"
+    assert user.premium_expires_at is not None
+    assert user.xp == 500
+    assert "border_platinum" in json.loads(user.unlocked_items)
+

@@ -109,6 +109,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const [isTelegram, setIsTelegram] = useState<boolean>(false);
 
   const [showRematchChoice, setShowRematchChoice] = useState<boolean>(false);
+  const [questClaimable, setQuestClaimable] = useState<boolean>(false);
   const [rematchStatus, setRematchStatus] = useState<'idle' | 'offered_by_me' | 'waiting'>('idle');
   const [incomingRematch, setIncomingRematch] = useState<any>(null);
   const [confirmConfig, setConfirmConfig] = useState<{
@@ -209,7 +210,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     }
   }, [gameState?.id]);
 
-  const triggerClocksWarnings = (timeLeft: number) => {
+  const triggerClocksWarnings = useCallback((timeLeft: number) => {
     const now = Date.now();
     
     // Play tick sound when time is below 10 seconds (every 1 second)
@@ -231,7 +232,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       triggeredHapticsRef.current[3] = true;
       telegramHaptic('warning');
     }
-  };
+  }, [playTickSound]);
 
   const isMyTurn = gameState && !gameState.is_game_over && gameState.turn === (isWhite ? 'w' : 'b');
   const isOpponentTurn = gameState && !gameState.is_game_over && gameState.turn !== (isWhite ? 'w' : 'b');
@@ -242,9 +243,16 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   // initialization" (TDZ) the moment that effect's deps are evaluated during render.
   const isGameOver = gameState?.is_game_over || gameState?.status === 'completed' || gameState?.status === 'aborted';
 
-  // Sync wallet balance and user stats on game completion, play warning indicators
+  // Guard refs to strictly execute game-over side effects only ONCE per match ID
+  const handledGameOverSoundRef = useRef<string | null>(null);
+  const handledGameOverSyncRef = useRef<string | null>(null);
+  const handledAbortedRedirectRef = useRef<string | null>(null);
+
+  // Sync wallet balance and user stats on game completion exactly once
   useEffect(() => {
-    if (gameState?.is_game_over) {
+    if (gameState?.is_game_over && gameState.id && handledGameOverSyncRef.current !== gameState.id) {
+      handledGameOverSyncRef.current = gameState.id;
+
       apiFetch("/api/v1/wallet/balance")
         .then(res => {
           if (res.ok) {
@@ -255,17 +263,30 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
       if (userId) {
         apiFetch(`/api/v1/users/${userId}`)
-          .then(res => {
-            if (res.ok) return res.json();
-            return null;
-          })
+          .then(res => (res.ok ? res.json() : null))
           .then(data => {
             if (data) {
               setUserStats(data);
             }
           })
           .catch(() => {});
+
+        apiFetch('/api/v1/gamification/engagement/status')
+          .then(res => (res.ok ? res.json() : null))
+          .then(data => {
+            if (data && data.state === 'claimable') {
+              setQuestClaimable(true);
+            }
+          })
+          .catch(() => {});
       }
+    }
+  }, [gameState?.is_game_over, gameState?.id, userId]);
+
+  // Trigger tactile haptics & audio cues on game over exactly once
+  useEffect(() => {
+    if (gameState?.is_game_over && gameState.id && handledGameOverSoundRef.current !== gameState.id) {
+      handledGameOverSoundRef.current = gameState.id;
 
       if (gameState.result_type === 'timeout') {
         playTickSound('timeout');
@@ -280,15 +301,22 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         telegramHaptic('warning'); // Draw
       }
     }
-  }, [gameState?.is_game_over, gameState?.result_type, gameState?.winner_id, userId, playTickSound]);
+  }, [gameState?.is_game_over, gameState?.id, gameState?.result_type, gameState?.winner_id, userId, playTickSound]);
 
-  // Redirect back if game is aborted and opponent never joined
+  // Redirect back if game is aborted and opponent never joined (exactly once)
   useEffect(() => {
-    if (gameState?.is_game_over && gameState?.result_type === 'aborted' && !gameState?.black_player_id) {
+    if (
+      gameState?.is_game_over &&
+      gameState.id &&
+      gameState?.result_type === 'aborted' &&
+      !gameState?.black_player_id &&
+      handledAbortedRedirectRef.current !== gameState.id
+    ) {
+      handledAbortedRedirectRef.current = gameState.id;
       telegramHaptic('warning');
       router.push(`/${locale}/home`);
     }
-  }, [gameState, locale, router]);
+  }, [gameState?.is_game_over, gameState?.id, gameState?.result_type, gameState?.black_player_id, locale, router]);
 
   // Socket draw / rematch event handlers
   useEffect(() => {
@@ -875,6 +903,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             copied={copied}
             xpGained={gameState ? (isWhite ? gameState.white_xp_gained : gameState.black_xp_gained) : undefined}
             isBotGame={isBotGame}
+            questClaimable={questClaimable}
           />
         )}
       </AnimatePresence>

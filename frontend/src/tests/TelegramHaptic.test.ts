@@ -21,3 +21,13 @@ it('keeps tactile selection and reward feedback for supported Telegram hosts', (
   expect(selectionChanged).toHaveBeenCalledTimes(1);
   expect(notificationOccurred).toHaveBeenCalledWith('success');
 });
+
+it('throttles rapid repeated identical haptic calls to protect the UI thread and prevent continuous vibration', () => {
+  host(true);
+  telegramHaptic('error');
+  telegramHaptic('error');
+  telegramHaptic('error');
+  expect(notificationOccurred).toHaveBeenCalledTimes(1);
+  expect(notificationOccurred).toHaveBeenCalledWith('error');
+});
+

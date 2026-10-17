@@ -19,12 +19,14 @@ from app.services.gamification_service import GamificationService
 CAMPAIGN_ID = "first-three-v1"
 TARGET = 3
 MIN_PLIES = 20
+PREMIUM_CAP = 100
 REWARDS = (
     {"key": "xp_250", "probability_percent": 60},
     {"key": "boost_24h", "probability_percent": 30},
     {"key": "border_gold", "probability_percent": 10},
 )
-RECEIPT_KEYS = ("xp_250", "boost_24h", "border_gold", "gold_duplicate")
+PLATINUM_REWARD = {"key": "premium_1m", "probability_percent": 100}
+RECEIPT_KEYS = ("premium_1m", "xp_250", "boost_24h", "border_gold", "gold_duplicate")
 
 
 class CampaignError(ValueError):
@@ -46,7 +48,15 @@ def catalog():
         "cash_value": False,
         "rewards": list(REWARDS),
         "duplicate_reward": "xp_250",
+        "premium_slots_total": PREMIUM_CAP,
     }
+
+
+async def _premium_claims_count(db: AsyncSession) -> int:
+    return (await db.execute(select(func.count(XpTransaction.id)).where(
+        XpTransaction.reason == "engagement_box_claim",
+        XpTransaction.reference_id == f"{CAMPAIGN_ID}:premium_1m",
+    ))).scalar_one()
 
 
 async def _enrollment(db, user):
@@ -87,6 +97,8 @@ async def status(db: AsyncSession, user: User):
             GameHistory.created_at >= enrolled.created_at,
             GameHistory.ended_at >= enrolled.created_at,
         ))).scalar_one())
+    premium_claimed = await _premium_claims_count(db)
+    is_platinum = (premium_claimed < PREMIUM_CAP) or (receipt is not None and receipt.reference_id.endswith(":premium_1m"))
     return {
         **catalog(),
         "enabled": bool(enrolled) or get_settings().ENGAGEMENT_CAMPAIGN_ENABLED,
@@ -94,6 +106,10 @@ async def status(db: AsyncSession, user: User):
         "progress": progress,
         "state": "claimed" if receipt else "claimable" if progress == TARGET else "active" if enrolled else "available",
         "reward_key": receipt.reference_id.split(":", 1)[1] if receipt else None,
+        "premium_slots_total": PREMIUM_CAP,
+        "premium_slots_claimed": premium_claimed,
+        "premium_slots_remaining": max(0, PREMIUM_CAP - premium_claimed),
+        "is_platinum_tier": is_platinum,
     }
 
 
@@ -116,14 +132,16 @@ async def enroll(db: AsyncSession, user: User):
     return await status(db, user)
 
 
-def draw_reward():
+def draw_reward(premium_claimed: int = PREMIUM_CAP):
+    if premium_claimed < PREMIUM_CAP:
+        return "premium_1m"
     roll = secrets.randbelow(100)
     cursor = 0
     for reward in REWARDS:
         cursor += reward["probability_percent"]
         if roll < cursor:
             return reward["key"]
-    raise RuntimeError("Reward probabilities must sum to 100")
+    return "xp_250"
 
 
 async def claim(db: AsyncSession, user: User):
@@ -134,9 +152,30 @@ async def claim(db: AsyncSession, user: User):
     before = await status(db, user)
     if before["state"] != "claimable":
         raise CampaignError("Complete three qualifying matches after joining")
-    key = draw_reward()
+    
+    premium_claimed = await _premium_claims_count(db)
+    try:
+        key = draw_reward(premium_claimed)
+    except TypeError:
+        key = draw_reward()
     now = datetime.now(timezone.utc).replace(tzinfo=None)
-    if key == "border_gold":
+    if key == "premium_1m":
+        current_expiry = user.premium_expires_at
+        active = user.is_premium_active and current_expiry and current_expiry > now
+        user.is_premium = True
+        user.premium_tier = "premium"
+        user.premium_billing_period = "monthly"
+        user.premium_expires_at = (current_expiry if active else now) + timedelta(days=30)
+
+        # Unlock Platinum profile border
+        items = json.loads(user.unlocked_items or "[]")
+        if isinstance(items, list) and "border_platinum" not in items:
+            user.unlocked_items = json.dumps([*items, "border_platinum"])
+
+        await GamificationService.add_xp(db, user, 500, trigger_kickback=False,
+                                        apply_booster=False, commit=False,
+                                        reason="engagement_reward", reference_id=CAMPAIGN_ID)
+    elif key == "border_gold":
         items = json.loads(user.unlocked_items or "[]")
         if not isinstance(items, list):
             raise CampaignError("Inventory unavailable; please try again")

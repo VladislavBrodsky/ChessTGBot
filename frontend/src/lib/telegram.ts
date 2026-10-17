@@ -26,9 +26,20 @@ export const telegramConfirm = (message: string, callback: (ok: boolean) => void
   }
 };
 
+let lastHapticTime = 0;
+let lastHapticType: string | null = null;
+
 export const telegramHaptic = (type: 'success' | 'warning' | 'error' | 'light' | 'medium' | 'heavy' | 'selection') => {
   if (typeof window !== "undefined" && window.Telegram?.WebApp?.HapticFeedback) {
     try {
+      const now = Date.now();
+      // Throttle identical haptic calls within 150ms to prevent infinite vibration loops & UI thread locks
+      if (type === lastHapticType && now - lastHapticTime < 150) {
+        return;
+      }
+      lastHapticTime = now;
+      lastHapticType = type;
+
       if (!window.Telegram.WebApp.isVersionAtLeast?.('6.1')) return;
       const haptic = window.Telegram.WebApp.HapticFeedback as any;
       if (type === 'selection' && haptic.selectionChanged) {

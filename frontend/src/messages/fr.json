@@ -1125,9 +1125,23 @@
       "xp_250": "250 XP",
       "boost_24h": "Bonus XP 1,5× · 24 heures",
       "border_gold": "Cadre de profil doré",
-      "gold_duplicate": "250 XP · cadre déjà obtenu"
+      "gold_duplicate": "250 XP · cadre déjà obtenu",
+      "premium_1m": "Abonnement VIP Premium de 1 mois"
     },
-    "brief": "Info"
+    "brief": "Info",
+    "platinum_title": "Boîte mystère Platine gratuite",
+    "platinum_subtitle": "VIP Premium 1 mois · 100 premiers joueurs",
+    "pioneer_remaining": "{count, plural, one {# place pionnière restante} other {# places pionnières restantes}}",
+    "pioneer_badge": "100 premiers joueurs",
+    "claim_platinum": "Ouvrir la boîte Platine",
+    "unboxing_title": "Ouverture de la boîte Platine…",
+    "unboxed_title": "Récompense Platine débloquée !",
+    "perk_academy": "Accès complet à l'Académie et tactiques",
+    "perk_boost": "Boost 2× XP sur toutes les parties",
+    "perk_border": "Cadre de profil Platine Souverain",
+    "perk_vip": "Privilèges VIP complets de la plateforme",
+    "share_win": "Partager la victoire sur Telegram",
+    "awesome": "Réclamer et jouer"
   },
   "GramVaultPreview": {
     "badge": "Grand Jackpot",

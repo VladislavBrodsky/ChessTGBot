@@ -1125,9 +1125,23 @@
       "xp_250": "250 XP",
       "boost_24h": "Bônus de XP 1,5× · 24 horas",
       "border_gold": "Moldura dourada de perfil",
-      "gold_duplicate": "250 XP · moldura repetida"
+      "gold_duplicate": "250 XP · moldura repetida",
+      "premium_1m": "Assinatura VIP Premium de 1 mês"
     },
-    "brief": "Info"
+    "brief": "Info",
+    "platinum_title": "Caixa misteriosa de platina grátis",
+    "platinum_subtitle": "VIP Premium 1 mês · Primeiros 100 jogadores",
+    "pioneer_remaining": "{count, plural, one {Resta # vaga de pioneiro} other {Restam # vagas de pioneiro}}",
+    "pioneer_badge": "Primeiros 100 jogadores",
+    "claim_platinum": "Abrir caixa de platina",
+    "unboxing_title": "Abrindo caixa misteriosa de platina…",
+    "unboxed_title": "Recompensa de platina desbloqueada!",
+    "perk_academy": "Acesso total à Academia e táticas",
+    "perk_boost": "Bônus 2× de XP em todas as partidas",
+    "perk_border": "Moldura de perfil platina soberana",
+    "perk_vip": "Privilégios VIP completos na plataforma",
+    "share_win": "Compartilhar vitória no Telegram",
+    "awesome": "Resgatar e jogar"
   },
   "GramVaultPreview": {
     "badge": "Grande Jackpot",

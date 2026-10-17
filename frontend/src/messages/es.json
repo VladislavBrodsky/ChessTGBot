@@ -1125,9 +1125,23 @@
       "xp_250": "250 XP",
       "boost_24h": "Multiplicador 1,5× · 24 horas",
       "border_gold": "Marco dorado de perfil",
-      "gold_duplicate": "250 XP · marco repetido"
+      "gold_duplicate": "250 XP · marco repetido",
+      "premium_1m": "Membresía VIP Premium por 1 mes"
     },
-    "brief": "Info"
+    "brief": "Info",
+    "platinum_title": "Caja misteriosa de platino gratis",
+    "platinum_subtitle": "VIP Premium 1 mes · Primeros 100 jugadores",
+    "pioneer_remaining": "{count, plural, one {Queda # lugar pionero} other {Quedan # lugares pioneros}}",
+    "pioneer_badge": "Primeros 100 jugadores",
+    "claim_platinum": "Abrir caja de platino",
+    "unboxing_title": "Abriendo caja de platino…",
+    "unboxed_title": "¡Recompensa de platino desbloqueada!",
+    "perk_academy": "Acceso total a Academia y tácticas",
+    "perk_boost": "Multiplicador 2× de XP en partidas",
+    "perk_border": "Marco de perfil soberano de platino",
+    "perk_vip": "Acceso VIP completo a la plataforma",
+    "share_win": "Compartir premio en Telegram",
+    "awesome": "Reclamar y jugar"
   },
   "GramVaultPreview": {
     "badge": "Gran Bote",

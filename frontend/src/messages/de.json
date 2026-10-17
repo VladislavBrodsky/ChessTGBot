@@ -1125,9 +1125,23 @@
       "xp_250": "250 XP",
       "boost_24h": "1,5× XP-Boost · 24 Stunden",
       "border_gold": "Goldener Profilrahmen",
-      "gold_duplicate": "250 XP · Goldrahmen bereits vorhanden"
+      "gold_duplicate": "250 XP · Goldrahmen bereits vorhanden",
+      "premium_1m": "1 Monat Premium-VIP-Mitgliedschaft"
     },
-    "brief": "Info"
+    "brief": "Info",
+    "platinum_title": "Kostenlose Platin-Mystery-Box",
+    "platinum_subtitle": "1 Monat Premium-VIP · Erste 100 Spieler",
+    "pioneer_remaining": "{count, plural, one {Noch # Pionier-Platz übrig} other {Noch # Pionier-Plätze übrig}}",
+    "pioneer_badge": "Erste 100 Spieler",
+    "claim_platinum": "Platin-Box öffnen",
+    "unboxing_title": "Öffne Platin-Mystery-Box…",
+    "unboxed_title": "Platin-Belohnung freigeschaltet!",
+    "perk_academy": "Vollzugriff auf Akademie & Taktiken",
+    "perk_boost": "2× XP-Boost in allen Partien",
+    "perk_border": "Sovereign-Platin-Profilrahmen",
+    "perk_vip": "Vollständige VIP-Plattformrechte",
+    "share_win": "Gewinn auf Telegram teilen",
+    "awesome": "Einlösen & spielen"
   },
   "GramVaultPreview": {
     "badge": "Hauptgewinn",
