@@ -41,6 +41,7 @@ import { Tabs, type TabOption } from '@/components/ui/Tabs';
 import { getXPProgress } from '@/lib/xpProgress';
 import EngagementQuest from '@/components/EngagementQuest';
 import { mainMiniAppLink, shareInvitation } from '@/lib/invitations';
+import { getTaskTitle, getTaskDescription } from '@/lib/taskTranslations';
 
 type TaskCategory = 'all' | 'daily' | 'milestones' | 'social';
 
@@ -123,10 +124,7 @@ export default function ChallengesPage() {
       });
       if (res.ok) {
         if (task) {
-          let title = task.title_key;
-          try {
-            title = t(task.title_key);
-          } catch {}
+          const title = getTaskTitle(t, task.title_key);
           triggerTaskSuccess(title, task.xp_reward);
         }
 
@@ -318,7 +316,7 @@ export default function ChallengesPage() {
 
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <h3 className="text-sm font-bold text-brand-primary truncate">{t(task.title_key)}</h3>
+                <h3 className="text-sm font-bold text-brand-primary truncate">{getTaskTitle(t, task.title_key)}</h3>
                 {isDaily && (
                   <Badge variant="secondary" size="counter" className="text-caption font-semibold">
                     {t('tab_daily')}
@@ -327,7 +325,7 @@ export default function ChallengesPage() {
               </div>
 
               <p className="text-caption text-brand-muted line-clamp-1 leading-snug">
-                {t(`${task.title_key}_desc`)}
+                {getTaskDescription(t, task.title_key)}
               </p>
 
               <MetaLine className="text-caption font-medium tabular-nums text-brand-muted">
@@ -612,10 +610,10 @@ export default function ChallengesPage() {
                           <span className="ui-icon-tile ui-icon-tile--success"><FaCheckCircle aria-hidden="true" /></span>
                           <div className="min-w-0">
                             <h3 className="text-sm font-semibold text-brand-muted mb-0.5">
-                              {t(task.title_key)}
+                              {getTaskTitle(t, task.title_key)}
                             </h3>
                             <p className="text-caption text-brand-muted mb-1 leading-snug">
-                              {t(`${task.title_key}_desc`)}
+                              {getTaskDescription(t, task.title_key)}
                             </p>
                           </div>
                         </div>

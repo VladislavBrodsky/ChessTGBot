@@ -10,6 +10,7 @@ const tasks = [{ id: 1, task_id: 1, title_key: 'daily_play', progress: 2, target
 async function prepare(page: Page, lobby: { searching: number; games_24h: number; recent?: unknown[] } | null, balance = 1250) {
   await page.route('https://telegram.org/**', route => route.abort());
   await page.addInitScript(() => {
+    (window as Window & { __E2E_TEST_AUTH__?: boolean }).__E2E_TEST_AUTH__ = true;
     sessionStorage.setItem('telegram_web_auth', 'id=999001&hash=e2e-invalid-signature');
     localStorage.setItem('onboarding_completed', 'true');
     localStorage.setItem('theme', 'dark');

@@ -11,6 +11,7 @@ import { GoalTilesSkeleton } from './ui/Skeleton';
 import { EmptyState } from './ui/EmptyState';
 import { ErrorState } from './ui/ErrorState';
 import { telegramHaptic } from '@/lib/telegram';
+import { getTaskTitle } from '@/lib/taskTranslations';
 
 interface Goal { task_id: number; title_key: string; progress: number; target_count: number; xp_reward: number; completed: boolean; claimed: boolean; }
 
@@ -45,14 +46,15 @@ export default function DailyGoalsBento() {
             const progress = Math.max(0, Math.min(task.progress, task.target_count));
             const percent = task.target_count > 0 ? (progress / task.target_count) * 100 : 0;
             const done = task.completed;
+            const title = getTaskTitle(t, task.title_key);
             return (
               <li key={task.task_id} className={`goal-tile ${done ? 'goal-tile--done' : ''}`}>
-                <ProgressRing percent={percent} tone={done ? 'emerald' : 'gold'} label={t(task.title_key)} size={60} stroke={6}>
+                <ProgressRing percent={percent} tone={done ? 'emerald' : 'gold'} label={title} size={60} stroke={6}>
                   {done
                     ? <FiCheck size={22} className="text-brand-success" aria-hidden="true" />
                     : <span className="text-sm font-bold tabular-nums text-brand-primary">{progress}<span className="text-brand-muted">/{task.target_count}</span></span>}
                 </ProgressRing>
-                <p className="goal-tile__title">{t(task.title_key)}</p>
+                <p className="goal-tile__title">{title}</p>
                 {task.claimed
                   ? <Badge variant="emerald">{t('claimed_status')}</Badge>
                   : done

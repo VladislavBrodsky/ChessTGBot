@@ -1,4 +1,14 @@
-import { PREVIEW_PROFILES, PREVIEW_PORTRAIT_IDS, PREVIEW_FRAMES_PER_DAY, previewDailyXP, previewDailyGRAM, previewStandings } from '@/lib/leaderboardPreview';
+import {
+  PREVIEW_PROFILES,
+  PREVIEW_PORTRAIT_IDS,
+  PREVIEW_FRAMES_PER_DAY,
+  PREVIEW_FRAME_INTERVAL_MS,
+  PREVIEW_EPOCH_MS,
+  previewDailyXP,
+  previewDailyGRAM,
+  previewStandings,
+  getPreviewFrame,
+} from '@/lib/leaderboardPreview';
 import fs from 'fs';
 import path from 'path';
 
@@ -79,5 +89,25 @@ describe('fictional leaderboard simulation', () => {
       totalBytes += image.length;
     }
     expect(totalBytes).toBeLessThan(100_000);
+  });
+
+  it('calculates preview frame from real-world timestamps accurately', () => {
+    expect(getPreviewFrame(PREVIEW_EPOCH_MS)).toBe(0);
+    expect(getPreviewFrame(PREVIEW_EPOCH_MS - 100_000)).toBe(0);
+    expect(getPreviewFrame(NaN)).toBe(0);
+    expect(getPreviewFrame(PREVIEW_EPOCH_MS + 2 * PREVIEW_FRAME_INTERVAL_MS)).toBe(2);
+    expect(getPreviewFrame(PREVIEW_EPOCH_MS + 24 * 60 * 60 * 1_000)).toBe(PREVIEW_FRAMES_PER_DAY);
+    expect(getPreviewFrame(PREVIEW_EPOCH_MS + 5 * 24 * 60 * 60 * 1_000)).toBe(5 * PREVIEW_FRAMES_PER_DAY);
+  });
+
+  it('exposes active competition with positive and negative 24h rank shifts', () => {
+    const frame0 = previewStandings(0, 'arena');
+    expect(frame0.every(entry => entry.rankChange === 0)).toBe(true);
+
+    const day1Standings = previewStandings(PREVIEW_FRAMES_PER_DAY, 'arena');
+    const movers = day1Standings.filter(entry => entry.rankChange !== 0);
+    expect(movers.length).toBeGreaterThan(10);
+    expect(movers.some(entry => entry.rankChange > 0)).toBe(true);
+    expect(movers.some(entry => entry.rankChange < 0)).toBe(true);
   });
 });

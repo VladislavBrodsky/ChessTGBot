@@ -19,6 +19,7 @@ import { type GramQuote } from '@/lib/gram';
 import {
   PREVIEW_FRAME_INTERVAL_MS,
   PREVIEW_PORTRAIT_IDS,
+  getPreviewFrame,
   previewStandings,
   type PreviewLadder,
 } from '@/lib/leaderboardPreview';
@@ -74,7 +75,11 @@ function LeaderboardScore({ entry, unit, locale, reduceMotion, gainLabel, podium
   );
 }
 
-export default function Leaderboard() {
+export interface LeaderboardProps {
+  initialFrame?: number;
+}
+
+export default function Leaderboard({ initialFrame }: LeaderboardProps = {}) {
   const t = useTranslations('LeaderboardPreview');
   const ti = useTranslations('Index');
   const locale = useLocale();
@@ -82,7 +87,11 @@ export default function Leaderboard() {
   const osReducedMotion = useReducedMotion();
   const reduceMotion = reducedMotion || !!osReducedMotion;
   const [ladder, setLadder] = useState<PreviewLadder>('arena');
-  const [frame, setFrame] = useState(0);
+  const [frame, setFrame] = useState<number>(() => {
+    if (typeof initialFrame === 'number') return initialFrame;
+    if (process.env.NODE_ENV === 'test') return 0;
+    return typeof window !== 'undefined' ? getPreviewFrame() : 0;
+  });
   const [showAll, setShowAll] = useState(false);
   const [visible, setVisible] = useState(true);
   const [foreground, setForeground] = useState(true);
@@ -115,8 +124,20 @@ export default function Leaderboard() {
     trackEvent('leaderboard_viewed', { tab: ladder });
   }, [ladder, trackEvent]);
 
+  // Synchronize on mount to real-world frame on client runtime
   useEffect(() => {
-    const onVisibility = () => setForeground(document.visibilityState !== 'hidden');
+    if (initialFrame !== undefined || process.env.NODE_ENV === 'test') return;
+    setFrame(getPreviewFrame());
+  }, [initialFrame]);
+
+  useEffect(() => {
+    const onVisibility = () => {
+      const isForeground = document.visibilityState !== 'hidden';
+      setForeground(isForeground);
+      if (isForeground && initialFrame === undefined && process.env.NODE_ENV !== 'test') {
+        setFrame(prev => Math.max(prev, getPreviewFrame()));
+      }
+    };
     onVisibility();
     document.addEventListener('visibilitychange', onVisibility);
     const observer = typeof IntersectionObserver === 'undefined' ? undefined : new IntersectionObserver(
@@ -124,13 +145,30 @@ export default function Leaderboard() {
     );
     if (region.current) observer?.observe(region.current);
     return () => { document.removeEventListener('visibilitychange', onVisibility); observer?.disconnect(); };
-  }, []);
+  }, [initialFrame]);
 
   useEffect(() => {
     if (!running) return;
-    const timer = window.setInterval(() => setFrame(value => value + 1), PREVIEW_FRAME_INTERVAL_MS);
+    const timer = window.setInterval(() => {
+      setFrame(value => {
+        if (initialFrame !== undefined || process.env.NODE_ENV === 'test') {
+          return value + 1;
+        }
+        return Math.max(value + 1, getPreviewFrame());
+      });
+    }, PREVIEW_FRAME_INTERVAL_MS);
     return () => window.clearInterval(timer);
-  }, [running]);
+  }, [running, initialFrame]);
+
+  // Check clock every 60s so real-world hourly transitions trigger without waiting 30m
+  useEffect(() => {
+    if (!running || initialFrame !== undefined || process.env.NODE_ENV === 'test') return;
+    const interval = window.setInterval(() => {
+      const realFrame = getPreviewFrame();
+      setFrame(current => (current !== realFrame ? realFrame : current));
+    }, 60_000);
+    return () => window.clearInterval(interval);
+  }, [running, initialFrame]);
 
   const standings = useMemo<LeaderboardEntry[]>(() => {
     // 1. Marketing baseline demo profiles at current frame
@@ -143,7 +181,7 @@ export default function Leaderboard() {
       studyStreak: undefined,
       score: d.score,
       dailyGain: d.dailyGain,
-      prevRank: d.rank - d.rankChange,
+      prevRank: d.rank + d.rankChange,
     }));
 
     // 2. Real user entries from active ladder endpoint
@@ -251,7 +289,7 @@ export default function Leaderboard() {
         {entry.rank}
         {entry.rankChange !== 0 && (
           <span
-            className={`flex items-center justify-center gap-0.5 text-[10px] font-bold ${
+            className={`flex items-center justify-center gap-0.5 text-xs font-bold ${
               entry.rankChange > 0 ? 'text-emerald-400' : 'text-rose-400'
             }`}
             aria-label={t('rank_change', { count: Math.abs(entry.rankChange) })}
@@ -286,7 +324,7 @@ export default function Leaderboard() {
                 {entry.rank}
                 {entry.rankChange !== 0 && (
                   <span
-                    className={`inline-flex items-center gap-0.5 ms-1 text-[11px] font-bold ${
+                    className={`inline-flex items-center gap-0.5 ms-1 text-xs font-bold ${
                       entry.rankChange > 0 ? 'text-emerald-400' : 'text-rose-400'
                     }`}
                     aria-label={t('rank_change', { count: Math.abs(entry.rankChange) })}
