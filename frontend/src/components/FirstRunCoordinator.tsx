@@ -78,6 +78,11 @@ export default function FirstRunCoordinator({ onOnboardingChange }: FirstRunCoor
   // Main coordinator engine: decides which dialog (if any) should be mounted
   useEffect(() => {
     if (typeof window === 'undefined' || invitationBusy) return;
+    if (new URLSearchParams(window.location.search).get('claim_box') === '1') {
+      setActiveStep(null);
+      onOnboardingChange?.(false);
+      return;
+    }
 
     // 1. Step 1: Onboarding check
     const onboardingDone = localStorage.getItem('onboarding_completed') === 'true';

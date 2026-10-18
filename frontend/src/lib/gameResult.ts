@@ -12,7 +12,7 @@ export function gameResultSummary(game: FinishedGame, userId: number) {
   const before = white ? game.white_elo_before : game.black_elo_before;
   const after = white ? game.white_elo_after : game.black_elo_after;
   const knownElo = typeof before === 'number' && Number.isFinite(before) && typeof after === 'number' && Number.isFinite(after);
-  const payoutCents = outcome === 'win' ? game.payout_amount : outcome === 'loss' ? 0 : game.wager_amount;
+  const payoutCents = game.wager_amount === 0 ? 0 : outcome === 'win' ? game.payout_amount : outcome === 'loss' ? 0 : game.wager_amount;
   const payout = typeof payoutCents === 'number' && Number.isSafeInteger(payoutCents) && payoutCents >= 0 ? payoutCents / 100 : null;
   return { outcome, payout, newElo: typeof after === 'number' && Number.isFinite(after) ? after : undefined, eloChange: knownElo ? after - before : undefined };
 }

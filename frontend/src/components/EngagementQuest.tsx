@@ -94,6 +94,12 @@ export default function EngagementQuest({ onPlayMatch }: EngagementQuestProps = 
       if (action === 'claim') {
         setRevealed(true);
         void syncStats();
+      } else if (action === 'join') {
+        if (onPlayMatch) {
+          onPlayMatch();
+        } else {
+          router.push(`/${locale}/game`);
+        }
       }
     } catch {
       setFailed(true);
@@ -101,7 +107,7 @@ export default function EngagementQuest({ onPlayMatch }: EngagementQuestProps = 
     } finally {
       setBusy(false);
     }
-  }, [data, busy, mutate, isPlatinum, syncStats]);
+  }, [data, busy, mutate, isPlatinum, syncStats, onPlayMatch, router, locale]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !data || busy) return;

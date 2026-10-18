@@ -248,10 +248,23 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const handledGameOverSyncRef = useRef<string | null>(null);
   const handledAbortedRedirectRef = useRef<string | null>(null);
 
-  // Sync wallet balance and user stats on game completion exactly once
+  // Sync wallet balance and user stats on game completion and again once settlement commits
+  const isSettled = gameState?.white_elo_after != null || gameState?.white_xp_gained != null;
   useEffect(() => {
-    if (gameState?.is_game_over && gameState.id && handledGameOverSyncRef.current !== gameState.id) {
-      handledGameOverSyncRef.current = gameState.id;
+    const syncKey = gameState?.id ? `${gameState.id}:${isSettled ? 'settled' : 'initial'}` : null;
+    if (gameState?.is_game_over && syncKey && handledGameOverSyncRef.current !== syncKey) {
+      handledGameOverSyncRef.current = syncKey;
+
+      const fetchEngagementStatus = () => {
+        apiFetch('/api/v1/gamification/engagement/status')
+          .then(res => (res.ok ? res.json() : null))
+          .then(data => {
+            if (data && data.state === 'claimable') {
+              setQuestClaimable(true);
+            }
+          })
+          .catch(() => {});
+      };
 
       apiFetch("/api/v1/wallet/balance")
         .then(res => {
@@ -271,17 +284,15 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           })
           .catch(() => {});
 
-        apiFetch('/api/v1/gamification/engagement/status')
-          .then(res => (res.ok ? res.json() : null))
-          .then(data => {
-            if (data && data.state === 'claimable') {
-              setQuestClaimable(true);
-            }
-          })
-          .catch(() => {});
+        fetchEngagementStatus();
+      }
+
+      if (!isSettled && userId) {
+        const timer = window.setTimeout(fetchEngagementStatus, 900);
+        return () => window.clearTimeout(timer);
       }
     }
-  }, [gameState?.is_game_over, gameState?.id, userId]);
+  }, [gameState?.is_game_over, gameState?.id, isSettled, userId]);
 
   // Trigger tactile haptics & audio cues on game over exactly once
   useEffect(() => {

@@ -104,6 +104,12 @@ async def init_db():
                     Task(id=108, title_key="ach_refer_25", description_key="Viral Master: Invite 25 friends to FinChess", xp_reward=2000, task_type=TaskType.REFER, target_count=25, is_daily=False, icon="users"),
                     Task(id=109, title_key="ach_win_50", description_key="Champion: Win 50 chess matches", xp_reward=500, task_type=TaskType.WIN, target_count=50, is_daily=False, icon="crown"),
                     Task(id=110, title_key="ach_play_100", description_key="Grandmaster: Play 100 chess matches", xp_reward=750, task_type=TaskType.PLAY, target_count=100, is_daily=False, icon="star"),
+                    Task(id=111, title_key="ach_play_1", description_key="First Battle: Play your first chess match", xp_reward=50, task_type=TaskType.PLAY, target_count=1, is_daily=False, icon="gamepad"),
+                    Task(id=112, title_key="ach_play_3", description_key="Warming Up: Play 3 chess matches", xp_reward=75, task_type=TaskType.PLAY, target_count=3, is_daily=False, icon="gamepad"),
+                    Task(id=113, title_key="ach_play_5", description_key="Tactician: Play 5 chess matches", xp_reward=100, task_type=TaskType.PLAY, target_count=5, is_daily=False, icon="gamepad"),
+                    Task(id=114, title_key="ach_play_50", description_key="Veteran: Play 50 chess matches", xp_reward=400, task_type=TaskType.PLAY, target_count=50, is_daily=False, icon="shield"),
+                    Task(id=115, title_key="ach_play_200", description_key="Master: Play 200 chess matches", xp_reward=1000, task_type=TaskType.PLAY, target_count=200, is_daily=False, icon="crown"),
+                    Task(id=116, title_key="ach_play_300", description_key="Legend: Play 300 chess matches", xp_reward=1500, task_type=TaskType.PLAY, target_count=300, is_daily=False, icon="award"),
                     Task(id=201, title_key="join_channel", description_key="Subscribe to official channel @chess_hub", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
                     Task(id=202, title_key="join_chat", description_key="Subscribe to official chat @chesshub_chat", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="telegram"),
                     Task(id=203, title_key="add_to_home_screen", description_key="Add App to your Home Screen", xp_reward=150, task_type=TaskType.LOGIN, target_count=1, is_daily=False, icon="home")

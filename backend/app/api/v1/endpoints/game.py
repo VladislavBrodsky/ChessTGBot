@@ -95,6 +95,8 @@ async def create_game(
         state.invite_token = launch.token if launch else None
         if not is_bot_game and wager == 0:
             state.first_move_grace_seconds = 180.0
+        from app.services.engagement_campaign import ensure_enrolled
+        await ensure_enrolled(db, current_user)
         await service.session_manager.save_game(game_id, state)
         await db.commit()
     except Exception:

@@ -869,15 +869,11 @@ class GameService:
                 session.add(white_user)
                 await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False, reason="ai_match", reference_id=game_id)
                 
-                # Save XP earned to state and update Redis
-                state.white_xp_gained = ai_xp * 2 if white_user.is_premium_active else ai_xp
-                state.black_xp_gained = 0
-                await self.session_manager.save_game(game_id, state)
-                
                 # Save bot game history
                 total_moves = len(state.move_history) if hasattr(state, 'move_history') else 0
                 result_type = getattr(state, "result_type", None) or ('checkmate' if state.winner else 'draw')
                 moves_json = json.dumps(getattr(state, 'move_history', []))
+                bot_elo = getattr(state, "black_elo", 1000) or 1000
                 
                 try:
                     assert white_id is not None, "white_id cannot be None for bot game history"
@@ -890,8 +886,8 @@ class GameService:
                         result_type=result_type,
                         white_elo_before=white_user.elo,
                         white_elo_after=white_user.elo, # ELO doesn't change for bot games
-                        black_elo_before=1000,
-                        black_elo_after=1000,
+                        black_elo_before=bot_elo,
+                        black_elo_after=bot_elo,
                         total_moves=total_moves,
                         duration_seconds=None,
                         final_fen=state.fen,
@@ -918,22 +914,6 @@ class GameService:
 
                     # Check and award deferred referral signup bonus (3-game milestone)
                     await GamificationService.check_referral_game_milestone(session, white_user.id)
-                    
-                    # Award XP and update tasks for AI games
-                    await GamificationService.update_task_progress(session, white_user.id, TaskType.PLAY, commit=False)
-                    if state.winner == 'w':
-                        await GamificationService.update_task_progress(session, white_user.id, TaskType.WIN, commit=False)
-                        ai_xp = 15
-                    elif state.winner == 'b':
-                        ai_xp = 5
-                    else:
-                        ai_xp = 10
-                        
-                    final_ai_xp = ai_xp * 2 if getattr(white_user, "is_premium_active", False) else ai_xp
-                    await GamificationService.add_xp(session, white_user, ai_xp, trigger_kickback=True, apply_booster=True, commit=False, reason="ai_game_match", reference_id=game_id)
-                    
-                    state.white_xp_gained = final_ai_xp
-                    state.black_xp_gained = 0
 
                     await session.commit()
                     await dispatch_referral_notifications(session)
@@ -943,6 +923,18 @@ class GameService:
                     print(f"[GameService] WARNING: Failed to save bot game history for {game_id}: {hist_err}")
                     await session.rollback()
                     raise hist_err
+
+                # Cache settlement fields on the state object and broadcast after DB commit
+                state.white_xp_gained = ai_xp * 2 if getattr(white_user, "is_premium_active", False) else ai_xp
+                state.black_xp_gained = 0
+                state.white_elo_before = white_user.elo
+                state.white_elo_after = white_user.elo
+                state.black_elo_before = bot_elo
+                state.black_elo_after = bot_elo
+                state.payout_amount = 0
+                state.platform_rake = 0
+                await self.session_manager.save_game(game_id, state)
+                await sio.emit('game_state', state.model_dump(), room=game_id)
                 return
 
             # Both human players are loaded; use their non-optional account IDs

@@ -26,7 +26,6 @@ import NotificationModal from '@/components/NotificationModal';
 import DailyGoalsBento from '@/components/DailyGoalsBento';
 import EngagementQuest from '@/components/EngagementQuest';
 import { GramVaultPreview } from '@/components/GramVaultPreview';
-import QuickMatchModal from '@/components/game/QuickMatchModal';
 import { telegramHaptic } from '@/lib/telegram';
 
 export default function Home() {
@@ -35,7 +34,6 @@ export default function Home() {
  const locale = useLocale();
  const [tgUser, setTgUser] = useState<any>(null);
  const [showNotifications, setShowNotifications] = useState(false);
- const [showQuickMatch, setShowQuickMatch] = useState(false);
  const claimable = useClaimableTasks();
  const [mounted, setMounted] = useState(false);
  const { stats, walletBalance, loadingStats, loadingBalance, balanceError, statsError, syncStats } = useUser();
@@ -103,10 +101,6 @@ export default function Home() {
               href={`/${locale}/game`}
               primary
               icon={<FaChessKnight />}
-              onClick={(e) => {
-                e.preventDefault();
-                setShowQuickMatch(true);
-              }}
             >
               <span className="t-title-2 block">{t('play')}</span>
               <span className="block text-sm font-semibold">{t('execute_matchmaking')}</span>
@@ -128,10 +122,6 @@ export default function Home() {
         </div>
       </div>
     </main>
-    <QuickMatchModal
-      isOpen={showQuickMatch}
-      onClose={() => setShowQuickMatch(false)}
-    />
   </LayoutWrapper>
  );
 }

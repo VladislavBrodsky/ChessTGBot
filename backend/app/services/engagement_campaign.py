@@ -122,6 +122,17 @@ async def _locked_user(db, user):
     return locked
 
 
+async def ensure_enrolled(db: AsyncSession, user: User) -> bool:
+    """Auto-enroll the user if the campaign is active and they have not yet enrolled."""
+    if not user or not get_settings().ENGAGEMENT_CAMPAIGN_ENABLED:
+        return False
+    if await _enrollment(db, user):
+        return False
+    db.add(XpTransaction(user_id=user.telegram_id, amount=0,
+                         reason="engagement_enrolled", reference_id=CAMPAIGN_ID))
+    return True
+
+
 async def enroll(db: AsyncSession, user: User):
     user = await _locked_user(db, user)
     if not await _enrollment(db, user):

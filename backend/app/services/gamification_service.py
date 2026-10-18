@@ -80,7 +80,10 @@ class GamificationService:
     async def get_or_create_achievements(db: AsyncSession, user_id: int, commit: bool = True):
         # Lock user row to prevent concurrent achievements generation
         user_stmt = select(User).where(User.id == user_id).with_for_update()
-        await db.execute(user_stmt)
+        user_res = await db.execute(user_stmt)
+        user = user_res.scalars().first()
+        user_games_played = (user.games_played or 0) if user else 0
+        user_wins = (user.wins or 0) if user else 0
 
         # Fetch all permanent tasks definitions
         result = await db.execute(select(Task).where(~Task.is_daily))
@@ -99,7 +102,7 @@ class GamificationService:
         for task_def in achievement_defs:
             user_task = user_tasks_map.get(task_def.id)
             
-            # Determine progress for REFER task if applicable
+            # Determine progress for REFER, PLAY, and WIN tasks
             progress = 0
             completed = False
             if task_def.task_type == TaskType.REFER:
@@ -110,23 +113,29 @@ class GamificationService:
                 ref_count = ref_count_res.scalar() or 0
                 progress = min(ref_count, task_def.target_count)
                 completed = progress >= task_def.target_count
+            elif task_def.task_type == TaskType.PLAY:
+                progress = min(user_games_played, task_def.target_count)
+                completed = progress >= task_def.target_count
+            elif task_def.task_type == TaskType.WIN:
+                progress = min(user_wins, task_def.target_count)
+                completed = progress >= task_def.target_count
 
             if not user_task:
                 user_task = UserTask(
                     user_id=user_id,
                     task_id=task_def.id,
-                    progress=progress if task_def.task_type == TaskType.REFER else 0,
-                    completed=completed if task_def.task_type == TaskType.REFER else False,
+                    progress=progress,
+                    completed=completed,
                     claimed=False
                 )
                 db.add(user_task)
                 user_tasks.append(user_task)
             else:
-                # Self-healing: Update progress for REFER tasks if not claimed
-                if task_def.task_type == TaskType.REFER and not user_task.claimed:
-                    if user_task.progress != progress or user_task.completed != completed:
-                        user_task.progress = progress
-                        user_task.completed = completed
+                # Self-healing: Update progress for uncompleted/unclaimed achievements
+                if not user_task.claimed:
+                    if progress > user_task.progress or (completed and not user_task.completed):
+                        user_task.progress = max(user_task.progress, progress)
+                        user_task.completed = user_task.completed or completed
                         user_task.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
                         db.add(user_task)
                         user_tasks.append(user_task)

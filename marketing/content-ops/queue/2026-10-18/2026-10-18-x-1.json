@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "White to move. Force Black's rook to build the smothered mate box",
   "text": "White to move. Force Black's rook to build the smothered mate box\n\nThe g8 square is covered by both White's queen on b3 and knight on e7.\n\nCalculate the 2-move finish ♟️\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -42,10 +42,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T18:55:49Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-x-1.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-18T00:00:16Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111608260218270176",
+    "reply_id": "2111608262340518234",
+    "root_url": "https://x.com/defi_ambassador/status/2111608260218270176"
+  },
+  "published": {
+    "root_id": "2111608260218270176",
+    "root_url": "https://x.com/defi_ambassador/status/2111608260218270176",
+    "at": "2026-10-18T00:00:16Z"
+  },
+  "media_cleaned": true
 }

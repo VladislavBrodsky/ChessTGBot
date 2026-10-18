@@ -873,6 +873,13 @@ async def join_matchmaking(sid, data):
             
             user_elo = getattr(user, 'elo', 1000)
 
+            try:
+                from app.services.engagement_campaign import ensure_enrolled
+                if await ensure_enrolled(db, user):
+                    await db.commit()
+            except Exception as e:
+                logger.warning(f"Engagement auto-enroll failed for user {user_id}: {e}")
+
             # Resolve the user's direct referrer (telegram_id) for the anti-collusion
             # guard — a referrer must not be ranked-matched with their own referee.
             # Referral.*_id columns are DB users.id, so we join back to User for the tid.
