@@ -7,7 +7,7 @@
   "hook": "How Web3Chess eliminates luck: 100% skill-based speed duels with instant settlement",
   "cta": "rules",
   "text": "<b>How Web3Chess eliminates luck: 100% skill-based speed duels with instant settlement</b>\n\nOnline chess platforms often suffer from bots, hidden fees, or delayed payouts.\n\nWeb3Chess is built on zero-cheat transparency:\n• Microsecond monotonic server clocks prevent lag manipulation\n• 95% of every entry fee pool goes directly to the winner\n• Instant TON wallet delivery upon match finish\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -31,10 +31,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T02:50:34Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-6.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-18T03:19:40Z",
+  "published": {
+    "message_id": 42,
+    "at": "2026-10-18T03:19:40Z"
+  },
+  "media_cleaned": true
 }

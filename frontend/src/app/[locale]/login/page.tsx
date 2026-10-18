@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Backdrop } from '@/components/ui/Backdrop';
+import { QrCode } from '@/components/ui/QrCode';
 import { telegramHaptic } from '@/lib/telegram';
 
 import { getStoredWebAuth, setStoredWebAuth } from '@/lib/sessionAuth';
@@ -61,8 +62,7 @@ export default function LoginPage() {
             <h2 id="mobile-login-title" className="t-title-2">{t('play_on_mobile')}</h2>
             <p className="max-w-[280px] text-sm leading-relaxed text-brand-muted">{t('scan_qr')}</p>
             <div className="flex aspect-square w-full max-w-[180px] items-center justify-center rounded-2xl bg-white p-3 shadow-lg border border-white/20">
-              {/* eslint-disable-next-line @next/next/no-img-element -- external QR service image */}
-              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`https://t.me/${bot}`)}&color=000000&bgcolor=ffffff&margin=2`} alt={t('qr_alt')} width={156} height={156} className="block h-auto w-full aspect-square" />
+              <QrCode value={`https://t.me/${bot}`} alt={t('qr_alt')} size={156} />
             </div>
             <a href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer" onClick={() => telegramHaptic('selection')} className="ui-action-link ui-action-link--primary w-full justify-center"><FaTelegramPlane aria-hidden="true" />{t('open_in_telegram')}</a>
           </section>

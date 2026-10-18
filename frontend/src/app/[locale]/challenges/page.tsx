@@ -19,7 +19,7 @@ import {
   FaUserPlus,
   FaCalendarCheck,
 } from "react-icons/fa";
-import { FiInfo, FiTarget } from "react-icons/fi";
+import { FiTarget } from "react-icons/fi";
 import XPProgressBar from "@/components/XPProgressBar";
 import { useState, useMemo } from "react";
 import Link from 'next/link';
@@ -44,15 +44,21 @@ import { mainMiniAppLink, shareInvitation } from '@/lib/invitations';
 
 type TaskCategory = 'all' | 'daily' | 'milestones' | 'social';
 
-function getTaskCategory(task: { is_daily?: boolean; title_key: string }): 'daily' | 'milestones' | 'social' {
-  if (task.is_daily) return 'daily';
-  if (
+function isDailyTask(task: { is_daily?: boolean; title_key: string }): boolean {
+  return Boolean(task.is_daily) || task.title_key.startsWith('daily_');
+}
+
+function isSocialTask(task: { title_key: string }): boolean {
+  return (
     task.title_key.startsWith('join_') ||
     task.title_key === 'add_to_home_screen' ||
     task.title_key.startsWith('ach_refer_')
-  ) {
-    return 'social';
-  }
+  );
+}
+
+function getTaskCategory(task: { is_daily?: boolean; title_key: string }): 'daily' | 'milestones' | 'social' {
+  if (isDailyTask(task)) return 'daily';
+  if (isSocialTask(task)) return 'social';
   return 'milestones';
 }
 
@@ -256,7 +262,6 @@ export default function ChallengesPage() {
         if (!a.completed && b.completed) return 1;
 
         if (isMilestone) {
-          // Sort by target_count ascending (progression: 1 -> 3 -> 5 -> 25 -> 50 -> 100 -> 200 -> 300)
           return (a.target_count || 0) - (b.target_count || 0);
         }
 
@@ -294,41 +299,47 @@ export default function ChallengesPage() {
 
   const renderTaskCard = (task: any) => {
     const isReadyToClaim = task.completed && !task.claimed;
+    const isDaily = isDailyTask(task);
+    const isSocial = isSocialTask(task);
+    const isPlayOrWin = !isSocial && task.title_key !== 'daily_login';
+
     return (
       <Card
         key={task.id}
         variant="solid"
-        className={`w-full p-3.5 transition-colors ${isReadyToClaim ? 'ui-stat--accent' : ''}`}
+        className={`w-full p-3 sm:p-3.5 transition-colors ${isReadyToClaim ? 'ui-stat--accent' : ''}`}
       >
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-3 min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3 w-full">
+          {/* Leading Icon & Text Details */}
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <span className={`ui-icon-tile shrink-0 ${task.completed ? 'ui-icon-tile--success' : ''}`}>
               {getTaskIcon(task.title_key, task.completed)}
             </span>
+
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <h3 className="text-sm font-bold text-brand-primary truncate">{t(task.title_key)}</h3>
-                {task.is_daily && (
+                {isDaily && (
                   <Badge variant="secondary" size="counter" className="text-caption font-semibold">
                     {t('tab_daily')}
                   </Badge>
                 )}
               </div>
-              <p className="text-caption text-brand-muted leading-snug">{t(`${task.title_key}_desc`)}</p>
-              <MetaLine className="t-caption font-medium tabular-nums text-brand-muted">
+
+              <p className="text-caption text-brand-muted line-clamp-1 leading-snug">
+                {t(`${task.title_key}_desc`)}
+              </p>
+
+              <MetaLine className="text-caption font-medium tabular-nums text-brand-muted">
                 <span className="text-brand-gold-ink">+{task.xp_reward} XP</span>
                 {task.gram_reward_nano && task.gram_reward_nano !== "0" && (
                   <GramAmount plus nano={task.gram_reward_nano} className="text-brand-action" />
                 )}
               </MetaLine>
-              {t.has(`${task.title_key}_inst`) && !task.completed && (
-                <p className="flex items-start gap-1.5 text-caption font-medium leading-snug text-brand-primary">
-                  <FiInfo size={12} className="mt-0.5 shrink-0 text-brand-muted" aria-hidden="true" />
-                  <span>{t(`${task.title_key}_inst`)}</span>
-                </p>
-              )}
-              <div className="mt-1 flex items-center gap-2">
-                <div className="h-1.5 w-full max-w-36 overflow-hidden rounded-full border border-brand-border-opacity-10 bg-brand-elevated">
+
+              {/* Progress bar and numeric fraction */}
+              <div className="flex items-center gap-2 pt-0.5">
+                <div className="h-1.5 flex-1 max-w-36 overflow-hidden rounded-full border border-brand-border-opacity-10 bg-brand-elevated">
                   <div
                     className={`h-full rounded-full transition-all duration-700 ${
                       task.progress >= task.target_count
@@ -338,69 +349,68 @@ export default function ChallengesPage() {
                     style={{ width: `${Math.min(100, (task.progress / task.target_count) * 100)}%` }}
                   />
                 </div>
-                <span className={`text-caption font-bold tabular-nums ${task.progress >= task.target_count ? 'text-emerald-500' : 'text-brand-muted'}`}>
+                <span className={`text-caption font-bold tabular-nums shrink-0 ${task.progress >= task.target_count ? 'text-emerald-500' : 'text-brand-muted'}`}>
                   {task.progress}/{task.target_count}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-end shrink-0 sm:self-center">
+          {/* Trailing Action: Always vertically centered, never wrapped into a bottom row */}
+          <div className="shrink-0 flex items-center justify-end">
             {isReadyToClaim ? (
               <Button
                 variant="action"
                 size="sm"
                 disabled={claimingId !== null}
                 onClick={() => handleClaim(task.task_id)}
-                className="shrink-0 whitespace-nowrap px-3.5"
+                className="whitespace-nowrap px-3 text-sm font-semibold"
               >
-                {claimingId === task.task_id ? '...' : t('claim_reward')}
+                {claimingId === task.task_id ? '...' : t('claim')}
               </Button>
             ) : task.claimed ? (
               <Badge variant="secondary" className="shrink-0">{t('claimed_status')}</Badge>
-            ) : (task.title_key === "join_channel" || task.title_key === "join_chat" || task.title_key === "add_to_home_screen") ? (
-              <div className="flex flex-wrap gap-2">
-                {task.title_key !== "add_to_home_screen" && (
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => {
-                      const link = task.title_key === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
-                      const host = (window as any).Telegram?.WebApp;
-                      if (host?.openTelegramLink) host.openTelegramLink(link); else window.open(link, "_blank", "noopener,noreferrer");
-                    }}
-                  >
-                    {tGram("join_button")}
-                  </Button>
-                )}
-                <Button
-                  variant="action"
-                  size="sm"
-                  className="shrink-0 whitespace-nowrap px-3"
-                  onClick={() => handleVerify(task.task_id, task.title_key)}
-                >
-                  {t('verify_btn')}
-                </Button>
-              </div>
+            ) : (task.title_key === "join_channel" || task.title_key === "join_chat") ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="whitespace-nowrap px-3 text-caption font-semibold"
+                onClick={() => {
+                  const link = task.title_key === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
+                  const host = (window as any).Telegram?.WebApp;
+                  if (host?.openTelegramLink) host.openTelegramLink(link); else window.open(link, "_blank", "noopener,noreferrer");
+                }}
+              >
+                {tGram("join_button")}
+              </Button>
+            ) : task.title_key === "add_to_home_screen" ? (
+              <Button
+                variant="action"
+                size="sm"
+                className="whitespace-nowrap px-3 text-caption font-semibold"
+                onClick={() => handleVerify(task.task_id, task.title_key)}
+              >
+                {t('verify_btn')}
+              </Button>
             ) : task.title_key.startsWith("ach_refer_") ? (
               <Button
                 variant="outline"
                 size="sm"
-                className="whitespace-nowrap px-3 text-caption"
+                className="whitespace-nowrap px-3 text-caption font-semibold"
                 onClick={() => {
                   if (!stats?.referral_code || !/^[A-Za-z0-9_-]{1,60}$/.test(stats.referral_code)) return;
                   const inviteLink = mainMiniAppLink(stats.bot_username || 'chess_matbot', `ref_${stats.referral_code}`);
                   shareInvitation(inviteLink, inviteText('share_text'));
                 }}
               >
-                {t.has('invite_friend') ? t('invite_friend') : 'Invite Friend'}
+                {t('invite_friend')}
               </Button>
-            ) : (task.task_type === "play" || task.task_type === "win" || task.task_type === "play_human") ? (
+            ) : isPlayOrWin ? (
               <Link href={`/${locale}/game`} className="inline-flex">
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="whitespace-nowrap px-3 text-caption"
+                  className="whitespace-nowrap px-3 text-caption font-semibold"
                   onClick={() => telegramHaptic('selection')}
                 >
                   {t('play_now')}
@@ -424,7 +434,7 @@ export default function ChallengesPage() {
 
   return (
     <LayoutWrapper className="w-full">
-      <main className="w-full app-page flex flex-col items-center mx-auto space-y-4">
+      <main className="w-full app-page flex flex-col items-center mx-auto space-y-4 pb-28">
 
         <PageHeader title={ti('daily_tasks')} icon={<FiTarget />} />
 
@@ -492,13 +502,14 @@ export default function ChallengesPage() {
           </div>
         </section>
 
-        {/* Category Tabs */}
+        {/* Category Tabs: Evenly distributed with zero horizontal clipping */}
         <div className="w-full">
           <Tabs
             tabs={tabOptions}
             activeTab={activeTab}
             onChange={(tabId) => setActiveTab(tabId)}
-            className="w-full"
+            className="w-full flex"
+            tabClassName="flex-1 min-w-0 px-1 sm:px-3 text-xs sm:text-sm"
             aria-label={ti('daily_tasks')}
           />
         </div>
@@ -595,7 +606,7 @@ export default function ChallengesPage() {
                 {tasks
                   .filter((t) => t.claimed)
                   .map((task) => (
-                    <Card key={task.id} variant="solid" className="p-3.5">
+                    <Card key={task.id} variant="solid" className="p-3 sm:p-3.5">
                       <div className="flex justify-between items-center gap-3">
                         <div className="flex items-center gap-3 min-w-0">
                           <span className="ui-icon-tile ui-icon-tile--success"><FaCheckCircle aria-hidden="true" /></span>
@@ -603,7 +614,7 @@ export default function ChallengesPage() {
                             <h3 className="text-sm font-semibold text-brand-muted mb-0.5">
                               {t(task.title_key)}
                             </h3>
-                            <p className="text-caption text-brand-muted leading-snug">
+                            <p className="text-caption text-brand-muted mb-1 leading-snug">
                               {t(`${task.title_key}_desc`)}
                             </p>
                           </div>

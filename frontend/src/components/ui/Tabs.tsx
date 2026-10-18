@@ -19,6 +19,7 @@ export interface TabsProps<T extends string = string> {
   activeTab: T;
   onChange: (tabId: T) => void;
   className?: string;
+  tabClassName?: string;
   'aria-label'?: string;
 }
 
@@ -27,6 +28,7 @@ export function Tabs<T extends string = string>({
   activeTab,
   onChange,
   className = '',
+  tabClassName = '',
   'aria-label': ariaLabel,
 }: TabsProps<T>) {
   const tc = useTranslations('Common');
@@ -54,7 +56,8 @@ export function Tabs<T extends string = string>({
               onChange(tab.id);
             }}
             className={`ui-tap-target
-              relative flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold normal-case tracking-normal transition-colors duration-200 cursor-pointer shrink-0 select-none min-h-11
+              relative flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold normal-case tracking-normal transition-colors duration-200 cursor-pointer select-none min-h-11
+              ${tabClassName ? tabClassName : 'shrink-0 px-3.5'}
               ${isActive ? 'text-brand-primary' : 'text-brand-muted hover:text-brand-primary'}
             `}
           >

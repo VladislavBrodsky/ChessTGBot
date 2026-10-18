@@ -48,6 +48,8 @@ class UserTaskResponse(BaseModel):
     gram_reward_mode: str = "claim"
     target_count: int
     icon: Optional[str] = None
+    is_daily: bool = False
+    task_type: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -75,6 +77,7 @@ async def get_my_tasks(
     from app.services.gram_rewards import task_reward_nano
     from app.models.gamification import TaskType
     for user_task, task_def in result.all():
+        tt_val = task_def.task_type.value if hasattr(task_def.task_type, "value") else str(task_def.task_type or "")
         tasks_list.append(UserTaskResponse(
             id=user_task.id,
             task_id=user_task.task_id,
@@ -87,7 +90,9 @@ async def get_my_tasks(
             gram_reward_nano=str(task_reward_nano(task_def)),
             gram_reward_mode="referral" if task_def.task_type == TaskType.REFER else "claim",
             target_count=task_def.target_count,
-            icon=task_def.icon
+            icon=task_def.icon,
+            is_daily=bool(task_def.is_daily),
+            task_type=tt_val,
         ))
     return tasks_list
 

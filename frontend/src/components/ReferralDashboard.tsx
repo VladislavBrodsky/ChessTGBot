@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { FaChartLine, FaCopy, FaQrcode, FaShareAlt, FaUsers } from 'react-icons/fa';
+import { FiArrowRight } from 'react-icons/fi';
 import { GramAmount, GramMark } from '@/components/ui/GramAmount';
 import { useUser } from '@/context/UserContext';
 import { useSWRFetch } from '@/hooks/useSWRFetch';
@@ -14,7 +15,8 @@ import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { ErrorState } from './ui/ErrorState';
 import { SkeletonList } from './ui/Skeleton';
-import { ActionLink, SectionHeader } from './ui/PageHeader';
+import { SectionHeader } from './ui/PageHeader';
+import { ReferralQrModal } from './ReferralQrModal';
 
 interface EarningPoint { date: string; amount: number; }
 interface ReferralStats {
@@ -22,6 +24,8 @@ interface ReferralStats {
   gram_rewards_nano?: string;
   gram_rewarded_referrals?: number;
   total_referrals: number;
+  activated_referrals?: number;
+  activation_rate?: number;
   active_referrals: number;
   total_earnings_usdt: number;
   earnings_chart: EarningPoint[];
@@ -55,6 +59,7 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
   const { stats: user, syncStats } = useUser();
   const { data, error, isLoading, mutate } = useSWRFetch<ReferralStats>('/api/v1/users/referrals/stats');
   const [copied, setCopied] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
   const referralStats = data && Number.isFinite(data.total_referrals) && Number.isFinite(data.active_referrals) && Number.isFinite(data.total_earnings_usdt) ? data : null;
 
   const code = user?.referral_code || referralCode || '';
@@ -149,8 +154,29 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
           <Button variant="secondary" onClick={copyInvite} leftIcon={<FaCopy />} className="w-full">{copied ? t('copied') : t('copy')}</Button>
           <Button variant="secondary" onClick={shareInvite} leftIcon={<FaShareAlt />} className="w-full">{t('share_invite')}</Button>
         </div>
-        <ActionLink href={`/${locale}/qr?code=${encodeURIComponent(code)}`} icon={<FaQrcode />}>{t('invite_qr_alt')}</ActionLink>
+        <button
+          type="button"
+          onClick={() => {
+            telegramHaptic('selection');
+            setShowQrModal(true);
+          }}
+          className="ui-action-link w-full text-start"
+        >
+          <span className="shrink-0 text-xl text-brand-action" aria-hidden="true"><FaQrcode /></span>
+          <span className="min-w-0 flex-1">{t('invite_qr_alt')}</span>
+          <span className="text-brand-muted" aria-hidden="true"><FiArrowRight size={18} className="rtl:rotate-180" /></span>
+        </button>
       </Card> : <ErrorState title={t('your_link')} message={ti('load_failed')} onRetry={() => syncStats()} retryLabel={ti('retry')} />}
+
+      {validCode && (
+        <ReferralQrModal
+          isOpen={showQrModal}
+          onClose={() => setShowQrModal(false)}
+          inviteLink={inviteLink}
+          botUsername={bot}
+          code={code}
+        />
+      )}
     </section>
   );
 }
