@@ -116,9 +116,19 @@ function scoresAt(frame: number, ladder: PreviewLadder) {
   }).sort((a, b) => b.score - a.score || a.profile.id.localeCompare(b.profile.id));
 }
 
+/** Reference epoch for the continuous leaderboard simulation (2026-10-13 00:00:00 UTC). */
+export const PREVIEW_EPOCH_MS = new Date('2026-10-13T00:00:00Z').getTime();
+
+export function getPreviewFrame(now: number = Date.now()): number {
+  if (typeof now !== 'number' || !Number.isFinite(now)) return 0;
+  const elapsed = Math.max(0, now - PREVIEW_EPOCH_MS);
+  return Math.floor(elapsed / PREVIEW_FRAME_INTERVAL_MS);
+}
+
 export function previewStandings(frame: number, ladder: PreviewLadder): PreviewStanding[] {
   const current = normalizedFrame(frame);
-  const previous = new Map(scoresAt(Math.max(0, current - 1), ladder).map((entry, index) => [entry.profile.id, index + 1]));
+  const prevFrame = Math.max(0, current - PREVIEW_FRAMES_PER_DAY);
+  const previous = new Map(scoresAt(prevFrame, ladder).map((entry, index) => [entry.profile.id, index + 1]));
   return scoresAt(current, ladder).map((entry, index) => ({
     ...entry,
     rank: index + 1,
