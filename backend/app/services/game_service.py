@@ -1526,7 +1526,7 @@ class GameService:
         # window before classifying it as orphaned on reconnect.
         orphan_cutoff = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(seconds=30)
         wager_result = await db.execute(
-            select(Transaction).where(
+            select(Transaction.reference_id).where(
                 and_(
                     Transaction.user_id == user_id,
                     Transaction.type == "game_wager",
@@ -1535,10 +1535,9 @@ class GameService:
                 )
             ).order_by(Transaction.created_at.desc()).limit(10)
         )
-        completed_wagers = wager_result.scalars().all()
+        completed_games = [ref for ref in wager_result.scalars().all() if ref]
         checked_games = set()
-        for tx in completed_wagers:
-            game_id = tx.reference_id
+        for game_id in completed_games:
             if (not game_id or game_id in checked_games or game_id.startswith("matchmaking")
                     or game_id.startswith("rematch")):
                 continue
@@ -1546,11 +1545,11 @@ class GameService:
             
             # A refund for the other player does not settle this player's stake.
             res_check = await db.execute(
-                select(Transaction).where(
+                select(Transaction.id).where(
                     and_(
                         Transaction.reference_id == game_id,
                         Transaction.user_id == user_id,
-                        Transaction.type.in_(["game_win", "game_refund"])
+                        Transaction.type.in_(["refund", "game_win", "game_refund"])
                     )
                 )
             )
@@ -1559,7 +1558,7 @@ class GameService:
             
             # Check if there is a GameHistory record for this game_id
             hist_check = await db.execute(
-                select(GameHistory).where(GameHistory.game_id == game_id)
+                select(GameHistory.id).where(GameHistory.game_id == game_id)
             )
             if hist_check.scalars().first():
                 continue # Already in history
@@ -1581,12 +1580,10 @@ class GameService:
             ).with_for_update())).scalars().all()
             debits = [entry for entry in entries if entry.type == "game_wager"]
             if not debits or any(entry.created_at >= orphan_cutoff for entry in debits):
-                await db.rollback()
                 continue
             refund_amount = -sum(entry.amount for entry in debits) \
                 - sum(entry.amount for entry in entries if entry.type == "refund")
             if refund_amount <= 0:
-                await db.rollback()
                 continue
             user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
             if user:

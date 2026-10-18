@@ -316,6 +316,11 @@ async def test_heal_zombie_wagers(db_session):
     await db_session.refresh(user)
     assert user.balance == 900
 
+    # Idempotent re-run with multiple already-settled wagers must not raise MissingGreenlet
+    await service.heal_zombie_wagers(db_session, telegram_id)
+    await db_session.refresh(user)
+    assert user.balance == 900
+
 
 @pytest.mark.asyncio
 async def test_game_service_lobby_cancellation_idempotency(db_session):
