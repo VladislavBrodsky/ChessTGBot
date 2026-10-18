@@ -1,0 +1,54 @@
+{
+  "id": "2026-10-18-x-yt-hikaru",
+  "kind": "x_post",
+  "date": "2026-10-18",
+  "category": "Tactics",
+  "hook": "Hikaru flags his opponent with 0.4 seconds on the clock by punishing one auto-recapture",
+  "text": "Hikaru flags his opponent with 0.4 seconds on the clock by punishing one auto-recapture\n\nIn speed chess scrambles, the in-between check always beats the automatic recapture premove.\n\n#Chess #SpeedChess #BlitzChess",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "solution": [
+      "Ra8#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "tag": "Mate In 1",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Can you spot the tactical finish?",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Watch the breakdown from @GMHikaru (01:15):\nhttps://www.youtube.com/watch?v=Gk5Xm-3D_e8\n\nPractice this interactive board:\nhttps://t.me/chess_matbot/Web3Chess?startapp=academy",
+    "delay_seconds": 30
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "updated_at": "2026-10-18T01:12:51Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111626526118588726",
+    "reply_id": "2111626529151008912",
+    "root_url": "https://x.com/defi_ambassador/status/2111626526118588726"
+  },
+  "published": {
+    "root_id": "2111626526118588726",
+    "root_url": "https://x.com/defi_ambassador/status/2111626526118588726",
+    "at": "2026-10-18T01:12:51Z"
+  },
+  "media_cleaned": true
+}

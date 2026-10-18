@@ -1,0 +1,52 @@
+{
+  "id": "2026-10-18-tg-yt-gotham",
+  "kind": "telegram",
+  "date": "2026-10-18",
+  "category": "Openings",
+  "format": "trap",
+  "hook": "Why 2000-Elo players still fall for the Stafford Gambit in 3-minute blitz",
+  "cta": "academy_app",
+  "text": "<b>Why 2000-Elo players still fall for the Stafford Gambit in 3-minute blitz</b>\n\n🎬 <b>Breakdown: The Dirtiest Stafford Gambit Trap in Blitz (@GothamChess)</b>\n\nIn this viral clip, the game swings at [03:45]:\nGreedy opening captures without king development lead directly to devastating tactical refutations.\n\nWatch the original moment:\nhttps://www.youtube.com/watch?v=k5j4Y8g77R0\n\nCan you spot the master refutation on the board below?",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "competitor",
+      "url": "https://www.youtube.com/watch?v=k5j4Y8g77R0",
+      "excerpt": "GothamChess viral analysis"
+    },
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "r1bBk2r/ppp2ppp/2p5/2b5/4n3/3P4/PPP2PPP/RN1QKB1R b KQkq - 0 7",
+    "solution": [
+      "Bxf2+",
+      "Ke2",
+      "Bg4#"
+    ],
+    "claim": "mate_in_2"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "YouTube Breakdown · GothamChess",
+    "headline": "GOTHAMCHESS\n*VIRAL MASTERCLASS*",
+    "subhead": "Clip at 03:45 · Greedy opening captures without king development lead direct",
+    "fen": "r1bBk2r/ppp2ppp/2p5/2b5/4n3/3P4/PPP2PPP/RN1QKB1R b KQkq - 0 7",
+    "moves": [
+      "Bxf2+",
+      "Ke2",
+      "Bg4#"
+    ],
+    "cta_label": "Solve in Academy",
+    "footer": "Breakdown inspired by @GothamChess · Web3Chess Academy"
+  },
+  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-yt-gotham.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}
