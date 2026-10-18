@@ -1,6 +1,6 @@
 import { translatorFor as mockTranslatorFor } from './testUtils/messagesMock';
 import '@testing-library/jest-dom';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import DailyTasks from '@/components/DailyTasks';
 import messages from '@/messages/en.json';
 
@@ -44,8 +44,18 @@ it('shows progress beside the bar while pending and a Claim action instead once 
   expect(within(claimable).queryByText('1 / 1')).not.toBeInTheDocument();
 });
 
+it('hides completed tasks by default from active list into the completed missions archive', () => {
+  render(<DailyTasks />);
+  expect(screen.queryAllByRole('heading', { name: 'Win a Match' })).toHaveLength(1);
+  const archiveButton = screen.getByRole('button', { name: /completed missions/i });
+  expect(archiveButton).toBeVisible();
+  fireEvent.click(archiveButton);
+  expect(screen.getAllByRole('heading', { name: 'Win a Match' })).toHaveLength(2);
+});
+
 it('drops the GRAM fact when a task has no GRAM reward', () => {
   render(<DailyTasks />);
+  fireEvent.click(screen.getByRole('button', { name: /completed missions/i }));
   const claimed = screen.getAllByRole('heading', { name: 'Win a Match' })[1].closest('li') as HTMLElement;
   expect(claimed.querySelectorAll('.ui-meta__item')).toHaveLength(1);
   expect(within(claimed).getByText(messages.Gamification.claimed_status)).toBeVisible();

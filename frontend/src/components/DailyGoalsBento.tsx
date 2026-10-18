@@ -21,8 +21,16 @@ export default function DailyGoalsBento() {
   const locale = useLocale();
   const { data, error, isLoading, mutate } = useSWRFetch<Goal[]>('/api/v1/gamification/tasks', { revalidateOnFocus: false });
   const tasks = Array.isArray(data)
-    ? data.filter(task => task.title_key.startsWith('daily_')).sort((a, b) => Number(a.claimed) - Number(b.claimed) || Number(a.completed) - Number(b.completed) || a.task_id - b.task_id)
+    ? data.filter(task => task.title_key.startsWith('daily_'))
     : [];
+
+  const activeTasks = tasks.filter(task => !task.claimed);
+  const displayTasks = (activeTasks.length > 0 ? activeTasks : tasks).sort((a, b) => {
+    // Unclaimed completed (ready to claim) first
+    if (!a.claimed && a.completed && (!b.completed || b.claimed)) return -1;
+    if (!b.claimed && b.completed && (!a.completed || a.claimed)) return 1;
+    return a.task_id - b.task_id;
+  });
 
   return (
     <section className="w-full space-y-3" aria-labelledby="daily-goals-title">
@@ -33,7 +41,7 @@ export default function DailyGoalsBento() {
         <EmptyState icon={<FiTarget size={24} />} title={t('no_missions')} />
       ) : (
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(104px,1fr))] gap-2.5 list-none p-0 m-0">
-          {tasks.slice(0, 3).map(task => {
+          {displayTasks.slice(0, 3).map(task => {
             const progress = Math.max(0, Math.min(task.progress, task.target_count));
             const percent = task.target_count > 0 ? (progress / task.target_count) * 100 : 0;
             const done = task.completed;
