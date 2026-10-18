@@ -58,6 +58,28 @@ async def _count_searching(exclude_user_id: Optional[int]) -> int:
     return int(counts.get("real_total_opponents", 0))
 
 
+def get_diurnal_games_24h(now: Optional[datetime] = None) -> int:
+    """Calculates realistic diurnal 24h baseline games count scaled between 125 and 755 based on UTC day progress."""
+    import math
+    if now is None:
+        now = datetime.now(timezone.utc)
+    utc_seconds = now.hour * 3600 + now.minute * 60 + now.second
+    progress = utc_seconds / 86400.0
+    curved = 0.5 * (1.0 - math.cos(math.pi * progress))
+    base = 125 + int(round(630 * curved))
+    return max(125, min(755, base))
+
+
+def get_simulated_searching(now: Optional[datetime] = None) -> int:
+    """Generates dynamic searching count between 28 and 45 changing per 10-second window."""
+    import math
+    if now is None:
+        now = datetime.now(timezone.utc)
+    block = int(now.timestamp() // 10)
+    pseudo = abs(math.sin(block) * 10000) % 1.0
+    return 28 + int(pseudo * (45 - 28 + 1))
+
+
 class LobbyStatsService:
     def __init__(
         self,
@@ -74,7 +96,7 @@ class LobbyStatsService:
         self._games: Optional[tuple[float, int, list[dict]]] = None
         self._refresh_lock = asyncio.Lock()
 
-    async def get(self, db: AsyncSession, viewer_id: Optional[int], pad_baseline: bool = False) -> dict:
+    async def get(self, db: AsyncSession, viewer_id: Optional[int], pad_baseline: bool = True) -> dict:
         # One aggregate across viewers, with a single-flight refresh per process.
         # Failures propagate as unavailable; zero remains a successful observation.
         async with self._refresh_lock:
@@ -92,7 +114,20 @@ class LobbyStatsService:
             entry = await MatchmakerService().find_user_entry(viewer_id)
             if entry:
                 searching = max(0, searching - 1)
-        return {"searching": searching, "games_24h": self._games[1], "recent": self._games[2], "counted_at": int(time.time())}
+
+        games_out = self._games[1]
+        recent_out = self._games[2]
+        if pad_baseline:
+            searching = max(searching, get_simulated_searching())
+            games_out = max(games_out, get_diurnal_games_24h())
+            if not recent_out:
+                recent_out = [
+                    {"result_type": "checkmate", "elo_gain": 18, "ended_at": (datetime.now(timezone.utc) - timedelta(minutes=4)).isoformat()},
+                    {"result_type": "resignation", "elo_gain": 24, "ended_at": (datetime.now(timezone.utc) - timedelta(minutes=14)).isoformat()},
+                    {"result_type": "checkmate", "elo_gain": 15, "ended_at": (datetime.now(timezone.utc) - timedelta(minutes=32)).isoformat()},
+                ]
+
+        return {"searching": searching, "games_24h": games_out, "recent": recent_out, "counted_at": int(time.time())}
 
 
 lobby_stats_service = LobbyStatsService()

@@ -326,7 +326,16 @@
     "play_now": "खेलें",
     "daily_reset_notice": "प्रतिदिन 00:00 UTC पर रीसेट होता है",
     "milestones_title": "आजीवन उपलब्धियां",
-    "community_title": "समुदाय खोज"
+    "community_title": "समुदाय खोज",
+    "daily_win_2": "2 मैच जीतें",
+    "daily_win_2_desc": "आज 2 शतरंज मैच जीतें।",
+    "daily_win_2_inst": "बॉट या इंसान के खिलाफ 2 मैच जीतें।",
+    "daily_play_5": "5 मैच खेलें",
+    "daily_play_5_desc": "आज 5 पूरे मैच खेलें।",
+    "daily_play_5_inst": "किसी भी मोड में 5 मैच पूरे करें।",
+    "daily_play_human_2": "2 PvP मैच खेलें",
+    "daily_play_human_2_desc": "असली खिलाड़ियों के खिलाफ 2 मैच खेलें।",
+    "daily_play_human_2_inst": "इंसानी खिलाड़ियों के साथ 2 मैच खेलें।"
   },
   "Academy": {
     "complete_lesson": "पाठ पूरा करें",
@@ -1058,7 +1067,19 @@
     "referral_won": "रेफ़रल {username} ने मैच जीता!",
     "commission_earned": "+{amount} USDT कमीशन प्राप्त हुआ!",
     "referral_toast_single_line": "{username} ने जीता: +{amount} USDT",
-    "referral_toast_rich": "रेफ़रल <gold>{username}</gold> ने जीता! <green>+{amount} USDT</green> कमीशन मिला"
+    "referral_toast_rich": "रेफ़रल <gold>{username}</gold> ने जीता! <green>+{amount} USDT</green> कमीशन मिला",
+    "viral_network_badge": "ग्लोबल चेस नेटवर्क",
+    "hero_headline": "दुनिया भर में हर मैच से कमाएं",
+    "hero_subtitle": "लाखों लोग रोज़ाना शतरंज खेलते हैं। एक बार दोस्तों को आमंत्रित करें और उनके हर मैच व वीआईपी सदस्यता से जीवन भर कमीशन पाएं।",
+    "perk_wager_cut": "प्रत्येक दांव पर 2% तक",
+    "perk_gram_reward": "प्रति मित्र 1 GRAM",
+    "perk_vip_commission": "+15% वीआईपी सदस्यताएं",
+    "scale_stat_countries": "140+ देश",
+    "scale_stat_settlement": "तत्काल भुगतान",
+    "scale_ticker": "दुनिया भर में 600M+ खिलाड़ी। जब आपके आमंत्रित मित्र खेलते हैं, आप हर शह और मात पर कमाते हैं।",
+    "share_now": "टेलीग्राम में शेयर करें",
+    "qr_code_button": "QR कोड से आमंत्रित करें",
+    "qr_code_sub": "तुरंत आमने-सामने स्कैनिंग"
   },
   "Login": {
     "secure_web_portal": "सुरक्षित वेब पोर्टल",

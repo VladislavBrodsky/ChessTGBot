@@ -326,7 +326,16 @@
     "play_now": "Играть",
     "daily_reset_notice": "Обновляется ежедневно в 00:00 UTC",
     "milestones_title": "Достижения",
-    "community_title": "Задания сообщества"
+    "community_title": "Задания сообщества",
+    "daily_win_2": "Выиграть 2 матча",
+    "daily_win_2_desc": "Выиграйте 2 шахматных матча сегодня.",
+    "daily_win_2_inst": "Одержите 2 победы в любом режиме игры.",
+    "daily_play_5": "Сыграть 5 матчей",
+    "daily_play_5_desc": "Сыграйте 5 полных матчей за день.",
+    "daily_play_5_inst": "Завершите 5 матчей в любом режиме.",
+    "daily_play_human_2": "Сыграть 2 PvP матча",
+    "daily_play_human_2_desc": "Сыграйте 2 матча против живых соперников.",
+    "daily_play_human_2_inst": "Сыграйте 2 партии с реальными игроками."
   },
   "Academy": {
     "complete_lesson": "Завершить урок",
@@ -1058,7 +1067,19 @@
     "referral_won": "Реферал {username} выиграл матч!",
     "commission_earned": "Получена комиссия +{amount} USDT!",
     "referral_toast_single_line": "{username} выиграл: +{amount} USDT",
-    "referral_toast_rich": "Реферал <gold>{username}</gold> выиграл! Получено <green>+{amount} USDT</green> комиссии"
+    "referral_toast_rich": "Реферал <gold>{username}</gold> выиграл! Получено <green>+{amount} USDT</green> комиссии",
+    "viral_network_badge": "Глобальная сеть шахмат",
+    "hero_headline": "Зарабатывайте с каждой игры по всему миру",
+    "hero_subtitle": "Миллионы играют в шахматы каждый день. Приглашайте друзей один раз и получайте пожизненные комиссии с каждого матча и VIP-подписки.",
+    "perk_wager_cut": "До 2% с каждого вейджера",
+    "perk_gram_reward": "1 GRAM за каждого друга",
+    "perk_vip_commission": "+15% с VIP-подписок",
+    "scale_stat_countries": "140+ стран",
+    "scale_stat_settlement": "Мгновенные выплаты",
+    "scale_ticker": "Более 600 млн игроков по всему миру. Когда ваши друзья играют, вы зарабатываете с каждого шаха и мата.",
+    "share_now": "Поделиться в Telegram",
+    "qr_code_button": "Пригласить по QR-коду",
+    "qr_code_sub": "Мгновенное сканирование при встрече"
   },
   "Login": {
     "secure_web_portal": "Защищенный веб-портал",

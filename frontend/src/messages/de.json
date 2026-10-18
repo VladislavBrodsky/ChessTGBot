@@ -326,7 +326,16 @@
     "play_now": "Spielen",
     "daily_reset_notice": "Täglich um 00:00 UTC zurückgesetzt",
     "milestones_title": "Lebenszeit-Meilensteine",
-    "community_title": "Community-Missionen"
+    "community_title": "Community-Missionen",
+    "daily_win_2": "Gewinne 2 Partien",
+    "daily_win_2_desc": "Gewinne heute 2 Schachpartien.",
+    "daily_win_2_inst": "Gewinne 2 Partien gegen Bot oder Mensch.",
+    "daily_play_5": "Spiele 5 Partien",
+    "daily_play_5_desc": "Schließe heute 5 Partien ab.",
+    "daily_play_5_inst": "Beende 5 Partien in einem beliebigen Modus.",
+    "daily_play_human_2": "Spiele 2 PvP-Partien",
+    "daily_play_human_2_desc": "Spiele 2 Partien gegen echte Gegner.",
+    "daily_play_human_2_inst": "Spiele 2 Partien gegen menschliche Gegner."
   },
   "Academy": {
     "complete_lesson": "Lektion abschließen",
@@ -1058,7 +1067,19 @@
     "referral_won": "Empfehlung {username} hat ein Match gewonnen!",
     "commission_earned": "+{amount} USDT Provision erhalten!",
     "referral_toast_single_line": "{username} hat gewonnen: +{amount} USDT",
-    "referral_toast_rich": "Empfehlung <gold>{username}</gold> hat gewonnen! <green>+{amount} USDT</green> Provision erhalten"
+    "referral_toast_rich": "Empfehlung <gold>{username}</gold> hat gewonnen! <green>+{amount} USDT</green> Provision erhalten",
+    "viral_network_badge": "Globales Schachnetzwerk",
+    "hero_headline": "Verdienen Sie an jedem Spiel weltweit",
+    "hero_subtitle": "Millionen spielen täglich Schach. Einmal Freunde einladen und lebenslange Provisionen an jedem Wetteinsatz und VIP-Abo verdienen.",
+    "perk_wager_cut": "Bis zu 2% Einsatzprovision",
+    "perk_gram_reward": "1 GRAM pro Freund",
+    "perk_vip_commission": "+15% auf VIP-Abonnements",
+    "scale_stat_countries": "140+ Länder",
+    "scale_stat_settlement": "Sofortige Abrechnung",
+    "scale_ticker": "Über 600 Mio. Spieler weltweit. Wenn Ihre Kontakte spielen, verdienen Sie an jedem Schachmatt.",
+    "share_now": "In Telegram teilen",
+    "qr_code_button": "Per QR-Code einladen",
+    "qr_code_sub": "Sofortiges Scannen vor Ort"
   },
   "Login": {
     "secure_web_portal": "Sicheres Webportal",

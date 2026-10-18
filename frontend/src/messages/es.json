@@ -326,7 +326,16 @@
     "play_now": "Jugar",
     "daily_reset_notice": "Se reinicia a las 00:00 UTC",
     "milestones_title": "Hitos Permanentes",
-    "community_title": "Misiones de Comunidad"
+    "community_title": "Misiones de Comunidad",
+    "daily_win_2": "Gana 2 Partidas",
+    "daily_win_2_desc": "Gana 2 partidas de ajedrez hoy.",
+    "daily_win_2_inst": "Gana 2 partidas contra un bot o un humano.",
+    "daily_play_5": "Juega 5 Partidas",
+    "daily_play_5_desc": "Completa 5 partidas hoy.",
+    "daily_play_5_inst": "Finaliza 5 partidas en cualquier modo.",
+    "daily_play_human_2": "Juega 2 Partidas PvP",
+    "daily_play_human_2_desc": "Juega 2 partidas contra rivales reales.",
+    "daily_play_human_2_inst": "Juega 2 partidas contra oponentes humanos."
   },
   "Academy": {
     "complete_lesson": "Completar lección",
@@ -1058,7 +1067,19 @@
     "referral_won": "¡El referido {username} ganó una partida!",
     "commission_earned": "¡Comisión de +{amount} USDT recibida!",
     "referral_toast_single_line": "{username} ganó: +{amount} USDT",
-    "referral_toast_rich": "¡Referido <gold>{username}</gold> ganó! Comisión de <green>+{amount} USDT</green> recibida"
+    "referral_toast_rich": "¡Referido <gold>{username}</gold> ganó! Comisión de <green>+{amount} USDT</green> recibida",
+    "viral_network_badge": "Red mundial de ajedrez",
+    "hero_headline": "Gana con cada partida en todo el mundo",
+    "hero_subtitle": "Millones juegan al ajedrez a diario. Invita a tus amigos una vez y obtén regalías continuas de por vida de cada partida y suscripción VIP.",
+    "perk_wager_cut": "Hasta 2% de cada apuesta",
+    "perk_gram_reward": "1 GRAM por amigo",
+    "perk_vip_commission": "+15% de suscripciones VIP",
+    "scale_stat_countries": "140+ países",
+    "scale_stat_settlement": "Liquidación instantánea",
+    "scale_ticker": "Más de 600 millones de jugadores en el mundo. Cuando tus invitados juegan, ganas con cada jaque mate.",
+    "share_now": "Compartir en Telegram",
+    "qr_code_button": "Invitar mediante código QR",
+    "qr_code_sub": "Escaneo presencial instantáneo"
   },
   "Login": {
     "secure_web_portal": "Portal Web Seguro",

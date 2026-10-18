@@ -65,9 +65,9 @@ function getTaskCategory(task: { is_daily?: boolean; title_key: string }): 'dail
 function getTaskIcon(titleKey: string, completed: boolean) {
   if (completed) return <FaCheckCircle aria-hidden="true" />;
   if (titleKey === 'daily_login') return <FaCalendarCheck aria-hidden="true" />;
-  if (titleKey === 'daily_play') return <FaGamepad aria-hidden="true" />;
-  if (titleKey === 'daily_play_human') return <FaUsers aria-hidden="true" />;
-  if (titleKey === 'daily_win') return <FaTrophy aria-hidden="true" />;
+  if (titleKey === 'daily_play' || titleKey === 'daily_play_5') return <FaGamepad aria-hidden="true" />;
+  if (titleKey === 'daily_play_human' || titleKey === 'daily_play_human_2') return <FaUsers aria-hidden="true" />;
+  if (titleKey === 'daily_win' || titleKey === 'daily_win_2') return <FaTrophy aria-hidden="true" />;
   if (titleKey === 'ach_first_win') return <FaAward aria-hidden="true" />;
   if (titleKey.startsWith('ach_win_')) return <FaCrown aria-hidden="true" />;
   if (

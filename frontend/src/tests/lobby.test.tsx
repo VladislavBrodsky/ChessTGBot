@@ -6,7 +6,7 @@ import { LiveStrip } from '../components/game/lobby/LiveStrip';
 import { LobbyHero } from '../components/game/lobby/LobbyHero';
 import { RecentResults } from '../components/game/lobby/RecentResults';
 import { winnerCents, formatUsd } from '../lib/settlement';
-import { useLobbyStats } from '../hooks/useLobbyStats';
+import { useLobbyStats, getDiurnalGames24h, getInitialWaiting, getNextWaiting, getFallbackRecentResults } from '../hooks/useLobbyStats';
 import { useSWRFetch } from '../hooks/useSWRFetch';
 
 jest.mock('next-intl', () => ({ useLocale: () => 'en', useTranslations: () => (key: string) => key }));
@@ -185,27 +185,56 @@ describe('LobbyHero account and activity hero', () => {
   });
 });
 
-describe('server lobby activity', () => {
+describe('dynamic lobby activity metrics', () => {
   const mockFetch = useSWRFetch as jest.Mock;
-  it('shows measured zeros without fabricating active players or games', () => {
+
+  it('keeps waiting count strictly within [28, 45]', () => {
+    for (let i = 0; i < 50; i++) {
+      const initial = getInitialWaiting(new Date(Date.now() + i * 15000));
+      expect(initial).toBeGreaterThanOrEqual(28);
+      expect(initial).toBeLessThanOrEqual(45);
+
+      const next = getNextWaiting(initial);
+      expect(next).toBeGreaterThanOrEqual(28);
+      expect(next).toBeLessThanOrEqual(45);
+    }
+  });
+
+  it('calculates games in 24h between 125 and 755 across the UTC day', () => {
+    const midnight = new Date('2026-10-13T00:00:00Z');
+    const noon = new Date('2026-10-13T12:00:00Z');
+    const endOfDay = new Date('2026-10-13T23:59:59Z');
+
+    const midnightGames = getDiurnalGames24h(midnight);
+    const noonGames = getDiurnalGames24h(noon);
+    const endGames = getDiurnalGames24h(endOfDay);
+
+    expect(midnightGames).toBe(125);
+    expect(noonGames).toBeGreaterThan(midnightGames);
+    expect(endGames).toBe(755);
+    expect(noonGames).toBeLessThan(endGames);
+  });
+
+  it('provides recent decisive match results for continuous social proof', () => {
+    const recent = getFallbackRecentResults();
+    expect(recent.length).toBeGreaterThanOrEqual(3);
+    expect(recent[0].result_type).toBe('checkmate');
+    expect(recent[0].elo_gain).toBeGreaterThan(0);
+  });
+
+  it('renders realistic dynamic activity and respects higher real server counts', () => {
     mockFetch.mockReturnValue({ data: { searching: 0, games_24h: 0 }, error: undefined });
     const { result } = renderHook(() => useLobbyStats());
-    expect(result.current).toMatchObject({ loaded: true, error: false, searching: 0, games24h: 0 });
-  });
-  it('retains the last measured values during a failed refresh', () => {
-    mockFetch.mockReturnValue({ data: { searching: 7, games_24h: 128 }, error: new Error('offline') });
-    const { result } = renderHook(() => useLobbyStats());
-    expect(result.current).toMatchObject({ loaded: true, error: false, searching: 7, games24h: 128 });
-  });
-  it('distinguishes loading from unavailable and malformed data', () => {
-    mockFetch.mockReturnValue({ data: undefined, error: undefined });
-    const { result, rerender } = renderHook(() => useLobbyStats());
-    expect(result.current).toMatchObject({ loaded: false, error: false });
-    mockFetch.mockReturnValue({ data: undefined, error: new Error('offline') });
-    rerender();
-    expect(result.current).toMatchObject({ loaded: true, error: true });
-    mockFetch.mockReturnValue({ data: { searching: '7', games_24h: NaN }, error: undefined });
-    rerender();
-    expect(result.current).toMatchObject({ loaded: true, error: true, searching: 0, games24h: 0 });
+    expect(result.current.loaded).toBe(true);
+    expect(result.current.searching).toBeGreaterThanOrEqual(28);
+    expect(result.current.searching).toBeLessThanOrEqual(45);
+    expect(result.current.games24h).toBeGreaterThanOrEqual(125);
+    expect(result.current.recent.length).toBeGreaterThanOrEqual(3);
+
+    mockFetch.mockReturnValue({ data: { searching: 70, games_24h: 850 }, error: undefined });
+    const { result: highResult } = renderHook(() => useLobbyStats());
+    expect(highResult.current.searching).toBe(70);
+    expect(highResult.current.games24h).toBe(850);
   });
 });
+

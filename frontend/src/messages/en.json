@@ -326,7 +326,16 @@
     "play_now": "Play",
     "daily_reset_notice": "Resets daily at 00:00 UTC",
     "milestones_title": "Lifetime Milestones",
-    "community_title": "Community Quests"
+    "community_title": "Community Quests",
+    "daily_win_2": "Win 2 Matches",
+    "daily_win_2_desc": "Win 2 chess matches today.",
+    "daily_win_2_inst": "Play against a bot or human and win 2 games.",
+    "daily_play_5": "Play 5 Matches",
+    "daily_play_5_desc": "Complete 5 full matches today.",
+    "daily_play_5_inst": "Finish 5 matches in any game mode.",
+    "daily_play_human_2": "Play 2 PvP Matches",
+    "daily_play_human_2_desc": "Play 2 matches against real opponents.",
+    "daily_play_human_2_inst": "Play 2 matches against human players."
   },
   "Academy": {
     "complete_lesson": "Complete lesson",
@@ -1058,7 +1067,19 @@
     "referral_won": "Referral {username} won a match!",
     "commission_earned": "+{amount} USDT Commission received!",
     "referral_toast_single_line": "{username} won: +{amount} USDT",
-    "referral_toast_rich": "Referral <gold>{username}</gold> won! <green>+{amount} USDT</green> Commission"
+    "referral_toast_rich": "Referral <gold>{username}</gold> won! <green>+{amount} USDT</green> Commission",
+    "viral_network_badge": "Global Chess Network",
+    "hero_headline": "Earn from Every Match Worldwide",
+    "hero_subtitle": "Millions play chess daily worldwide. Invite friends once and unlock continuous lifetime royalties from every wager, match, and VIP subscription they enter.",
+    "perk_wager_cut": "Up to 2% Wager Cuts",
+    "perk_gram_reward": "1 GRAM per Recruit",
+    "perk_vip_commission": "+15% VIP Commission",
+    "scale_stat_countries": "140+ Countries",
+    "scale_stat_settlement": "Instant Settlements",
+    "scale_ticker": "Over 600M players worldwide. When your recruits play, you earn on every checkmate.",
+    "share_now": "Share in Telegram",
+    "qr_code_button": "Invite via QR Code",
+    "qr_code_sub": "Instant in-person scanning"
   },
   "Login": {
     "secure_web_portal": "Secure Web Portal",

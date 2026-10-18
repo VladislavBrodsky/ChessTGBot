@@ -326,7 +326,16 @@
     "play_now": "العب الآن",
     "daily_reset_notice": "تتجدد يومياً في 00:00 UTC",
     "milestones_title": "إنجازات المسيرة",
-    "community_title": "مهام المجتمع"
+    "community_title": "مهام المجتمع",
+    "daily_win_2": "الفوز في مباراتين",
+    "daily_win_2_desc": "فز في مباراتين شطرنج اليوم.",
+    "daily_win_2_inst": "العب ضد روبوت أو إنسان وحقق فوزين.",
+    "daily_play_5": "العب 5 مباريات",
+    "daily_play_5_desc": "أكمل 5 مباريات اليوم.",
+    "daily_play_5_inst": "أنهِ 5 مباريات في أي وضع.",
+    "daily_play_human_2": "العب مباراتي PvP",
+    "daily_play_human_2_desc": "العب مباراتين ضد منافسين حقيقيين.",
+    "daily_play_human_2_inst": "العب مباراتين ضد لاعبين حقيقيين."
   },
   "Academy": {
     "complete_lesson": "إكمال الدرس",
@@ -1058,7 +1067,19 @@
     "referral_won": "فاز المدعو {username} بالمباراة!",
     "commission_earned": "تم استلام عمولة +{amount} USDT!",
     "referral_toast_single_line": "فاز {username}: +{amount} USDT",
-    "referral_toast_rich": "فاز <gold>{username}</gold>! تم استلام عمولة <green>+{amount} USDT</green>"
+    "referral_toast_rich": "فاز <gold>{username}</gold>! تم استلام عمولة <green>+{amount} USDT</green>",
+    "viral_network_badge": "شبكة الشطرنج العالمية",
+    "hero_headline": "اكسب من كل مباراة حول العالم",
+    "hero_subtitle": "الملايين يلعبون الشطرنج يومياً. ادعُ أصدقاءك مرة واحدة واحصل على عوائد دائمة مدى الحياة من كل رهان واشتراك VIP.",
+    "perk_wager_cut": "ما يصل إلى 2% من الرهانات",
+    "perk_gram_reward": "1 GRAM لكل صديق",
+    "perk_vip_commission": "+15% من اشتراكات VIP",
+    "scale_stat_countries": "أكثر من 140 دولة",
+    "scale_stat_settlement": "تسوية فورية",
+    "scale_ticker": "أكثر من 600 مليون لاعب حول العالم. عندما يلعب أصدقاؤك، تكسب مع كل كش مات.",
+    "share_now": "مشاركة في تيليجرام",
+    "qr_code_button": "دعوة عبر رمز QR",
+    "qr_code_sub": "مسح فوري وجهاً لوجه"
   },
   "Login": {
     "secure_web_portal": "بوابة ويب آمنة",

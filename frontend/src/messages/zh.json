@@ -326,7 +326,16 @@
     "play_now": "开始对局",
     "daily_reset_notice": "每日 00:00 UTC 重置",
     "milestones_title": "生涯里程碑",
-    "community_title": "社区任务"
+    "community_title": "社区任务",
+    "daily_win_2": "获胜2局",
+    "daily_win_2_desc": "今日赢得2局国际象棋比赛。",
+    "daily_win_2_inst": "对战人机或真人并赢得2局。",
+    "daily_play_5": "对弈5局",
+    "daily_play_5_desc": "今日完成5局完整比赛。",
+    "daily_play_5_inst": "在任意模式下完成5局比赛。",
+    "daily_play_human_2": "与真人对弈2局",
+    "daily_play_human_2_desc": "与真人对手进行2场对局。",
+    "daily_play_human_2_inst": "与真人玩家进行2局比赛。"
   },
   "Academy": {
     "complete_lesson": "完成课程",
@@ -1058,7 +1067,19 @@
     "referral_won": "推荐用户 {username} 赢得比赛！",
     "commission_earned": "收到 +{amount} USDT 佣金！",
     "referral_toast_single_line": "{username} 获胜: +{amount} USDT",
-    "referral_toast_rich": "推荐用户 <gold>{username}</gold> 获胜！获得 <green>+{amount} USDT</green> 佣金"
+    "referral_toast_rich": "推荐用户 <gold>{username}</gold> 获胜！获得 <green>+{amount} USDT</green> 佣金",
+    "viral_network_badge": "全球国际象棋网络",
+    "hero_headline": "从全球每一场对局中赚取收益",
+    "hero_subtitle": "全球每天有数百万人下棋。只需邀请一次好友，即可从他们的每一场对局和 VIP 订阅中获得持续的终身分成。",
+    "perk_wager_cut": "高达 2% 对局下注分成",
+    "perk_gram_reward": "每位好友奖励 1 GRAM",
+    "perk_vip_commission": "+15% VIP 会员订阅分成",
+    "scale_stat_countries": "140 多个国家和地区",
+    "scale_stat_settlement": "秒级实时结算",
+    "scale_ticker": "全球超过 6 亿国际象棋玩家。当您邀请的玩家对局时，每一个将死都为您带来收益。",
+    "share_now": "在 Telegram 中分享",
+    "qr_code_button": "二维码面对面邀请",
+    "qr_code_sub": "面对面扫码立即加入"
   },
   "Login": {
     "secure_web_portal": "安全网络门户",

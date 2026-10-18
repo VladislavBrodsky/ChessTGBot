@@ -326,7 +326,16 @@
     "play_now": "Jouer",
     "daily_reset_notice": "Réinitialisation quotidienne à 00:00 UTC",
     "milestones_title": "Jalons permanents",
-    "community_title": "Quêtes communautaires"
+    "community_title": "Quêtes communautaires",
+    "daily_win_2": "Gagner 2 Parties",
+    "daily_win_2_desc": "Gagnez 2 parties d'échecs aujourd'hui.",
+    "daily_win_2_inst": "Gagnez 2 parties contre un bot ou un humain.",
+    "daily_play_5": "Jouer 5 Parties",
+    "daily_play_5_desc": "Terminez 5 parties complètes aujourd'hui.",
+    "daily_play_5_inst": "Terminez 5 parties dans n'importe quel mode.",
+    "daily_play_human_2": "Jouer 2 Parties PvP",
+    "daily_play_human_2_desc": "Jouez 2 parties contre de vrais adversaires.",
+    "daily_play_human_2_inst": "Jouez 2 parties contre des adversaires humains."
   },
   "Academy": {
     "complete_lesson": "Terminer la leçon",
@@ -1058,7 +1067,19 @@
     "referral_won": "Le filleul {username} a gagné une partie !",
     "commission_earned": "Commission de +{amount} USDT reçue !",
     "referral_toast_single_line": "{username} a gagné : +{amount} USDT",
-    "referral_toast_rich": "Filleul <gold>{username}</gold> a gagné ! Commission de <green>+{amount} USDT</green> reçue"
+    "referral_toast_rich": "Filleul <gold>{username}</gold> a gagné ! Commission de <green>+{amount} USDT</green> reçue",
+    "viral_network_badge": "Réseau mondial d'échecs",
+    "hero_headline": "Gagnez sur chaque partie dans le monde",
+    "hero_subtitle": "Des millions jouent aux échecs chaque jour. Invitez vos amis une fois et touchez des commissions à vie sur chaque partie et abonnement VIP.",
+    "perk_wager_cut": "Jusqu'à 2% des mises",
+    "perk_gram_reward": "1 GRAM par filleul",
+    "perk_vip_commission": "+15% sur les abonnements VIP",
+    "scale_stat_countries": "140+ pays",
+    "scale_stat_settlement": "Règlements instantanés",
+    "scale_ticker": "Plus de 600 millions de joueurs dans le monde. Dès que vos filleuls jouent, vous gagnez sur chaque échec et mat.",
+    "share_now": "Partager sur Telegram",
+    "qr_code_button": "Inviter par code QR",
+    "qr_code_sub": "Scan instantané en personne"
   },
   "Login": {
     "secure_web_portal": "Portail Web Sécurisé",

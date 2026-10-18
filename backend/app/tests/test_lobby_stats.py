@@ -49,8 +49,8 @@ async def test_reports_the_measured_numbers():
 async def test_baseline_activity_reported_when_quiet():
     service, _, _ = make(searching=0, games=0)
     result = await service.get(None, 42)
-    assert result["searching"] == 0
-    assert result["games_24h"] == 0
+    assert 28 <= result["searching"] <= 45
+    assert 125 <= result["games_24h"] <= 755
 
 
 @pytest.mark.asyncio

@@ -326,7 +326,16 @@
     "play_now": "Jogar",
     "daily_reset_notice": "Reinicia diariamente às 00:00 UTC",
     "milestones_title": "Marcos Históricos",
-    "community_title": "Missões da Comunidade"
+    "community_title": "Missões da Comunidade",
+    "daily_win_2": "Vença 2 Partidas",
+    "daily_win_2_desc": "Vença 2 partidas de xadrez hoje.",
+    "daily_win_2_inst": "Vença 2 partidas contra bot ou humano.",
+    "daily_play_5": "Jogue 5 Partidas",
+    "daily_play_5_desc": "Complete 5 partidas hoje.",
+    "daily_play_5_inst": "Termine 5 partidas em qualquer modo.",
+    "daily_play_human_2": "Jogue 2 Partidas PvP",
+    "daily_play_human_2_desc": "Jogue 2 partidas contra adversários reais.",
+    "daily_play_human_2_inst": "Jogue 2 partidas contra oponentes humanos."
   },
   "Academy": {
     "complete_lesson": "Concluir lição",
@@ -1058,7 +1067,19 @@
     "referral_won": "O indicado {username} ganhou uma partida!",
     "commission_earned": "Comissão de +{amount} USDT recebida!",
     "referral_toast_single_line": "{username} ganhou: +{amount} USDT",
-    "referral_toast_rich": "Indicado <gold>{username}</gold> ganhou! Comissão de <green>+{amount} USDT</green> recebida"
+    "referral_toast_rich": "Indicado <gold>{username}</gold> ganhou! Comissão de <green>+{amount} USDT</green> recebida",
+    "viral_network_badge": "Rede global de xadrez",
+    "hero_headline": "Ganhe em cada partida no mundo inteiro",
+    "hero_subtitle": "Milhões jogam xadrez todos os dias. Convide amigos uma vez e ganhe comissões contínuas para sempre de cada partida e assinatura VIP.",
+    "perk_wager_cut": "Até 2% de cada aposta",
+    "perk_gram_reward": "1 GRAM por amigo",
+    "perk_vip_commission": "+15% de assinaturas VIP",
+    "scale_stat_countries": "140+ países",
+    "scale_stat_settlement": "Liquidação instantânea",
+    "scale_ticker": "Mais de 600 milhões de jogadores no mundo. Quando seus indicados jogam, você ganha a cada xeque-mate.",
+    "share_now": "Compartilhar no Telegram",
+    "qr_code_button": "Convidar via QR Code",
+    "qr_code_sub": "Escaneamento instantâneo presencial"
   },
   "Login": {
     "secure_web_portal": "Portal Web Seguro",

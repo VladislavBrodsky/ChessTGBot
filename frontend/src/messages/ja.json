@@ -326,7 +326,16 @@
     "play_now": "プレイ",
     "daily_reset_notice": "毎日00:00 UTCにリセット",
     "milestones_title": "生涯マイルストーン",
-    "community_title": "コミュニティクエスト"
+    "community_title": "コミュニティクエスト",
+    "daily_win_2": "2勝する",
+    "daily_win_2_desc": "本日チェス対局で2勝する。",
+    "daily_win_2_inst": "Botまたは人間との対戦で2勝する。",
+    "daily_play_5": "5局プレイする",
+    "daily_play_5_desc": "本日5局の対局を完了する。",
+    "daily_play_5_inst": "任意のモードで5局終了する。",
+    "daily_play_human_2": "対人戦を2局プレイ",
+    "daily_play_human_2_desc": "実際の相手と2局対戦する。",
+    "daily_play_human_2_inst": "人間プレイヤーと2局対戦する。"
   },
   "Academy": {
     "complete_lesson": "レッスンを完了",
@@ -1058,7 +1067,19 @@
     "referral_won": "紹介ユーザー {username} が対局に勝利！",
     "commission_earned": "+{amount} USDT の手数料を受け取りました！",
     "referral_toast_single_line": "{username} が勝利: +{amount} USDT",
-    "referral_toast_rich": "紹介の <gold>{username}</gold> が勝利！<green>+{amount} USDT</green> の報酬を獲得"
+    "referral_toast_rich": "紹介の <gold>{username}</gold> が勝利！<green>+{amount} USDT</green> の報酬を獲得",
+    "viral_network_badge": "グローバルチェスネットワーク",
+    "hero_headline": "世界中の対局から報酬を獲得",
+    "hero_subtitle": "世界中で毎日何百万人がチェスをプレイしています。一度招待すれば、彼らのすべての対局やVIP購読から継続的にロイヤルティを獲得できます。",
+    "perk_wager_cut": "対局ベットの最大2%還元",
+    "perk_gram_reward": "友達1人につき 1 GRAM",
+    "perk_vip_commission": "+15% VIPサブスク還元",
+    "scale_stat_countries": "140以上の国と地域",
+    "scale_stat_settlement": "即時決済",
+    "scale_ticker": "世界中で6億人以上のチェスプレイヤー。招待した仲間が対局するたび、チェックメイトごとに報酬を獲得。",
+    "share_now": "Telegramでシェア",
+    "qr_code_button": "QRコードで招待",
+    "qr_code_sub": "対面ですぐにスキャン"
   },
   "Login": {
     "secure_web_portal": "安全なWebポータル",
