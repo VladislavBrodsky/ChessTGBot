@@ -45,8 +45,11 @@ for (const [locale, width] of [['en', 320], ['ar', 390], ['en', 1280]] as const)
     const button = page.locator('.lobby-tile').filter({ has: page.locator('svg') }).last();
     await expect(button).toBeEnabled({ timeout: 30000 });
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    const request = page.waitForRequest(request => request.url().includes('/game/create'));
     await button.click();
+    const drawer = page.getByRole('dialog');
+    await expect(drawer).toBeVisible();
+    const request = page.waitForRequest(request => request.url().includes('/game/create'));
+    await drawer.getByRole('button', { name: locale === 'ar' ? 'إنشاء مباراة مجانية' : 'Create free game' }).click();
     const url = new URL((await request).url());
     expect(url.searchParams.get('type')).toBe('online');
     expect(url.searchParams.get('wager')).toBe('0');
