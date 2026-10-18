@@ -16,12 +16,22 @@ export const useGameSocket = (gameId: string) => {
         const socket = getSocket();
         setIsConnected(socket.connected);
         let botMoveTimeout: any = null;
+        let joinAttempts = 0;
+        const requestState = (force = false) => {
+            if (!socket.connected || (!force && gameStateRef.current) || joinAttempts >= 8) return;
+            joinAttempts += 1;
+            socket.emit("join_room", { room: gameId });
+        };
 
         const onConnect = () => {
             setIsConnected(true);
-            socket.emit("join_room", { room: gameId });
+            joinAttempts = 0;
+            requestState(true);
         };
-        const onDisconnect = () => setIsConnected(false);
+        const onDisconnect = () => {
+            setIsConnected(false);
+            joinAttempts = 0;
+        };
 
         const onGameState = (data: any) => {
             console.log("Game State Received:", data);
@@ -32,6 +42,7 @@ export const useGameSocket = (gameId: string) => {
             );
 
             gameStateRef.current = data;
+            joinAttempts = 0;
             setGameState(data);
             setFen(data.fen);
             try {
@@ -99,11 +110,13 @@ export const useGameSocket = (gameId: string) => {
         socket.on("error", onError);
 
         // Join the room
-        if (socket.connected) {
-            socket.emit("join_room", { room: gameId });
-        }
+        requestState();
+        // A dropped or missed room reply must not strand a returning player on
+        // the loading screen. Retry a bounded number of times while connected.
+        const retry = window.setInterval(requestState, 2500);
 
         return () => {
+            window.clearInterval(retry);
             socket.emit("leave_room", { room: gameId });
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);

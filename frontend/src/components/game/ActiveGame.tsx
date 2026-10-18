@@ -710,6 +710,12 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           <span className="text-caption font-semibold normal-case tracking-normal text-brand-muted animate-pulse">
             {tg('synchronizing_arena')}
           </span>
+          <GameCrashOverlay
+            show={showCrashOverlay}
+            tGameCrashed={tg('game_crashed')}
+            tGameCrashedDesc={tg('game_crashed_desc')}
+            tReloadGameBtn={tg('reload_game_btn')}
+          />
         </div>
       </LayoutWrapper>
     );
