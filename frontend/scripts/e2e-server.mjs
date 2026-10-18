@@ -25,9 +25,10 @@ function run(args) {
   spawned.on('error', error => { console.error(error); process.exit(1); });
   return spawned;
 }
+const port = process.env.E2E_PORT || '3000';
 child = run(['build', '--webpack']);
 child.on('exit', code => {
   if (stopping || code !== 0) process.exit(code ?? 1);
-  child = run(['start', '-p', '3000']);
+  child = run(['start', '-p', port]);
   child.on('exit', code => process.exit(code ?? 0));
 });

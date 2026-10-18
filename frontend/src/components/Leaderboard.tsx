@@ -247,11 +247,19 @@ export default function Leaderboard() {
   const row = (entry: LeaderboardEntry) => (
     <motion.li layout={reduceMotion ? false : 'position'} initial={false} transition={{ duration: reduceMotion ? 0 : 0.32 }}
       key={entry.id} data-preview-profile={entry.id} className="leaderboard-preview-row leaderboard-row rounded-row">
-      <span className="t-caption tabular-nums text-brand-muted" aria-label={t('rank', { rank: entry.rank })}>
+      <span className="t-caption tabular-nums text-brand-muted text-center" aria-label={t('rank', { rank: entry.rank })}>
         {entry.rank}
-        {entry.rankChange !== 0 && <span className="block" aria-label={t('rank_change', { count: Math.abs(entry.rankChange) })}>
-          {entry.rankChange > 0 ? <FiArrowUp aria-hidden="true" /> : <FiArrowDown aria-hidden="true" />}
-        </span>}
+        {entry.rankChange !== 0 && (
+          <span
+            className={`flex items-center justify-center gap-0.5 text-[10px] font-bold ${
+              entry.rankChange > 0 ? 'text-emerald-400' : 'text-rose-400'
+            }`}
+            aria-label={t('rank_change', { count: Math.abs(entry.rankChange) })}
+          >
+            {entry.rankChange > 0 ? <FiArrowUp aria-hidden="true" className="inline stroke-[3]" /> : <FiArrowDown aria-hidden="true" className="inline stroke-[3]" />}
+            {Math.abs(entry.rankChange) > 1 && <span>{Math.abs(entry.rankChange)}</span>}
+          </span>
+        )}
       </span>
       {portrait(entry, 'sm')}
       <div className="min-w-0 space-y-1">
@@ -274,7 +282,20 @@ export default function Leaderboard() {
               {portrait(entry, entry.rank === 1 ? 'xl' : 'lg')}
               <bdi className="podium__name" title={entry.name}>{entry.name}</bdi>
               {renderScore(entry, true)}
-              <div className={`podium__step podium__step--${entry.rank}`} aria-label={t('rank', { rank: entry.rank })}>{entry.rank}</div>
+              <div className={`podium__step podium__step--${entry.rank}`} aria-label={t('rank', { rank: entry.rank })}>
+                {entry.rank}
+                {entry.rankChange !== 0 && (
+                  <span
+                    className={`inline-flex items-center gap-0.5 ms-1 text-[11px] font-bold ${
+                      entry.rankChange > 0 ? 'text-emerald-400' : 'text-rose-400'
+                    }`}
+                    aria-label={t('rank_change', { count: Math.abs(entry.rankChange) })}
+                  >
+                    {entry.rankChange > 0 ? <FiArrowUp aria-hidden="true" className="inline stroke-[3]" /> : <FiArrowDown aria-hidden="true" className="inline stroke-[3]" />}
+                    {Math.abs(entry.rankChange) > 1 && <span>{Math.abs(entry.rankChange)}</span>}
+                  </span>
+                )}
+              </div>
             </motion.div>
           ))}
         </div>
