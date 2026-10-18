@@ -272,6 +272,18 @@ export default async function BlogPostPage({ params }: PageProps) {
         <header className={post.coverImage
           ? "grid gap-6 lg:max-w-none lg:grid-cols-[minmax(0,1fr)_320px]"
           : "space-y-6 max-w-4xl"}>
+          {post.coverImage && (
+            <Image
+              src={post.coverImage}
+              width={1000}
+              height={1000}
+              sizes="(max-width: 639px) 240px, 320px"
+              alt=""
+              loading="eager"
+              className="mx-auto h-auto w-full max-w-[240px] sm:max-w-xs lg:col-start-2 lg:row-start-1 lg:row-span-4 lg:self-center"
+            />
+          )}
+
           {/* Metadata Pill Row */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Badge>{post.category}</Badge>
@@ -294,17 +306,6 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           {/* Subtitle / Lead */}
           <p className="text-lead text-fg-muted">{post.subtitle}</p>
-
-          {post.coverImage && (
-            <Image
-              src={post.coverImage}
-              width={1000}
-              height={1000}
-              sizes="(max-width: 639px) 240px, 320px"
-              alt=""
-              className="mx-auto h-auto w-full max-w-[240px] sm:max-w-xs lg:col-start-2 lg:row-start-1 lg:row-span-4 lg:self-center"
-            />
-          )}
 
           {/* Author Badge */}
           <div className="flex items-center gap-3.5 pt-6 border-t border-line">
