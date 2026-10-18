@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowLeft, FaCopy, FaCheck, FaChessKnight } from 'react-icons/fa';
+import { FaArrowLeft, FaChessKnight } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import ChessBoardComponent from '@/components/game/ChessBoard';
@@ -885,19 +885,6 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             gameState={gameState}
             onClockWarning={triggerClocksWarnings}
           />
-
-          {/* Action Bar */}
-          {!isBotGame && !isGameOver && friendInviteLink && (
-            <motion.button type="button"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => shareFriendInvite(tg('share_text_live'))}
-              className="ui-tap-target w-full action-button py-[18px] rounded-2xl normal-case flex items-center justify-center gap-3 cursor-pointer shadow-sm"
-            >
-              {copied ? <FaCheck /> : <FaCopy />}
-              <span>{copied ? tg('invite_link_copied') : tg('invite_friend_next')}</span>
-            </motion.button>
-          )}
         </div>
       )}
 
