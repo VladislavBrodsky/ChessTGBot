@@ -92,7 +92,6 @@ test('platinum mystery box displays pioneer badge, remaining slots, and triggers
 
   expect(await screen.findByText('platinum_title')).toBeVisible();
   expect(screen.getByText('platinum_subtitle')).toBeVisible();
-  expect(screen.getByText('pioneer_remaining')).toBeVisible();
 
   const claimBtn = screen.getByRole('button', { name: 'claim_platinum' });
   expect(claimBtn).toBeVisible();

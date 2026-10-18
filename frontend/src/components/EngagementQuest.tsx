@@ -228,18 +228,6 @@ export default function EngagementQuest({ onPlayMatch }: EngagementQuestProps = 
         </Button>
       </div>
 
-      {isPlatinum && typeof data.premium_slots_remaining === 'number' && data.premium_slots_remaining > 0 && (
-        <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs">
-          <span className="flex items-center gap-1.5 text-cyan-300 font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            {t('pioneer_remaining', { count: data.premium_slots_remaining })}
-          </span>
-          <span className="text-xs font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
-            $9.99 Value · 100% Free
-          </span>
-        </div>
-      )}
-
       <div className="rounded-2xl border border-brand-border/60 bg-brand-elevated/40 p-3.5 space-y-2.5">
         <div
           className="space-y-2.5"
