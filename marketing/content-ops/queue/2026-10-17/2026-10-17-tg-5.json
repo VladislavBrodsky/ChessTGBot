@@ -7,7 +7,7 @@
   "hook": "You premoved a recapture. Your opponent found an in-between check. Familiar pain?",
   "cta": "play",
   "text": "<b>You premoved a recapture. Your opponent found an in-between check. Familiar pain?</b>\n\nThe German masters named it a century ago: <i>Zwischenzug</i> (the in-between move).\nIn 3-minute blitz, 80% of lost pieces come from assuming the opponent will play the expected recapture.\n\nBefore snatching a piece back, always ask: Can they check me first?\nTrain your eye to spot intermediate moves before your opponent spots them for you.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -41,10 +41,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T02:50:34Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-17/2026-10-17-tg-5.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-18T00:19:26Z",
+  "published": {
+    "message_id": 41,
+    "at": "2026-10-18T00:19:26Z"
+  },
+  "media_cleaned": true
 }
