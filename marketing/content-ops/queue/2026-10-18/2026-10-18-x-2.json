@@ -5,7 +5,7 @@
   "category": "Chess Culture",
   "hook": "You premoved a recapture. Your opponent played an in-between check",
   "text": "You premoved a recapture. Your opponent played an in-between check\n\nThe masters call it Zwischenzug.\n\nIn 3-minute blitz, 80% of blunders come from assuming an automatic recapture.\n\n#Chess #BlitzChess #ChessLife",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -43,10 +43,23 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T18:55:50Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-x-2.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-18T23:14:07Z",
+  "last_error": "403 Client Error: Forbidden for url: https://upload.twitter.com/1.1/media/upload.json",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111959033179451735",
+    "reply_id": "2111959035855454290",
+    "root_url": "https://x.com/defi_ambassador/status/2111959033179451735"
+  },
+  "published": {
+    "root_id": "2111959033179451735",
+    "root_url": "https://x.com/defi_ambassador/status/2111959033179451735",
+    "at": "2026-10-18T23:14:07Z"
+  },
+  "media_cleaned": true
 }

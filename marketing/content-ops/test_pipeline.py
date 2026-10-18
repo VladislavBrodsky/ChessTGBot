@@ -110,6 +110,27 @@ class Publisher(unittest.TestCase):
         out = telegram_publisher.publish({"id": "x", "text": "t", "cta": "play", "category": "Tactics"}, dry_run=True)
         self.assertEqual(out["would_send"], "message")
 
+    def test_publish_due_handles_missing_scheduled_at_without_crashing(self):
+        day = queue.QUEUE / "2099-01-01"
+        day.mkdir(parents=True, exist_ok=True)
+        try:
+            entry = {
+                "id": "2099-01-01-tg-1",
+                "kind": "telegram",
+                "date": "2099-01-01",
+                "status": "approved",
+                "text": "test post",
+                "cta": "play",
+                "category": "Tactics",
+            }
+            (day / "2099-01-01-tg-1.json").write_text(json.dumps(entry))
+            report = telegram_publisher.publish_due(day="2099-01-01", dry_run=True)
+            self.assertEqual(report, [])
+        finally:
+            (day / "2099-01-01-tg-1.json").unlink(missing_ok=True)
+            if day.exists():
+                day.rmdir()
+
 class WagerWords(unittest.TestCase):
     def test_substrings_do_not_trigger_the_wager_rule(self):
         self.assertEqual(qa.compliance("A costly mistake in a great spot with potential."), [])

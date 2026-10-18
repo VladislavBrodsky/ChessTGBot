@@ -176,7 +176,13 @@ def publish_due(now=None, dry_run: bool | None = None, limit: int = 5, day: str 
     now = now or queue.utcnow()
     report = []
     for post in queue.all_entries("telegram", "approved", day=day):
-        if post["scheduled_at"] > queue.iso(now) or len(report) >= limit: continue
+        sched = post.get("scheduled_at")
+        if sched and sched > queue.iso(now):
+            continue
+        if not sched and post.get("date") and post["date"] > queue.iso(now)[:10]:
+            continue
+        if len(report) >= limit:
+            break
         live = all(_credentials()) and dry_run is not True
         if live: queue.set_status(post, "publishing")  # at-most-once: a crash mid-send must not double-post
         try:

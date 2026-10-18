@@ -7,7 +7,7 @@
   "hook": "White to move. Black's king is boxed in. Spot the 1-move mate",
   "cta": "academy_app",
   "text": "<b>White to move. Black's king is boxed in. Spot the 1-move mate</b>\n\nBlack's king on g8 has three pawns acting as walls.\nOne rook move delivers instant checkmate.\n\n❤ Ra8#   🔥 Rd1   👏 f4\nAnswer reveals in 6 hours.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -56,10 +56,16 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T21:33:41Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-1.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 2
-  }
+  },
+  "updated_at": "2026-10-18T23:13:54Z",
+  "last_error": "Telegram sendPhoto failed: 400 ",
+  "published": {
+    "message_id": 43,
+    "at": "2026-10-18T23:13:54Z"
+  },
+  "media_cleaned": true
 }

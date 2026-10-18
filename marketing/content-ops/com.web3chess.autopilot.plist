@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.web3chess.autopilot</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Library/Frameworks/Python.framework/Versions/3.13/bin/python3</string>
+        <string>/Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/autopilot.py</string>
+        <string>--daemon</string>
+        <string>--live</string>
+        <string>--interval-seconds</string>
+        <string>60</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/grandmaestro/Developer/ChessTGBot</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/state/launchd_stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/state/launchd_stderr.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Library/Frameworks/Python.framework/Versions/3.13/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>
