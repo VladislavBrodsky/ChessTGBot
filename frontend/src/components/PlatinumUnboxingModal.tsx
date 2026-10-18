@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { telegramHaptic } from '@/lib/telegram';
 import { fireGlobalConfetti } from '@/components/ui/Confetti';
 import { useAnimationsEnabled } from '@/hooks/useAnimationsEnabled';
+import { useAudio } from '@/hooks/useAudio';
 import { sendTelemetryEvent } from '@/lib/api';
 import { mainMiniAppLink } from '@/lib/invitations';
 
@@ -31,6 +32,7 @@ export default function PlatinumUnboxingModal({
 }: PlatinumUnboxingModalProps) {
   const t = useTranslations('Engagement');
   const animations = useAnimationsEnabled();
+  const { play: playAudio } = useAudio();
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
@@ -46,10 +48,16 @@ export default function PlatinumUnboxingModal({
     setRevealed(false);
     telegramHaptic('selection');
 
+    // 0.45s suspense tick
+    const midTimer = setTimeout(() => {
+      telegramHaptic('medium');
+    }, 450);
+
     // 1-second suspenseful unboxing build-up
     const timer = setTimeout(() => {
       setRevealed(true);
       telegramHaptic('success');
+      playAudio('win');
 
       // Triple celebratory particle burst
       void fireGlobalConfetti({
@@ -74,8 +82,11 @@ export default function PlatinumUnboxingModal({
       }, 260);
     }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [isOpen, animations]);
+    return () => {
+      clearTimeout(midTimer);
+      clearTimeout(timer);
+    };
+  }, [isOpen, animations, playAudio]);
 
   const handleShareToTelegram = () => {
     telegramHaptic('selection');
@@ -130,6 +141,19 @@ export default function PlatinumUnboxingModal({
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
             className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500/30 via-cyan-200/25 to-blue-500/30 blur-2xl pointer-events-none"
           />
+
+          {revealed && (
+            <motion.div
+              initial={{ scale: 0.6, opacity: 0, rotate: 0 }}
+              animate={{ scale: [1.15, 1.35, 1.15], opacity: [0.35, 0.65, 0.35], rotate: 360 }}
+              transition={{
+                scale: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
+                opacity: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
+                rotate: { duration: 16, repeat: Infinity, ease: 'linear' },
+              }}
+              className="absolute inset-0 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(0,240,255,0.45)_0%,rgba(0,240,255,0)_70%)] blur-lg pointer-events-none"
+            />
+          )}
 
           <motion.div
             initial={false}

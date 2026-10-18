@@ -197,16 +197,9 @@ export default function EngagementQuest({ onPlayMatch }: EngagementQuestProps = 
             </span>
           )}
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 id="engagement-title" className="t-title-3 truncate">
-                {isPlatinum ? t('platinum_title') : t('title')}
-              </h2>
-              {isPlatinum && typeof data.premium_slots_remaining === 'number' && data.premium_slots_remaining > 0 && (
-                <span className="ui-eyebrow inline-flex items-center px-2 py-0.5 rounded-full font-bold bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 shrink-0">
-                  {t('pioneer_badge')}
-                </span>
-              )}
-            </div>
+            <h2 id="engagement-title" className="t-title-3 truncate">
+              {isPlatinum ? t('platinum_title') : t('title')}
+            </h2>
             <p className="t-caption text-brand-muted truncate">
               {isPlatinum ? t('platinum_subtitle') : t('subtitle')}
             </p>

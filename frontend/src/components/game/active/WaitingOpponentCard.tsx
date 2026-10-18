@@ -71,7 +71,7 @@ export function WaitingOpponentCard({
             <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mb-1">
               {tWagerTier}
             </span>
-            <span className="text-sm font-semibold text-emerald-400">
+            <span className="text-sm font-semibold text-brand-action">
               {gameState?.bid_amount > 0 
                 ? `$${(gameState.bid_amount / 100).toFixed(2)} USDT` 
                 : tFreeMatch}
@@ -81,7 +81,7 @@ export function WaitingOpponentCard({
             <span className="text-caption font-bold text-brand-muted normal-case tracking-normal mb-1">
               {tTimeControl}
             </span>
-            <span className="text-sm font-semibold text-amber-400 normal-case">
+            <span className="text-sm font-semibold text-brand-gold normal-case">
               {gameState?.time_control_seconds >= 60 
                 ? `${gameState.time_control_seconds / 60} MIN` 
                 : `${gameState?.time_control_seconds || 600}s`}
@@ -99,7 +99,7 @@ export function WaitingOpponentCard({
               onClick={onCopyInvite}
               className="ui-tap-target absolute right-2 text-brand-muted hover:opacity-100 p-2 cursor-pointer transition-all duration-150 active:scale-90"
             >
-              {copied ? <FaCheck className="text-emerald-400 text-caption" /> : <FaCopy className="text-caption" />}
+              {copied ? <FaCheck className="text-brand-action text-caption" /> : <FaCopy className="text-caption" />}
             </button>
           </div>
 
@@ -117,7 +117,7 @@ export function WaitingOpponentCard({
               <motion.button type="button"
                 whileTap={{ scale: 0.985 }}
                 onClick={onAbortGame}
-                className="ui-tap-target w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-rose-400 py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer transition-all shadow-sm"
+                className="ui-tap-target w-full bg-brand-rose-opacity-10 border border-brand-rose-opacity-20 hover:bg-brand-rose-opacity-20 text-brand-danger py-3 rounded-xl flex items-center justify-center gap-2 text-caption normal-case font-semibold tracking-normal cursor-pointer transition-all shadow-sm"
               >
                 <span>{tCancelRefundMatch}</span>
               </motion.button>

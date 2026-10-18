@@ -168,7 +168,13 @@ export default function PlayLobby() {
     let interval: any;
     if (matchmakingState === 'searching') {
       interval = setInterval(() => {
-        setSearchTimer(prev => prev + 1);
+        setSearchTimer(prev => {
+          const next = prev + 1;
+          if (next > 0 && next % 10 === 0) {
+            telegramHaptic('light');
+          }
+          return next;
+        });
       }, 1000);
     } else {
       setSearchTimer(0);
@@ -519,14 +525,18 @@ export default function PlayLobby() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col items-center gap-1">
                 <span className="text-sm font-semibold text-brand-primary">{tg('searching_opponent')}</span>
                 <span className="text-2xl font-semibold tabular-nums text-brand-muted" role="timer" aria-live="off">
                   {Math.floor(searchTimer / 60)}:{(searchTimer % 60).toString().padStart(2, '0')}
                 </span>
-                <span className="text-caption text-brand-muted">{tg('lobby_search_hint')}</span>
+                <div className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-brand-surface border border-brand-border text-caption font-mono text-brand-muted mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-action animate-pulse" />
+                  <span>{Math.max(100, (stats?.elo || 1000) - Math.min(300, 100 + Math.floor(searchTimer / 5) * 25))} – {(stats?.elo || 1000) + Math.min(300, 100 + Math.floor(searchTimer / 5) * 25)} ELO</span>
+                </div>
+                <span className="text-caption text-brand-muted mt-0.5">{tg('lobby_search_hint')}</span>
                 <span className="text-caption text-brand-muted">
-                  <strong className="font-bold text-emerald-400 tabular-nums">
+                  <strong className="font-bold text-brand-action tabular-nums">
                     {lobby.searching.toLocaleString(locale)}
                   </strong> {tg('lobby_waiting')}
                 </span>

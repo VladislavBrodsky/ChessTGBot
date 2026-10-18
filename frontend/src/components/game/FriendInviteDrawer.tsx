@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from "react";
-import { FaShareAlt, FaCopy, FaCheck } from "react-icons/fa";
+import { FaCopy, FaCheck, FaTelegram, FaClock } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { telegramHaptic } from "@/lib/telegram";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -45,7 +45,7 @@ export default function FriendInviteDrawer({
     copyToClipboard(inviteLink).then((ok) => {
       if (!ok) return;
       setCopiedLink(true);
-      telegramHaptic('light');
+      telegramHaptic('success');
       setTimeout(() => setCopiedLink(false), 2000);
     });
   };
@@ -58,7 +58,26 @@ export default function FriendInviteDrawer({
       description={tg('invite_link_desc')}
     >
       <div className="space-y-4">
-        <div className="w-full bg-brand-elevated rounded-2xl p-4 border border-brand-border space-y-2 text-center">
+        {/* Match Overview pill */}
+        <div className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-brand-elevated border border-brand-border">
+          <div className="flex items-center gap-2.5 text-left">
+            <span className="w-8 h-8 rounded-xl bg-brand-surface border border-brand-border flex items-center justify-center text-brand-primary">
+              <FaClock size={13} />
+            </span>
+            <div className="flex flex-col">
+              <span className="text-caption font-semibold text-brand-muted">{tg('time_control')}</span>
+              <span className="text-sm font-bold text-brand-primary">
+                {timeControl >= 60 ? `${Math.round(timeControl / 60)} MIN` : `${timeControl}s`}
+              </span>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-full text-caption font-semibold bg-brand-action/15 border border-brand-action/30 text-brand-action">
+            {tg('free_match')}
+          </span>
+        </div>
+
+        {/* Link container */}
+        <div className="w-full bg-brand-elevated rounded-2xl p-3 border border-brand-border space-y-2 text-center">
           <input
             readOnly
             type="text"
@@ -75,7 +94,7 @@ export default function FriendInviteDrawer({
             onClick={shareInviteLink}
             className="w-full normal-case font-semibold tracking-normal flex items-center justify-center gap-2"
           >
-            <FaShareAlt size={12} />
+            <FaTelegram size={16} />
             <span>{tg('share_invite')}</span>
           </Button>
           
@@ -86,7 +105,7 @@ export default function FriendInviteDrawer({
               onClick={handleCopyLink}
               className="w-full flex items-center justify-center gap-2"
             >
-              {copiedLink ? <FaCheck className="text-emerald-400" /> : <FaCopy />}
+              {copiedLink ? <FaCheck className="text-brand-action" /> : <FaCopy />}
               <span>{copiedLink ? tg('copied_success') : tg('copy_code')}</span>
             </Button>
             

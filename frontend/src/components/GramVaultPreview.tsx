@@ -144,14 +144,9 @@ export function GramVaultPreview() {
           <div className="flex items-center gap-3 min-w-0">
             <VibingGramIcon size={36} />
             <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <h2 id="gram-vault-preview-title" className="t-title-3 truncate">
-                  {t('title')}
-                </h2>
-                <span className="shrink-0 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 border border-amber-500/30 text-amber-300">
-                  100 GRAM
-                </span>
-              </div>
+              <h2 id="gram-vault-preview-title" className="t-title-3 truncate">
+                {t('title')}
+              </h2>
               <p className="t-caption text-brand-muted truncate">{t('status')}</p>
             </div>
           </div>
