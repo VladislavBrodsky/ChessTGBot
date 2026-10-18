@@ -12,7 +12,7 @@ import pytest
 
 from app.schemas.game_state import GameState
 from app.services import stale_game_sweeper as sweeper
-from app.services.stale_game_sweeper import is_sweepable, STALE_GRACE_SECONDS
+from app.services.stale_game_sweeper import is_sweepable, STALE_GRACE_SECONDS, UNFILLED_WAGER_GRACE_SECONDS
 
 
 def _state(**kw):
@@ -46,8 +46,14 @@ def test_not_sweepable_ai_game():
 
 
 def test_not_sweepable_when_opponent_never_joined():
-    # Unfilled lobby -> handled by heal_zombie_wagers, not this sweeper.
+    # The host must have enough time to share the link.
     assert is_sweepable(_state(black_player_id=None), time.time()) is False
+
+
+def test_unfilled_paid_lobby_expires_and_refunds_after_half_hour():
+    now = time.time()
+    assert is_sweepable(_state(black_player_id=None, created_at=now - UNFILLED_WAGER_GRACE_SECONDS - 1), now)
+    assert not is_sweepable(_state(bid_amount=0, black_player_id=None, created_at=now - 86400), now)
 
 
 def test_not_sweepable_once_started():
@@ -196,6 +202,44 @@ async def test_sweep_aborts_and_refunds_never_started_wager(db_session):
     state2 = await svc.session_manager.get_game(gid)
     # (already game_over -> not sweepable) but even a forced re-run is a no-op refund-wise.
     assert is_sweepable(state2, time.time()) is False
+
+
+@pytest.mark.asyncio
+async def test_sweep_refunds_unfilled_paid_invitation(db_session):
+    if hasattr(db_session, "users"):
+        return
+    from sqlalchemy import select
+    from app.models.user import User
+    from app.models.transaction import Transaction
+    from app.services.game_service import GameService
+
+    host_id, stake, gid = 820011, 500, "unfilled-paid-invite-test"
+    db_session.add(User(telegram_id=host_id, first_name="Host", elo=1000, balance=500))
+    db_session.add(Transaction(user_id=host_id, type="game_wager", amount=-stake,
+                               fee=0, status="completed", reference_id=gid))
+    await db_session.commit()
+    service = GameService()
+    state = await service.create_game(gid, is_bot_game=False, bid_amount=stake)
+    state.white_player_id = host_id
+    state.created_at = time.time() - UNFILLED_WAGER_GRACE_SECONDS - 1
+    await service.session_manager.save_game(gid, state)
+
+    await sweeper._sweep_once(service)
+    after = await service.session_manager.get_game(gid)
+    assert after.is_game_over and after.result_type == "aborted"
+    db_session.expire_all()
+    host = (await db_session.execute(select(User).where(User.telegram_id == host_id))).scalar_one()
+    assert host.balance == 1000
+    refunds = (await db_session.execute(select(Transaction).where(
+        Transaction.user_id == host_id, Transaction.reference_id == gid,
+        Transaction.type == "refund"
+    ))).scalars().all()
+    assert len(refunds) == 1 and refunds[0].amount == stake
+
+    await sweeper._sweep_once(service)
+    db_session.expire_all()
+    host = (await db_session.execute(select(User).where(User.telegram_id == host_id))).scalar_one()
+    assert host.balance == 1000
 
 
 def test_is_clock_expired():

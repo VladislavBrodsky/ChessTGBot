@@ -31,4 +31,26 @@ describe('game reconnect', () => {
     renderHook(() => useGameSocket('free-game'));
     expect(socket.emit.mock.calls.filter(([event]) => event === 'join_room')).toHaveLength(5);
   });
+
+  it('waits for an explicit action before accepting a paid friend game', () => {
+    jest.useFakeTimers();
+    const listeners = new Map<string, (value?: any) => void>();
+    const socket = {
+      connected: true,
+      emit: jest.fn(),
+      on: jest.fn((event: string, callback: (value?: any) => void) => { listeners.set(event, callback); }),
+      off: jest.fn((event: string) => { listeners.delete(event); }),
+    };
+    (getSocket as jest.Mock).mockReturnValue(socket);
+    const game = renderHook(() => useGameSocket('paid-friend'));
+    act(() => listeners.get('wager_consent_required')?.({ game_id: 'paid-friend', wager: 500, time_control: 1800 }));
+    expect(game.result.current.wagerConsent).toEqual({ game_id: 'paid-friend', wager: 500, time_control: 1800 });
+    act(() => jest.advanceTimersByTime(5000));
+    expect(socket.emit.mock.calls.filter(([event]) => event === 'join_room')).toHaveLength(1);
+    act(() => game.result.current.acceptWager());
+    expect(socket.emit).toHaveBeenCalledWith('join_room', { room: 'paid-friend', accept_wager: true });
+    act(() => listeners.get('game_state')?.({ fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', turn: 'w' }));
+    expect(game.result.current.wagerConsent).toBeNull();
+    game.unmount();
+  });
 });

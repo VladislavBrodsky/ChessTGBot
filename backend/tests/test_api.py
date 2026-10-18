@@ -557,3 +557,31 @@ async def test_free_friend_creation_and_launch(client, db_session):
     assert resolved.json() == {"destination": "game", "game_id": game['game_id']}
     rows = (await db_session.execute(select(Transaction).where(Transaction.reference_id == game['game_id']))).scalars().all()
     assert rows == []
+
+
+@pytest.mark.asyncio
+async def test_staked_friend_creation_reserves_exact_stake_and_clock(client, db_session):
+    from app.services.session_manager import SessionManager
+    from app.models.transaction import Transaction
+    from app.models.user import User
+    from app.crud import user as user_crud
+    from sqlalchemy import select
+
+    user = (await db_session.execute(select(User).where(User.telegram_id == 123456789))).scalar_one_or_none()
+    if user is None:
+        user = await user_crud.create_user(db_session, 123456789, 'Friend Host')
+    user.balance = 1000
+    await db_session.commit()
+    response = await client.post('/api/v1/game/create?type=online&wager=500&time_control=1800')
+    assert response.status_code == 200
+    created = response.json()
+    assert 'startapp=go_' in created['invite_link']
+    state = await SessionManager().get_game(created['game_id'])
+    assert state.bid_amount == 500 and state.time_control_seconds == 1800
+    assert state.white_player_id == 123456789 and not state.black_player_id
+    await db_session.refresh(user)
+    assert user.balance == 500
+    wagers = (await db_session.execute(select(Transaction).where(
+        Transaction.reference_id == created['game_id'], Transaction.type == 'game_wager'
+    ))).scalars().all()
+    assert len(wagers) == 1 and wagers[0].amount == -500

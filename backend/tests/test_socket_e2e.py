@@ -76,9 +76,11 @@ class E2EClient:
         self.match_found: asyncio.Queue = asyncio.Queue()
         self.game_states: asyncio.Queue = asyncio.Queue()
         self.errors: asyncio.Queue = asyncio.Queue()
+        self.wager_consent: asyncio.Queue = asyncio.Queue()
         self.sio.on("match_found", self._on(self.match_found))
         self.sio.on("game_state", self._on(self.game_states))
         self.sio.on("error", self._on(self.errors))
+        self.sio.on("wager_consent_required", self._on(self.wager_consent))
         self.sio.on("matchmaking_error", self._on(self.errors))
 
     @staticmethod
@@ -196,6 +198,126 @@ async def _fetch_players(factory):
         )
         users = {u.telegram_id: u for u in res.scalars().all()}
     return users[PLAYER_A], users[PLAYER_B]
+
+
+async def test_private_wager_requires_guest_consent_and_survives_reconnect_heal(socket_server):
+    from app.services.game_service import GameService
+
+    url, factory = socket_server["url"], socket_server["factory"]
+    await _seed_players(factory)
+    game_id = "private_staked_friend_test"
+    service = GameService()
+    state = await service.create_game(game_id, time_control_seconds=1800, bid_amount=BID_CENTS)
+    state.white_player_id = PLAYER_A
+    state.white_username = "E2E-A"
+    await service.session_manager.save_game(game_id, state)
+    async with factory() as db:
+        host = (await db.execute(select(User).where(User.telegram_id == PLAYER_A))).scalar_one()
+        host.balance -= BID_CENTS
+        db.add(Transaction(user_id=PLAYER_A, type="game_wager", amount=-BID_CENTS,
+                           fee=0, status="completed", reference_id=game_id))
+        await db.commit()
+
+    host_client, guest_client = E2EClient(), E2EClient()
+    await host_client.connect(url, PLAYER_A, "E2E-A", ip="203.0.113.10")
+    await guest_client.connect(url, PLAYER_B, "E2E-B", ip="203.0.113.20")
+    try:
+        await host_client.sio.emit("join_room", {"room": game_id})
+        await host_client.next_state()
+        await host_client.sio.disconnect()
+        assert not (await service.get_game_state(game_id)).is_game_over
+        await guest_client.sio.emit("join_room", {"room": game_id})
+        terms = await asyncio.wait_for(guest_client.wager_consent.get(), WHITE_TIMEOUT)
+        assert terms == {"game_id": game_id, "wager": BID_CENTS, "time_control": 1800}
+        assert (await _fetch_players(factory))[1].balance == START_BALANCE
+        assert (await service.get_game_state(game_id)).black_player_id is None
+
+        await guest_client.sio.emit("join_room", {"room": game_id, "accept_wager": True})
+        joined = await guest_client.next_state()
+        assert {joined["white_player_id"], joined["black_player_id"]} == {PLAYER_A, PLAYER_B}
+        assert joined["time_control_seconds"] == 1800
+        assert (await _fetch_players(factory))[1].balance == START_BALANCE - BID_CENTS
+
+        await host_client.connect(url, PLAYER_A, "E2E-A", ip="203.0.113.10")
+        await host_client.sio.emit("join_room", {"room": game_id})
+        assert (await host_client.next_state())["time_control_seconds"] == 1800
+
+        # Rejoining and the background balance healer must never charge again
+        # or abort a live paid match.
+        await guest_client.sio.emit("join_room", {"room": game_id})
+        await guest_client.next_state()
+        async with factory() as db:
+            await service.heal_zombie_wagers(db, PLAYER_B)
+        assert (await _fetch_players(factory))[1].balance == START_BALANCE - BID_CENTS
+        assert not (await service.get_game_state(game_id)).is_game_over
+    finally:
+        await host_client.sio.disconnect()
+        await guest_client.sio.disconnect()
+
+
+async def test_private_wager_join_restores_guest_balance_if_game_save_fails(socket_server, monkeypatch):
+    from app.services.game_service import GameService
+
+    factory = socket_server["factory"]
+    await _seed_players(factory)
+    game_id = "private_save_failure_test"
+    service = GameService()
+    state = await service.create_game(game_id, time_control_seconds=300, bid_amount=BID_CENTS)
+    state.white_player_id = PLAYER_A
+    await service.session_manager.save_game(game_id, state)
+    async with factory() as db:
+        db.add(Transaction(user_id=PLAYER_A, type="game_wager", amount=-BID_CENTS,
+                           fee=0, status="completed", reference_id=game_id))
+        await db.commit()
+
+    async def failed_save(*_args, **_kwargs):
+        raise RuntimeError("simulated game store outage")
+
+    original_save = service.session_manager.save_game
+    monkeypatch.setattr(service.session_manager, "save_game", failed_save)
+    for _ in range(2):
+        with pytest.raises(RuntimeError, match="simulated game store outage"):
+            await service.join_game(game_id, PLAYER_B, accept_wager=True)
+    assert (await _fetch_players(factory))[1].balance == START_BALANCE
+    async with factory() as db:
+        transactions = (await db.execute(select(Transaction).where(
+            Transaction.user_id == PLAYER_B, Transaction.reference_id == game_id
+        ))).scalars().all()
+    assert sorted((tx.type, tx.amount) for tx in transactions) == [
+        ("game_wager", -BID_CENTS), ("game_wager", -BID_CENTS),
+        ("refund", BID_CENTS), ("refund", BID_CENTS),
+    ]
+    monkeypatch.setattr(service.session_manager, "save_game", original_save)
+    joined = await service.join_game(game_id, PLAYER_B, accept_wager=True)
+    assert PLAYER_B in (joined.white_player_id, joined.black_player_id)
+    assert (await _fetch_players(factory))[1].balance == START_BALANCE - BID_CENTS
+
+
+async def test_private_wager_join_keeps_stake_if_store_times_out_after_write(socket_server, monkeypatch):
+    from app.services.game_service import GameService
+
+    factory = socket_server["factory"]
+    await _seed_players(factory)
+    game_id = "private_ambiguous_save_test"
+    service = GameService()
+    state = await service.create_game(game_id, time_control_seconds=300, bid_amount=BID_CENTS)
+    state.white_player_id = PLAYER_A
+    await service.session_manager.save_game(game_id, state)
+    original_save = service.session_manager.save_game
+
+    async def save_then_timeout(*args, **kwargs):
+        await original_save(*args, **kwargs)
+        raise TimeoutError("write succeeded but reply was lost")
+
+    monkeypatch.setattr(service.session_manager, "save_game", save_then_timeout)
+    joined = await service.join_game(game_id, PLAYER_B, accept_wager=True)
+    assert PLAYER_B in (joined.white_player_id, joined.black_player_id)
+    assert (await _fetch_players(factory))[1].balance == START_BALANCE - BID_CENTS
+    async with factory() as db:
+        transactions = (await db.execute(select(Transaction).where(
+            Transaction.user_id == PLAYER_B, Transaction.reference_id == game_id
+        ))).scalars().all()
+    assert [(tx.type, tx.amount) for tx in transactions] == [("game_wager", -BID_CENTS)]
 
 
 async def test_two_clients_match_play_checkmate_and_settle(socket_server):

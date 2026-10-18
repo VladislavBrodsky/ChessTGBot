@@ -10,7 +10,10 @@ export const useGameSocket = (gameId: string) => {
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [gameState, setGameState] = useState<any>(null);
+    const [wagerConsent, setWagerConsent] = useState<{ wager: number; time_control: number } | null>(null);
     const gameStateRef = useRef<any>(null);
+    const acceptedWagerRef = useRef(false);
+    const awaitingConsentRef = useRef(false);
 
     useEffect(() => {
         const socket = getSocket();
@@ -18,9 +21,9 @@ export const useGameSocket = (gameId: string) => {
         let botMoveTimeout: any = null;
         let joinAttempts = 0;
         const requestState = (force = false) => {
-            if (!socket.connected || (!force && gameStateRef.current) || joinAttempts >= 8) return;
+            if (!socket.connected || awaitingConsentRef.current || (!force && gameStateRef.current) || joinAttempts >= 8) return;
             joinAttempts += 1;
-            socket.emit("join_room", { room: gameId });
+            socket.emit("join_room", { room: gameId, ...(acceptedWagerRef.current ? { accept_wager: true } : {}) });
         };
 
         const onConnect = () => {
@@ -42,6 +45,8 @@ export const useGameSocket = (gameId: string) => {
             );
 
             gameStateRef.current = data;
+            awaitingConsentRef.current = false;
+            setWagerConsent(null);
             joinAttempts = 0;
             setGameState(data);
             setFen(data.fen);
@@ -107,6 +112,13 @@ export const useGameSocket = (gameId: string) => {
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("game_state", onGameState);
+        const onWagerConsent = (data: { game_id: string; wager: number; time_control: number }) => {
+            if (data.game_id === gameId && !acceptedWagerRef.current) {
+                awaitingConsentRef.current = true;
+                setWagerConsent(data);
+            }
+        };
+        socket.on("wager_consent_required", onWagerConsent);
         socket.on("error", onError);
 
         // Join the room
@@ -121,12 +133,19 @@ export const useGameSocket = (gameId: string) => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("game_state", onGameState);
+            socket.off("wager_consent_required", onWagerConsent);
             socket.off("error", onError);
             if (botMoveTimeout) {
                 clearTimeout(botMoveTimeout);
             }
         };
     }, [gameId, chess]);
+
+    const acceptWager = useCallback(() => {
+        acceptedWagerRef.current = true;
+        awaitingConsentRef.current = false;
+        getSocket().emit("join_room", { room: gameId, accept_wager: true });
+    }, [gameId]);
 
     const makeMove = useCallback((move: { from: string; to: string; promotion?: string }) => {
         const socket = getSocket();
@@ -194,5 +213,5 @@ export const useGameSocket = (gameId: string) => {
         return false;
     }, [chess, gameId]);
 
-    return { fen, makeMove, isConnected, error, gameState };
+    return { fen, makeMove, isConnected, error, gameState, wagerConsent, acceptWager };
 };

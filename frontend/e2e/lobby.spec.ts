@@ -126,3 +126,27 @@ test('search and cancel without AI fallback button', async ({ page }) => {
   await page.getByRole('button', { name: /Cancel Search/ }).click();
   await expect(page.locator('.lobby-cta')).toBeVisible();
 });
+
+test('phone: friend setup confirms the exact wager and clock before creating an invite', async ({ page }) => {
+  await prepare(page, { searching: 0, games_24h: 0 });
+  await page.route('**/api/v1/game/create**', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify({ game_id: 'friend-e2e-game' }),
+  }));
+  await openLobby(page, 320, 640);
+  await page.getByRole('button', { name: /Play with a Friend/ }).click();
+  const drawer = page.getByRole('dialog', { name: 'Set up a friend game' });
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole('button', { name: 'Create free game' })).toBeEnabled();
+  await drawer.getByRole('tab', { name: 'Stake game' }).click();
+  await expect(drawer.getByText('Winner receives $9.50 USDT')).toBeVisible();
+  await drawer.getByRole('radio', { name: '30m' }).click();
+  await expect(drawer.getByText('$5.00 USDT each · 30 min per player')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  const action = await drawer.getByRole('button', { name: 'Create and stake $5.00' }).boundingBox();
+  expect(action!.y + action!.height).toBeLessThanOrEqual(640);
+  const request = page.waitForRequest(value => value.url().includes('/api/v1/game/create?'));
+  await drawer.getByRole('button', { name: 'Create and stake $5.00' }).click();
+  const created = new URL((await request).url());
+  expect(created.searchParams.get('wager')).toBe('500');
+  expect(created.searchParams.get('time_control')).toBe('1800');
+});

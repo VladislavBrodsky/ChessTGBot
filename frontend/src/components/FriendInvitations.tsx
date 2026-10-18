@@ -56,8 +56,13 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
     void post('dismiss', { parameter: param }).catch(() => {});
   }, [key]);
   const navigate = useCallback((gameId: string) => {
+    const reviewingPaidGame = selectedRef.current?.kind === 'game' && !selectedRef.current.free && !selectedRef.current.member;
     setNavigating(true); setSelected(null); setExplicit(false); setLoading(false); setError('');
-    consume(parameter);
+    // Reviewing a paid game is not acceptance. Keep the link reusable if the
+    // guest leaves at the final stake confirmation; clear only the server inbox
+    // intent so it does not reopen over the board in this session.
+    if (reviewingPaidGame) void post('dismiss', { parameter }).catch(() => {});
+    else consume(parameter);
     router.push(`/${locale}/game?id=${encodeURIComponent(gameId)}`);
   }, [consume, locale, parameter, router]);
   const resolve = useCallback(async (param: string) => {
@@ -80,6 +85,11 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
         consume(param); setExplicit(false);
         if (view.destination !== 'home') setNavigating(true);
         router.push(`/${locale}/${destinations[view.destination]}`);
+      } else if (view.kind === 'game' && !view.free && view.game_id === new URLSearchParams(window.location.search).get('id')) {
+        // A Telegram WebView may retain start_param across a board reload.
+        // The board owns the final wager confirmation, so avoid stacking the
+        // invitation preview over it.
+        setExplicit(false);
       } else setSelected(view);
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'unavailable'); }
     finally { setLoading(false); }

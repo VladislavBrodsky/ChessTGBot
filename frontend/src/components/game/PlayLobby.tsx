@@ -23,6 +23,7 @@ import ArenaBanner from './ArenaBanner';
 import EngagementQuest from '@/components/EngagementQuest';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
+import FriendChallengeDrawer from './FriendChallengeDrawer';
 import { Button } from '@/components/ui/Button';
 
 import { DepositDialog as DepositModal } from '@/components/Wallet/WalletDialogs';
@@ -57,12 +58,15 @@ export default function PlayLobby() {
   const [isCreating, setIsCreating] = useState(false);
   const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
   const [showAiDifficulty, setShowAiDifficulty] = useState(false);
+  const [showFriendChallenge, setShowFriendChallenge] = useState(false);
+  const [friendError, setFriendError] = useState('');
 
   // Time control
   const [timeControl, setTimeControl] = useState<number>(600); // 10 minutes default
 
   // Quick Top-up states
   const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
+  const [depositTarget, setDepositTarget] = useState<number | null>(null);
 
   const submittingRef = useRef<boolean>(false);
   const keepSearchingOnExitRef = useRef<boolean>(false);
@@ -361,14 +365,15 @@ export default function PlayLobby() {
     getSocket().emit('enable_matchmaking_notifications', {});
   };
 
-  const playVsFriend = async () => {
+  const playVsFriend = async (wager: number, friendTime: number) => {
     if (isCreating || submittingRef.current) return;
     telegramHaptic('selection');
     submittingRef.current = true;
     setIsCreating(true);
     setMatchmakingError("");
+    setFriendError('');
     try {
-      const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${timeControl}&wager=0`, {
+      const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${friendTime}&wager=${wager}`, {
         method: "POST"
       });
       if (!res.ok) {
@@ -376,10 +381,13 @@ export default function PlayLobby() {
         throw new Error(errData.detail || "Backend error");
       }
       const data = await res.json();
+      void syncBalance().catch(() => {});
+      setShowFriendChallenge(false);
       router.push(`/${locale}/game?id=${data.game_id}`);
     } catch (e: any) {
       console.error("Failed to create friend game", e);
-      setMatchmakingError(tg('friend_invite_failed'));
+      setFriendError(tg('friend_invite_failed'));
+      if (wager > 0) void syncBalance().catch(() => {});
     } finally {
       setIsCreating(false);
       submittingRef.current = false;
@@ -624,11 +632,11 @@ export default function PlayLobby() {
                     <span className="lobby-tile__sub">{tg('lobby_no_stake')}</span>
                   </span>
                 </button>
-                <Button variant="secondary" className="lobby-tile" onClick={playVsFriend} disabled={isCreating}>
+                <Button variant="secondary" className="lobby-tile" onClick={() => { setFriendError(''); setShowFriendChallenge(true); }} disabled={isCreating}>
                   <span className="ui-icon-tile ui-icon-tile--premium"><FaShareAlt size={16} aria-hidden="true" /></span>
                   <span className="lobby-tile__text">
                     <span className="lobby-tile__title">{tg('play_friend')}</span>
-                    <span className="lobby-tile__sub">{tg('lobby_no_stake')}</span>
+                    <span className="lobby-tile__sub">{tg('friend_tile_subtitle')}</span>
                   </span>
                 </Button>
               </div>
@@ -650,12 +658,17 @@ export default function PlayLobby() {
 
         {/* Lobby Quick Deposit Drawer */}
         {showAiDifficulty && <AiDifficultyDrawer onClose={() => setShowAiDifficulty(false)} onSelect={startAiGame} isCreating={isCreating} />}
+        {showFriendChallenge && <FriendChallengeDrawer onClose={() => { if (!isCreating) setShowFriendChallenge(false); }}
+          onCreate={(stake, friendTime) => { void playVsFriend(stake, friendTime); }}
+          onTopUp={(stake) => { setDepositTarget(stake); setShowFriendChallenge(false); setShowDepositDrawer(true); }}
+          initialTime={timeControl} initialWager={chosenWager} walletBalance={walletBalance}
+          loadingBalance={loadingBalance} balanceError={Boolean(balanceError)} isCreating={isCreating} error={friendError} />}
         <AnimatePresence>
           {showDepositDrawer && (
             <DepositModal
-              chosenWager={chosenWager}
+              chosenWager={depositTarget ?? chosenWager}
               walletBalance={walletBalance}
-              onClose={() => setShowDepositDrawer(false)}
+              onClose={() => { setShowDepositDrawer(false); setDepositTarget(null); }}
               onSuccess={refreshAfterDeposit}
             />
           )}

@@ -23,6 +23,10 @@ import { requestBotRevengeGame } from '@/lib/botRevenge';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
+import { formatUsd, winnerCents } from '@/lib/settlement';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 import {
   GamePlayerCard,
@@ -47,7 +51,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const { playTickSound } = useAudioSynth();
   const { play: playAudio } = useAudio();
   // @ts-ignore
-  const { fen, makeMove, isConnected, error, gameState } = useGameSocket(gameId);
+  const { fen, makeMove, isConnected, error, gameState, wagerConsent, acceptWager } = useGameSocket(gameId);
 
   const [copied, setCopied] = useState(false);
   const [actionTrayFootprint, setActionTrayFootprint] = useState<number | null>(null);
@@ -697,9 +701,24 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const netPayout = summary?.payout ?? null;
   const myNewElo = summary?.newElo;
 
+  const wagerConsentModal = <Modal isOpen={Boolean(wagerConsent)} onClose={() => router.push(`/${locale}/game`)} title={tg('friend_join_stake_title')} maxWidth="sm">
+    {wagerConsent && <div className="space-y-4">
+      <Card variant="solid" className="space-y-2 p-4">
+        <p className="text-sm text-brand-muted">{tg('stake')}: <strong className="text-brand-primary">{formatUsd(wagerConsent.wager)} USDT</strong></p>
+        <p className="text-sm text-brand-muted">{tg('time_control')}: <strong className="text-brand-primary">{wagerConsent.time_control / 60} min</strong></p>
+        <p className="text-sm text-brand-muted">{tg('win_up_to')}: <strong className="text-brand-primary">{formatUsd(winnerCents(wagerConsent.wager))} USDT</strong></p>
+      </Card>
+      <p className="text-sm text-brand-muted">{tg('friend_join_stake_notice')}</p>
+      {error && <p role="alert" className="text-sm text-brand-danger">{error}</p>}
+      <Button variant="primary" className="w-full" onClick={() => { telegramHaptic('selection'); acceptWager(); }}>{tg('friend_join_stake_action', { amount: formatUsd(wagerConsent.wager) })}</Button>
+      <Button variant="secondary" className="w-full" onClick={() => router.push(`/${locale}/game`)}>{tg('to_lobby')}</Button>
+    </div>}
+  </Modal>;
+
   if (!gameState) {
     return (
       <LayoutWrapper className="justify-center items-center">
+        {wagerConsentModal}
         <div className="flex flex-col items-center justify-center min-h-[50dvh]">
           <div className="relative w-20 h-20 flex items-center justify-center rounded-full border border-brand-border-opacity-10 bg-brand-surface mb-5 shadow-premium">
             <div className="absolute inset-0 rounded-full border border-brand-primary/20 animate-ping opacity-40" />
@@ -731,6 +750,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
         ? { '--action-tray-space': `${actionTrayFootprint}px` } as React.CSSProperties
         : undefined}
     >
+      {wagerConsentModal}
       {/* Header / Nav */}
       <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex justify-between items-center mb-4 relative z-10 px-2 mt-2 mx-auto">
         <div className="flex items-center gap-3">
@@ -836,7 +856,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           tTimeControl={tg('time_control')}
           tInviteOnTelegram={tg('invite_on_telegram')}
           tCancelRefundMatch={tg('cancel_refund_match')}
-          tWaitingKeepOpen={tg('waiting_keep_open')}
+          tWaitingKeepOpen={gameState?.bid_amount > 0 ? tg('friend_waiting_paid') : tg('waiting_keep_open')}
         />
       ) : (
         <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-4 mx-auto">

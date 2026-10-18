@@ -278,7 +278,6 @@ async def disconnect(sid):
     try:
         session = await sio.get_session(sid)
         user_id = session.get('user_id')
-        game_id = session.get('game_id')
         sm = GameService().session_manager
         if sm.redis and not sm._use_memory:
             await sm.redis.delete(f"socket:presence:{sid}")
@@ -300,18 +299,9 @@ async def disconnect(sid):
             except Exception:
                 pass
             
-            # Auto-abort friendly game lobby if creator disconnects before opponent joins
-            if game_id:
-                service = GameService()
-                state = await service.get_game_state(game_id)
-                if state and not state.is_game_over:
-                    if state.white_player_id == user_id and not state.black_player_id and state.bid_amount > 0:
-                        logger.info(f"Creator {user_id} disconnected from lobby {game_id}. Aborting game and refunding.")
-                        state.is_game_over = True
-                        state.result_type = 'aborted'
-                        await service.session_manager.save_game(game_id, state)
-                        await service.end_game(game_id, state)
-                        await sio.emit('game_state', state.model_dump(), room=game_id)
+            # A private staked invitation may be accepted while its creator is
+            # away. The durable sweeper refunds an unfilled invite after 30 min;
+            # a transient socket disconnect must not invalidate the shared link.
     except Exception as e:
         print(f"Error on socket disconnect: {e}")
 
@@ -342,8 +332,6 @@ async def join_room(sid, data):
     user_id = session.get('user_id')
     
     if room:
-        if user_id:
-            await sio.save_session(sid, {**session, 'game_id': room})
         service = GameService()
         if user_id:
             state = await service.session_manager.get_game(room)
@@ -351,9 +339,14 @@ async def join_room(sid, data):
                 if user_id not in (state.white_player_id, state.black_player_id):
                     await sio.emit('error', {'message': 'Forbidden: You are not a player in this game.'}, room=sid)
                     return
-        
-        await sio.enter_room(sid, room)
-        print(f"Socket {sid} (User {user_id}) joined room {room}")
+            if (state and not state.is_game_over and state.bid_amount > 0
+                    and state.white_player_id and not state.black_player_id
+                    and user_id != state.white_player_id and data.get('accept_wager') is not True):
+                await sio.emit('wager_consent_required', {
+                    'game_id': room, 'wager': state.bid_amount,
+                    'time_control': state.time_control_seconds,
+                }, room=sid)
+                return
         
         # Try to join/assign player if user_id present
         if user_id:
@@ -361,10 +354,14 @@ async def join_room(sid, data):
             had_both_players = (old_state and old_state.white_player_id and old_state.black_player_id)
             
             try:
-                state = await service.join_game(room, user_id)
+                state = await service.join_game(room, user_id, accept_wager=data.get('accept_wager') is True)
             except ValueError as e:
                 await sio.emit('error', {'message': str(e)}, room=sid)
                 return
+            if state:
+                await sio.enter_room(sid, room)
+                await sio.save_session(sid, {**session, 'game_id': room})
+                print(f"Socket {sid} (User {user_id}) joined room {room}")
             
             # If both players are now present for the first time in a friendly PVP game, start the game and schedule abort timer
             if state and not had_both_players and state.white_player_id and state.black_player_id:
@@ -380,6 +377,7 @@ async def join_room(sid, data):
         else:
             state = await service.get_game_state(room)
             if state:
+                await sio.enter_room(sid, room)
                 await sio.emit('game_state', state.model_dump(), room=sid)
 
         # Recovery/Reconnection timer restart handler

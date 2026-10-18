@@ -275,13 +275,14 @@ async def test_heal_zombie_wagers(db_session):
         amount=-200,  # 2.00 USDT
         fee=0,
         status="completed",
-        reference_id=game_id
+        reference_id=game_id,
+        created_at=datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=1),
     )
     db_session.add(tx2)
     await db_session.commit()
 
-    # Since the Redis key does not exist for "test_dangling_game_999",
-    # heal_zombie_wagers should refund it immediately in DB.
+    # The Redis key does not exist and the debit is older than the grace
+    # window, so reconnect healing should refund it in DB.
     await service.heal_zombie_wagers(db_session, telegram_id)
 
     await db_session.refresh(user)
@@ -298,6 +299,22 @@ async def test_heal_zombie_wagers(db_session):
     refund_tx = res_refund.scalars().first()
     assert refund_tx is not None
     assert refund_tx.amount == 200
+
+    # A just-created private wager can be between DB commit and Redis save.
+    # Reconnect healing must leave it alone until the grace window passes.
+    fresh_game = "fresh_private_wager_999"
+    fresh_private_tx = Transaction(user_id=telegram_id, type="game_wager", amount=-100,
+                                   fee=0, status="completed", reference_id=fresh_game)
+    db_session.add(fresh_private_tx)
+    await db_session.commit()
+    await service.heal_zombie_wagers(db_session, telegram_id)
+    await db_session.refresh(user)
+    assert user.balance == 800
+    fresh_private_tx.created_at = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=1)
+    await db_session.commit()
+    await service.heal_zombie_wagers(db_session, telegram_id)
+    await db_session.refresh(user)
+    assert user.balance == 900
 
 
 @pytest.mark.asyncio

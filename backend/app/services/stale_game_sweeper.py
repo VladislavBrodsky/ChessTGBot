@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 # A matched wager game with no first move after this long is dead. Comfortably
 # past the 30s in-process first-move abort so we never race a healthy game.
 STALE_GRACE_SECONDS = 120
+UNFILLED_WAGER_GRACE_SECONDS = 1800
 SWEEP_INTERVAL_SECONDS = 60
 
 # A sweep that fails is retried on the next tick, so a momentary Redis/network
@@ -44,11 +45,11 @@ SWEEP_ALERT_REMINDER_SWEEPS = 10
 
 def is_sweepable(state, now: float, grace: float = STALE_GRACE_SECONDS) -> bool:
     """
-    True only for a *matched human* game that has NEVER started and is now stale:
+    True only for an unstarted wager game whose reserved stake should be released:
       - not already over,
-      - both real human players joined (excludes AI = -1 and unfilled lobbies),
       - no move was ever made (last_move_at is None), and
-      - its first-move grace plus a safety margin has elapsed since matching.
+      - either a paid invitation has waited 30 minutes without a guest, or a
+        matched human game has exceeded its first-move grace plus a safety margin.
     Started-but-abandoned games are intentionally left to the clock-timeout path
     (a real forfeit, not a refund); unfilled free invitations remain shareable until their normal TTL.
     """
@@ -58,7 +59,7 @@ def is_sweepable(state, now: float, grace: float = STALE_GRACE_SECONDS) -> bool:
     black_id = state.black_player_id
     if not white_id or white_id == -1:
         return False
-    if not black_id or black_id == -1:
+    if black_id == -1:
         return False
     if state.last_move_at is not None:
         return False
@@ -67,6 +68,8 @@ def is_sweepable(state, now: float, grace: float = STALE_GRACE_SECONDS) -> bool:
         # Pre-existing games from before created_at was tracked: leave them to
         # the 24h TTL / reconnect self-heal rather than guess their age.
         return False
+    if not black_id:
+        return getattr(state, "bid_amount", 0) > 0 and now - created >= UNFILLED_WAGER_GRACE_SECONDS
     matched = getattr(state, "matched_at", None)
     if getattr(state, "bid_amount", 0) <= 0 and not matched:
         return False  # legacy free games have no reliable match timestamp
