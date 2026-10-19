@@ -7,7 +7,7 @@
   "hook": "White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3",
   "cta": "academy",
   "text": "<b>White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3</b>\n\nGreedy play in the opening gets punished fast in speed chess.\nWhen Black plays 3...Nd4, White thinks: 'A free pawn with an f7 attack!'\nThen came 4.Nxe5? Qg5! and White's king never survived past move 7.\n\nThe refutation: 4.Nxd4! exd4 5.O-O, leaving White with superior development and complete center control.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -46,10 +46,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T21:33:42Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-2.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-19T02:40:03Z",
+  "published": {
+    "message_id": 44,
+    "at": "2026-10-19T02:40:03Z"
+  },
+  "media_cleaned": true
 }

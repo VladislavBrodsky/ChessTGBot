@@ -112,15 +112,32 @@ def _has_valid_image(entry: Dict[str, Any]) -> bool:
     return bool(p.exists() or (queue.ROOT / p).exists() or (queue.HERE / p).exists())
 
 
-def ensure_x_queue_replenished(now: datetime, render_images: bool = True) -> int:
-    """Auto-generates today's X daily batch when no approved X posts remain in queue."""
-    approved_x = [
-        e for e in queue.all_entries()
-        if e.get("kind") in ("x_post", "x_thread") and e.get("status") == "approved"
-    ]
-    if approved_x:
-        if render_images:
-            for entry in approved_x:
+def ensure_x_queue_replenished(now: datetime, render_images: bool = True, lookahead_days: int = 1) -> int:
+    """Proactively ensures today and tomorrow have approved, pre-rendered X posts buffered."""
+    created_total = 0
+    today = now.date()
+
+    for offset in range(lookahead_days + 1):
+        target_day = today + timedelta(days=offset)
+        target_day_str = target_day.isoformat()
+        day_entries = [e for e in queue.all_entries(day=target_day_str) if e.get("kind") in ("x_post", "x_thread")]
+
+        # If day has no entries, auto-generate complete batch
+        if not day_entries:
+            try:
+                logger.info(f"Proactive Buffer: Auto-generating X batch for {target_day_str}...")
+                orchestrator = ContentEngineOrchestrator(plan_date=target_day)
+                batch = orchestrator.generate_x_daily_batch(target_date=target_day, render_images=render_images)
+                created = int(batch.get("posts_created", 0))
+                created_total += created
+                logger.info(f"Buffered {created} approved X posts for {target_day_str}.")
+            except Exception as e:
+                logger.error(f"Failed buffering X batch for {target_day_str}: {e}", exc_info=True)
+
+    # Render any missing images across all approved X posts
+    if render_images:
+        for entry in queue.all_entries():
+            if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") == "approved":
                 if entry.get("kind") == "x_post" and entry.get("creative") and not _has_valid_image(entry):
                     try:
                         logger.info(f"Rendering missing X creative for {entry['id']}...")
@@ -128,29 +145,36 @@ def ensure_x_queue_replenished(now: datetime, render_images: bool = True) -> int
                         queue.save(entry)
                     except Exception as e:
                         logger.error(f"Failed rendering X creative for {entry['id']}: {e}")
-        return 0
 
-    target_day = now.date()
-    while queue.path_for(f"{target_day.isoformat()}-x-1").exists():
-        target_day += timedelta(days=1)
-
-    logger.info(f"X queue depleted. Auto-generating fresh X daily batch for {target_day.isoformat()}...")
-    orchestrator = ContentEngineOrchestrator(plan_date=target_day)
-    batch = orchestrator.generate_x_daily_batch(target_date=target_day, render_images=render_images)
-    created = int(batch.get("posts_created", 0))
-    logger.info(f"Auto-replenished {created} approved X posts for {target_day.isoformat()}.")
-    return created
+    return created_total
 
 
-def ensure_tg_queue_replenished(now: datetime, render_images: bool = True) -> int:
-    """Auto-generates today's Telegram daily batch when no approved Telegram posts remain in queue."""
-    approved_tg = [
-        e for e in queue.all_entries()
-        if e.get("kind") == "telegram" and e.get("status") == "approved"
-    ]
-    if approved_tg:
-        if render_images:
-            for entry in approved_tg:
+def ensure_tg_queue_replenished(now: datetime, render_images: bool = True, lookahead_days: int = 1) -> int:
+    """Proactively ensures today and tomorrow have approved, pre-rendered Telegram posts buffered."""
+    created_total = 0
+    today = now.date()
+
+    for offset in range(lookahead_days + 1):
+        target_day = today + timedelta(days=offset)
+        target_day_str = target_day.isoformat()
+        day_entries = [e for e in queue.all_entries(day=target_day_str) if e.get("kind") == "telegram"]
+
+        # If day has no entries, auto-generate complete batch
+        if not day_entries:
+            try:
+                logger.info(f"Proactive Buffer: Auto-generating Telegram batch for {target_day_str}...")
+                orchestrator = ContentEngineOrchestrator(plan_date=target_day)
+                batch = orchestrator.generate_telegram_daily_batch(target_date=target_day, render_images=render_images)
+                created = int(batch.get("posts_created", 0))
+                created_total += created
+                logger.info(f"Buffered {created} approved Telegram posts for {target_day_str}.")
+            except Exception as e:
+                logger.error(f"Failed buffering Telegram batch for {target_day_str}: {e}", exc_info=True)
+
+    # Render any missing images across all approved Telegram posts
+    if render_images:
+        for entry in queue.all_entries():
+            if entry.get("kind") == "telegram" and entry.get("status") == "approved":
                 if entry.get("creative") and not _has_valid_image(entry):
                     try:
                         logger.info(f"Rendering missing Telegram creative for {entry['id']}...")
@@ -158,18 +182,8 @@ def ensure_tg_queue_replenished(now: datetime, render_images: bool = True) -> in
                         queue.save(entry)
                     except Exception as e:
                         logger.error(f"Failed rendering Telegram creative for {entry['id']}: {e}")
-        return 0
 
-    target_day = now.date()
-    while queue.path_for(f"{target_day.isoformat()}-tg-1").exists():
-        target_day += timedelta(days=1)
-
-    logger.info(f"Telegram queue depleted. Auto-generating fresh Telegram daily batch for {target_day.isoformat()}...")
-    orchestrator = ContentEngineOrchestrator(plan_date=target_day)
-    batch = orchestrator.generate_telegram_daily_batch(target_date=target_day, render_images=render_images)
-    created = int(batch.get("posts_created", 0))
-    logger.info(f"Auto-replenished {created} approved Telegram posts for {target_day.isoformat()}.")
-    return created
+    return created_total
 
 
 def run_tick(

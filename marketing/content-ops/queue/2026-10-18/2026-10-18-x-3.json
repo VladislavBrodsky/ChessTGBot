@@ -5,7 +5,7 @@
   "category": "Product",
   "hook": "Skill-gated PvP: 95% of every match pool goes to the winner",
   "text": "Skill-gated PvP: 95% of every match pool goes to the winner\n\nZero house-edge luck, zero bots, and server-validated moves on every turn.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -37,10 +37,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-17T18:55:51Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-x-3.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-18T23:44:43Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2111966734919864776",
+    "reply_id": "2111966737562222956",
+    "root_url": "https://x.com/defi_ambassador/status/2111966734919864776"
+  },
+  "published": {
+    "root_id": "2111966734919864776",
+    "root_url": "https://x.com/defi_ambassador/status/2111966734919864776",
+    "at": "2026-10-18T23:44:43Z"
+  },
+  "media_cleaned": true
 }

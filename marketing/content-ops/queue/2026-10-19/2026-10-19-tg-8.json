@@ -1,0 +1,65 @@
+{
+  "id": "2026-10-19-tg-8",
+  "kind": "telegram",
+  "date": "2026-10-19",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. Pawn on f6 guards the decisive blow",
+  "cta": "academy_app",
+  "text": "<b>White to move. Pawn on f6 guards the decisive blow</b>\n\nDark square invasion: Black cannot defend g7.\nExecute the 1-move finish.\n\n❤ Qg7#   🔥 Qh4   👏 g4\nAnswer reveals in 6 hours.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "5rk1/5p1p/5PpQ/8/8/8/5PPP/6K1 w - - 0 1",
+    "solution": [
+      "Qg7#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Lolli's Mate",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "5rk1/5p1p/5PpQ/8/8/8/5PPP/6K1 w - - 0 1",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Qg7#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Qg7#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "5rk1/5p1p/5PpQ/8/8/8/5PPP/6K1 w - - 0 1",
+      "cta_label": "Solve More in Academy"
+    },
+    "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-8.reveal.png"
+  },
+  "scheduled_at": "2026-10-19T21:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-18T23:53:20Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-8.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  }
+}

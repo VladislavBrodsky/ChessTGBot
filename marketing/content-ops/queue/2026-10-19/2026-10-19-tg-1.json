@@ -1,0 +1,65 @@
+{
+  "id": "2026-10-19-tg-1",
+  "kind": "telegram",
+  "date": "2026-10-19",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. Black's rook and pawns cage their own king",
+  "cta": "academy_app",
+  "text": "<b>White to move. Black's rook and pawns cage their own king</b>\n\nBlack's king on h8 has no flight squares remaining.\nFind the leaping knight check that seals the smothered mate.\n\n❤ Nf7#   🔥 Nxf7+   👏 Nh7\nAnswer reveals in 6 hours.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+    "solution": [
+      "Nf7#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Smothered Mate",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Nf7#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Nf7#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+      "cta_label": "Solve More in Academy"
+    },
+    "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-1.reveal.png"
+  },
+  "scheduled_at": "2026-10-19T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-18T23:53:16Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  }
+}

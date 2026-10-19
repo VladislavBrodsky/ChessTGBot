@@ -893,60 +893,354 @@ class ContentEngineOrchestrator:
         results: List[Dict[str, Any]] = []
 
         slots_utc = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"]
+        date_badge = d.strftime("%b %d")
+
+        # Collect previously used hooks to guarantee zero Telegram duplicates across days
+        used_tg_hooks = set()
+        for existing in queue.all_entries():
+            if existing.get("kind") == "telegram" and existing.get("date") != d_str:
+                if existing.get("hook"):
+                    used_tg_hooks.add(existing["hook"].strip().lower())
+
+        tg_tactics_pool = [
+            {
+                "tactic_name": "Back Rank Corridor",
+                "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+                "solution": ["Ra8#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Black's king is boxed in. Spot the 1-move mate",
+                "body": (
+                    "Black's king on g8 has three pawns acting as walls.\n"
+                    "One rook move delivers instant checkmate.\n\n"
+                    "❤ Ra8#   🔥 Rd1   👏 f4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Smothered Mate",
+                "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+                "solution": ["Nf7#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Black's rook and pawns cage their own king",
+                "body": (
+                    "Black's king on h8 has no flight squares remaining.\n"
+                    "Find the leaping knight check that seals the smothered mate.\n\n"
+                    "❤ Nf7#   🔥 Nxf7+   👏 Nh7\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Anastasia's Mate",
+                "fen": "5r2/4Nppk/8/8/8/4R3/5PPP/6K1 w - - 0 1",
+                "solution": ["Rh3#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. The knight on e7 locks down g8 and g6",
+                "body": (
+                    "Black's king on h7 is boxed against the edge.\n"
+                    "One rook move finishes the corridor mate.\n\n"
+                    "❤ Rh3#   🔥 Re4   👏 f4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Boden's Mate",
+                "fen": "2kr1b1r/p2npppp/1pp5/8/5B2/2N5/PPP1BPPP/2KR3R w - - 0 1",
+                "solution": ["Ba6#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Criss-crossing bishops slice the king's castle",
+                "body": (
+                    "The dark-square bishop holds the flight line.\n"
+                    "Deliver the light-square bishop strike for instant checkmate.\n\n"
+                    "❤ Ba6#   🔥 Bb5   👏 Rd4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Epaulette Mate",
+                "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+                "solution": ["Qe6#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Flanked by two rooks, the king cannot move",
+                "body": (
+                    "Black's own rooks on d8 and f8 block any escape.\n"
+                    "Spot the central queen mate in 1.\n\n"
+                    "❤ Qe6#   🔥 Qd7+   👏 Qf6\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Lolli's Mate",
+                "fen": "5rk1/5p1p/5PpQ/8/8/8/5PPP/6K1 w - - 0 1",
+                "solution": ["Qg7#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Pawn on f6 guards the decisive blow",
+                "body": (
+                    "Dark square invasion: Black cannot defend g7.\n"
+                    "Execute the 1-move finish.\n\n"
+                    "❤ Qg7#   🔥 Qh4   👏 g4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Morphy's Opera Mate",
+                "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+                "solution": ["Qb8+", "Nxb8", "Rd8#"],
+                "claim": "mate_in_2",
+                "hook": "White to move. Paul Morphy's classical queen deflection sacrifice",
+                "body": (
+                    "Black's king on e8 is pinned down.\n"
+                    "Calculate the forced mate in 2.\n\n"
+                    "❤ Qb8+   🔥 Rd8+   👏 Bxf7+\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+        ]
+
+        tg_traps_pool = [
+            {
+                "trap_name": "Blackburne-Shilling Gambit",
+                "hook": "White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3",
+                "body": (
+                    "Greedy play in the opening gets punished fast in speed chess.\n"
+                    "When Black plays 3...Nd4, White thinks: 'A free pawn with an f7 attack!'\n"
+                    "Then came 4.Nxe5? Qg5! and White's king never survived past move 7.\n\n"
+                    "The refutation: 4.Nxd4! exd4 5.O-O, leaving White with superior development and complete center control."
+                ),
+                "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
+                "solution": ["Bxf7+"],
+            },
+            {
+                "trap_name": "Stafford Gambit",
+                "hook": "Why 2000-Elo players still fall for the Stafford Gambit in 3-minute blitz",
+                "body": (
+                    "Greedy opening captures without king development lead directly to devastating tactical refutations.\n"
+                    "When White takes on e5 and holds material, Black's pieces unleash a devastating barrage.\n\n"
+                    "Spot the master refutation: neutralize the dark-squared bishop early and castle immediately."
+                ),
+                "fen": "r1bBk2r/ppp2ppp/2p5/2b5/4n3/3P4/PPP2PPP/RN1QKB1R b KQkq - 0 7",
+                "solution": ["Bxf2+", "Ke2", "Bg4#"],
+            },
+            {
+                "trap_name": "Legal's Trap",
+                "hook": "Black thought they won White's queen. Two moves later, checkmate landed on d5",
+                "body": (
+                    "The most famous minor-piece queen sacrifice in chess history.\n"
+                    "When Black pins the knight with Bg4, White calculates: 5.Nxe5! Bxd1 6.Bxf7+ Ke7 7.Nd5#.\n\n"
+                    "The lesson: Never capture an undefended queen without calculating forcing king checks first."
+                ),
+                "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+                "solution": ["Bxf7+", "Ke7", "Nd5#"],
+            },
+            {
+                "trap_name": "Fishing Pole Trap",
+                "hook": "Never take the knight on g4 when the h-file opens against your castled king",
+                "body": (
+                    "The Fishing Pole trap catches players who play h3 automatically in the Ruy Lopez or Italian.\n"
+                    "Black plays h5! After hxg4? hxg4, the open h-file and queen invasion on h4 force checkmate in 3.\n\n"
+                    "The defense: Ignore the g4 bait or challenge Black's center immediately with d4."
+                ),
+                "fen": "r1bq1rk1/pppp1ppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RN1Q1RK1 b - - 0 6",
+                "solution": ["Ng4"],
+            },
+            {
+                "trap_name": "Noah's Ark Trap",
+                "hook": "Greedy bishop pushes in the Ruy Lopez get trapped on b3 every time",
+                "body": (
+                    "In the Spanish opening, White's light-squared bishop on b3 seems powerful.\n"
+                    "Black plays a6, b5, and c4, locking the bishop in a wooden box with no escape.\n\n"
+                    "The defense: White must preserve an escape route with a4 or c3 before pushing the d-pawn."
+                ),
+                "fen": "r1bqk2r/2ppbppp/p1n5/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 b kq - 0 7",
+                "solution": ["d6"],
+            },
+            {
+                "trap_name": "Elephant Gambit",
+                "hook": "White grabs central space early. Black's bishop counter-strike flips the board",
+                "body": (
+                    "1.e4 e5 2.Nf3 d5!? Black sacrifices a central pawn to open diagonals for both bishops.\n"
+                    "Unprepared players get suffocated before reaching move 10.\n\n"
+                    "Review the complete refutation line inside the free Web3Chess Academy."
+                ),
+                "fen": "rnbqkbnr/ppp2ppp/8/3pp3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+                "solution": ["Nxe5"],
+            },
+            {
+                "trap_name": "Halosar Trap",
+                "hook": "The Blackmar-Diemer trap that punishes passive pawn captures in under 8 moves",
+                "body": (
+                    "White sacrifices the e-pawn for rapid open-file development.\n"
+                    "When Black greedily grabs on d4, White's bishop sacrifice on f7 tears off the king's shield.\n\n"
+                    "Speed chess rule: Lead in development is worth more than a single flank pawn in blitz."
+                ),
+                "fen": "rnbqk1nr/ppp1ppbp/6p1/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4",
+                "solution": ["e4"],
+            },
+        ]
+
+        tg_evening_pool = [
+            {
+                "tactic_name": "Arabian Mate",
+                "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+                "solution": ["Rh7#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. The knight guards the escape squares. Find the mate",
+                "body": (
+                    "Black's king on h8 is locked down by White's knight on f6.\n"
+                    "One rook move delivers instant checkmate.\n\n"
+                    "❤ Rh7#   🔥 Ra8+   👏 Ne8\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Ladder Mate",
+                "fen": "7k/1R6/8/8/8/8/8/R5K1 w - - 0 1",
+                "solution": ["Ra8#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Two rooks seal every flight square on the back rank",
+                "body": (
+                    "Black's king on h8 is trapped behind the 7th-rank barrier.\n"
+                    "Spot the 1-move ladder mate.\n\n"
+                    "❤ Ra8#   🔥 Rb8+   👏 Kg2\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Damiano's Bishop Mate",
+                "fen": "6k1/5ppp/8/8/8/8/1B3PPP/R5K1 w - - 0 1",
+                "solution": ["Ra8#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. The bishop on b2 snipes the flight square on f8",
+                "body": (
+                    "Black's king on g8 cannot step onto f8 because of the long diagonal.\n"
+                    "Spot the 1-move checkmate.\n\n"
+                    "❤ Ra8#   🔥 Rd1   👏 f4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Lolli's Mate",
+                "fen": "5rk1/5p1p/5PpQ/8/8/8/5PPP/6K1 w - - 0 1",
+                "solution": ["Qg7#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Pawn on f6 guards the decisive blow",
+                "body": (
+                    "Dark square invasion: Black cannot defend g7.\n"
+                    "Execute the 1-move finish.\n\n"
+                    "❤ Qg7#   🔥 Qh4   👏 g4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Anastasia's Mate",
+                "fen": "5r2/4Nppk/8/8/8/4R3/5PPP/6K1 w - - 0 1",
+                "solution": ["Rh3#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. The knight on e7 locks down g8 and g6",
+                "body": (
+                    "Black's king on h7 is boxed against the edge.\n"
+                    "One rook move finishes the corridor mate.\n\n"
+                    "❤ Rh3#   🔥 Re4   👏 f4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Boden's Mate",
+                "fen": "2kr1b1r/p2npppp/1pp5/8/5B2/2N5/PPP1BPPP/2KR3R w - - 0 1",
+                "solution": ["Ba6#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Criss-crossing bishops slice the king's castle",
+                "body": (
+                    "The dark-square bishop holds the flight line.\n"
+                    "Deliver the light-square bishop strike for instant checkmate.\n\n"
+                    "❤ Ba6#   🔥 Bb5   👏 Rd4\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+            {
+                "tactic_name": "Epaulette Mate",
+                "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+                "solution": ["Qe6#"],
+                "claim": "mate_in_1",
+                "hook": "White to move. Flanked by two rooks, the king cannot move",
+                "body": (
+                    "Black's own rooks on d8 and f8 block any escape.\n"
+                    "Spot the central queen mate in 1.\n\n"
+                    "❤ Qe6#   🔥 Qd7+   👏 Qf6\n"
+                    "Answer reveals in 6 hours."
+                ),
+            },
+        ]
+
+        def _pick_tg_unique(pool: List[Dict[str, Any]], seed_offset: int) -> Dict[str, Any]:
+            start_idx = (d.toordinal() + seed_offset) % len(pool)
+            for i in range(len(pool)):
+                candidate = dict(pool[(start_idx + i) % len(pool)])
+                if candidate["hook"].strip().lower() not in used_tg_hooks:
+                    return candidate
+            fallback = dict(pool[start_idx])
+            fallback["hook"] = f"{fallback['hook']} ({date_badge})"
+            return fallback
 
         # 1. TG-1: Tactics Interactive Academy Drill
+        t1_spec = _pick_tg_unique(tg_tactics_pool, 0)
         p1 = self.copywriter.draft_interactive_academy_drill(
             slot_id=f"{d_str}-tg-1",
-            fen="6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
-            solution=["Ra8#"],
-            tactic_name="Back Rank Corridor",
-            claim="mate_in_1",
-            hook="White to move. Black's king is boxed in. Spot the 1-move mate",
-            body=(
-                "Black's king on g8 has three pawns acting as walls.\n"
-                "One rook move delivers instant checkmate.\n\n"
-                "❤ Ra8#   🔥 Rd1   👏 f4\n"
-                "Answer reveals in 6 hours."
-            ),
+            fen=t1_spec["fen"],
+            solution=t1_spec["solution"],
+            tactic_name=t1_spec["tactic_name"],
+            claim=t1_spec["claim"],
+            hook=t1_spec["hook"],
+            body=t1_spec["body"],
         )
         p1["scheduled_at"] = f"{d_str}T{slots_utc[0]}:00Z"
 
         # 2. TG-2: Opening Trap Refutation (Academy)
+        t2_spec = _pick_tg_unique(tg_traps_pool, 1)
         p2 = self.copywriter.draft_opening_trap_telegram_post(
             slot_id=f"{d_str}-tg-2",
-            trap_name="Blackburne-Shilling Gambit",
-            hook="White grabbed the free pawn on e5. Seven moves later, checkmate arrived on f3",
-            body=(
-                "Greedy play in the opening gets punished fast in speed chess.\n"
-                "When Black plays 3...Nd4, White thinks: 'A free pawn with an f7 attack!'\n"
-                "Then came 4.Nxe5? Qg5! and White's king never survived past move 7.\n\n"
-                "The refutation: 4.Nxd4! exd4 5.O-O, leaving White with superior development and complete center control."
-            ),
-            fen="r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4",
-            solution=["Bxf7+"],
+            trap_name=t2_spec["trap_name"],
+            hook=t2_spec["hook"],
+            body=t2_spec["body"],
+            fen=t2_spec["fen"],
+            solution=t2_spec["solution"],
         )
         p2["scheduled_at"] = f"{d_str}T{slots_utc[1]}:00Z"
 
         # 3. TG-3: Mystery Vault Drop
         p3 = self.copywriter.draft_mystery_box_drop(
             slot_id=f"{d_str}-tg-3",
-            box_tier="Epic",
+            box_tier="Epic" if d.weekday() % 2 == 0 else "Legendary",
         )
         p3["scheduled_at"] = f"{d_str}T{slots_utc[2]}:00Z"
 
         # 4. TG-4: Academy Pro Tip
+        academy_topics = [
+            ("Candidate Moves", "Stop looking for the best move before you calculate all forcing checks",
+             "In 3-minute blitz, players jump at the first plausible recapture.\n\n"
+             "Master players scan three things in under 2 seconds:\n"
+             "1. Checks (every check must be calculated)\n"
+             "2. Captures (every piece tension)\n"
+             "3. Threats (forcing queen or rook moves)\n\n"
+             "Review candidate calculation inside the free Web3Chess Academy."),
+            ("Prophylaxis", "Ask what your opponent wants before you calculate your own attack",
+             "In blitz scrambles, 70% of losses come from ignoring opponent counter-threats.\n\n"
+             "Before committing an attacking piece, take 1 second to spot their best reply.\n\n"
+             "Study prophylactic thinking inside the Web3Chess Academy."),
+            ("Piece Activity", "An active knight in the center out-evaluates a passive rook on the rim",
+             "Material count is deceptive in 3-minute blitz. Piece mobility wins games.\n\n"
+             "Keep pieces pointing at the enemy king and control open outposts.\n\n"
+             "Sharpen your piece activity in our free Academy."),
+            ("Rook Endgames", "Activate your rook behind enemy passed pawns, never in front of them",
+             "Tarrasch's classic rule holds true in 2026 digital blitz:\n\n"
+             "A rook behind a passed pawn controls the entire promotion file.\n\n"
+             "Master practical endgame technique in the Web3Chess Academy."),
+        ]
+        topic_spec = academy_topics[d.weekday() % len(academy_topics)]
         p4 = self.copywriter.draft_academy_lesson_telegram_post(
             slot_id=f"{d_str}-tg-4",
-            topic="Candidate Moves",
-            hook="Stop looking for the best move before you calculate all forcing checks",
-            body=(
-                "In 3-minute blitz, players jump at the first plausible recapture.\n\n"
-                "Master players scan three things in under 2 seconds:\n"
-                "1. Checks (every check must be calculated)\n"
-                "2. Captures (every piece tension)\n"
-                "3. Threats (forcing queen or rook moves)\n\n"
-                "Review candidate calculation inside the free Web3Chess Academy."
-            ),
+            topic=topic_spec[0],
+            hook=topic_spec[1],
+            body=topic_spec[2],
         )
         p4["scheduled_at"] = f"{d_str}T{slots_utc[3]}:00Z"
 
@@ -980,19 +1274,15 @@ class ContentEngineOrchestrator:
         p7["scheduled_at"] = f"{d_str}T{slots_utc[6]}:00Z"
 
         # 8. TG-8: Evening Tactics Interactive Drill
+        t8_spec = _pick_tg_unique(tg_evening_pool, 2)
         p8 = self.copywriter.draft_interactive_academy_drill(
             slot_id=f"{d_str}-tg-8",
-            fen="7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
-            solution=["Rh7#"],
-            tactic_name="Arabian Mate",
-            claim="mate_in_1",
-            hook="White to move. The knight guards the escape squares. Find the mate",
-            body=(
-                "Black's king on h8 is locked down by White's knight on f6.\n"
-                "One rook move delivers instant checkmate.\n\n"
-                "❤ Rh7#   🔥 Ra8+   👏 Ne8\n"
-                "Answer reveals in 6 hours."
-            ),
+            fen=t8_spec["fen"],
+            solution=t8_spec["solution"],
+            tactic_name=t8_spec["tactic_name"],
+            claim=t8_spec["claim"],
+            hook=t8_spec["hook"],
+            body=t8_spec["body"],
         )
         p8["scheduled_at"] = f"{d_str}T{slots_utc[7]}:00Z"
 

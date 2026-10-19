@@ -1,0 +1,54 @@
+{
+  "id": "2026-10-19-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-19",
+  "category": "Openings",
+  "format": "trap",
+  "hook": "Black thought they won White's queen. Two moves later, checkmate landed on d5",
+  "cta": "academy",
+  "text": "<b>Black thought they won White's queen. Two moves later, checkmate landed on d5</b>\n\nThe most famous minor-piece queen sacrifice in chess history.\nWhen Black pins the knight with Bg4, White calculates: 5.Nxe5! Bxd1 6.Bxf7+ Ke7 7.Nd5#.\n\nThe lesson: Never capture an undefended queen without calculating forcing king checks first.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+    "solution": [
+      "Bxf7+",
+      "Ke7",
+      "Nd5#"
+    ],
+    "claim": "line_legal"
+  },
+  "creative": {
+    "template": "trap",
+    "size": "square",
+    "tag": "Trap Breakdown: Legal's Trap",
+    "headline": "LEGAL'S TRAP\n*PUNISH GREED*",
+    "subhead": "Can you spot the refutation line?",
+    "fen": "rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6",
+    "moves": [
+      "Bxf7+",
+      "Ke7",
+      "Nd5#"
+    ],
+    "cta_label": "Learn in Academy",
+    "footer": "Study full lines in the Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-19T03:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-18T23:53:18Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

@@ -21,7 +21,11 @@ fi
 if [ "$IS_RUNNING" -eq 0 ]; then
     EXISTING_PID=$(pgrep -f "autopilot.py --daemon" | head -n 1 || true)
     if [ -n "$EXISTING_PID" ]; then
-        echo "Status: RUNNING (PID: $EXISTING_PID, unmanaged)"
+        if launchctl list 2>/dev/null | grep -q "com.web3chess.autopilot"; then
+            echo "Status: RUNNING (PID: $EXISTING_PID, macOS LaunchAgent: com.web3chess.autopilot)"
+        else
+            echo "Status: RUNNING (PID: $EXISTING_PID, background process)"
+        fi
         IS_RUNNING=1
     else
         echo "Status: STOPPED"

@@ -7,7 +7,7 @@
   "hook": "Challenge a Friend: Settle your chess debates in 3 minutes",
   "cta": "duel_friend",
   "text": "⚡ <b>Stop arguing about chess in group chats.</b>\n\nPut 3 minutes on the clock and prove your move. Tap below to generate an instant challenge link you can send directly to any friend or group chat.\n\nZero app download. Sub-100ms clock synchronization powered by Telegram Bot API 8.0.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -36,10 +36,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T21:33:44Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-5.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-19T12:10:21Z",
+  "published": {
+    "message_id": 48,
+    "at": "2026-10-19T12:10:21Z"
+  },
+  "media_cleaned": true
 }
