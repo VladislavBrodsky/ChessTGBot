@@ -162,6 +162,27 @@ class TestAutopilot(unittest.TestCase):
             self.assertTrue(res["sniper"]["sniped"])
             self.assertEqual(res["sniper"]["target_handle"], "@GMHikaru")
 
+    def test_autopilot_tick_cmo_routine(self):
+        mock_routine_res = {
+            "status": "success",
+            "date": "2099-01-01",
+            "health": {"health_status": "healthy"},
+            "planned_posts": [
+                {"id": "2099-01-01-tg-viral-1", "hook": "Test hook"},
+            ],
+            "report": "Mock Report",
+        }
+        with patch("agents.cmo_routine.CmoDailyRoutine.run_full_routine", return_value=mock_routine_res):
+            res = autopilot.run_tick(
+                dry_run=True,
+                run_cmo_routine=True,
+            )
+            self.assertIn("cmo_routine", res)
+            self.assertIsNotNone(res["cmo_routine"])
+            self.assertEqual(res["cmo_routine"]["status"], "success")
+            self.assertEqual(res["cmo_routine"]["planned_posts"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
+

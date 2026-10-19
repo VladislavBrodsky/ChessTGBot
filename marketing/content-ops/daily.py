@@ -144,6 +144,13 @@ def cmd_cmo_report(args):
     entries = queue.all_entries(day=day)
     print(cmo.generate_executive_report(entries))
 
+def cmd_cmo_morning_routine(args):
+    from agents.cmo_routine import CmoDailyRoutine
+    target_d = _day(args)
+    routine = CmoDailyRoutine(target_date=target_d)
+    res = routine.run_full_routine(force=getattr(args, "force", False))
+    print(res["report"])
+
 def cmd_clean_media(args):
     from pipeline import cleanup
     res = cleanup.purge_published_media(dry_run=args.dry_run)
@@ -174,6 +181,10 @@ def main():
     p_clean = sub.add_parser("clean-media")
     p_clean.add_argument("--dry-run", action="store_true")
     p_clean.set_defaults(run=cmd_clean_media)
+    p_cmo = sub.add_parser("cmo-morning-routine")
+    p_cmo.add_argument("--date")
+    p_cmo.add_argument("--force", action="store_true")
+    p_cmo.set_defaults(run=cmd_cmo_morning_routine)
     p = sub.add_parser("submit"); p.add_argument("id"); p.add_argument("file"); p.set_defaults(run=cmd_submit)
     for name in ("approve", "reject"):
         p = sub.add_parser(name); p.add_argument("id"); p.set_defaults(run=cmd_decide)

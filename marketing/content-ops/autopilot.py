@@ -198,6 +198,8 @@ def run_tick(
     force_sniper: bool = False,
     audit_analytics: bool = False,
     min_audit_spacing_minutes: int = 180,
+    run_cmo_routine: bool = False,
+    enable_cmo_routine: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """Executes a single check-and-dispatch pass across all content channels."""
     now = queue.utcnow()
@@ -220,6 +222,7 @@ def run_tick(
         "next_up_tg": None,
         "sniper": None,
         "audit": None,
+        "cmo_routine": None,
     }
 
     # 1. Stage any approved blog articles to website
@@ -384,7 +387,33 @@ def run_tick(
         except Exception as e:
             logger.warning(f"Analytics audit error: {e}")
 
-    # 6. Zero-bloat cleanup: continuously purge any published media and release memory
+    # 6. Daily 6:00 AM CMO Morning Routine: Audit previous day, check logs, self-heal, scrape viral trends, plan 5 posts
+    from agents.cmo_routine import CmoDailyRoutine
+    local_now = datetime.now().astimezone()
+    today_local = local_now.date().isoformat()
+    last_cmo_date = state.get("last_cmo_routine_date")
+
+    cmo_active = (not dry_run) if enable_cmo_routine is None else enable_cmo_routine
+    should_run_cmo = run_cmo_routine or (cmo_active and local_now.hour >= 6 and last_cmo_date != today_local)
+    if should_run_cmo:
+        try:
+            logger.info(f"Triggering CMO 6:00 AM Daily Morning Routine for {today_local}...")
+            cmo_routine = CmoDailyRoutine(target_date=local_now.date())
+            routine_res = cmo_routine.run_full_routine()
+            state["last_cmo_routine_date"] = today_local
+            results["cmo_routine"] = {
+                "date": today_local,
+                "status": "success",
+                "health": routine_res.get("health", {}).get("health_status"),
+                "planned_posts": len(routine_res.get("planned_posts", [])),
+                "report_file": str(HERE / "reports" / f"cmo-daily-audit-{today_local}.md"),
+            }
+            logger.info(f"CMO 6:00 AM Routine completed successfully for {today_local}.")
+        except Exception as e:
+            logger.error(f"CMO Daily Routine error: {e}", exc_info=True)
+            results["cmo_routine_error"] = str(e)
+
+    # 7. Zero-bloat cleanup: continuously purge any published media and release memory
     try:
         clean_res = cleanup.purge_published_media(dry_run=dry_run)
         results["media_cleaned"] = clean_res.get("files_deleted", 0)
@@ -404,6 +433,7 @@ def daemon_loop(
     min_sniper_spacing_minutes: int = 120,
     min_audit_spacing_minutes: int = 180,
     enable_sniper: bool = True,
+    enable_cmo_routine: Optional[bool] = None,
     dry_run: bool = True,
 ) -> None:
     """Runs continuous background polling loop."""
@@ -432,12 +462,15 @@ def daemon_loop(
                 enable_sniper=enable_sniper,
                 min_sniper_spacing_minutes=min_sniper_spacing_minutes,
                 min_audit_spacing_minutes=min_audit_spacing_minutes,
+                enable_cmo_routine=enable_cmo_routine,
             )
             dispatched_count = len(res.get("x_dispatched", [])) + len(res.get("tg_dispatched", []))
             if dispatched_count > 0:
                 logger.info(f"Tick completed: {dispatched_count} posts dispatched.")
             if res.get("sniper") and res["sniper"].get("sniped"):
                 logger.info(f"Tick completed: Sniper replied to {res['sniper'].get('target_handle')}.")
+            if res.get("cmo_routine"):
+                logger.info(f"Tick completed: CMO routine generated {res['cmo_routine'].get('planned_posts')} posts.")
         except Exception as e:
             logger.error(f"Autopilot tick failure: {e}", exc_info=True)
 
@@ -463,6 +496,7 @@ def main():
     parser.add_argument("--snipe-now", action="store_true", help="Force an immediate Reply Sniper check and dispatch")
     parser.add_argument("--no-sniper", action="store_true", help="Disable the Reply Sniper")
     parser.add_argument("--audit", action="store_true", help="Run an immediate CMO analytics audit")
+    parser.add_argument("--cmo-routine", action="store_true", help="Execute the CMO 6:00 AM morning routine")
     parser.add_argument("--live", dest="dry_run", action="store_false", default=True, help="Live mode (post to real APIs)")
 
     args = parser.parse_args()
@@ -489,6 +523,7 @@ def main():
             enable_sniper=not args.no_sniper,
             force_sniper=args.snipe_now,
             audit_analytics=args.audit,
+            run_cmo_routine=args.cmo_routine,
         )
         print(json.dumps(res, indent=2))
 

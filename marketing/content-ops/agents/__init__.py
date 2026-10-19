@@ -13,6 +13,7 @@ from .smm_copywriter import SmmCopywriterAgent
 from .qa_compliance import QaComplianceAgent
 from .publisher import PublisherAgent
 from .orchestrator import ContentEngineOrchestrator
+from .cmo_routine import CmoDailyRoutine
 
 __all__ = [
     "CmoAgent",
@@ -24,4 +25,5 @@ __all__ = [
     "QaComplianceAgent",
     "PublisherAgent",
     "ContentEngineOrchestrator",
+    "CmoDailyRoutine",
 ]

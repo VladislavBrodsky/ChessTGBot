@@ -1,0 +1,66 @@
+{
+  "id": "2026-10-19-tg-viral-1",
+  "kind": "telegram",
+  "date": "2026-10-19",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. Black's king is boxed in (Oct 19)",
+  "cta": "academy_app",
+  "text": "<b>White to move. Black's king is boxed in (Oct 19)</b>\n\nBlack's king on g8 has three pawns acting as walls.\nOne rook move delivers instant checkmate.\n\n❤ Ra8#   🔥 Rd1   👏 f4\nAnswer reveals in 6 hours.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "solution": [
+      "Ra8#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Back Rank Corridor",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Ra8#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Ra8#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+      "cta_label": "Solve More in Academy"
+    },
+    "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-viral-1.reveal.png"
+  },
+  "slot": 1,
+  "scheduled_at": "2026-10-19T07:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-19T16:07:26Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-viral-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  }
+}

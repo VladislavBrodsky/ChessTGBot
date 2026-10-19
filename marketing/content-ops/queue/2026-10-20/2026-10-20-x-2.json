@@ -1,0 +1,52 @@
+{
+  "id": "2026-10-20-x-2",
+  "kind": "x_post",
+  "date": "2026-10-20",
+  "category": "Chess Debate",
+  "hook": "Endgame technique beats opening memory under a 3-minute clock",
+  "text": "Endgame technique beats opening memory under a 3-minute clock\n\nClub players spend 90% of study time memorizing 15 moves of theory.\n\nThen move 16 arrives and rook endgames decide everything.\n\n#Chess #SpeedChess #ChessCommunity",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Hot Take",
+    "headline": "RAPID IS DEAD\n*INTUITION VS MEMORY*",
+    "subhead": "Can you calculate under 180 seconds or do you freeze?",
+    "cta_label": "Join Debate",
+    "panels": [
+      {
+        "label": "Classical",
+        "text": "Memorize opening lines",
+        "piece": "K"
+      },
+      {
+        "label": "Blitz PvP",
+        "text": "Pure real-time survival",
+        "piece": "Q"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Do you study openings or endgame patterns more for blitz?\n\nSharpen your practical conversion at:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-20T08:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-19T16:08:43Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-20/2026-10-20-x-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

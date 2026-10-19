@@ -1,0 +1,49 @@
+{
+  "id": "2026-10-20-x-1",
+  "kind": "x_post",
+  "date": "2026-10-20",
+  "category": "Tactics",
+  "hook": "White to move. Criss-cross bishops slice the queenside castle",
+  "text": "White to move. Criss-cross bishops slice the queenside castle\n\nThe f4 bishop controls b8 and d6. One diagonal strike ends the game.\n\nSpot the winning bishop move ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "2kr1b1r/p2npppp/1pp5/8/5B2/2N5/PPP1BPPP/2KR3R w - - 0 1",
+    "solution": [
+      "Ba6#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "2kr1b1r/p2npppp/1pp5/8/5B2/2N5/PPP1BPPP/2KR3R w - - 0 1",
+    "tag": "Mate In 1",
+    "headline": "BODEN'S MATE\n*TWO BISHOPS NET*",
+    "subhead": "White to move • Mate in 1",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Ba6# (Boden's Mate).\nTwo crisscrossing bishops lock down every queenside escape square.\n\nSharpen your pattern recognition at:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-20T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-19T16:08:42Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-20/2026-10-20-x-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}
