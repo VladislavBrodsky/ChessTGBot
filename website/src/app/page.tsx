@@ -15,8 +15,7 @@ import { Card } from "@/components/ui/Card";
 import { Icon } from "@/icons";
 import { Marquee } from "@/components/magicui/marquee";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-import { socialProofSnapshot } from "@/lib/social-proof";
-import { LiveSocialProof } from "@/components/LiveSocialProof";
+import { PlayOfferStrip } from "@/components/PlayOfferStrip";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { MetaLine } from "@/components/ui/MetaLine";
 import { AnimatedList } from "@/components/magicui/animated-list";
@@ -43,7 +42,7 @@ import { jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
   "Play Chess Online in Telegram & Win Real Crypto",
-  "Play chess inside Telegram with Web3Chess. Challenge players worldwide in the #1 Telegram chess bot: free Stockfish A.I. practice, 100 tactical puzzles, and real USDT cash duels.",
+  "Play chess inside Telegram with Web3Chess. Practice free against Stockfish, explore 100 tactical levels, and learn the rules for optional USDT chess matches.",
   "",
   [
     "telegram chess bot",
@@ -63,35 +62,34 @@ export const metadata = pageMetadata(
 // Re-render regularly so newly scheduled articles reach the home page on time.
 export const revalidate = 60;
 
-const LIVE_STRIP = [
-  { amount: "+$47.50 USDT", text: "GM_Morphy won 3+2 Blitz duel", dot: "bg-win-fill", tone: "text-fg-win" },
-  { amount: "1,000 GRAM", text: "King’s Dominion Mystery Jackpot unlocked", dot: "bg-caution-soft", tone: "text-fg-caution" },
-  { amount: "+$95.00 USDT", text: "Magnus_99 won 5+3 Rapid table", dot: "bg-win-fill", tone: "text-fg-win" },
-  { amount: "2.0% Rake", text: "6-Tier Affiliate passive commissions credited", dot: "bg-fg-muted", tone: "text-fg-muted" },
-  { amount: "95 USDT", text: "@gm_vlad on-chain withdrawal settled (3.8s)", dot: "bg-premium-soft", tone: "text-fg-premium" },
-  { amount: "+$190.00 USDT", text: "Kasparov_X won 10+0 Classical match", dot: "bg-win-fill", tone: "text-fg-win" },
+const FEATURE_STRIP = [
+  { amount: "Free AI", text: "Practice against Stockfish", dot: "bg-win-fill", tone: "text-fg-win" },
+  { amount: "3 games", text: "Earn one free Mystery Box", dot: "bg-caution-soft", tone: "text-fg-caution" },
+  { amount: "In-app rewards", text: "XP, XP boost, or profile border", dot: "bg-premium-soft", tone: "text-fg-premium" },
+  { amount: "100 levels", text: "Learn chess tactics in the Academy", dot: "bg-fg-muted", tone: "text-fg-muted" },
+  { amount: "95% of pot", text: "Winner share in an optional wager match", dot: "bg-win-fill", tone: "text-fg-win" },
 ] as const;
 
 const FAIR_PILLARS = [
   {
     icon: "cpu" as const,
-    tag: "Stockfish 16 Engine",
+    tag: "Server game state",
     title: "Authoritative server moves",
-    body: "Stockfish 16 engine validates every single ply deterministically server-side. Zero client-side manipulation, impossible moves, or clock spoofing.",
-    metric: "< 45ms Latency · Deterministic",
+    body: "The game server validates moves and records match results, keeping the authoritative state outside the browser.",
+    metric: "Server-validated moves",
   },
   {
     icon: "users-three" as const,
-    tag: "Verified Rival Only",
+    tag: "Rated opponents",
     title: "Fair ELO matchmaking",
-    body: "Compete exclusively against verified rivals within your rating bracket, time control, and wager tier. Anti-smurf rating algorithms protect every match.",
-    metric: "±50 ELO Window · Anti-Smurf",
+    body: "Choose a time control and available wager tier before entering an online match. Check the match terms before committing a stake.",
+    metric: "Time controls · Stakes · Results",
   },
   {
     icon: "scales" as const,
-    tag: "Smart Escrow Split",
+    tag: "Clear pot split",
     title: "Instant 95% pot settlement",
-    body: "Both players deposit equal USDT before move 1 into smart escrow. Checkmate or resignation instantly credits 95% to the victor on-chain.",
+    body: "Both players commit equal USDT before play. After a decided result, the winner receives 95% of the combined pot in their app balance.",
     metric: `${SETTLEMENT.winnerPercent}% Victor · ${SETTLEMENT.platformFeePercent}% Platform · ${SETTLEMENT.referralFeePercent}% Affiliate`,
   },
 ];
@@ -205,7 +203,7 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="hero-lead max-w-[42ch] text-fg-muted">
-                Challenge rivals worldwide inside Telegram with the #1 Telegram chess bot. Stake USDT, outplay your opponent, and take 95% of the pot. Free Stockfish A.I. practice, 100-level Academy, and Mystery Boxes with up to 1,000 GRAM in prizes.
+                Play chess inside Telegram. Practice free against Stockfish, work through 100 Academy levels, and earn one Mystery Box after three qualifying games. Optional USDT matches pay 95% of the combined pot to the winner’s app balance.
               </p>
             </div>
             <div className="hero-details space-y-4">
@@ -220,17 +218,15 @@ export default function HomePage() {
                 </ButtonLink>
               </div>
 
-              {/* ── Real-time Social Proof & Match Activity ── */}
-              <LiveSocialProof initial={socialProofSnapshot()} />
+              <PlayOfferStrip />
             </div>
           </div>
         </section>
 
-        {/* ── Live strip: match wins and vault drops ── */}
-        <section className="shell-wide my-3" aria-label="Live PvP match activity">
+        <section className="shell-wide my-3" aria-label="Ways to play Web3Chess">
           <div className="relative overflow-hidden rounded-full border border-line bg-surface/70 px-2 py-2 backdrop-blur-md [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
             <Marquee duration={35} pauseOnHover>
-              {LIVE_STRIP.map((item) => (
+              {FEATURE_STRIP.map((item) => (
                 <span key={item.text} className="live-strip-item">
                   <i className={item.dot} aria-hidden="true" />
                   <strong className={item.tone}>{item.amount}</strong>
@@ -253,7 +249,7 @@ export default function HomePage() {
                 Turn your chess rating into real crypto: 95% pot payouts
               </h2>
               <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
-                Traditional chess pays you in pixels and points. Web3Chess rewards every tactical win with instant USDT payouts, 1,000 GRAM mystery jackpots, and 6-tier passive match rake.
+                Start with free chess practice and a three-game Mystery Box challenge. If you choose an optional USDT wager match, the winner receives 95% of the combined pot in their app balance.
               </p>
             </div>
             <ButtonLink href="/how-it-works" variant="secondary">
@@ -291,12 +287,12 @@ export default function HomePage() {
                 </dd>
               </div>
               <div className="fact-item">
-                <dt className="text-caption text-fg-muted">Top mystery prize</dt>
+                <dt className="text-caption text-fg-muted">Free box goal</dt>
                 <dd className="fact-value flex items-baseline gap-1.5">
                   <span className="poster fact-figure tabular-nums">
-                    <NumberTicker value={1000} />
+                    <NumberTicker value={3} />
                   </span>
-                  <span className="text-label font-semibold">GRAM</span>
+                  <span className="text-label font-semibold">Games</span>
                 </dd>
               </div>
               <div className="fact-item">
@@ -450,7 +446,7 @@ export default function HomePage() {
                 </h2>
 
                 <p className="max-w-[44ch] section-lead text-fg-muted">
-                  Both players stake equal USDT. No luck, no house edge, no pay-to-win cards — only pure tactical chess. The winner claims 95% of the combined pot instantly on-chain.
+                  Both players stake equal USDT. No luck or pay-to-win cards — only tactical chess. After a decided result, the winner receives 95% of the combined pot in their app balance.
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -474,7 +470,7 @@ export default function HomePage() {
                 <div className="stake-stream-heading">
                   <span className="flex flex-wrap items-center gap-2">
                     <strong>Popular Stakes &amp; Payouts</strong>
-                    <Badge tone="accent">Live Pools</Badge>
+                    <Badge tone="accent">Payout examples</Badge>
                   </span>
                   <span>+90% Net ROI on win</span>
                 </div>

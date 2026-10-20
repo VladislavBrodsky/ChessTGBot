@@ -84,109 +84,27 @@ const AMBIENT_ARCS = [
   { from: CITIES["Paris"],         to: CITIES["Tokyo"],     color: [147/255, 51/255, 234/255] as [number, number, number] },
 ];
 
-// ── Curated Real-World Match Combinations (100% matched to CITIES) ──────
-const LIVE_MATCHES = [
-  { p1: "Tokyo",        flag1: "🇯🇵", p2: "New York",     flag2: "🇺🇸", stake: "100 USDT", pot: "190 USDT", format: "Rapid 10+0",    tier: "vip",     label: "VIP Duel" },
-  { p1: "Dubai",        flag1: "🇦🇪", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
-  { p1: "Tashkent",     flag1: "🇺🇿", p2: "Zurich",       flag2: "🇨🇭", stake: "25 USDT",  pot: "47.5 USDT",format: "Blitz 3+2",     tier: "active",  label: "Active" },
-  { p1: "Seoul",        flag1: "🇰🇷", p2: "San Francisco",flag2: "🇺🇸", stake: "250 USDT", pot: "475 USDT", format: "Classical 30+0", tier: "elite",   label: "Elite" },
-  { p1: "Paris",        flag1: "🇫🇷", p2: "Buenos Aires", flag2: "🇦🇷", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
-  { p1: "Mumbai",       flag1: "🇮🇳", p2: "Singapore",    flag2: "🇸🇬", stake: "75 USDT",  pot: "142.5 USDT",format: "Blitz 5+3",    tier: "high",    label: "High Stakes" },
-  { p1: "New York",     flag1: "🇺🇸", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "500 USDT", pot: "950 USDT", format: "Classical 60+0", tier: "whale",   label: "Whale" },
-  { p1: "Berlin",       flag1: "🇩🇪", p2: "Tashkent",     flag2: "🇺🇿", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+5",    tier: "active",  label: "Active" },
-  { p1: "Singapore",    flag1: "🇸🇬", p2: "Sydney",       flag2: "🇦🇺", stake: "100 USDT", pot: "190 USDT", format: "Rapid 15+10",   tier: "vip",     label: "VIP Duel" },
-  { p1: "Stockholm",    flag1: "🇸🇪", p2: "Dubai",        flag2: "🇦🇪", stake: "250 USDT", pot: "475 USDT", format: "Classical 30+0", tier: "elite",   label: "Elite" },
-  { p1: "Madrid",       flag1: "🇪🇸", p2: "São Paulo",    flag2: "🇧🇷", stake: "50 USDT",  pot: "95 USDT",  format: "Blitz 5+3",     tier: "high",    label: "High Stakes" },
-  { p1: "London",       flag1: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", p2: "Mumbai",      flag2: "🇮🇳", stake: "100 USDT", pot: "190 USDT", format: "Rapid 15+10",   tier: "vip",     label: "VIP Duel" },
-  { p1: "Zurich",       flag1: "🇨🇭", p2: "Seoul",        flag2: "🇰🇷", stake: "500 USDT", pot: "950 USDT", format: "Classical 60+0", tier: "whale",   label: "Whale" },
-  { p1: "São Paulo",    flag1: "🇧🇷", p2: "Lagos",        flag2: "🇳🇬", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
-  { p1: "Cape Town",    flag1: "🇿🇦", p2: "Amsterdam",    flag2: "🇳🇱", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+0",    tier: "active",  label: "Active" },
-  { p1: "Cairo",        flag1: "🇪🇬", p2: "Istanbul",     flag2: "🇹🇷", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+5",    tier: "active",  label: "Active" },
-  { p1: "Baku",         flag1: "🇦🇿", p2: "Vienna",       flag2: "🇦🇹", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
-  { p1: "Nairobi",      flag1: "🇰🇪", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "5 USDT",   pot: "9.5 USDT", format: "Blitz 3+2",     tier: "starter", label: "Starter" },
-  { p1: "Accra",        flag1: "🇬🇭", p2: "Dakar",        flag2: "🇸🇳", stake: "1 USDT",   pot: "1.9 USDT", format: "Bullet 1+1",    tier: "micro",   label: "Micro" },
-  { p1: "Bangkok",      flag1: "🇹🇭", p2: "Tokyo",        flag2: "🇯🇵", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+3",     tier: "popular", label: "Popular" },
-  { p1: "Riyadh",       flag1: "🇸🇦", p2: "Berlin",       flag2: "🇩🇪", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
-  { p1: "Prague",       flag1: "🇨🇿", p2: "New York",     flag2: "🇺🇸", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+0",    tier: "active",  label: "Active" },
-  { p1: "Rome",         flag1: "🇮🇹", p2: "Cairo",        flag2: "🇪🇬", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
-  { p1: "Amsterdam",    flag1: "🇳🇱", p2: "Singapore",    flag2: "🇸🇬", stake: "100 USDT", pot: "190 USDT", format: "Classical 30+0", tier: "vip",     label: "VIP Duel" },
-  { p1: "Los Angeles",  flag1: "🇺🇸", p2: "Seoul",        flag2: "🇰🇷", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
-  { p1: "Santiago",     flag1: "🇨🇱", p2: "Madrid",       flag2: "🇪🇸", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+3",     tier: "popular", label: "Popular" },
-  { p1: "Yerevan",      flag1: "🇦🇲", p2: "Dubai",        flag2: "🇦🇪", stake: "25 USDT",  pot: "47.5 USDT",format: "Rapid 10+0",    tier: "active",  label: "Active" },
-  { p1: "Toronto",      flag1: "🇨🇦", p2: "London",       flag2: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", stake: "50 USDT",  pot: "95 USDT",  format: "Rapid 15+10",   tier: "high",    label: "High Stakes" },
-  { p1: "Warsaw",       flag1: "🇵🇱", p2: "Tashkent",     flag2: "🇺🇿", stake: "10 USDT",  pot: "19 USDT",  format: "Blitz 5+0",     tier: "popular", label: "Popular" },
-  { p1: "Sydney",       flag1: "🇦🇺", p2: "San Francisco",flag2: "🇺🇸", stake: "100 USDT", pot: "190 USDT", format: "Classical 30+0", tier: "vip",     label: "VIP Duel" },
+// Illustrative routes demonstrate the global play concept, not live matches.
+const ROUTE_EXAMPLES = [
+  { p1: "Tokyo", flag1: "🇯🇵", p2: "London", flag2: "🇬🇧" },
+  { p1: "São Paulo", flag1: "🇧🇷", p2: "New York", flag2: "🇺🇸" },
+  { p1: "Mumbai", flag1: "🇮🇳", p2: "Singapore", flag2: "🇸🇬" },
+  { p1: "Nairobi", flag1: "🇰🇪", p2: "Berlin", flag2: "🇩🇪" },
 ];
 
-// Color definitions per tier
-const TIER_COLORS: Record<string, {
-  text: string;
-  pill: string;
-  badge: string;
-  arc: [number, number, number];
-}> = {
-  micro: {
-    text: "text-fg-muted",
-    pill: "bg-fg-muted/10 border-line text-fg-muted",
-    badge: "bg-fg-muted/10 text-fg-muted border-line",
-    arc: [16/255, 185/255, 129/255],
-  },
-  starter: {
-    text: "text-fg-win",
-    pill: "bg-win-fill/10 border-win text-fg-win",
-    badge: "bg-win-fill/10 text-fg-win border-win/20",
-    arc: [16/255, 185/255, 129/255],
-  },
-  popular: {
-    text: "text-fg-win",
-    pill: "bg-win-fill/10 border-win text-fg-win",
-    badge: "bg-win-fill/15 text-fg-win border-win/30",
-    arc: [16/255, 185/255, 129/255],
-  },
-  active: {
-    text: "text-fg-muted",
-    pill: "bg-fg-muted/10 border-line text-fg-muted",
-    badge: "bg-fg-muted/10 text-fg-muted border-line/20",
-    arc: [59/255, 130/255, 246/255],
-  },
-  high: {
-    text: "text-fg-caution",
-    pill: "bg-caution-soft/10 border-caution text-fg-caution",
-    badge: "bg-caution-soft/15 text-fg-caution border-caution/30",
-    arc: [245/255, 158/255, 11/255],
-  },
-  vip: {
-    text: "text-fg-premium",
-    pill: "bg-premium-soft/10 border-premium text-fg-premium",
-    badge: "bg-premium-soft/15 text-fg-premium border-premium/30",
-    arc: [168/255, 85/255, 247/255],
-  },
-  elite: {
-    text: "text-fg-loss",
-    pill: "bg-loss-fill/10 border-loss text-fg-loss",
-    badge: "bg-loss-fill/15 text-fg-loss border-loss/30",
-    arc: [244/255, 63/255, 94/255],
-  },
-  whale: {
-    text: "text-fg-caution",
-    pill: "bg-caution-soft/10 border-caution text-fg-caution font-bold",
-    badge: "bg-caution-soft/20 text-fg-caution border-caution/40",
-    arc: [251/255, 191/255, 36/255],
-  },
-};
+const ARC_COLOR: [number, number, number] = [16 / 255, 185 / 255, 129 / 255];
 
-// Global Node Ticker
 const NODES = [
-  { city: "Tokyo", flag: "🇯🇵", ping: "14ms" },
-  { city: "London", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", ping: "8ms" },
-  { city: "Dubai", flag: "🇦🇪", ping: "12ms" },
-  { city: "New York", flag: "🇺🇸", ping: "15ms" },
-  { city: "Singapore", flag: "🇸🇬", ping: "11ms" },
-  { city: "Zurich", flag: "🇨🇭", ping: "9ms" },
-  { city: "Tashkent", flag: "🇺🇿", ping: "16ms" },
-  { city: "São Paulo", flag: "🇧🇷", ping: "22ms" },
-  { city: "Sydney", flag: "🇦🇺", ping: "18ms" },
-  { city: "Berlin", flag: "🇩🇪", ping: "10ms" },
+  { city: "Tokyo", flag: "🇯🇵" },
+  { city: "London", flag: "🇬🇧" },
+  { city: "Dubai", flag: "🇦🇪" },
+  { city: "New York", flag: "🇺🇸" },
+  { city: "Singapore", flag: "🇸🇬" },
+  { city: "Zurich", flag: "🇨🇭" },
+  { city: "Tashkent", flag: "🇺🇿" },
+  { city: "São Paulo", flag: "🇧🇷" },
+  { city: "Sydney", flag: "🇦🇺" },
+  { city: "Berlin", flag: "🇩🇪" },
 ];
 
 export function GlobeShowcase() {
@@ -204,8 +122,7 @@ export function GlobeShowcase() {
   const [width, setWidth] = useState(280);
   const [isCrossfading, setIsCrossfading] = useState(false);
 
-  const current = LIVE_MATCHES[matchIndex];
-  const tierConfig = TIER_COLORS[current.tier] || TIER_COLORS["popular"];
+  const current = ROUTE_EXAMPLES[matchIndex];
 
   // Memoize active city coordinates
   const city1Coords = useMemo(
@@ -220,16 +137,16 @@ export function GlobeShowcase() {
   const activeArcRef = useRef({
     city1: city1Coords,
     city2: city2Coords,
-    color: tierConfig.arc,
+    color: ARC_COLOR,
   });
 
   useEffect(() => {
     activeArcRef.current = {
       city1: city1Coords,
       city2: city2Coords,
-      color: tierConfig.arc,
+      color: ARC_COLOR,
     };
-  }, [city1Coords, city2Coords, tierConfig.arc]);
+  }, [city1Coords, city2Coords]);
 
   // Setup globe WebGL with cobe only when in viewport
   useEffect(() => {
@@ -322,14 +239,14 @@ export function GlobeShowcase() {
     };
   }, [isVisible, foreground, reduced, paused]);
 
-  // Smooth match flip every 3.5s only when visible
+  // Rotate illustrative routes only while visible
   useEffect(() => {
     if (!active || paused) return;
     let flip: ReturnType<typeof setTimeout>;
     const timer = setInterval(() => {
       setIsCrossfading(true);
       flip = setTimeout(() => {
-        setMatchIndex((i) => (i + 1) % LIVE_MATCHES.length);
+        setMatchIndex((i) => (i + 1) % ROUTE_EXAMPLES.length);
         setIsCrossfading(false);
       }, 200);
     }, 3500);
@@ -341,10 +258,10 @@ export function GlobeShowcase() {
   return (
     <Card className="globe-showcase showcase-panel" data-interactive-workspace>
       <div ref={containerRef} className="globe-marketing" data-active={active && !paused}>
-        <div className="showcase-panel-heading"><span>Global Arena</span><ShowcaseMotionControl name="globe" paused={paused} onToggle={() => setPaused((value) => !value)} /></div>
+        <div className="showcase-panel-heading"><span>Global play illustration</span><ShowcaseMotionControl name="globe" paused={paused} onToggle={() => setPaused((value) => !value)} /></div>
         <div className="globe-match" data-changing={isCrossfading || undefined}>
           <div className="globe-match-cities"><span>{current.flag1} {current.p1}</span><span aria-hidden="true">↔</span><span>{current.flag2} {current.p2}</span></div>
-          <div className="globe-match-details"><strong>{current.stake}</strong><span>{current.format}</span><span>{current.label}</span></div>
+          <div className="globe-match-details"><strong>Example route</strong><span>Chess across time zones</span></div>
         </div>
         <div className="globe-marketing-stage">
           <svg ref={fallbackRef} className="globe-fallback" viewBox="0 0 320 320" aria-hidden="true">
@@ -354,13 +271,13 @@ export function GlobeShowcase() {
             <path d="M83 103Q160 27 239 186" fill="none" stroke="var(--color-win)" strokeWidth="1.5" />
             <g fill="var(--color-win)"><circle cx="83" cy="103" r="5" /><circle cx="239" cy="186" r="5" /><circle cx="130" cy="179" r="3" /><circle cx="213" cy="126" r="3" /></g>
           </svg>
-          <canvas ref={canvasRef} className="globe-canvas" role="img" aria-label="Global chess matches connected across the world"
+          <canvas ref={canvasRef} className="globe-canvas" role="img" aria-label="Illustrative chess routes across the world"
             onPointerDown={(e) => { pointerInteracting.current = e.clientX - pointerInteractionMovement.current; }}
             onPointerUp={() => { pointerInteracting.current = null; }} onPointerOut={() => { pointerInteracting.current = null; }}
             onMouseMove={(e) => { if (pointerInteracting.current !== null) pointerInteractionMovement.current = (e.clientX - pointerInteracting.current) * 0.005; }}
             onTouchMove={(e) => { if (pointerInteracting.current !== null && e.touches[0]) pointerInteractionMovement.current = (e.touches[0].clientX - pointerInteracting.current) * 0.005; }} />
         </div>
-        <ul className="globe-node-list" style={{ gridTemplateColumns: `repeat(${nodeCount}, minmax(0, 1fr))` }}>{nodes.map((node) => <li key={node.city}><span>{node.flag} {node.city}</span><span>{node.ping}</span></li>)}</ul>
+        <ul className="globe-node-list" style={{ gridTemplateColumns: `repeat(${nodeCount}, minmax(0, 1fr))` }}>{nodes.map((node) => <li key={node.city}><span>{node.flag} {node.city}</span><span>Example</span></li>)}</ul>
       </div>
     </Card>
   );

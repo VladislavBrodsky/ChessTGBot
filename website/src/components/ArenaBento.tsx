@@ -5,64 +5,10 @@ import { Icon } from "@/icons";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { MetaLine } from "@/components/ui/MetaLine";
 import { OrbitingCircles } from "@/components/magicui/orbiting-circles";
-import { AnimatedList } from "@/components/magicui/animated-list";
-
-
-const liveFeed = [
-  {
-    id: "live-1",
-    player: "@CryptoMorphy",
-    action: "Won 3+2 Blitz match",
-    payout: "+$47.50 USDT",
-    time: "1m ago",
-    badge: "Blitz 3+2",
-    icon: "lightning" as const,
-  },
-  {
-    id: "live-2",
-    player: "@Magnus_GRAM",
-    action: "Won 5+3 Rapid match",
-    payout: "+$95.00 USDT",
-    time: "3m ago",
-    badge: "Rapid 5+3",
-    icon: "trophy" as const,
-  },
-  {
-    id: "live-3",
-    player: "@gram_tactician",
-    action: "Unboxed King’s Vault",
-    payout: "+50 GRAM",
-    time: "5m ago",
-    badge: "Jackpot Drop",
-    icon: "gift" as const,
-  },
-  {
-    id: "live-4",
-    player: "@pawn_storm",
-    action: "Won 1+0 Bullet match",
-    payout: "+$19.00 USDT",
-    time: "7m ago",
-    badge: "Bullet 1+0",
-    icon: "lightning" as const,
-  },
-  {
-    id: "live-5",
-    player: "@gm_vlad",
-    action: "Confirmed withdrawal",
-    payout: "$150.00 USDT",
-    time: "11m ago",
-    badge: "Telegram Bot",
-    icon: "arrow-up-right" as const,
-  },
-  {
-    id: "live-6",
-    player: "@queen_gambit",
-    action: "Climbed to 2410 ELO",
-    payout: "Grandmaster Tier",
-    time: "14m ago",
-    badge: "Season 1",
-    icon: "shield-check" as const,
-  },
+const settlementSteps = [
+  { title: "Choose a stake", detail: "Both players commit the same USDT amount", icon: "coins" as const },
+  { title: "Play the match", detail: "A decided result settles the combined pot", icon: "sword" as const },
+  { title: "See the receipt", detail: "The winner’s app balance receives 95%", icon: "shield-check" as const },
 ];
 
 export function ArenaBento() {
@@ -85,14 +31,14 @@ export function ArenaBento() {
           </p>
         </div>
 
-        {/* Decided match settlement with count-up figures */}
+        {/* Illustrative settlement math, not a player transaction */}
         <div className="arena-panel">
           <div className="arena-panel-heading">
             <span className="flex items-center gap-2 font-semibold text-fg">
               <i className="size-2 rounded-full bg-win-fill" aria-hidden="true" />
-              Live Blitz Match 3+2
+              Example Blitz Match 3+2
             </span>
-            <MetaLine items="Match ID #48291 · Decided" />
+            <MetaLine items="Illustrative $25 stakes" />
           </div>
           <dl className="arena-pot">
             <div>
@@ -119,15 +65,15 @@ export function ArenaBento() {
         <div className="arena-card-copy">
           <div className="arena-card-meta">
             <Badge tone="accent" icon="gift">
-              Mystery Vaults
+              Free Mystery Box
             </Badge>
-            <span className="arena-card-status">Daily Drops</span>
+            <span className="arena-card-status">One per account</span>
           </div>
           <h3 className="arena-card-title">
-            Win up to 1,000 GRAM in Mystery Boxes
+            Play 3 games to earn a Mystery Box
           </h3>
           <p>
-            Turn your earned XP into real rewards. Unlock mystery chests with chances to unbox GRAM prizes, 2× XP boosts, and exclusive 3D board pieces.
+            Complete three qualifying games to claim a free box. The current reward is XP, a 24-hour XP boost, or a gold profile border.
           </p>
         </div>
 
@@ -145,16 +91,16 @@ export function ArenaBento() {
 
         <ul className="arena-list">
           <li>
-            <span><i className="bg-caution-soft" aria-hidden="true" />King’s Dominion Chest</span>
-            <strong><NumberTicker value={1000} suffix=" GRAM" /> Jackpot</strong>
+            <span><i className="bg-caution-soft" aria-hidden="true" />XP reward</span>
+            <strong>250 XP</strong>
           </li>
           <li>
-            <span><i className="bg-premium-soft" aria-hidden="true" />Queen’s Treasury Chest</span>
-            <strong>1-Month Premium + Drops</strong>
+            <span><i className="bg-premium-soft" aria-hidden="true" />XP boost</span>
+            <strong>24 hours</strong>
           </li>
           <li>
-            <span><i className="bg-fg-muted" aria-hidden="true" />Knight’s Gambit Chest</span>
-            <strong>2× XP Boosts &amp; Skins</strong>
+            <span><i className="bg-fg-muted" aria-hidden="true" />Profile border</span>
+            <strong>Gold style</strong>
           </li>
         </ul>
       </Card>
@@ -170,21 +116,21 @@ export function ArenaBento() {
           </div>
           <h3 className="arena-card-title">Climb the Leaderboard</h3>
           <p>
-            Every rated victory builds your ELO ranking and pushes you up the ladder toward weekly tournament prizes.
+            Every rated result updates your ELO and your position on the leaderboard.
           </p>
         </div>
         <ol className="arena-list arena-leaderboard">
           <li>
-            <span className="font-semibold text-fg">#1 Morphy · 2480</span>
-            <strong><NumberTicker value={2450} prefix="+$" /></strong>
+            <span className="font-semibold text-fg">Play a rated match</span>
+            <strong>Record a result</strong>
           </li>
           <li>
-            <span>#2 Magnus · 2415</span>
-            <strong><NumberTicker value={1890} prefix="+$" /></strong>
+            <span>Build your rating</span>
+            <strong>Track ELO</strong>
           </li>
           <li>
-            <span>#3 Pawn · 2380</span>
-            <strong><NumberTicker value={1240} prefix="+$" /></strong>
+            <span>Compare progress</span>
+            <strong>View ranks</strong>
           </li>
         </ol>
       </Card>
@@ -234,42 +180,42 @@ export function ArenaBento() {
         </Link>
       </Card>
 
-      {/* ── 6. Live arena activity: closes the grid beside the Academy card, copy beside the stream ── */}
+      {/* ── 6. Settlement steps: closes the grid beside the Academy card ── */}
       <Card className="arena-card arena-activity sm:col-span-2">
         <div className="arena-card-copy">
           <div className="arena-card-meta">
             <Badge tone="accent" icon="lightning">
-              Live Arena Activity
+              Match Settlement
             </Badge>
             <span className="flex items-center gap-1.5 text-caption font-semibold text-fg">
               <i className="size-2 rounded-full bg-win-fill" aria-hidden="true" />
-              Real-time
+              Explained
             </span>
           </div>
           <h3 className="arena-card-title">
-            Real players. Instant on-chain payouts
+            Equal stakes. A clear winner receipt
           </h3>
           <p>
-            Live matches finishing, pots settled, and mystery chests unboxed around the clock.
+            Follow the wager flow before playing. The example beside this card explains the steps; it is not a live transaction feed.
           </p>
           <div className="arena-activity-foot">
             <span>95% winner pot</span>
-            <strong>Decided instantly</strong>
+            <strong>Credited to app balance</strong>
           </div>
         </div>
 
         <div className="arena-event-stream">
-          <AnimatedList delay={2400} maxItems={3}>
-            {liveFeed.map((item) => (
-              <figure key={item.id} className="arena-event">
+          <div className="grid gap-2.5">
+            {settlementSteps.map((item) => (
+              <div key={item.title} className="arena-event">
                 <span className="arena-event-icon"><Icon name={item.icon} size={14} /></span>
                 <div className="arena-event-main">
-                  <div><strong>{item.player}</strong><span>{item.time}</span></div>
-                  <div><span>{item.action}</span><strong>{item.payout}</strong></div>
+                  <div><strong>{item.title}</strong></div>
+                  <div><span>{item.detail}</span></div>
                 </div>
-              </figure>
+              </div>
             ))}
-          </AnimatedList>
+          </div>
         </div>
       </Card>
     </div>

@@ -38,7 +38,7 @@ const PLAY_FAQS = [
 
 export const metadata: Metadata = pageMetadata(
   "Play Chess Online: Telegram Bot & Web Arena",
-  "Launch the #1 Telegram chess bot or play in your web browser. Free Stockfish 16 A.I. practice, 100 tactical puzzles, and real-money USDT matches with instant on-chain payouts.",
+  "Launch Web3Chess in Telegram or play in your web browser. Practice free against Stockfish, explore 100 tactical levels, and learn the rules for optional USDT matches.",
   "/play",
   [
     "telegram chess bot",
@@ -84,11 +84,11 @@ export default async function PlayPage() {
             <Badge tone="accent" icon="lightning">
               Instant Launch
             </Badge>
-            <MetaLine className="font-semibold win-ink" items="Live Arena · 3,840+ Active Rivals" />
+            <MetaLine className="font-semibold win-ink" items="Free AI practice · Optional online matches" />
           </div>
           <h1 id="page-title" className="poster play-heading">Play Chess Online: Telegram Chess Bot &amp; Web Arena</h1>
           <p className="max-w-[50ch] hero-lead text-fg-muted">
-            Launch directly in Telegram with the premier Telegram chess bot or play in your desktop browser. Enjoy free Stockfish A.I. practice, solve 100 tactics puzzles, or enter live USDT matches on GRAM rails.
+            Launch directly in Telegram or play in your desktop browser. Enjoy free Stockfish A.I. practice, solve 100 tactics puzzles, or explore optional USDT matches.
           </p>
           </div>
         </section>

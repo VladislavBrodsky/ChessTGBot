@@ -89,7 +89,7 @@ export default function HowItWorksPage() {
               in Telegram
             </>
           }
-          lead="Launch the #1 Telegram chess bot, invite friends, and choose your pace. Enjoy free Stockfish A.I. practice or enter live USDT matches in seconds."
+          lead="Launch Web3Chess in Telegram, invite friends, and choose your pace. Enjoy free Stockfish A.I. practice or explore optional USDT matches."
           visual={<ChessSculpture variant="howItWorks" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">

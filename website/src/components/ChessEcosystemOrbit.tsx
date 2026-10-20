@@ -72,11 +72,11 @@ const CHESS_PIECES: OrbitItem[] = [
 ];
 
 const CRYPTO_TOKENS: OrbitItem[] = [
-  { id: "usdt", name: "USDT", tag: "Instant 1:1 Settlement", element: <TetherUsdtBadge className="size-7" /> },
-  { id: "gram", name: "GRAM", tag: "Sub-Cent Gas Rails", element: <GramBadge className="size-7" /> },
-  { id: "btc", name: "Bitcoin", tag: "Cross-Chain Liquidity", element: <BitcoinBadge className="size-7" /> },
-  { id: "eth", name: "Ethereum", tag: "Multichain Bridge", element: <EthereumBadge className="size-7" /> },
-  { id: "telegram", name: "Telegram", tag: "1-Tap Direct Launch", element: <TelegramBadge className="size-7" /> },
+  { id: "usdt", name: "USDT", tag: "Optional wager asset", element: <TetherUsdtBadge className="size-7" /> },
+  { id: "gram", name: "GRAM", tag: "Task rewards balance", element: <GramBadge className="size-7" /> },
+  { id: "btc", name: "Bitcoin", tag: "External wallet asset", element: <BitcoinBadge className="size-7" /> },
+  { id: "eth", name: "Ethereum", tag: "External wallet asset", element: <EthereumBadge className="size-7" /> },
+  { id: "telegram", name: "Telegram", tag: "Mini App launch", element: <TelegramBadge className="size-7" /> },
 ];
 
 export function ChessEcosystemOrbit() {
@@ -108,8 +108,8 @@ export function ChessEcosystemOrbit() {
         </div>
         <div className="ecosystem-piece-grid">{CHESS_PIECES.map((item) => inspectButton(item, true))}</div>
       </div>
-      <div className="ecosystem-inspector" aria-live="polite" aria-atomic="true">{activeItem ? <><strong>{activeItem.name}</strong><span>{activeItem.tag}</span></> : <span>Hover or tap any piece or token to inspect live rails</span>}</div>
-      <div className="showcase-panel-footer">USDT Settlement · GRAM Blockchain · BTC &amp; ETH Bridge</div>
+      <div className="ecosystem-inspector" aria-live="polite" aria-atomic="true">{activeItem ? <><strong>{activeItem.name}</strong><span>{activeItem.tag}</span></> : <span>Hover or tap any piece or token to explore the ecosystem</span>}</div>
+      <div className="showcase-panel-footer">USDT matches · GRAM rewards · Telegram play</div>
     </Card>
   );
 }

@@ -18,12 +18,12 @@ const WAGERS_FAQS = [
   {
     question: "Is playing chess for real money legal?",
     answer:
-      "Yes. Chess is recognized globally and under US and international legal precedents as a 100% pure game of skill with zero element of chance. Player moves, tactical calculation, and clock management determine every outcome, classifying peer-to-peer chess matches as legal skill competitions.",
+      "Rules for real-money chess vary by location. Check the platform's eligibility terms and the requirements that apply where you live before joining a USDT match.",
   },
   {
     question: "How do USDT match stakes and 95% pot payouts work?",
     answer:
-      "Both players deposit identical stakes ($1, $5, $10, $25, $50, $100, or $250 USDT) into an automated smart escrow before move 1. In decided matches, 95% of the combined pot is credited directly and instantly to the winner's balance (+90% net gain on your stake).",
+      "Both players commit equal USDT stakes from their app balances before play. In decided matches, 95% of the combined pot is credited to the winner's app balance (+90% net gain on the winner's stake).",
   },
   {
     question: "What happens if a match ends in a draw or stalemate?",
@@ -33,7 +33,7 @@ const WAGERS_FAQS = [
   {
     question: "How fast are crypto withdrawals on GRAM rails?",
     answer:
-      "Withdrawals process non-custodially on GRAM rails within seconds. To guarantee security, each withdrawal request triggers a 1-tap HMAC confirmation button inside your private Telegram bot chat before broadcasting on-chain.",
+      "Withdrawal timing depends on processing and network confirmation. Follow the status in Wallet; eligible requests may require a confirmation step in the Telegram bot before payout.",
   },
   {
     question: "Can I practice for free before wagering real stakes?",
@@ -44,7 +44,7 @@ const WAGERS_FAQS = [
 
 export const metadata = pageMetadata(
   "Play Chess for Money: Real USDT Stakes",
-  "Play chess for money online with real crypto stakes. Challenge rivals worldwide in $1 to $250 USDT chess duels. Winner takes 95% of the pot with automated escrow inside Telegram.",
+  "Explore optional USDT chess matches with clear stakes and fees. In a decided match, the winner receives 95% of the combined pot in their app balance.",
   "/wagers",
   [
     "play chess for money",
@@ -90,7 +90,7 @@ export default function WagersPage() {
               with USDT stakes
             </>
           }
-          lead="Equal stakes. Clear 95% winner pots. Zero house edge. Stake $1 to $250 USDT, outplay your rival, and withdraw on-chain in seconds."
+          lead="Equal stakes and clear fees. In a decided match, the winner receives 95% of the combined pot in their app balance. Review the rules and eligibility before wagering."
           visual={<ChessSculpture variant="wagers" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
@@ -108,7 +108,7 @@ export default function WagersPage() {
         <section aria-labelledby="example-heading">
           <div className="section-index">
             <span>01 / See a worked example</span>
-            <span>Real-time pot &amp; fee breakdown</span>
+            <span>Worked pot &amp; fee breakdown</span>
           </div>
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
             <div>
