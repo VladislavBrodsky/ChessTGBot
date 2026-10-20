@@ -1,0 +1,25 @@
+{
+  "status": "approved-for-website-publication",
+  "approval": "Owner selected Publish this article in the October 20 review prompt",
+  "approved_article_sha256": "96ccfcf06213c22053a97c8b24b3bccc8b9e4a0c6cd88dbfa256d54037d80a7d",
+  "website_article": "website/src/content/articles/free-ai-chess-practice-three-game-threat-drill.json",
+  "website_cover": "/illustrations/chess-academy.webp",
+  "share_art": "Academy sculpture via articleArt mapping; article subtitle in share image",
+  "preflight": {
+    "content_check": "passed; 36 articles verified",
+    "production_build": "passed; article and share-image routes generated",
+    "seo_check": "passed; 45 public pages and sitemap URLs",
+    "typescript": "passed",
+    "targeted_lint": "passed with zero warnings",
+    "standalone_request_tests": "passed; 1 test",
+    "mobile_browser": "HTTP 200 at 390px; cover loaded before title; no horizontal overflow",
+    "desktop_browser": "HTTP 200 at 1365px; cover loaded in right column; no horizontal overflow",
+    "share_image": "HTTP 200, PNG 1200x630; visually inspected"
+  },
+  "preview_files": [
+    "publication-preview-mobile.png",
+    "publication-preview-desktop.png",
+    "publication-share.png"
+  ],
+  "distribution_scope": "Website only; social copy and campaign export remain unpublished review assets"
+}

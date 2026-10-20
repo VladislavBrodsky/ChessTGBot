@@ -1,0 +1,72 @@
+{
+  "generatedAt": "2026-10-20T15:58:19.134Z",
+  "status": "draft-for-review",
+  "creative": {
+    "id": "academy",
+    "number": "13",
+    "name": "Three-game threat drill",
+    "purpose": "Original no-stake A.I. practice lesson",
+    "icon": "strategy",
+    "theme": "canvas",
+    "art": "academy",
+    "tag": "Free practice",
+    "headline": "ONE THREAT\nTHREE GAMES",
+    "body": "Notice it · Test a reply · Review the move",
+    "cta": "Explore the Academy",
+    "note": "A.I. practice · No stake needed",
+    "proof": [
+      "Name the threat",
+      "Test two replies",
+      "Review one move"
+    ],
+    "proofIcons": [
+      "target",
+      "strategy",
+      "book-open-text"
+    ],
+    "alternate": "WHAT DID\nTHAT MOVE ATTACK?",
+    "caption": "An original three-game drill for free A.I. chess practice. Notice one threat, test a reply, then review your decision. Draft for review",
+    "destination": "https://web3chess.online/academy",
+    "measure": "Saves per reach at 72 hours and seven days after approved publication; compare like channel and format windows",
+    "sequence": [
+      "Ask what the last move attacked in the constructed position",
+      "Reveal the knight on f6 attacking e4 and one legal defence",
+      "Invite three no-stake practice games and one move review per game"
+    ],
+    "status": "draft-for-review"
+  },
+  "outputs": [
+    {
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "png": "square.png",
+      "svg": "square.svg",
+      "layoutWarnings": []
+    },
+    {
+      "format": "portrait",
+      "width": 1080,
+      "height": 1350,
+      "png": "portrait.png",
+      "svg": "portrait.svg",
+      "layoutWarnings": []
+    },
+    {
+      "format": "story",
+      "width": 1080,
+      "height": 1920,
+      "png": "story.png",
+      "svg": "story.svg",
+      "layoutWarnings": []
+    },
+    {
+      "format": "wide",
+      "width": 1920,
+      "height": 1080,
+      "png": "wide.png",
+      "svg": "wide.svg",
+      "layoutWarnings": []
+    }
+  ]
+}

@@ -19,7 +19,7 @@ export default async function Image({
     art: articleArt(slug, post?.category ?? "Academy"),
     title: post?.title ?? "Moves worth reading.",
     eyebrow: post?.category ?? "THE CHESS JOURNAL",
-    description:
+    description: post?.subtitle ??
       "Opening ideas, tactical patterns, and the thinking behind Web3Chess.",
   });
 }

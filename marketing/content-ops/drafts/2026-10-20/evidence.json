@@ -1,0 +1,150 @@
+{
+  "status": "draft-for-review",
+  "language": "en",
+  "local_date": "2026-10-20",
+  "timezone": "America/Mexico_City",
+  "created_at": "2026-10-20T15:56:57Z",
+  "intended_publication_date": "2026-10-20",
+  "actual_publication_date": null,
+  "human_approval": null,
+  "selection": {
+    "calendar_slot": "Product — What free A.I. practice is useful for",
+    "selected": "Original three-game threat drill using the current no-stake A.I. training flow",
+    "reason": "The scheduled Product lesson has a concrete player task. Today's public-feed candidates are event reports, not verified evidence for this product lesson, so the evergreen calendar topic is a better fit than attaching unrelated news.",
+    "duplicate_check": "No dated 2026-10-20 article package existed at the start of the run. Existing product articles describe how to enter Telegram chess and separate practice from stakes; none teaches a three-game threat drill with this constructed position. The new slug is distinct.",
+    "future_article_url": "https://web3chess.online/blog/free-ai-chess-practice-three-game-threat-drill",
+    "future_article_url_status": "Unpublished draft; do not use this URL in social copy before approval and deployment"
+  },
+  "collection": {
+    "report": "research.json",
+    "fetched_at": "2026-10-20T15:54:04.777920+00:00",
+    "candidate_count": 30,
+    "sources": [
+      {
+        "id": "fide",
+        "http_status": 200,
+        "new": 9,
+        "updated": 0,
+        "unchanged": 1
+      },
+      {
+        "id": "lichess",
+        "http_status": 200,
+        "new": 1,
+        "updated": 0,
+        "unchanged": 23
+      },
+      {
+        "id": "chesscom",
+        "http_status": 200,
+        "new": 12,
+        "updated": 0,
+        "unchanged": 13
+      }
+    ],
+    "interpretation": "Feed snippets were discovery only. Collector scores are heuristics, not audience metrics or evidence of virality."
+  },
+  "claims": [
+    {
+      "claim": "The current Play lobby offers A.I. training with a difficulty choice and starts a computer game at wager zero",
+      "source_paths": [
+        "frontend/src/components/game/PlayLobby.tsx",
+        "frontend/src/components/game/AiDifficultyDrawer.tsx",
+        "backend/app/api/v1/endpoints/game.py"
+      ],
+      "source_url": "https://web3chess.online/academy",
+      "source_publication_date": null,
+      "captured_at": "2026-10-20T15:56:57Z",
+      "verification": "Read the current game-creation path and the public Academy source; public Academy and How it works URLs returned HTTP 200. The backend normalizes every computer-game wager to zero. No engine-version, unlimited-games or rating-equivalence claim is reused from the site.",
+      "status": "verified-current-code"
+    },
+    {
+      "claim": "The constructed line reaches the supplied FEN; after ...Nf6 the knight attacks e4; 5.d3 and 5.d4 are legal, and d3 defends e4",
+      "source_paths": [
+        "website/node_modules/chess.js"
+      ],
+      "source_url": "https://github.com/jhlywa/chess.js",
+      "source_publication_date": null,
+      "captured_at": "2026-10-20T15:56:57Z",
+      "verification": "Replayed all eight SAN half-moves with the installed chess.js library, matched the final FEN and checked both White replies. The exercise makes no engine-best or evaluation claim.",
+      "status": "verified-original-analysis"
+    },
+    {
+      "claim": "A fresh FIDE candidate describes youth championship play, including a published tactical sequence",
+      "source_url": "https://www.fide.com/one-move-can-change-everything-in-the-world-championships-u7-u17/",
+      "source_publication_date": "2026-10-16",
+      "event_date": null,
+      "captured_at": "2026-10-20T15:56:57Z",
+      "verification": "Read the full FIDE primary page, not only its feed snippet. Not selected: the youth event and its position do not support today's Product practice lesson, and the draft avoids attaching commercial promotion to youth coverage.",
+      "status": "reviewed-not-used"
+    },
+    {
+      "claim": "The Academy and How it works destinations are reachable",
+      "source_url": "https://web3chess.online/academy",
+      "secondary_url": "https://web3chess.online/how-it-works",
+      "source_publication_date": null,
+      "captured_at": "2026-10-20T15:56:57Z",
+      "verification": "Both public URLs returned HTTP 200. The social package points to the live Academy page while its article URL remains unpublished.",
+      "status": "verified"
+    }
+  ],
+  "ordered_review_passes": [
+    {
+      "order": 1,
+      "role": "CMO",
+      "finding": "Choose the scheduled Product education slot for mobile chess improvers; focus on starting useful no-stake practice, with no deposit or wager call to action. Preselect Academy visits and attributable first practice-game starts as outcomes when measured; stop or revise after a comparable observation window if readers do not reach practice.",
+      "status": "passed"
+    },
+    {
+      "order": 2,
+      "role": "Research and keywords",
+      "finding": "The intent seed is free chess A.I. practice, with a narrower three-game drill. Checked existing published content and today's full primary candidate. No search volume, audience size or competitor performance is inferred from feeds.",
+      "status": "passed"
+    },
+    {
+      "order": 3,
+      "role": "Chess editor",
+      "finding": "Original legal opening line and response options checked against chess.js. The article distinguishes a legal example from an engine recommendation and separates a practice outcome from match rating or earnings.",
+      "status": "passed"
+    },
+    {
+      "order": 4,
+      "role": "SMM",
+      "finding": "Telegram, X, Instagram carousel and three-frame story copy prepared with two original hooks and a complete e4-threat reveal. The live Academy link replaces the unpublished article URL.",
+      "status": "passed"
+    },
+    {
+      "order": 5,
+      "role": "SEO and performance",
+      "finding": "Distinct task-focused slug, excerpt and meta description; draft content checker verified 36 articles including this draft for metadata, dates, sources, CTA links, legal chess position and related links. Both public destinations returned HTTP 200. X single post is 250 weighted characters with URL counting. All four branded PNG/SVG exports have zero layout warnings; the proof sheet and full-size story were visually inspected. No field Core Web Vitals or audience performance claim is made.",
+      "status": "passed"
+    }
+  ],
+  "analytics_limitations": "No reliable article-attributed Academy visits, first practice-game starts or comparable post reach were supplied. The separate CMO audit contains figures and competitor-performance assertions without source-level evidence in this package, so they are not used as measured facts.",
+  "distribution": {
+    "article": "review-only",
+    "social": "review-only",
+    "broadcast": "not-authorized",
+    "budget_changes": "none"
+  },
+  "validation": {
+    "website_content_checker": "Passed --draft on 2026-10-20; verified 36 articles, including chess position and metadata",
+    "chess_line": "Replayed with installed chess.js; final FEN and legal 5.d3 and 5.d4 confirmed",
+    "social_x_single_post_weighted_characters": 250,
+    "creative_export": "Four PNGs and four editable SVGs in 1:1, 4:5, 9:16 and 16:9, plus proof sheet; manifest lists zero layout warnings for each format",
+    "visual_review": "Proof sheet and full-size 9:16 story inspected; copy, icons, art and CTA visible with no overlap or truncation",
+    "distribution": "Unpublished review draft only; no push, deploy, broadcast or social publication"
+  },
+  "review_version": {
+    "article_sha256": "96ccfcf06213c22053a97c8b24b3bccc8b9e4a0c6cd88dbfa256d54037d80a7d",
+    "article_path": "article.json",
+    "note": "Publish-ready JSON: approved article text plus the existing Academy cover sculpture. Exact digest recorded for promotion."
+  },
+  "publication_approval": {
+    "owner_decision": "Publish this article",
+    "decision_context": "Direct reply on 2026-10-20 to the question asking whether to publish the October 20 article and creative",
+    "approved_text_sha256": "70c83338234a43a756edd66c73843bf357658cb756b65f4b874fbfea203a3547",
+    "presentation_update": "Added the existing Academy sculpture as coverImage; no article prose, dates, chess position, source, or CTA changed",
+    "publish_scope": "Website article and branded creative only; no social posts or Telegram broadcast"
+  }
+}

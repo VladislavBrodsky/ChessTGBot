@@ -69,6 +69,7 @@ export type ChessArtVariant = keyof typeof chessArt;
 
 export function articleArt(slug: string, category: string): ChessArtVariant {
   if (slug === "can-you-castle-if-rook-is-attacked") return "castling";
+  if (slug === "free-ai-chess-practice-three-game-threat-drill") return "academy";
   if (slug.includes("fair-play")) return "fairPlay";
   if (slug.includes("wager") || slug.includes("stake")) return "wagers";
   if (category === "Product") return "howItWorks";
