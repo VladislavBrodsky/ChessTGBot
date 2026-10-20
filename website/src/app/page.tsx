@@ -240,7 +240,7 @@ export default function HomePage() {
         <section id="rewards" className="shell-wide home-section" aria-labelledby="rewards-heading">
           <div className="section-index">
             <span>01 / Why players choose Web3Chess</span>
-            <span>Real rewards · Zero house edge</span>
+            <span>Free practice · Clear pot split</span>
           </div>
 
           <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
@@ -437,7 +437,7 @@ export default function HomePage() {
                     95% Winner Payout
                   </Badge>
                   <span className="text-caption font-semibold text-fg-win">
-                    Lowest rake in Web3
+                    Fees shown before play
                   </span>
                 </div>
 
@@ -594,7 +594,7 @@ export default function HomePage() {
               Your next rival is waiting in Telegram
             </h2>
             <p className="mt-4 max-w-[46ch] text-body text-fg-muted relative z-10">
-              Join thousands of players competing for real crypto daily. Practice for free or enter real-stakes PvP matches in seconds.
+              Start with a free practice game. When you are ready, review the rules and choose whether to enter an eligible USDT match.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3 relative z-10">
               <PlayButton size="lg" pulsating trackingLocation="final_banner" />

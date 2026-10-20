@@ -6,11 +6,12 @@ import { FeatureCardIntro } from "@/components/ui/FeatureCardIntro";
 import { Icon } from "@/icons";
 import { IconCloud } from "./magicui/icon-cloud";
 import { SettlementExample } from "./SettlementExample";
+import { SETTLEMENT } from "@/lib/config";
 
 const stakes = [
-  { stake: "$5", pace: "Blitz 3+2", payout: "$9.50" },
-  { stake: "$25", pace: "Rapid 10+0", payout: "$47.50", popular: true },
-  { stake: "$100", pace: "Classic 30+0", payout: "$190" },
+  { stake: "$5", pace: "Blitz 3+2", payout: "$9.50", featured: false },
+  { stake: "$25", pace: "Rapid 10+0", payout: "$47.50", featured: true },
+  { stake: "$100", pace: "Classic 30+0", payout: "$190", featured: false },
 ];
 const referrals = [
   { tier: "1", label: "Tier 1 Direct", share: "1.0%" },
@@ -38,9 +39,9 @@ export function RewardsBento() {
         <FeatureCardIntro id="stakes-card-title" label="Stake Ladder" status="From $1" icon="lightning" title="Play Any Stake Level" body="$1 micro-duels up to $500 high-roller classics. Winner receives 95% in their app balance." href="/wagers" action="View tiers" />
         <div className="reward-demo">
           <div className="demo-heading"><span>Stake Ladder</span><span>$1–$500</span></div>
-          <ul className="stake-preview-list">{stakes.map((row) => <li key={row.stake} data-featured={row.popular || undefined}>
+          <ul className="stake-preview-list">{stakes.map((row) => <li key={row.stake} data-featured={row.featured || undefined}>
             <div><strong>{row.stake}</strong><span>{row.pace}</span></div>
-            <div className="stake-preview-value">{row.popular && <span className="preview-highlight">Popular</span>}<strong>→ {row.payout}</strong></div>
+            <div className="stake-preview-value">{row.featured && <span className="preview-highlight">Example</span>}<strong>→ {row.payout}</strong></div>
           </li>)}</ul>
           <div className="stake-preview-rail"><span>$1 Micro</span><span className="stake-preview-track" aria-hidden="true"><i /></span><span>$500 Whale</span></div>
         </div>
@@ -54,14 +55,14 @@ export function RewardsBento() {
         </div>
       </Card>
       <Card className="reward-panel" role="article" aria-labelledby="economics-card-title">
-        <FeatureCardIntro id="economics-card-title" label="Modern Edge" status="Web3 vs 2" icon="lightning" title="Chess That Pays" body="Legacy chess keeps 100%. Web3Chess returns 95% of pot to winners." href="/fair-play" action="Fair-play" />
+        <FeatureCardIntro id="economics-card-title" label="Pot Split" status="Decided Matches" icon="lightning" title="Know the Pot Before You Play" body="For an eligible, decided USDT match, the winner receives 95% of the combined pot in their app balance. The remaining 5% covers platform and referral fees." href="/wagers" action="See payout math" />
         <div className="reward-demo">
-          <div className="demo-heading"><span>Economics</span><span>95% vs 0%</span></div>
+          <div className="demo-heading"><span>Combined pot</span><span>95% / 5%</span></div>
           <ul className="economics-preview-list">
-            <li><span aria-hidden="true">×</span><div><strong>Legacy Chess</strong><span>Zero cash · Paywalls</span></div><strong className="economics-share">0%</strong></li>
-            <li data-featured="true"><Icon name="check" size={18} /><div><strong>Web3Chess</strong><span>95% Winner Payout</span></div><strong className="economics-share">95%</strong></li>
+            <li data-featured="true"><Icon name="check" size={18} /><div><strong>Winner credit</strong><span>Includes the original stake</span></div><strong className="economics-share">{SETTLEMENT.winnerPercent}%</strong></li>
+            <li><Icon name="scales" size={18} /><div><strong>Platform and referrals</strong><span>{SETTLEMENT.platformFeePercent}% platform · {SETTLEMENT.referralFeePercent}% referral</span></div><strong className="economics-share">{SETTLEMENT.platformFeePercent + SETTLEMENT.referralFeePercent}%</strong></li>
           </ul>
-          <p className="demo-note demo-note-split"><span>Winner Share:</span><strong>95% Guaranteed</strong></p>
+          <p className="demo-note demo-note-split"><span>Winner share:</span><strong>{SETTLEMENT.winnerPercent}% of the pot</strong></p>
         </div>
       </Card>
     </BentoGrid>
