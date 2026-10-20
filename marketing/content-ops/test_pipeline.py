@@ -95,6 +95,21 @@ class Creative(unittest.TestCase):
     def test_news_needs_a_source_credit(self):
         self.assertTrue(any("source" in i for i in renderer.check({"creative": {"template": "news", "headline": "h", "cta_label": "c", "subhead": "s"}})))
 
+    def test_studio_promo_requires_approved_layout_and_claims(self):
+        project = {
+            "version": 1, "format": "square", "width": 1080, "height": 1080, "theme": "canvas",
+            "title": "PLAY FROM TELEGRAM", "subtitle": "Open the board", "cta": "Play chess",
+            "tag": "Chess", "urlLabel": "web3chess.online", "note": "No stake needed",
+            "proofs": ["Open the app", "Choose a match", "Make a move"],
+            "proofIcons": ["telegram-logo", "strategy", "target"],
+            "layers": [{"kind": "sculpture"}],
+        }
+        post = {"creative": {"template": "product", "headline": "PLAY FROM TELEGRAM", "cta_label": "Play chess", "studio": project}}
+        self.assertEqual(renderer.check(post), [])
+        self.assertTrue(any("exact board" in i for i in renderer.check({**post, "chess": {"fen": FEN}})))
+        self.assertTrue(any("banned claim" in i for i in renderer.check({"creative": {**post["creative"], "studio": {**project, "title": "Earn $500 a day"}}})))
+        self.assertTrue(any("size" in i for i in renderer.check({"creative": {**post["creative"], "studio": {**project, "width": 900}}})))
+
     def test_reveal_needs_a_verified_position_and_sane_delay(self):
         post = {**self.post, "reveal": {"after_hours": 7, "text": "Solved", "creative": {"template": "puzzle", "reveal": True, "moves": ["Nf7#"], "headline": "h", "cta_label": "c", "fen": FEN}}}
         self.assertEqual(renderer.check(post), [])

@@ -1,6 +1,8 @@
 # Social package — 20 October 2026
 
-**Status:** Draft for review. The article is unpublished; use the live Academy destination below until the article itself is approved and published.
+**Status:** Social copy and canvases are drafts for review. The article is published at https://web3chess.online/blog/free-ai-chess-practice-three-game-threat-drill. The Academy destination below is the selected call to action; no social post is marked as sent by this package.
+
+**Creative source:** `creative.json` is the brief; `creative/*.project.json` is editable in `/CREATIVES`. The current PNGs are `creative/square.png` for Telegram and X, `creative/blog.png` for article sharing, and `creative/portrait.png` / `creative/story.png` for future connected channels. Review `creative/preview.png` and `creative/manifest.json` before scheduling. Puzzle frames described below need exact-position board exports, not the decorative 3D cover.
 
 **Hook A:** Stop asking only whether you beat the A.I. What threat did you notice?
 

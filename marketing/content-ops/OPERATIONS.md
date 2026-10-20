@@ -1,12 +1,10 @@
 # Autoposting operations: 5 Telegram posts and 5 articles a day
 
-This is the runbook for the content engine in `pipeline/` and the image engine in `../templates/tg/`. It supersedes the
+This is the runbook for the content engine in `pipeline/`, the exact-position board renderer in `../templates/tg/`, and the campaign [Creatives Studio](https://web3chess.online/CREATIVES). It supersedes the
 one-article-a-day sections of [WORKFLOW.md](WORKFLOW.md) for the Telegram channel and the blog; the research and review
 rules there still apply.
 
-**Status (2026-10-10):** the pipeline plans, briefs, gates, renders and dry-run publishes. Nothing posts live until the
-owner supplies the Telegram secrets and flips a mode (see "Go live"). Default mode is **review**: a human approves every
-item after reading it and seeing the rendered image.
+**Status (2026-10-20):** the pipeline plans, briefs, gates, renders and can publish approved items when the channel runner has its credentials. The repository's current mode is **review**: a human checks each post and rendered image before approval. Check queue state before preparing or rescheduling an item; prior entries may already be approved or published. The one-article daily editorial desk is a separate review workflow from this five-slot queue.
 
 ## 1. Who does what
 
@@ -19,7 +17,7 @@ ordered passes (human or agent), not separate deployed services.
 | **Competitive analyst** | Scraping and audit of public channels, new viral sources | `sources.json`, `telegram_public.py` | `reports/competitor-audit-<date>.md/.json`; `viral_sources` kept current | Report cites n, p-values, limits; no copied text kept beyond short evidence excerpts |
 | **Chess editor** | Every position and line | `pipeline/idea_bank.py`, Lichess CC0 data, verified games | Verified ideas (`idea_bank`), correct SAN, honest lessons | python-chess verifies; tests pass |
 | **Copywriter / SMM** | Post and article drafts in our voice; hooks, CTA, reveal text | The slot's brief (`daily.py briefs`) | `drafts/<date>/tg-N.json`, `art-N.json` | `daily.py submit` returns no issues |
-| **Designer** | Templates and brand fit of images | `../templates/tg/` | New/updated templates and samples; contact sheet | `node preview.mjs --all` passes; phone-size check done |
+| **Designer** | Exact-position board graphics and branded promotional canvases | `../templates/tg/`, `/CREATIVES`, `creative.json` | Board image for puzzles; Studio project JSON, platform PNGs and proof sheet for campaigns | Renderer checks pass; each image is reviewed at phone size |
 | **Compliance / QA** | The gates and the human read | `pipeline/qa.py`, `renderer.check` | Gate changes (never weakened), the approval click | A person reads the post + image, then `daily.py approve <id>` |
 | **Analytics** | Weekly numbers and what to do next | Channel stats exports, UTM visits, attributed starts | Decision log; gaps stated as gaps | Metrics table updated; unknowns left empty |
 
@@ -69,6 +67,9 @@ Articles carry `publishAt`, so the site shows each one only from its slot time (
 - Compliance: no income/profit/urgency language (also inside the image text); wager wording needs "18+" and "You can lose your stake." in the post (and in the image footer); no youth wording near wager copy.
 - Chess: every FEN is legal, every SAN line replays, "mate in N" claims are proven with python-chess, and the **image's FEN must equal the checked FEN**.
 - Images: the engine's own QA (fit, safe margin, overlap, WCAG AA contrast, size floors, board squares >= 28 px). A failed render rejects the item; a post with a `creative` and no image is refused by the publisher.
+- Promotional canvases may attach a reviewed `/CREATIVES` JSON as `creative.studio` to a non-position queue item. This replaces only that item's rendered main image; all existing text, claim, disclosure and approval gates still run. Any item with a chess FEN or verified chess position continues through the exact board renderer. X Studio images must be square. Do not attach Studio art to puzzle reveals.
+
+For the daily editorial package, `node marketing/content-ops/export-creative.mjs marketing/content-ops/drafts/YYYY-MM-DD` creates the Studio JSON and reviewed PNG set. An approved article may copy its `creative/blog.png` into `website/public/blog/` and serve it as the article share image; this is a publication change and requires the article-specific approval and normal site checks. Do not replace an exact board diagram with this promotional cover. Exporting a canvas alone does not publish a post or make a queue entry approved.
 
 ## 3. Go live (owner actions)
 

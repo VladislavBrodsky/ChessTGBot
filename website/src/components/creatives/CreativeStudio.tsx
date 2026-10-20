@@ -52,6 +52,7 @@ export function CreativeStudio() {
   const [warnings, setWarnings] = useState<string[]>([]);
   const [notice, setNotice] = useState("");
   const [ready, setReady] = useState(false);
+  const [storageAvailable, setStorageAvailable] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [customWidth, setCustomWidth] = useState("1080");
   const [customHeight, setCustomHeight] = useState("1080");
@@ -80,13 +81,18 @@ export function CreativeStudio() {
   useEffect(() => {
     if (!ready) return;
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(project)); }
-    catch { window.setTimeout(() => setNotice("Browser storage is unavailable; download your project to keep it"), 0); }
+    catch {
+      window.setTimeout(() => {
+        setStorageAvailable(false);
+        setNotice("Browser storage is unavailable; download your project to keep it");
+      }, 0);
+    }
   }, [project, ready]);
 
   useEffect(() => {
     const ticket = ++renderId.current;
     const timer = window.setTimeout(() => {
-      renderProject(project, { guides, selectedId: selectedId ?? undefined }).then(({ canvas, warnings: nextWarnings }) => {
+      renderProject(project, { guides, selectedId: selectedId ?? undefined, previewMaxDimension: 1280 }).then(({ canvas, warnings: nextWarnings }) => {
         if (ticket !== renderId.current) return;
         const visible = canvasRef.current;
         if (!visible) return;
@@ -97,7 +103,7 @@ export function CreativeStudio() {
       }).catch((error) => {
         if (ticket === renderId.current) setWarnings([error instanceof Error ? error.message : "Preview could not render"]);
       });
-    }, 45);
+    }, 90);
     return () => window.clearTimeout(timer);
   }, [project, guides, selectedId]);
 
@@ -108,11 +114,17 @@ export function CreativeStudio() {
   }, [notice]);
 
   const selected = project.layers.find((layer) => layer.id === selectedId);
-  const update = (change: Partial<CreativeProject>) => setProject((current) => ({ ...current, ...change }));
-  const updateLayer = (id: string, change: Partial<ArtLayer>) => setProject((current) => ({
-    ...current,
-    layers: current.layers.map((layer) => layer.id === id ? { ...layer, ...change } : layer),
-  }));
+  const update = (change: Partial<CreativeProject>) => {
+    setPresetId("custom");
+    setProject((current) => ({ ...current, ...change }));
+  };
+  const updateLayer = (id: string, change: Partial<ArtLayer>) => {
+    setPresetId("custom");
+    setProject((current) => ({
+      ...current,
+      layers: current.layers.map((layer) => layer.id === id ? { ...layer, ...change } : layer),
+    }));
+  };
 
   function choosePreset(id: string) {
     const preset = PRESETS.find((item) => item.id === id);
@@ -157,6 +169,7 @@ export function CreativeStudio() {
     while (project.layers.some((layer) => layer.id === `art-${suffix}`)) suffix += 1;
     const id = `art-${suffix}`;
     const step = project.layers.length;
+    setPresetId("custom");
     setProject((current) => ({
       ...current,
       layers: [...current.layers, {
@@ -170,11 +183,13 @@ export function CreativeStudio() {
   }
 
   function removeArt(id: string) {
+    setPresetId("custom");
     setProject((current) => ({ ...current, layers: current.layers.filter((layer) => layer.id !== id) }));
     setSelectedId(null);
   }
 
   function moveArt(id: string, offset: -1 | 1) {
+    setPresetId("custom");
     setProject((current) => {
       const layers = [...current.layers];
       const index = layers.findIndex((layer) => layer.id === id);
@@ -188,6 +203,7 @@ export function CreativeStudio() {
   function duplicateArt(layer: ArtLayer) {
     if (project.layers.length >= 8) { setNotice("A canvas can hold up to eight artwork layers"); return; }
     let suffix = 1;
+    setPresetId("custom");
     while (project.layers.some((item) => item.id === `art-${suffix}`)) suffix += 1;
     const id = `art-${suffix}`;
     setProject((current) => ({ ...current, layers: [...current.layers, {
@@ -249,6 +265,7 @@ export function CreativeStudio() {
       const parsed = parseProject(JSON.parse(await file.text()));
       if (!parsed) throw new Error("This is not a valid Web3Chess creative project");
       setProject(parsed);
+      setPresetId("custom");
       setSelectedId(parsed.layers[0]?.id ?? null);
       setCustomWidth(String(parsed.width));
       setCustomHeight(String(parsed.height));
@@ -261,26 +278,26 @@ export function CreativeStudio() {
   return (
     <div className="space-y-6" id="creative-studio">
       <div className="rounded-panel bg-inverse p-4 text-fg-inverse sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-overline uppercase tracking-[0.16em] text-mint">Workspace / 01</p>
-            <h2 className="mt-1 text-heading-sm font-medium">{project.name}</h2>
-            <p className="mt-1 text-caption text-white/75">{project.width} × {project.height} px · Saved in this browser</p>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div className="min-w-0">
+            <p className="text-overline uppercase tracking-[0.16em] text-mint">Current canvas</p>
+            <h2 className="mt-1 break-words text-title font-medium leading-tight sm:text-heading-sm">{project.name}</h2>
+            <p className="mt-2 text-caption text-white/75">{project.width} × {project.height} px <span aria-hidden="true">·</span> {!ready ? "Loading your draft" : storageAvailable ? "Auto-saved on this device" : "Save JSON to keep your work"}</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap lg:justify-end">
             <button type="button" onClick={() => importRef.current?.click()}
-              className="min-h-11 rounded-control border border-white/30 px-4 text-caption font-semibold hover:bg-white/10">
-              Import project
+              className="min-h-11 rounded-control border border-white/30 px-3 text-caption font-semibold transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint sm:px-4">
+              Import JSON
             </button>
             <input ref={importRef} type="file" accept="application/json,.json" className="sr-only"
               aria-label="Import editable project" onChange={(event) => void handleProjectImport(event.target.files?.[0])} />
             <button type="button" onClick={handleProjectDownload}
-              className="min-h-11 rounded-control border border-white/30 px-4 text-caption font-semibold hover:bg-white/10">
-              Save project
+              className="min-h-11 rounded-control border border-white/30 px-3 text-caption font-semibold transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint sm:px-4">
+              Save JSON
             </button>
             <button type="button" onClick={() => void handleExport()} disabled={exporting || warnings.length > 0}
-              className="min-h-11 rounded-control bg-mint px-4 text-caption font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50">
-              {exporting ? "Preparing PNG…" : "Download PNG"}
+              className="col-span-2 min-h-11 rounded-control bg-mint px-4 text-caption font-semibold text-black transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint disabled:cursor-not-allowed disabled:opacity-50 sm:col-auto">
+              {exporting ? "Preparing PNG…" : "Export PNG"}
             </button>
           </div>
         </div>
@@ -288,8 +305,16 @@ export function CreativeStudio() {
 
       <div aria-live="polite" className="min-h-6 text-caption text-fg-muted">{notice}</div>
 
+      <nav aria-label="Studio sections" className="flex gap-2 overflow-x-auto pb-1 lg:hidden">
+        {[["#studio-preview", "Preview"], ["#studio-size", "Size"], ["#studio-copy", "Text"],
+          ["#studio-art", "Artwork"], ["#studio-finish", "Finish"]].map(([href, label]) =>
+          <a key={href} href={href} className="flex min-h-11 shrink-0 items-center rounded-control border border-line bg-surface px-4 text-caption font-semibold text-fg hover:bg-wash">
+            {label}
+          </a>)}
+      </nav>
+
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)]">
-        <section aria-label="Canvas preview" className="min-w-0 rounded-panel border border-line bg-surface p-4 sm:p-6 xl:sticky xl:top-24">
+        <section id="studio-preview" aria-label="Canvas preview" className="min-w-0 scroll-mt-24 rounded-panel border border-line bg-surface p-4 sm:p-6 xl:sticky xl:top-24">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
             <div>
               <p className="eyebrow">Live preview</p>
@@ -332,7 +357,7 @@ export function CreativeStudio() {
         </section>
 
         <div className="min-w-0 space-y-5">
-          <section aria-labelledby="format-heading" className="rounded-panel border border-line bg-surface p-5">
+          <section id="studio-size" aria-labelledby="format-heading" className="scroll-mt-24 rounded-panel border border-line bg-surface p-5">
             <p className="eyebrow">01 / Output</p>
             <h3 id="format-heading" className="mt-1 text-title font-medium">Size and format</h3>
             <div className="mt-4 grid grid-cols-2 gap-2">
@@ -355,11 +380,12 @@ export function CreativeStudio() {
             </div>
           </section>
 
-          <section aria-labelledby="copy-heading" className="rounded-panel border border-line bg-surface p-5">
+          <section id="studio-copy" aria-labelledby="copy-heading" className="scroll-mt-24 rounded-panel border border-line bg-surface p-5">
             <p className="eyebrow">02 / Message</p>
             <h3 id="copy-heading" className="mt-1 text-title font-medium">Edit the words</h3>
             <label className="mt-4 grid gap-1.5 text-caption font-semibold">Starting layout
               <select className="site-input site-select" value={presetId} onChange={(event) => choosePreset(event.target.value)}>
+                <option value="custom" disabled>Custom project</option>
                 {PRESETS.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
               </select>
             </label>
@@ -372,18 +398,18 @@ export function CreativeStudio() {
               <Field label="Subtitle" value={project.subtitle} maxLength={180} onChange={(subtitle) => update({ subtitle })} />
               {[0, 1, 2].map((index) => <div key={index} className="grid gap-2 rounded-control border border-line p-3">
                 <Field label={`Proof line ${index + 1}`} value={project.proofs[index]} maxLength={80}
-                  onChange={(value) => setProject((current) => {
+                  onChange={(value) => { setPresetId("custom"); setProject((current) => {
                     const proofs = [...current.proofs] as CreativeProject["proofs"];
                     proofs[index] = value;
                     return { ...current, proofs };
-                  })} />
+                  }); }} />
                 <label className="grid gap-1.5 text-caption font-semibold">Matching icon
                   <select className="site-input site-select" value={project.proofIcons[index]}
-                    onChange={(event) => setProject((current) => {
+                    onChange={(event) => { setPresetId("custom"); setProject((current) => {
                       const proofIcons = [...current.proofIcons] as CreativeProject["proofIcons"];
                       proofIcons[index] = event.target.value as CreativeProject["proofIcons"][number];
                       return { ...current, proofIcons };
-                    })}>
+                    }); }}>
                     {PROOF_ICONS.map((icon) => <option key={icon.id} value={icon.id}>{icon.label}</option>)}
                   </select>
                 </label>
@@ -394,7 +420,7 @@ export function CreativeStudio() {
             </div>
           </section>
 
-          <section aria-labelledby="art-heading" className="rounded-panel border border-line bg-surface p-5">
+          <section id="studio-art" aria-labelledby="art-heading" className="scroll-mt-24 rounded-panel border border-line bg-surface p-5">
             <p className="eyebrow">03 / Visuals</p>
             <h3 id="art-heading" className="mt-1 text-title font-medium">Add 3D artwork</h3>
             <p className="mt-2 text-caption text-fg-muted">Choose a branded sculpture, then drag, size, and rotate it on the canvas</p>
@@ -447,7 +473,7 @@ export function CreativeStudio() {
             </div>}
           </section>
 
-          <section aria-labelledby="theme-heading" className="rounded-panel border border-line bg-surface p-5">
+          <section id="studio-finish" aria-labelledby="theme-heading" className="scroll-mt-24 rounded-panel border border-line bg-surface p-5">
             <p className="eyebrow">04 / Finish</p>
             <h3 id="theme-heading" className="mt-1 text-title font-medium">Canvas surface</h3>
             <div className="mt-4 grid grid-cols-3 gap-2">

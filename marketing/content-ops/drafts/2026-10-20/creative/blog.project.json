@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "Three-game threat drill",
+  "format": "custom",
+  "width": 1200,
+  "height": 630,
+  "theme": "canvas",
+  "tag": "Free practice",
+  "title": "ONE THREAT\nTHREE GAMES",
+  "subtitle": "Notice it · Test a reply · Review the move",
+  "proofs": [
+    "Name the threat",
+    "Test two replies",
+    "Review one move"
+  ],
+  "proofIcons": [
+    "target",
+    "strategy",
+    "book-open-text"
+  ],
+  "cta": "Explore the Academy",
+  "urlLabel": "web3chess.online",
+  "note": "A.I. practice · No stake needed",
+  "layers": [
+    {
+      "id": "art-1",
+      "kind": "academy",
+      "x": 0.79,
+      "y": 0.46,
+      "size": 0.32,
+      "rotation": 0
+    }
+  ]
+}

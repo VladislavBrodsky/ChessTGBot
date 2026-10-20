@@ -35,7 +35,7 @@ Publish each series once per seven-day cycle. News can displace the nearest rela
 
 ## Voice and copy
 
-Sound like a chess-literate friend with a clear point of view: short opening, concrete board detail, confident explanation, restrained wit. Show the move or mechanism behind the headline. Use Web3Chess for editorial identity and the outlined CHESS wordmark and violet rook for the visual lockup. Avoid faux authority, invented testimonials, generic crypto hype and claims that skill guarantees profit.
+Sound like a chess-literate friend with a clear point of view: short opening, concrete board detail, confident explanation, restrained wit. Show the move or mechanism behind the headline. Use Web3Chess for editorial identity and the official text-only CHESS / Play-to-Earn vector lockup. The violet rook is retired. Avoid faux authority, invented testimonials, generic crypto hype and claims that skill guarantees profit.
 
 | Framework | Best use | Concrete pattern |
 |---|---|---|
@@ -86,7 +86,9 @@ Use one primary intent per article. Put the answer near the start; give a distin
 
 Create the blog as the complete explanation, Telegram as a concise summary with one action, X as a short observation or a four-post educational thread, and Instagram as a puzzle/carousel or story sequence. Prepare Reel narration and board movement from the same verified example. No automatic cross-posted wall of text.
 
-Use [the campaign studio](../templates/studio.html) and its editable source assets. Compose separately for 1:1, 4:5, 9:16 and 16:9, with draft exports prepared for review. Keep the hook short, board coordinates legible, platform overlays clear, and the reveal in a separate puzzle frame. Use the vendored Phosphor icons, shipped fonts and licensed sculptures. Motion should show a move or a transition, with captions; it should not obscure notation. [Production guide](../templates/README.md)
+Use the [Creatives Studio](https://web3chess.online/CREATIVES) as the editable source for promotional, lesson-cover, and article-share canvases. Save each Studio project JSON beside its exported PNG; render each reviewed brief in 1:1, 4:5, 9:16, 16:9 and a 1200×630 blog-share layout. The offline `export-creative.mjs` uses the same website renderer and makes a proof sheet. Exact-position puzzles and reveals keep the board-specific renderer so every square, FEN and move remains verifiable. The 3D art is contextual illustration, never a substitute for the board. Keep the hook short, coordinates legible, platform overlays clear, and the reveal in a separate puzzle frame. Use the approved Phosphor icons, shipped fonts and licensed sculptures. Motion should show a move or a transition, with captions; it should not obscure notation. [Canvas rules](../templates/CANVAS_STYLE_GUIDE.md)
+
+Telegram uses the square image with native short copy and one verified destination. X uses the square image for a single post or a distinct slide per thread claim. Blog cards and share promotions use the 1200×630 image; the article itself remains the full explanation and retains exact chess diagrams. Portrait and story exports are prepared for later connected platforms but are not distributed until their accounts, copy, disclosure and approval are configured. Never infer reach, urgency or outcomes from the artwork.
 
 ## Analytics and weekly decisions
 

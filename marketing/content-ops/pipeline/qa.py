@@ -232,6 +232,9 @@ def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
         size = post["creative"].get("size")
         if size and size != "square":
             issues.append(f"X creative must use 1:1 format (size='square'); got '{size}'")
+        studio = post["creative"].get("studio")
+        if isinstance(studio, dict) and studio.get("format") != "square":
+            issues.append("X Studio creative must use the 1:1 square canvas")
 
     return {"passed": not issues, "issues": issues}
 

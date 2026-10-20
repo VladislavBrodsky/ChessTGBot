@@ -2,7 +2,19 @@
 
 This guide defines the visual and copywriting standards for all social media graphics, campaign banners, and announcement canvases produced for Web3Chess (`web3chess.online` & `@chesshub_chat`).
 
-All canvas generators, rendering scripts, and marketing workflows must adhere strictly to these standards.
+All canvas generators, rendering scripts, and marketing workflows must adhere strictly to these standards. The live [Creatives Studio](https://web3chess.online/CREATIVES) is the editable source for campaign and article-share art. Keep its exported project JSON with every approved PNG. The older board renderer remains the source for chess puzzles and move reveals, where the exact legal position is essential.
+
+## Platform output and approval
+
+| Use | Canvas | Editorial rule |
+| :--- | :--- | :--- |
+| Telegram and X single-image posts | 1080×1080 | One hook and one action; review image and native caption together |
+| Portrait social feed | 1080×1350 | Keep the key claim and logo inside the safe canvas, then preview in a phone feed |
+| Stories | 1080×1920 | Reserve the upper and lower zones for platform controls; never place the CTA or disclaimer at the edge |
+| Wide social and presentations | 1920×1080 | Recompose rather than stretch a square image |
+| Blog share promotion | 1200×630 | Match the article's verified angle and link; preserve exact chess diagrams within the article |
+
+Review source, offer, chess facts, required disclosures, readability, crop, destination, filename and rendered pixels before marking a post approved. A Studio graphic is promotional art, not evidence of a game result, live player count or prize. New platform accounts and distribution schedules require their own channel approval. No automatic reposting from this export step.
 
 ---
 
@@ -19,8 +31,8 @@ Every item in a list or proof card must have an icon that directly represents th
 | **Security / Fair Play** | `shield-check` (🛡️) | `Anti-cheat engine`, `Transparent settlement` |
 | **Tournaments / Leaderboard** | `trophy` (🏆) or `crown-simple` (👑) | `Daily leaderboard prizes`, `Seasonal cup` |
 
-### Engine Implementation
-In `marketing/templates/renderer.js`, proof rows support explicit icon arrays (`d.proofIcons = ['lightning', 'coins', 'telegram-logo']`) or automatic context mapping based on keywords (`bullet`, `blitz`, `usdt`, `stake`, `chat`, `@`).
+### Engine implementation
+Set the three `proofIcons` explicitly in the Studio project. Each icon should identify its own proof line; the offline editorial exporter rejects missing or unknown icons.
 
 ---
 
@@ -71,11 +83,11 @@ The bottom interactive and regulatory zone uses a strict dual-element structure:
 ## 6. Copywriting & FOMO Standards
 
 - **Zero Terminal Periods**: Headings, subheads, tags, proof rows, button labels, and footer notes **MUST NEVER** end with a period (`.`).
-- **Viral & FOMO Phrasing**:
-  - Focus on **speed**, **real crypto gains**, and **live urgency**.
+- **Useful hooks and real urgency**:
+  - Focus on a concrete chess decision, a verifiable product action, or a real time-bound event with a sourced deadline.
   - *Poor / Generic*: `Bullet, blitz, and USDT stakes. Join our community.`
-  - *High-Converting / FOMO*: `60s blitz · Instant USDT payouts · The arena is live`
-  - *Alternative*: `Fast blitz · Real USDT stakes · Win & cash out live`
+  - *Clear*: `60s blitz · Check the threat before you move`
+  - *Alternative*: `Three practice games · One question after every move`
 
 ---
 

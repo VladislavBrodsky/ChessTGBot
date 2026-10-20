@@ -90,13 +90,15 @@ export interface RenderResult {
 }
 
 /** Renders one exact-size output. Preview decorations are opt-in and never exported. */
-export async function renderProject(project: CreativeProject, options: { guides?: boolean; selectedId?: string } = {}): Promise<RenderResult> {
+export async function renderProject(project: CreativeProject, options: { guides?: boolean; selectedId?: string; previewMaxDimension?: number } = {}): Promise<RenderResult> {
   await document.fonts.ready;
   const canvas = document.createElement("canvas");
-  canvas.width = project.width;
-  canvas.height = project.height;
+  const scale = options.previewMaxDimension ? Math.min(1, options.previewMaxDimension / Math.max(project.width, project.height)) : 1;
+  canvas.width = Math.round(project.width * scale);
+  canvas.height = Math.round(project.height * scale);
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas is unavailable in this browser");
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
   const { width: w, height: h } = project;
   const unit = Math.min(w / 1080, h / 1080);
   const isWide = w / h > 1.35;

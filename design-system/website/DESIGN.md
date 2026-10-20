@@ -29,6 +29,11 @@ layers render into one full-size canvas; PNG exports omit editor guides. Drafts
 are saved only in the current browser, with JSON import/export for portability.
 The tool does not publish to the site or assert campaign performance, scarcity,
 or financial claims on behalf of the owner.
+The live editor uses a bounded preview surface for responsive dragging; final
+PNG export still renders at the selected exact pixel dimensions. On phones the
+workspace has a concise title and dimensions, paired JSON controls, a full-width
+export action, and an in-page jump row for Preview, Size, Text, Artwork and Finish.
+Keep each jump target clear of sticky navigation and preserve 44px hit areas.
 
 ### 0.1 Production marketing preservation and responsive polish (2026-10-13)
 
