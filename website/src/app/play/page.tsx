@@ -27,12 +27,12 @@ const PLAY_FAQS = [
   {
     question: "Is Web3Chess free to play?",
     answer:
-      "Yes. Unlimited practice matches against the Stockfish 16 engine, 100 tactical puzzle levels in the Academy, and casual games are 100% free with zero paywalls. Real-money USDT matches are completely optional.",
+      "AI training against Stockfish 16 and 100 tactical puzzle levels in the Academy are free. In a wagered match against another player, each person stakes at least 1 USDT.",
   },
   {
     question: "How do I challenge a friend to a chess game on Telegram?",
     answer:
-      "Inside the app, tap 'Play Friend' to generate a unique match challenge link. Share the link into any Telegram private chat or group. When your friend taps it, the board opens immediately.",
+      "Inside the app, tap 'Play Friend', choose a time control and USDT stake, and create an invitation link. Share it in a Telegram chat. Your friend reviews and accepts the same stake before joining.",
   },
 ] as const;
 
