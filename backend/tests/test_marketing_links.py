@@ -1,4 +1,4 @@
-"""Content links (mk_<channel>_<post>) record first-touch source and land on Home."""
+"""Content links record first-touch source and keep approved website destinations."""
 from datetime import timedelta
 import hashlib
 import hmac
@@ -67,6 +67,19 @@ async def test_preview_routes_home_and_keeps_the_first_source(db_session):
     with pytest.raises(HTTPException) as error:
         await invites.preview(db_session, new, 'mk_')
     assert error.value.status_code == 404
+
+
+async def test_website_campaigns_preserve_play_and_academy_destinations(db_session):
+    new = User(telegram_id=540013, first_name='New', created_at=player_tracking.utcnow())
+    db_session.add(new); await db_session.commit()
+
+    assert await invites.preview(db_session, new, 'mk_web_play_arena') == {'kind': 'route', 'destination': 'arena'}
+    assert await invites.preview(db_session, new, 'mk_web_academy') == {'kind': 'route', 'destination': 'academy'}
+    assert await invites.preview(db_session, new, 'mk_web_rules') == {'kind': 'route', 'destination': 'home'}
+    await db_session.commit()
+
+    # Attribution is first touch. Opening more website links cannot overwrite it.
+    assert (await db_session.get(PlayerAcquisition, 540013)).campaign == 'mk_web_play_arena'
 
 
 async def test_bot_start_records_new_player_from_content_link_only(db_session, monkeypatch):

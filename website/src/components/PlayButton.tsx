@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { telegramLink } from "@/lib/config";
+import React, { useState, useEffect, useRef } from "react";
+import { campaignForCta, telegramLink, WEBSITE_CAMPAIGNS } from "@/lib/config";
 import { trackPlayClick } from "@/lib/analytics";
 import { TelegramIcon } from "./icons";
 import { buttonClass } from "./ui/button-styles";
@@ -33,16 +33,18 @@ export function PlayButton({
   trackingLocation = "play_button",
 }: Props) {
   const [ripples, setRipples] = useState<Ripple[]>([]);
+  const rippleSequence = useRef(0);
+  const launchParameter = startapp === "arena" ? WEBSITE_CAMPAIGNS.play : campaignForCta(trackingLocation);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    trackPlayClick(trackingLocation, startapp);
+    trackPlayClick(trackingLocation, launchParameter);
 
     const rect = e.currentTarget.getBoundingClientRect();
     const rippleSize = Math.max(rect.width, rect.height) * 2;
     const x = e.clientX - rect.left - rippleSize / 2;
     const y = e.clientY - rect.top - rippleSize / 2;
 
-    const newRipple = { x, y, size: rippleSize, key: Date.now() };
+    const newRipple = { x, y, size: rippleSize, key: ++rippleSequence.current };
     setRipples((prev) => [...prev, newRipple]);
   };
 
@@ -62,7 +64,7 @@ export function PlayButton({
 
   return (
     <a
-      href={telegramLink(startapp)}
+      href={telegramLink(launchParameter)}
       target="_blank"
       rel="noopener noreferrer"
       onClick={handleClick}

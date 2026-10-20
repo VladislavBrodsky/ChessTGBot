@@ -1,4 +1,4 @@
-import { GA_MEASUREMENT_ID, telegramLink } from "./config";
+import { GA_MEASUREMENT_ID, telegramLink, type WebsiteLaunchParameter } from "./config";
 
 /**
  * Google Analytics (GA4) & Data Collection Utilities.
@@ -49,15 +49,15 @@ export function trackPageView(url: string, title?: string): void {
  * Tracks a website click toward Telegram. This is a handoff attempt, not a
  * confirmed Telegram arrival, registered player, game, or revenue event.
  */
-export function trackPlayClick(location: string, startapp?: string): void {
-  const destination = telegramLink(startapp === "arena" ? "arena" : undefined);
+export function trackPlayClick(location: string, startapp: WebsiteLaunchParameter): void {
+  const destination = telegramLink(startapp);
 
   // Keep the established event name for trend continuity; classify its stage
   // explicitly so a click cannot be reported as an acquired player or income.
   trackEvent("play_in_telegram", {
     funnel_stage: "telegram_handoff_click",
     click_location: location,
-    startapp_param: startapp || "default",
+    startapp_param: startapp,
     destination_url: destination,
     device_type:
       typeof window !== "undefined" && window.innerWidth < 1024
@@ -109,7 +109,7 @@ export function trackShareClick(
   url: string,
 ): void {
   trackEvent("share", {
-    funnel_stage: "share_intent",
+    funnel_stage: method === "copy_link" ? "copy_completed" : "share_intent",
     method,
     content_type: context,
     item_id: url,

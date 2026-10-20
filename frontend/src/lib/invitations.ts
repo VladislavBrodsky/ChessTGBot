@@ -19,7 +19,7 @@ export function readLaunchParameter(location: Pick<Location, 'search' | 'hash'>,
     || sdkParameter || hash.get('tgWebAppStartParam') || '';
 }
 
-/** Content links (mk_<channel>_<post>) only label where a player came from. */
+/** Marketing links label first touch; the server may also select a route. */
 export function isCampaignParameter(parameter: string): boolean {
   return /^mk_[A-Za-z0-9_-]{1,61}$/.test(parameter);
 }

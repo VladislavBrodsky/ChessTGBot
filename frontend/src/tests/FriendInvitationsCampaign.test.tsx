@@ -36,6 +36,21 @@ test('a content campaign link records its source silently and keeps the player o
   expect(screen.getByText('Home')).toBeInTheDocument();
 });
 
+test.each([
+  ['mk_web_play_arena', 'arena', '/en/game'],
+  ['mk_web_academy', 'academy', '/en/academy'],
+])('website campaign %s opens its approved destination without a dialog', async (parameter, destination, route) => {
+  apiFetch.mockImplementation((url: string): Promise<Reply> => url.includes('/friends/inbox')
+    ? Promise.resolve({ ok: true, json: () => Promise.resolve({ launch: null, invitations: [] }) })
+    : Promise.resolve({ ok: true, json: () => Promise.resolve({ kind: 'route', destination }) }));
+  window.history.replaceState(null, '', `/en/home?startapp=${parameter}`);
+  render(<InvitationProvider><p>Home</p></InvitationProvider>);
+
+  await waitFor(() => expect(push).toHaveBeenCalledWith(route));
+  expect(sessionStorage.getItem(`chess-invitation:540001:${parameter}`)).toBe('1');
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
 test('a failed campaign lookup never shows an invitation error', async () => {
   apiFetch.mockImplementation((url: string): Promise<Reply> => url.includes('/friends/inbox')
     ? Promise.resolve({ ok: true, json: () => Promise.resolve({ launch: null, invitations: [] }) })

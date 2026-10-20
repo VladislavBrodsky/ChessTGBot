@@ -45,7 +45,17 @@ Use the 150 phrases as a **research inventory** for these routes and article bri
 
 Segment every stage by landing page, device, country, branded/nonbranded query cohort where available, and campaign. Report counts and denominators with settled date windows. Never divide website clicks by backend games as if they were the same cohort until the attribution bridge exists. Avoid putting personal or wallet data into analytics events.
 
-The site already sends a GA4 `play_in_telegram` event. In this release its destination URL is generated from the canonical bot configuration, and puzzle starts/hints are recorded on actual interaction. A first-party bridge from a website session to authenticated Mini App arrival still needs a reserved, allowlisted `startapp` campaign code, backend deduplication, retention/consent review, and end-to-end verification. Arbitrary UTM strings must **not** be appended to `startapp`: unknown values are currently treated as game IDs.
+The site sends a GA4 `play_in_telegram` handoff event. Website CTAs and QR codes now use fixed `mk_web_*` launch codes that the backend accepts as **first-touch source labels for newly registered players**. The Play and Academy codes preserve their relevant in-app destination; all other website codes open Home. Existing players are not reclassified as new acquisitions, and later links do not overwrite first touch. The backend's source report can count attributed registrations and users with an accepted move, but an accepted move is **not** a completed game. These aggregate source buckets do not join an individual website session or article to a game. A full session-to-game bridge still needs an approved ID, consent/retention contract, deduplication, and end-to-end verification. Arbitrary UTM strings must **not** be appended to `startapp`.
+
+### First measurable acquisition cohort
+
+Compare GA4 `play_in_telegram` handoff clicks by `click_location` and `startapp_param` with backend `pilot_metrics.sources` registrations and accepted-move players for the same complete UTC period. These are separate stages and cannot be turned into a person-level conversion rate. The fixed website source buckets are Home, Play, Academy, Rules, How It Works, Wagers, Fair Play, navigation, footer, mobile CTA, QR, and other. Keep a weekly source table with actual denominators and mark channels with too little data as inconclusive. The existing share event reports a clipboard success as `copy_completed`; Telegram/X share events remain `share_intent` because delivery cannot be confirmed.
+
+### Next controlled experiments
+
+1. **Activation:** send qualified Academy and tactics readers to one playable, verified position, then offer the next relevant app action. Measure unrevealed solves, handoff clicks, website-source registrations, and accepted-move players in that order.
+2. **Invitation:** after a real solve, let a player share that exact position. Measure recipient landings and solves before claiming a viral coefficient; a share-button tap is only intent.
+3. **Discovery:** choose one existing page each week with a settled Search Console query mismatch and improve its actual chess answer or interactive example. Add internal links from closely related articles and compare complete periods, not partial days.
 
 ## 90-day execution cadence
 

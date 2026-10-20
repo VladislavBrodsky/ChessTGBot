@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { MetaLine } from "@/components/ui/MetaLine";
 import { Icon } from "@/icons";
 import { qrSvg } from "@/lib/qr";
-import { telegramLink, SITE } from "@/lib/config";
+import { telegramLink, SITE, WEBSITE_CAMPAIGNS } from "@/lib/config";
 import { BRAND } from "@/lib/brand";
 import { pageMetadata, jsonLd, softwareApplicationData, breadcrumbData, faqData } from "@/lib/seo";
 
@@ -53,7 +53,7 @@ export const metadata: Metadata = pageMetadata(
 );
 
 export default async function PlayPage() {
-  const svg = await qrSvg(telegramLink("arena"));
+  const svg = await qrSvg(telegramLink(WEBSITE_CAMPAIGNS.play));
   return (
     <div className="shell-wide">
       <script

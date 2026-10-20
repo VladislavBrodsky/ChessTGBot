@@ -16,6 +16,9 @@ import { Card } from '@/components/ui/Card';
 import { ErrorState } from '@/components/ui/ErrorState';
 
 type Inbox = { launch?: string | null; invitations?: Invitation[] };
+const ROUTE_DESTINATIONS: Record<string, string> = {
+  home: 'home', arena: 'game', practice: 'game', academy: 'academy', box: 'marketplace', marketplace: 'marketplace',
+};
 
 async function post(path: string, body: object) {
   const response = await apiFetch(`/api/v1/game/friends/${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -69,8 +72,22 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
     if (consumed(param)) return;
     // Mark in memory before the request so polling cannot open a second dialog.
     handled.current.add(key(param));
-    // Content links never open a dialog: the server records the source and the player stays on Home.
-    if (isCampaignParameter(param)) { void post('preview', { parameter: param }).then(() => consume(param), () => {}); return; }
+    // Content links never open a dialog. Preserve the server's approved
+    // destination after recording first touch; a failed lookup can retry.
+    if (isCampaignParameter(param)) {
+      void post('preview', { parameter: param }).then((view) => {
+        if (view.kind !== 'route' || !ROUTE_DESTINATIONS[view.destination]) {
+          handled.current.delete(key(param));
+          return;
+        }
+        consume(param);
+        if (view.destination !== 'home') {
+          setNavigating(true);
+          router.push(`/${locale}/${ROUTE_DESTINATIONS[view.destination]}`);
+        }
+      }, () => { handled.current.delete(key(param)); });
+      return;
+    }
     setParameter(param); setExplicit(true); setLoading(true); setError('');
     try {
       if (param === 'arena') { consume(param); setExplicit(false); setNavigating(true); router.push(`/${locale}/game`); return; }
@@ -80,11 +97,10 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
       if (param === 'home') { consume(param); setExplicit(false); router.push(`/${locale}/home`); return; }
       const view = await post('preview', { parameter: param });
       if (view.kind === 'route') {
-        const destinations: Record<string, string> = { home: 'home', arena: 'game', practice: 'game', academy: 'academy', box: 'marketplace', marketplace: 'marketplace' };
-        if (!destinations[view.destination]) throw new Error('invalid_invitation');
+        if (!ROUTE_DESTINATIONS[view.destination]) throw new Error('invalid_invitation');
         consume(param); setExplicit(false);
         if (view.destination !== 'home') setNavigating(true);
-        router.push(`/${locale}/${destinations[view.destination]}`);
+        router.push(`/${locale}/${ROUTE_DESTINATIONS[view.destination]}`);
       } else if (view.kind === 'game' && !view.free && view.game_id === new URLSearchParams(window.location.search).get('id')) {
         // A Telegram WebView may retain start_param across a board reload.
         // The board owns the final wager confirmation, so avoid stacking the

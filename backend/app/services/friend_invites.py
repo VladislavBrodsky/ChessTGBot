@@ -102,12 +102,17 @@ async def preview(db, user, parameter):
         }
         return {"kind": "route", "destination": dest_map[parameter]}
     if parameter.startswith('mk_'):
-        # Content links label first-touch source only; the player lands on Home.
+        # Content links label first-touch source; selected website links keep
+        # their relevant destination without becoming an invitation or reward.
         from app.services.player_tracking import attribute_marketing, marketing_campaign
         if not marketing_campaign(parameter):
             fail('invalid_invitation', 404)
         await attribute_marketing(db, user, parameter)
-        return {"kind": "route", "destination": "home"}
+        destination = {
+            'mk_web_play_arena': 'arena',
+            'mk_web_academy': 'academy',
+        }.get(parameter.lower(), 'home')
+        return {"kind": "route", "destination": destination}
     if parameter.startswith('ref_'):
         host = await host_for_code(db, parameter)
         return {"kind": "friend", "opponent": identity(host), "self": host.telegram_id == user.telegram_id,

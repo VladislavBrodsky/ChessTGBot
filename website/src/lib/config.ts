@@ -17,13 +17,46 @@ export const BOT_USERNAME = (
  *   - omitted      → opens home
  *   - "arena"      → opens matchmaking
  *   - "ref_<code>" → referral
- *   - "mk_<card-id>_<channel>_<target>" → marketing deep link; routes to the
- *     target (arena | academy | challenges | wallet) and logs telemetry. Needs a
- *     card id reserved from backend/app/services/marketing/ — do not invent one.
+ *   - "mk_<source>" → first-touch marketing source for newly registered
+ *     players. The backend routes the website's play/academy codes directly;
+ *     other marketing codes open Home.
  * ANY other value is treated as a game id and sends the player to a game that
  * does not exist. Do not add campaign parameters here.
  */
-export function telegramLink(startapp?: "arena"): string {
+export const WEBSITE_CAMPAIGNS = {
+  home: "mk_web_home",
+  play: "mk_web_play_arena",
+  academy: "mk_web_academy",
+  rules: "mk_web_rules",
+  howItWorks: "mk_web_how",
+  wagers: "mk_web_wagers",
+  fairPlay: "mk_web_fairplay",
+  navigation: "mk_web_nav",
+  footer: "mk_web_footer",
+  mobile: "mk_web_mobile",
+  qr: "mk_web_qr",
+  other: "mk_web_other",
+} as const;
+
+export type WebsiteLaunchParameter =
+  | "arena"
+  | (typeof WEBSITE_CAMPAIGNS)[keyof typeof WEBSITE_CAMPAIGNS];
+
+/** Fixed, aggregate source buckets. No visitor IDs or arbitrary URL data. */
+export function campaignForCta(location: string): WebsiteLaunchParameter {
+  if (location.startsWith("academy") || location === "puzzle_solved_banner") return WEBSITE_CAMPAIGNS.academy;
+  if (location.startsWith("rules")) return WEBSITE_CAMPAIGNS.rules;
+  if (location.startsWith("how_it_works")) return WEBSITE_CAMPAIGNS.howItWorks;
+  if (location.startsWith("wagers")) return WEBSITE_CAMPAIGNS.wagers;
+  if (location.startsWith("fair_play")) return WEBSITE_CAMPAIGNS.fairPlay;
+  if (location.startsWith("nav_")) return WEBSITE_CAMPAIGNS.navigation;
+  if (location.startsWith("footer_")) return WEBSITE_CAMPAIGNS.footer;
+  if (location === "sticky_mobile_dock") return WEBSITE_CAMPAIGNS.mobile;
+  if (["hero", "final_banner", "facts_banner", "infrastructure"].includes(location)) return WEBSITE_CAMPAIGNS.home;
+  return WEBSITE_CAMPAIGNS.other;
+}
+
+export function telegramLink(startapp?: WebsiteLaunchParameter): string {
   const base = `https://t.me/${BOT_USERNAME}/Web3Chess`;
   return startapp ? `${base}?startapp=${startapp}` : base;
 }

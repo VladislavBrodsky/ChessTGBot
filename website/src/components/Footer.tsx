@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 import { PlayButton } from "./PlayButton";
 import { home } from "@/content/home";
-import { SITE, telegramLink } from "@/lib/config";
+import { SITE, telegramLink, WEBSITE_CAMPAIGNS } from "@/lib/config";
 import { qrSvg } from "@/lib/qr";
 import { Badge } from "./ui/Badge";
 import { Dock, DockIcon } from "@/components/magicui/dock";
 import { Icon } from "@/icons";
 
 export async function Footer() {
-  const footerQr = await qrSvg(telegramLink());
+  const footerQr = await qrSvg(telegramLink(WEBSITE_CAMPAIGNS.qr));
 
   return (
     <footer className="shell-wide pb-8 pt-8 sm:pb-12 sm:pt-10">
@@ -34,7 +34,7 @@ export async function Footer() {
           <div className="flex w-full justify-center sm:justify-end md:w-auto md:shrink-0">
             <Dock iconMagnification={50} iconDistance={90} className="bg-inset/80 border-line">
               <a
-                href={telegramLink()}
+                href={telegramLink(WEBSITE_CAMPAIGNS.footer)}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open Telegram bot"

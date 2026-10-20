@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Icon, type IconName } from "@/icons";
-import { telegramLink } from "@/lib/config";
+import { telegramLink, WEBSITE_CAMPAIGNS } from "@/lib/config";
 import { buttonClass } from "@/components/ui/button-styles";
 import { MetaLine } from "@/components/ui/MetaLine";
 
@@ -155,7 +155,7 @@ export function AcademyRoadmap() {
                 <strong>{track.lessonsCount} Lv · {track.drillsCount} Drills</strong>
               </div>
               <div className="roadmap-bar" role="presentation"><i style={{ width: `${track.progressPercent}%` }} /></div>
-              <a href={telegramLink()} target="_blank" rel="noopener noreferrer" className="roadmap-link">
+              <a href={telegramLink(WEBSITE_CAMPAIGNS.academy)} target="_blank" rel="noopener noreferrer" className="roadmap-link">
                 <span>Practice Track {track.step}</span>
                 <Icon name="arrow-right" size={16} />
               </a>
@@ -172,7 +172,7 @@ export function AcademyRoadmap() {
           <div><dt>Neural Engine</dt><dd>Stockfish 17 (800–2800)</dd></div>
           <div><dt>Entry Cost</dt><dd>100% Free Practice</dd></div>
         </dl>
-        <a href={telegramLink()} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "", "md")}>
+        <a href={telegramLink(WEBSITE_CAMPAIGNS.academy)} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "", "md")}>
           <span>Open Academy in Telegram</span>
           <Icon name="arrow-right" size={16} />
         </a>

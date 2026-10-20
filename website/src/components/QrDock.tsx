@@ -1,5 +1,5 @@
 import { qrSvg } from "@/lib/qr";
-import { telegramLink } from "@/lib/config";
+import { telegramLink, WEBSITE_CAMPAIGNS } from "@/lib/config";
 
 /**
  * Fixed bottom-end QR dock. Compact, centered, and unobtrusive.
@@ -7,7 +7,7 @@ import { telegramLink } from "@/lib/config";
  * At narrower widths the footer still provides a desktop QR.
  */
 export async function QrDock() {
-  const svg = await qrSvg(telegramLink());
+  const svg = await qrSvg(telegramLink(WEBSITE_CAMPAIGNS.qr));
   return (
     <aside
       aria-label="Scan to play in Telegram"
