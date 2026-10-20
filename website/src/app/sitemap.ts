@@ -25,6 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/wagers`, priority: 0.9 },
     { url: `${SITE.url}/academy`, priority: 0.9 },
     { url: `${SITE.url}/blog`, priority: 0.9 },
+    { url: `${SITE.url}/CREATIVES`, priority: 0.6 },
     { url: `${SITE.url}/fair-play`, priority: 0.85 },
     { url: `${SITE.url}/rules`, priority: 0.85 },
     { url: `${SITE.url}/terms`, priority: 0.5 },

@@ -19,6 +19,17 @@
 
 ## 0. How to use this document
 
+### Creatives Studio (`/CREATIVES`, 2026-10-20)
+
+The public marketing site offers a local canvas constructor with square, portrait,
+story, wide, and bounded custom pixel sizes. It uses the approved warm-canvas,
+paper, and ink surfaces, the text-only CHESS lockup, contextual icon proof rows,
+the dual-action footer, and local Web3Chess 3D art. All editable text and artwork
+layers render into one full-size canvas; PNG exports omit editor guides. Drafts
+are saved only in the current browser, with JSON import/export for portability.
+The tool does not publish to the site or assert campaign performance, scarcity,
+or financial claims on behalf of the owner.
+
 ### 0.1 Production marketing preservation and responsive polish (2026-10-13)
 
 - **Editorial artwork:** an article may set its existing `coverImage` field to a local, optimized illustration. Put it first in the article header on phones, before metadata and headline, and in the right header column from 1024px. Load this above-the-fold image eagerly. Keep explicit square dimensions, a bounded 240px phone / 320px desktop width, and empty alternative text when purely decorative. New article-specific art also belongs in `chess-art.ts` so its journal and share preview use the same sculpture. Generated artwork never replaces exact chess diagrams or encodes essential notation.
