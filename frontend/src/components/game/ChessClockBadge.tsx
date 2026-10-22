@@ -8,6 +8,8 @@ interface ChessClockBadgeProps {
   isWhite?: boolean;
   onClockWarning?: (timeLeft: number) => void;
   isMe?: boolean;
+  label?: string;
+  className?: string;
 }
 
 function formatTime(seconds: number): string {
@@ -23,6 +25,8 @@ export function ChessClockBadge({
   isWhite: _isWhite,
   onClockWarning,
   isMe = false,
+  label,
+  className = '',
 }: ChessClockBadgeProps) {
   const initialTime = color === 'w' ? (gameState?.white_time_left ?? 600) : (gameState?.black_time_left ?? 600);
   const [timeLeft, setTimeLeft] = useState<number>(initialTime);
@@ -74,18 +78,19 @@ export function ChessClockBadge({
   return (
     <div
       role="timer"
-      aria-label={`${color === 'w' ? 'White' : 'Black'} clock`}
-      className={`px-3.5 py-2 min-w-[84px] text-center rounded-2xl border transition-colors duration-300 ${
+      aria-label={label || `${color === 'w' ? 'White' : 'Black'} clock`}
+      className={`chess-clock ${className} ${
         isLowTime
-          ? 'border-[color-mix(in_srgb,#ef4444_55%,transparent)] bg-brand-rose-opacity-10 text-brand-danger animate-pulse'
+          ? 'chess-clock--critical'
           : isWarningTime
-          ? 'border-[color-mix(in_srgb,var(--text-gold)_45%,transparent)] bg-brand-amber-opacity-10 text-brand-gold'
+          ? 'chess-clock--warning'
           : running
-          ? 'border-[color-mix(in_srgb,var(--action-bg)_50%,transparent)] bg-brand-emerald-opacity-10 text-brand-primary shadow-[0_0_18px_-4px_var(--action-bg)]'
-          : 'border-brand-border bg-brand-elevated text-brand-muted'
+          ? 'chess-clock--running'
+          : 'chess-clock--idle'
       }`}
     >
-      <span className="text-lg font-bold tracking-tight tabular-nums">
+      {label && <span className="chess-clock__label">{label}</span>}
+      <span className="chess-clock__time">
         {formatTime(timeLeft)}
       </span>
     </div>

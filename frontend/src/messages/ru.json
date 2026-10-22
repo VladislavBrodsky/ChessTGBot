@@ -779,7 +779,8 @@
     "friend_share_free": "Сыграй со мной в шахматы бесплатно в Telegram",
     "friend_share_staked": "Сыграй со мной в шахматы — ставка {amount} USDT",
     "friend_rematch_free": "Бесплатный реванш",
-    "friend_invite_failed": "Не удалось создать приглашение. Попробуй ещё раз"
+    "friend_invite_failed": "Не удалось создать приглашение. Попробуй ещё раз",
+    "your_time": "Ваше время"
   },
   "Wallet": {
     "wager_stake": "Ставка",

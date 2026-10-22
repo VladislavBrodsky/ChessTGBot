@@ -779,7 +779,8 @@
     "friend_share_free": "Jogue uma partida de xadrez grátis comigo no Telegram",
     "friend_share_staked": "Jogue xadrez comigo — aposta de {amount} USDT",
     "friend_rematch_free": "Revanche grátis",
-    "friend_invite_failed": "Não foi possível criar o convite. Tente novamente"
+    "friend_invite_failed": "Não foi possível criar o convite. Tente novamente",
+    "your_time": "Seu tempo"
   },
   "Wallet": {
     "wager_stake": "Aposta",

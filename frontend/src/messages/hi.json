@@ -779,7 +779,8 @@
     "friend_share_free": "Telegram पर मेरे साथ मुफ़्त शतरंज खेलें",
     "friend_share_staked": "मेरे साथ शतरंज खेलें — दाँव {amount} USDT",
     "friend_rematch_free": "मुफ़्त रीमैच",
-    "friend_invite_failed": "निमंत्रण नहीं बन सका। फिर से कोशिश करें"
+    "friend_invite_failed": "निमंत्रण नहीं बन सका। फिर से कोशिश करें",
+    "your_time": "आपका समय"
   },
   "Wallet": {
     "wager_stake": "दाँव",

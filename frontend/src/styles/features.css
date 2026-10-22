@@ -691,3 +691,72 @@
 /* Board coordinates: react-chessboard paints them as absolutely positioned spans, which sit ABOVE its static piece
    layer and collide with the pieces. Lift the piece layer so labels read as part of the square, not on top of a piece. */
 [data-square] > div { position: relative; z-index: 1; }
+.game-status-bar {
+  position: sticky;
+  inset-block-start: calc(var(--app-safe-top) + 4px);
+  z-index: var(--z-sticky);
+  min-height: 64px;
+  margin-block-start: 2px;
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--bg-surface) 96%, transparent);
+  box-shadow: inset 0 1px 0 var(--border-highlight), 0 10px 28px -20px rgba(0, 0, 0, 0.9);
+}
+
+.game-connection-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 999px;
+}
+.game-connection-dot--online { background: var(--action-bg); }
+.game-connection-dot--offline { background: var(--danger-ink); }
+
+.chess-clock {
+  min-width: 92px;
+  padding: 7px 12px;
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-card);
+  text-align: center;
+  transition: border-color var(--motion-duration-fast), background-color var(--motion-duration-fast), color var(--motion-duration-fast);
+}
+.chess-clock__label {
+  display: block;
+  margin-block-end: 2px;
+  color: currentColor;
+  font-size: var(--type-caption-size);
+  font-weight: 650;
+  line-height: 1;
+}
+.chess-clock__time {
+  display: block;
+  font-size: var(--type-numeric-size);
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.chess-clock--critical {
+  border-color: color-mix(in srgb, var(--danger-ink) 58%, transparent);
+  color: var(--danger-ink);
+  background: var(--color-rose-opacity-10);
+  animation: pulse 1s ease-in-out infinite;
+}
+.chess-clock--warning {
+  border-color: color-mix(in srgb, var(--text-gold) 48%, transparent);
+  color: var(--text-gold);
+  background: var(--color-amber-opacity-10);
+}
+.chess-clock--running {
+  border-color: color-mix(in srgb, var(--action-bg) 52%, transparent);
+  color: var(--text-primary);
+  background: var(--color-emerald-opacity-10);
+  box-shadow: 0 0 18px -8px var(--action-bg);
+}
+.chess-clock--idle {
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+}
+
+@media (min-width: 768px) and (max-height: 900px) {
+  .active-game-board { max-width: min(100%, calc(100dvh - var(--app-safe-top) - var(--app-safe-bottom) - 280px)); }
+}

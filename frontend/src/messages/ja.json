@@ -779,7 +779,8 @@
     "friend_share_free": "Telegramで無料のチェス対局をしよう",
     "friend_share_staked": "チェスで対戦しよう — 掛け金 {amount} USDT",
     "friend_rematch_free": "無料で再戦",
-    "friend_invite_failed": "招待を作成できませんでした。もう一度お試しください"
+    "friend_invite_failed": "招待を作成できませんでした。もう一度お試しください",
+    "your_time": "あなたの持ち時間"
   },
   "Wallet": {
     "wager_stake": "参加金額",

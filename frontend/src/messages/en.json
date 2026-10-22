@@ -779,7 +779,8 @@
     "friend_share_free": "Play a free chess game with me in Telegram",
     "friend_share_staked": "Play chess with me — stake {amount} USDT",
     "friend_rematch_free": "Free rematch",
-    "friend_invite_failed": "Could not create an invitation. Please try again"
+    "friend_invite_failed": "Could not create an invitation. Please try again",
+    "your_time": "Your time"
   },
   "Wallet": {
     "wager_stake": "Wager stake",

@@ -29,11 +29,11 @@ async def people(db_session, monkeypatch):
     return host, guest, other
 
 
-async def test_main_app_links_and_named_referral_for_existing_player(db_session, people):
+async def test_main_app_links_route_public_referrals_to_practice(db_session, people):
     host, guest, _ = people
     view = await invites.preview(db_session, guest, 'ref_friendhost')
-    assert view['opponent']['name'] == 'Host <&>' and view['free']
-    assert (await invites.preview(db_session, host, 'ref_friendhost'))['self']
+    assert view == {'kind': 'route', 'destination': 'practice'}
+    assert await invites.preview(db_session, host, 'ref_friendhost') == {'kind': 'route', 'destination': 'practice'}
     assert '?startapp=ref_friendhost' in app_link('ref_friendhost')
     assert '/app?' not in app_link('ref_friendhost')
     assert '/ru/home?startapp=ref_friendhost' in web_app_link('ref_friendhost', 'ru')
@@ -44,19 +44,28 @@ async def test_main_app_links_and_named_referral_for_existing_player(db_session,
 
 async def test_dismissed_intent_is_not_resurrected_by_signed_session_replay(db_session, people):
     _, guest, _ = people
-    await invites.remember_launch(db_session, guest, 'ref_friendhost', version=200)
+    parameter = 'go_abcdefghijklmnopqrst'
+    await invites.remember_launch(db_session, guest, parameter, version=200)
     await db_session.commit()
-    assert (await invites.inbox(db_session, guest))['launch'] == 'ref_friendhost'
-    await invites.dismiss_launch(db_session, guest.telegram_id, 'ref_friendhost')
+    assert (await invites.inbox(db_session, guest))['launch'] == parameter
+    await invites.dismiss_launch(db_session, guest.telegram_id, parameter)
     for version in (100, 200):
-        await invites.remember_launch(db_session, guest, 'ref_friendhost', version=version)
+        await invites.remember_launch(db_session, guest, parameter, version=version)
         await db_session.commit()
         await db_session.refresh(await db_session.get(PlayerLaunchIntent, guest.telegram_id))
         assert (await invites.inbox(db_session, guest))['launch'] is None
-    await invites.remember_launch(db_session, guest, 'ref_friendhost', version=300)
+    await invites.remember_launch(db_session, guest, parameter, version=300)
     await db_session.commit()
     await db_session.refresh(await db_session.get(PlayerLaunchIntent, guest.telegram_id))
-    assert (await invites.inbox(db_session, guest))['launch'] == 'ref_friendhost'
+    assert (await invites.inbox(db_session, guest))['launch'] == parameter
+
+
+async def test_public_referral_is_attributed_without_becoming_an_inbox_request(db_session, people):
+    _, guest, _ = people
+    await invites.remember_launch(db_session, guest, 'ref_friendhost')
+    await db_session.commit()
+    assert (await invites.inbox(db_session, guest))['launch'] is None
+    assert await db_session.get(PlayerLaunchIntent, guest.telegram_id) is None
 
 
 async def test_request_consent_idempotent_free_game_and_no_money(db_session, people):
@@ -107,7 +116,7 @@ async def test_expired_self_and_busy_requests(db_session, people):
     assert (await invites.respond(db_session, host, view['id'], 'accept'))['status'] == 'expired'
 
 
-async def test_bot_existing_player_gets_escaped_invitation_and_saved_intent(db_session, people, monkeypatch):
+async def test_bot_referral_opens_free_practice_without_saving_an_invitation(db_session, people, monkeypatch):
     from app.services.telegram_bot import TelegramService
     import app.core.database as database
     _, guest, _ = people
@@ -119,11 +128,11 @@ async def test_bot_existing_player_gets_escaped_invitation_and_saved_intent(db_s
     update = SimpleNamespace(effective_user=SimpleNamespace(id=guest.telegram_id, first_name='Guest', last_name=None, username=None, language_code='en'), message=SimpleNamespace(reply_text=AsyncMock()))
     await TelegramService.start_command(update, context)
     call = update.message.reply_text.call_args
-    assert 'Host &lt;&amp;&gt;' in call.args[0]
+    assert 'free practice game' in call.args[0]
     button = call.kwargs['reply_markup'].inline_keyboard[0][0]
     assert 'startapp=ref_friendhost' in button.web_app.url
     context.bot.set_chat_menu_button.assert_not_called()
-    assert (await invites.inbox(db_session, guest))['launch'] == 'ref_friendhost'
+    assert (await invites.inbox(db_session, guest))['launch'] is None
 
 
 async def test_exact_reported_legacy_game_parameter_and_lost_launch_recovery(db_session, people):

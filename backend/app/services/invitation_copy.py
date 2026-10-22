@@ -12,6 +12,23 @@ COPY = {
     'zh': ('{name} 邀请你下棋', '你收到了一份国际象棋邀请', '点击下方的打开邀请即可继续。也可稍后打开应用 — 邀请已保存。', '打开邀请', '{name} 想和你免费对弈', '{name} 已接受 — 免费对局已准备就绪', '打开邀请即可继续 — 无需钱包或充值'),
 }
 
+REFERRAL_PRACTICE_COPY = {
+    'en': ('Your free practice game is ready', 'Start a timed practice game against the computer. No wallet or deposit is needed.', 'Start free practice'),
+    'ru': ('Бесплатная тренировочная партия готова', 'Начните тренировочную партию с компьютером. Кошелёк и депозит не нужны.', 'Начать бесплатную тренировку'),
+    'es': ('Tu partida de práctica gratis está lista', 'Empieza una partida cronometrada contra el ordenador. No necesitas billetera ni depósito.', 'Empezar práctica gratis'),
+    'de': ('Deine kostenlose Trainingspartie ist bereit', 'Starte eine Partie mit Uhr gegen den Computer. Keine Wallet oder Einzahlung nötig.', 'Kostenlos trainieren'),
+    'fr': ('Votre partie d’entraînement gratuite est prête', 'Lancez une partie chronométrée contre l’ordinateur. Aucun portefeuille ni dépôt requis.', 'Commencer gratuitement'),
+    'pt': ('Sua partida de treino grátis está pronta', 'Comece uma partida cronometrada contra o computador. Sem carteira ou depósito.', 'Começar treino grátis'),
+    'ar': ('مباراة التدريب المجانية جاهزة', 'ابدأ مباراة تدريبية بوقت ضد الكمبيوتر. لا حاجة إلى محفظة أو إيداع.', 'ابدأ التدريب المجاني'),
+    'hi': ('आपका मुफ़्त अभ्यास खेल तैयार है', 'कंप्यूटर के विरुद्ध समयबद्ध अभ्यास खेल शुरू करें। वॉलेट या जमा की ज़रूरत नहीं है।', 'मुफ़्त अभ्यास शुरू करें'),
+    'ja': ('無料の練習対局を始められます', 'コンピューターとの持ち時間付き対局を開始します。ウォレットも入金も不要です。', '無料練習を始める'),
+    'zh': ('免费练习对局已准备好', '开始一场与电脑进行的计时练习对局。无需钱包或充值。', '开始免费练习'),
+}
+
 
 def invitation_copy(lang):
     return COPY.get(lang, COPY['en'])
+
+
+def referral_practice_copy(lang):
+    return REFERRAL_PRACTICE_COPY.get(lang, REFERRAL_PRACTICE_COPY['en'])

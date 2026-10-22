@@ -51,6 +51,18 @@ test.each([
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
+test('a public referral opens computer practice without showing or sending a friend request', async () => {
+  apiFetch.mockImplementation((url: string): Promise<Reply> => url.includes('/friends/inbox')
+    ? Promise.resolve({ ok: true, json: () => Promise.resolve({ launch: null, invitations: [] }) })
+    : Promise.resolve({ ok: true, json: () => Promise.resolve({ kind: 'route', destination: 'practice' }) }));
+  window.history.replaceState(null, '', '/en/home?startapp=ref_public_owner');
+  render(<InvitationProvider><p>Home</p></InvitationProvider>);
+
+  await waitFor(() => expect(push).toHaveBeenCalledWith('/en/game?practice=1'));
+  expect(apiFetch.mock.calls.some(([url]) => url.includes('/friends/requests'))).toBe(false);
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
 test('a failed campaign lookup never shows an invitation error', async () => {
   apiFetch.mockImplementation((url: string): Promise<Reply> => url.includes('/friends/inbox')
     ? Promise.resolve({ ok: true, json: () => Promise.resolve({ launch: null, invitations: [] }) })

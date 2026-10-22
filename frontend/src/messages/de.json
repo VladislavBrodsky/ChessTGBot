@@ -779,7 +779,8 @@
     "friend_share_free": "Spiele kostenlos mit mir Schach in Telegram",
     "friend_share_staked": "Spiele mit mir Schach — Einsatz {amount} USDT",
     "friend_rematch_free": "Kostenlose Revanche",
-    "friend_invite_failed": "Einladung konnte nicht erstellt werden. Versuche es erneut"
+    "friend_invite_failed": "Einladung konnte nicht erstellt werden. Versuche es erneut",
+    "your_time": "Deine Zeit"
   },
   "Wallet": {
     "wager_stake": "Einsatz",

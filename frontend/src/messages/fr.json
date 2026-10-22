@@ -779,7 +779,8 @@
     "friend_share_free": "Joue gratuitement aux échecs avec moi sur Telegram",
     "friend_share_staked": "Joue aux échecs avec moi — mise de {amount} USDT",
     "friend_rematch_free": "Revanche gratuite",
-    "friend_invite_failed": "Impossible de créer une invitation. Réessaie"
+    "friend_invite_failed": "Impossible de créer une invitation. Réessaie",
+    "your_time": "Votre temps"
   },
   "Wallet": {
     "wager_stake": "Mise",

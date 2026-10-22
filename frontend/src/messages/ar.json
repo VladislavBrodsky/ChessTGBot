@@ -779,7 +779,8 @@
     "friend_share_free": "العب معي الشطرنج مجانًا في تيليجرام",
     "friend_share_staked": "العب معي الشطرنج — الرهان {amount} USDT",
     "friend_rematch_free": "مباراة إعادة مجانية",
-    "friend_invite_failed": "تعذّر إنشاء الدعوة. حاول مجددًا"
+    "friend_invite_failed": "تعذّر إنشاء الدعوة. حاول مجددًا",
+    "your_time": "وقتك"
   },
   "Wallet": {
     "wager_stake": "قيمة الرهان",

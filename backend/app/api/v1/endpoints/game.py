@@ -297,10 +297,11 @@ async def dismiss_friend_launch(payload: FriendLaunchRequest, current_user: User
 
 @router.post('/friends/requests', dependencies=[Depends(rate_limit(limit=5, window=60))])
 async def request_friend_game(payload: FriendLaunchRequest, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    from app.services.friend_invites import request_game
-    result = await request_game(db, current_user, payload.parameter)
-    await db.commit()
-    return result
+    # Reusable ref_ links are public acquisition links. Older clients treated
+    # them as play requests and could notify the referral owner every time a
+    # stranger opened a campaign link. Direct games now use their scoped go_
+    # invitation; keep this legacy endpoint closed so stale clients cannot spam.
+    raise HTTPException(status_code=410, detail={"code": "referral_practice_only"})
 
 
 @router.post('/friends/{invite_id}/respond', dependencies=[Depends(rate_limit(limit=10, window=60))])

@@ -15,6 +15,7 @@ export interface GamePlayerCardProps {
   isBot?: boolean;
   gameState: any;
   onClockWarning: (timeLeft: number) => void;
+  showClock?: boolean;
 }
 
 export function GamePlayerCard({
@@ -28,6 +29,7 @@ export function GamePlayerCard({
   isBot = false,
   gameState,
   onClockWarning,
+  showClock = true,
 }: GamePlayerCardProps) {
   if (isMe) {
     return (
@@ -58,13 +60,13 @@ export function GamePlayerCard({
             )}
           </div>
         </div>
-        <ChessClockBadge
+        {showClock && <ChessClockBadge
           gameState={gameState}
           color={isWhite ? 'w' : 'b'}
           isWhite={isWhite}
           onClockWarning={onClockWarning}
           isMe
-        />
+        />}
       </div>
     );
   }

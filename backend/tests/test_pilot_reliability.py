@@ -457,54 +457,35 @@ async def test_free_game_claim_replaces_idle_ai_but_never_an_active_human_game(r
     assert await client.get("user:active_game:701") == "pilot-claimed"
 
 
-async def test_returning_friend_link_recovery_and_concurrent_acceptance_across_workers(workers):
-    """The reported bot -> menu path works for existing users without a new signup."""
+async def test_returning_public_referral_routes_to_practice_across_workers(workers):
+    """A public referral attributes acquisition without becoming a game request."""
     from app.models.user import User
     from app.models.friend_invite import FriendInvite
     from datetime import timedelta
     urls, (redis_client, factory) = workers
-    host, guest, stranger = 95000001, 95000002, 95000003
+    host, guest = 95000001, 95000002
     headers = lambda uid, param=None: {'X-Telegram-Init-Data': signed_user(uid, param)}
     async with factory() as db:
-        db.add_all([User(telegram_id=uid, first_name=f'Friend {uid}', referral_code=f'friend{uid}', elo=1000, created_at=player_tracking.utcnow() - timedelta(days=1)) for uid in (host, guest, stranger)])
+        db.add_all([User(telegram_id=uid, first_name=f'Friend {uid}', referral_code=f'friend{uid}', elo=1000, created_at=player_tracking.utcnow() - timedelta(days=1)) for uid in (host, guest)])
         await db.commit()
     parameter = f'ref_friend{host}'
     async with httpx.AsyncClient() as http:
         synced = await http.post(urls[0] + '/api/v1/users/sync', headers=headers(guest, parameter))
         assert synced.status_code == 200, synced.text
         recovered = await http.get(urls[1] + '/api/v1/game/friends/inbox', headers=headers(guest))
-        assert recovered.json()['launch'] == parameter
+        assert recovered.json()['launch'] is None
         preview = await http.post(urls[1] + '/api/v1/game/friends/preview', headers=headers(guest), json={'parameter': parameter})
-        assert preview.status_code == 200 and preview.json()['opponent']['name'] == f'Friend {host}'
+        assert preview.status_code == 200 and preview.json() == {'kind': 'route', 'destination': 'practice'}
         responses = await asyncio.gather(*(http.post(base + '/api/v1/game/friends/requests', headers=headers(guest), json={'parameter': parameter}) for base in urls))
-        assert all(result.status_code == 200 for result in responses), [result.text for result in responses]
-        invite_id = responses[0].json()['id']
-        assert responses[1].json()['id'] == invite_id
-        no_consent = await http.post(urls[0] + f'/api/v1/game/friends/{invite_id}/respond', headers=headers(guest), json={'action': 'accept'})
-        assert no_consent.status_code == 403
-        forwarded = await http.post(urls[1] + '/api/v1/game/friends/preview', headers=headers(stranger), json={'parameter': 'fi_' + invite_id})
-        assert forwarded.status_code == 404
-        accepted = await asyncio.gather(*(http.post(base + f'/api/v1/game/friends/{invite_id}/respond', headers=headers(host), json={'action': 'accept'}) for base in urls))
-        assert all(result.status_code == 200 for result in accepted), [result.text for result in accepted]
-        game_id = accepted[0].json()['game_id']
-        assert game_id and accepted[1].json()['game_id'] == game_id
-        for uid in (host, guest):
-            current = (await http.get(urls[1] + '/api/v1/game/friends/inbox', headers=headers(uid))).json()
-            assert current['invitations'][0]['game_id'] == game_id
-        assert (await http.get(urls[1] + '/api/v1/game/friends/inbox', headers=headers(guest))).json()['launch'] is None
-    state = await SessionManager().get_game(game_id)
-    assert state.bid_amount == 0 and state.first_move_grace_seconds == 180
-    assert (state.white_player_id, state.black_player_id) == (host, guest)
-    await GameService().make_move(game_id, 'e2e4', player_id=host)
-    await GameService().make_move(game_id, 'e7e5', player_id=guest)
+        assert all(result.status_code == 410 for result in responses), [result.text for result in responses]
     async with factory() as db:
         from app.models.player_tracking import PlayerAcquisition
-        assert await db.get(PlayerAcquisition, guest) is None
-        assert len((await db.execute(select(FriendInvite))).scalars().all()) == 1
+        assert (await db.get(PlayerAcquisition, guest)).inviter_id == host
+        assert len((await db.execute(select(FriendInvite))).scalars().all()) == 0
         assert list((await db.execute(select(User.balance).where(User.telegram_id.in_((host, guest))))).scalars()) == [0, 0]
 
 
-async def test_invitation_hint_reaches_authenticated_room_on_other_worker(workers):
+async def test_public_referral_request_does_not_emit_invitation_hint(workers):
     import socketio
     from app.models.user import User
     urls, (_, factory) = workers
@@ -519,9 +500,9 @@ async def test_invitation_hint_reaches_authenticated_room_on_other_worker(worker
         await socket.connect(urls[0], auth={'initData': signed_user(host)}, transports=['websocket'])
         async with httpx.AsyncClient() as http:
             response = await http.post(urls[1] + '/api/v1/game/friends/requests', headers={'X-Telegram-Init-Data': signed_user(guest)}, json={'parameter': 'ref_hint_host'})
-            assert response.status_code == 200, response.text
-        async with asyncio.timeout(10):
-            assert await hints.get() == {}
+            assert response.status_code == 410, response.text
+        with pytest.raises(asyncio.TimeoutError):
+            await asyncio.wait_for(hints.get(), timeout=0.25)
     finally:
         if socket.connected:
             await socket.disconnect()

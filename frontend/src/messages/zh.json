@@ -779,7 +779,8 @@
     "friend_share_free": "在 Telegram 和我免费下一盘国际象棋",
     "friend_share_staked": "和我下国际象棋 — 赌注 {amount} USDT",
     "friend_rematch_free": "免费再战",
-    "friend_invite_failed": "无法创建邀请，请重试"
+    "friend_invite_failed": "无法创建邀请，请重试",
+    "your_time": "你的时间"
   },
   "Wallet": {
     "wager_stake": "对局金额",

@@ -319,16 +319,28 @@ class TelegramService:
             # referral notifications. Persist context even for returning players.
             from app.services.mini_app_links import app_link, web_app_link, is_invite_parameter
             if is_invite_parameter(start_param):
-                from app.services.friend_invites import remember_launch, host_for_code, identity
+                from app.services.friend_invites import remember_launch
                 async with AsyncSessionLocal() as launch_db:
                     await remember_launch(launch_db, db_user, start_param)
                     await launch_db.commit()
-                    name = ''
                     if start_param.startswith('ref_'):
-                        try:
-                            name = identity(await host_for_code(launch_db, start_param))['name']
-                        except Exception:
-                            pass
+                        from app.services.invitation_copy import referral_practice_copy
+                        title, description, action = referral_practice_copy(lang)
+                        await update.message.reply_text(
+                            f'♟ <b>{title}</b>\n\n{description}',
+                            parse_mode='HTML',
+                            reply_markup=InlineKeyboardMarkup([[
+                                InlineKeyboardButton(action, web_app=WebAppInfo(url=web_app_link(start_param, lang)))
+                            ]]),
+                        )
+                        if created_here:
+                            try:
+                                from app.services.gamification_service import GamificationService
+                                await GamificationService.process_referral(launch_db, db_user, start_param)
+                            except Exception:
+                                bot_errors_logger.exception('Referral attribution after practice reply failed')
+                        return
+                    name = ''
                     import html
                     from app.services.invitation_copy import invitation_copy
                     copy = invitation_copy(lang)
@@ -337,12 +349,6 @@ class TelegramService:
                     await update.message.reply_text(invitation_text, parse_mode='HTML', reply_markup=InlineKeyboardMarkup([
                         [InlineKeyboardButton(copy[3], web_app=WebAppInfo(url=web_app_link(start_param, lang)))]
                     ]))
-                    if created_here and start_param.startswith('ref_'):
-                        try:
-                            from app.services.gamification_service import GamificationService
-                            await GamificationService.process_referral(launch_db, db_user, start_param)
-                        except Exception:
-                            bot_errors_logger.exception('Referral attribution after invitation reply failed')
                 return
 
             # Content links (mk_) record first-touch source for players this /start created.

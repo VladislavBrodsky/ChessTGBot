@@ -70,6 +70,8 @@ export default function PlayLobby() {
 
   const submittingRef = useRef<boolean>(false);
   const keepSearchingOnExitRef = useRef<boolean>(false);
+  const autoPracticeStartedRef = useRef(false);
+  const [autoPracticeRequested, setAutoPracticeRequested] = useState(false);
 
   // Get Telegram WebApp user object on mount
   useEffect(() => {
@@ -82,6 +84,7 @@ export default function PlayLobby() {
       }
       
       const params = new URLSearchParams(window.location.search);
+      setAutoPracticeRequested(params.get('practice') === '1');
       if (params.get('status') === 'success' && params.get('session_id')) {
         setShowDepositDrawer(true);
       }
@@ -394,7 +397,7 @@ export default function PlayLobby() {
     }
   };
 
-  const startAiGame = async (difficulty: string) => {
+  const startAiGame = useCallback(async (difficulty: string) => {
     if (isCreating) return;
     setIsCreating(true);
     setMatchmakingError('');
@@ -413,7 +416,16 @@ export default function PlayLobby() {
     } finally {
       setIsCreating(false);
     }
-  };
+  }, [isCreating, locale, router, tg, timeControl]);
+
+  // Public referral links are acquisition links. Start a free, expert-level
+  // computer practice game once instead of creating a request against the
+  // referral owner. Bot games remain stake-free on the server.
+  useEffect(() => {
+    if (!autoPracticeRequested || autoPracticeStartedRef.current) return;
+    autoPracticeStartedRef.current = true;
+    void startAiGame('hard');
+  }, [autoPracticeRequested, startAiGame]);
   
   const lobby = useLobbyStats();
 

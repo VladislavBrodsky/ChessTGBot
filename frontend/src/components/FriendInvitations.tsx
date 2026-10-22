@@ -17,7 +17,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 
 type Inbox = { launch?: string | null; invitations?: Invitation[] };
 const ROUTE_DESTINATIONS: Record<string, string> = {
-  home: 'home', arena: 'game', practice: 'game', academy: 'academy', box: 'marketplace', marketplace: 'marketplace',
+  home: 'home', arena: 'game', practice: 'game?practice=1', academy: 'academy', box: 'marketplace', marketplace: 'marketplace',
 };
 
 async function post(path: string, body: object) {

@@ -9,6 +9,7 @@ import { FaArrowLeft, FaChessKnight } from 'react-icons/fa';
 
 import LayoutWrapper from '@/components/LayoutWrapper';
 import ChessBoardComponent from '@/components/game/ChessBoard';
+import ChessClockBadge from '@/components/game/ChessClockBadge';
 import { opponentIdentity } from '@/lib/opponentIdentity';
 import MatchOverModal from '@/components/game/MatchOverModal';
 import RematchChoiceDrawer from '@/components/game/RematchChoiceDrawer';
@@ -752,7 +753,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     >
       {wagerConsentModal}
       {/* Header / Nav */}
-      <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex justify-between items-center mb-4 relative z-10 px-2 mt-2 mx-auto">
+      <div className="game-status-bar w-full max-w-md md:max-w-xl lg:max-w-2xl flex justify-between items-center mb-4 px-2 mx-auto">
         <div className="flex items-center gap-3">
           {isGameOver && !isTelegram && (
             <Link href={`/${locale}/home`}>
@@ -781,11 +782,20 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           )}
         </div>
 
-        <div className="flex items-center gap-2 bg-brand-surface px-3 py-1 rounded-full border border-brand-border-opacity-10 shadow-sm">
-          <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`} />
-          <span className="text-caption font-bold tracking-normal text-brand-muted normal-case">
-            {isConnected ? tg('active_sync') : tg('isolated')}
-          </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`game-connection-dot ${isConnected ? 'game-connection-dot--online' : 'game-connection-dot--offline'}`}
+            role="status"
+            aria-label={isConnected ? tg('active_sync') : tg('isolated')}
+            title={isConnected ? tg('active_sync') : tg('isolated')}
+          />
+          <ChessClockBadge
+            gameState={gameState}
+            color={isWhite ? 'w' : 'b'}
+            label={tg('your_time')}
+            onClockWarning={triggerClocksWarnings}
+            isMe
+          />
         </div>
       </div>
 
@@ -859,7 +869,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           tWaitingKeepOpen={gameState?.bid_amount > 0 ? tg('friend_waiting_paid') : tg('waiting_keep_open')}
         />
       ) : (
-        <div className="w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-4 mx-auto">
+        <div className="active-game-stack w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-4 mx-auto">
           {/* Opponent HUD Card */}
           <GamePlayerCard
             userId={opponentId}
@@ -874,7 +884,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           />
 
           {/* Board Container */}
-          <div className="w-full relative z-20 flex justify-center px-1">
+          <div className="active-game-board w-full relative z-20 flex justify-center px-1">
             <div className={`board-frame w-full p-2 rounded-3xl overflow-hidden aspect-square ${isMyTurn ? 'board-frame--turn' : ''}`}>
               <ChessBoardComponent
                 fen={fen}
@@ -885,13 +895,6 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
               />
             </div>
           </div>
-
-          {/* Move History Rail */}
-          <MoveHistoryRail
-            sanMoveHistory={sanMoveHistory}
-            moveHistoryRef={moveHistoryRef}
-            title={tg('move_history')}
-          />
 
           {/* Current Player HUD Card */}
           <GamePlayerCard
@@ -904,6 +907,14 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             isWhite={isWhite}
             gameState={gameState}
             onClockWarning={triggerClocksWarnings}
+            showClock={false}
+          />
+
+          {/* Move History Rail */}
+          <MoveHistoryRail
+            sanMoveHistory={sanMoveHistory}
+            moveHistoryRef={moveHistoryRef}
+            title={tg('move_history')}
           />
         </div>
       )}

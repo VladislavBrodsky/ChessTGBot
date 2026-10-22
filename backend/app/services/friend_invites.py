@@ -34,6 +34,16 @@ def identity(user):
 async def remember_launch(db, user, parameter, version=None):
     if not is_invite_parameter(parameter):
         return
+    # A reusable referral link is an acquisition route, not a personal game
+    # request. Attribute it without saving it in the invitation inbox; otherwise
+    # every public visitor can create a request against the referral owner.
+    if parameter.startswith('ref_'):
+        host = (await db.execute(select(User).where(User.referral_code == parameter[4:]))).scalar_one_or_none()
+        if host:
+            import hashlib
+            await attribute_launch(db, user, SimpleNamespace(inviter_id=host.telegram_id, campaign='friend_referral',
+                token=hashlib.sha256(parameter.encode()).hexdigest()[:32]))
+        return
     # A replayed signed session must not overwrite a newer bot/browser intent.
     from sqlalchemy.dialects.postgresql import insert as pg_insert
     from sqlalchemy.dialects.sqlite import insert as sqlite_insert
@@ -46,12 +56,6 @@ async def remember_launch(db, user, parameter, version=None):
         'parameter': statement.excluded.parameter, 'version': statement.excluded.version,
         'dismissed': '0', 'expires_at': statement.excluded.expires_at,
     }, where=statement.excluded.version > PlayerLaunchIntent.version))
-    if parameter.startswith('ref_'):
-        host = (await db.execute(select(User).where(User.referral_code == parameter[4:]))).scalar_one_or_none()
-        if host:
-            import hashlib
-            await attribute_launch(db, user, SimpleNamespace(inviter_id=host.telegram_id, campaign='friend_referral',
-                token=hashlib.sha256(parameter.encode()).hexdigest()[:32]))
 
 
 async def dismiss_launch(db, user_id, parameter):
@@ -114,9 +118,8 @@ async def preview(db, user, parameter):
         }.get(parameter.lower(), 'home')
         return {"kind": "route", "destination": destination}
     if parameter.startswith('ref_'):
-        host = await host_for_code(db, parameter)
-        return {"kind": "friend", "opponent": identity(host), "self": host.telegram_id == user.telegram_id,
-                "parameter": parameter, "free": True, "time_control": 600}
+        await host_for_code(db, parameter)
+        return {"kind": "route", "destination": "practice"}
     if parameter.startswith('fi_'):
         row = await db.get(FriendInvite, parameter[3:])
         if not row:

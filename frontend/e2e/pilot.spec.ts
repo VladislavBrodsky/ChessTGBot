@@ -75,36 +75,42 @@ test('player dashboard shows unknown history and creates an attributed community
 
 const friendRequest = { kind: 'request', id: 'pilotrequest', status: 'pending', role: 'guest', opponent: { name: 'Dana', elo: 1450 }, game_id: null, free: true, time_control: 600, url: 'https://t.me/chess_matbot?startapp=fi_pilotrequest' };
 
-for (const entry of ['direct', 'saved'] as const) {
-  test(`friend referral ${entry} shows named invitation and a recoverable free request`, async ({ page }) => {
+test('public referral starts free computer practice without notifying the referral owner', async ({ page }) => {
+  await prepare(page);
+  await page.setViewportSize({ width: 320, height: 740 });
+  let requestEndpointCalled = false;
+  await page.route('**/api/v1/game/friends/**', async route => {
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith('/requests')) requestEndpointCalled = true;
+    const response = path.endsWith('/preview')
+      ? { kind: 'route', destination: 'practice' }
+      : { launch: null, invitations: [] };
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(response) });
+  });
+  await page.goto('/en/home?startapp=ref_dana');
+  await expect(page).toHaveURL(/\/en\/game\?id=e2e-ai-game/, { timeout: 30_000 });
+  expect(requestEndpointCalled).toBe(false);
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});
+
+for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 800 }]) {
+  test(`personal clock remains visible throughout the game at ${viewport.width}x${viewport.height}`, async ({ page }) => {
     await prepare(page);
-    await page.setViewportSize({ width: 320, height: 740 });
-    let requested = false, ready = false;
-    await page.route('**/api/v1/game/friends/**', async route => {
-      const path = new URL(route.request().url()).pathname;
-      let response: unknown = {};
-      if (path.endsWith('/preview')) response = { kind: 'friend', opponent: friendRequest.opponent, self: false, parameter: 'ref_dana', free: true, time_control: 600 };
-      if (path.endsWith('/inbox')) response = { launch: entry === 'saved' && !requested ? 'ref_dana' : null, invitations: requested ? [{ ...friendRequest, status: ready ? 'ready' : 'pending', game_id: ready ? 'e2e-ai-game' : null }] : [] };
-      if (path.endsWith('/requests')) { requested = true; response = friendRequest; expect(route.request().postDataJSON()).toEqual({ parameter: 'ref_dana' }); }
-      await route.fulfill({ contentType: 'application/json', body: JSON.stringify(response) });
-    });
-    await page.goto(entry === 'direct' ? '/?tgWebAppStartParam=ref_dana' : '/en/home');
-    await expect(page.getByRole('dialog')).toHaveCount(1);
-    await expect(page.getByRole('heading', { name: 'Dana invited you to play' })).toBeVisible();
-    await expect(page.getByText('No wallet or deposit needed')).toBeVisible();
-    if (entry === 'direct') await page.getByRole('dialog').screenshot({ path: '/tmp/chess-pilot-validation/invitation-en.png' });
-    await page.getByRole('button', { name: 'Send play request', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'Waiting for your friend', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Send request in Telegram' })).toBeEnabled();
-    ready = true;
-    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
-    await expect(page.getByRole('button', { name: 'Open game', exact: true })).toBeVisible();
+    await page.setViewportSize(viewport);
+    await page.goto('/en/game?id=e2e-ai-game');
+    const clock = page.getByRole('timer', { name: 'Your time' });
+    await expect(clock).toBeVisible({ timeout: 30_000 });
+    const before = await clock.boundingBox();
+    expect(before).not.toBeNull();
+    expect(before!.y).toBeGreaterThanOrEqual(0);
+    expect(before!.y + before!.height).toBeLessThanOrEqual(viewport.height);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect(clock).toBeVisible();
+    const after = await clock.boundingBox();
+    expect(after).not.toBeNull();
+    expect(after!.y).toBeGreaterThanOrEqual(0);
+    expect(after!.y + after!.height).toBeLessThanOrEqual(viewport.height);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.getByRole('button', { name: 'Open game', exact: true }).click();
-    await expect(page).toHaveURL(/\/en\/game\?id=e2e-ai-game/);
-    // SDK/query replay must not pull the player back into the invitation.
-    await page.goto('/en/home?startapp=ref_dana');
-    await expect(page.getByRole('heading', { name: 'Dana invited you to play' })).toHaveCount(0);
   });
 }
 
@@ -149,16 +155,16 @@ test('reported legacy game shows a named preview and expired links have a clear 
 });
 
 
-test('Arabic light invitation remains readable with reduced motion and safe mobile width', async ({ page }) => {
+test('Arabic light direct invitation remains readable with reduced motion and safe mobile width', async ({ page }) => {
   await prepare(page);
   await page.addInitScript(() => localStorage.setItem('theme', 'light'));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.route('**/api/v1/game/friends/**', async route => {
     const preview = new URL(route.request().url()).pathname.endsWith('/preview');
-    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(preview ? { kind: 'friend', opponent: friendRequest.opponent, self: false, parameter: 'ref_dana', free: true, time_control: 600 } : { launch: null, invitations: [] }) });
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(preview ? { kind: 'game', opponent: friendRequest.opponent, parameter: '4e044c66', game_id: '4e044c66', free: true, time_control: 600 } : { launch: null, invitations: [] }) });
   });
-  await page.goto('/ar/home?startapp=ref_dana');
-  await expect(page.getByRole('button', { name: 'إرسال طلب لعب', exact: true })).toBeVisible();
+  await page.goto('/ar/home?startapp=4e044c66');
+  await expect(page.getByRole('button', { name: 'انضم مجانًا', exact: true })).toBeVisible();
   await expect(page.getByRole('dialog')).toHaveCount(1);
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('dialog').screenshot({ path: '/tmp/chess-pilot-validation/invitation-ar.png' });
