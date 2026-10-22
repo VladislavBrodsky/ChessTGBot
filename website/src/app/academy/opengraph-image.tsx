@@ -9,6 +9,6 @@ export default async function Image() {
     title: "See more. Play better",
     eyebrow: "THE CHESS ACADEMY",
     description:
-      "Opening principles, tactical patterns, and free A.I. practice.",
+      "Opening principles, tactical patterns, and Free Coach practice.",
   });
 }

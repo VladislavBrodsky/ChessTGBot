@@ -63,7 +63,7 @@ export const metadata = pageMetadata(
 export const revalidate = 60;
 
 const FEATURE_STRIP = [
-  { amount: "Free AI", text: "Practice against Stockfish", dot: "bg-win-fill", tone: "text-fg-win" },
+  { amount: "Free Coach", text: "Practice against Stockfish", dot: "bg-win-fill", tone: "text-fg-win" },
   { amount: "3 games", text: "Earn one free Mystery Box", dot: "bg-caution-soft", tone: "text-fg-caution" },
   { amount: "In-app rewards", text: "XP, XP boost, or profile border", dot: "bg-premium-soft", tone: "text-fg-premium" },
   { amount: "100 levels", text: "Learn chess tactics in the Academy", dot: "bg-fg-muted", tone: "text-fg-muted" },
@@ -296,7 +296,7 @@ export default function HomePage() {
                 </dd>
               </div>
               <div className="fact-item">
-                <dt className="text-caption text-fg-muted">Tactics Academy &amp; AI</dt>
+                <dt className="text-caption text-fg-muted">Tactics Academy &amp; Free Coach</dt>
                 <dd className="fact-value flex items-baseline gap-1.5">
                   <span className="poster fact-figure tabular-nums">
                     <NumberTicker value={100} />
@@ -385,10 +385,10 @@ export default function HomePage() {
           <div className="section-split">
             <div className="space-y-5">
               <h2 id="academy-heading" className="editorial-title">
-                Free chess puzzles online &amp; Stockfish A.I. practice
+                Free chess puzzles online &amp; Free Coach practice
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
-                Master opening principles. Spot game-ending forks and pins. Calculate endgame conversions. Train against the Stockfish AI engine anytime without risking crypto.
+                Master opening principles. Spot game-ending forks and pins. Calculate endgame conversions. Train against the Stockfish engine anytime without risking crypto.
               </p>
               <ButtonLink href="/academy" variant="secondary">
                 Enter the Academy
@@ -415,7 +415,7 @@ export default function HomePage() {
                 ))}
               </ul>
               <div className="academy-preview-foot">
-                <MetaLine items="Stockfish A.I. Practice · Unlimited games" />
+                <MetaLine items="Free Coach practice · Unlimited games" />
                 <strong>Zero stake needed</strong>
               </div>
             </Card>
@@ -556,7 +556,7 @@ export default function HomePage() {
         <aside id="philosophy" className="shell-wide home-section" aria-labelledby="break-heading">
           <div className="responsible-note">
             <h2 id="break-heading">A grandmaster knows when to take a break</h2>
-            <p>Set limits before you play, never chase losses, and return with a clear head. Free A.I. practice is always there for a game without a stake.</p>
+            <p>Set limits before you play, never chase losses, and return with a clear head. Free Coach practice is always there for a game without a stake.</p>
           </div>
         </aside>
 

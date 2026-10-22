@@ -315,7 +315,7 @@ export default function RulesPage() {
               Ready to test your chess rules knowledge?
             </h2>
             <p className="mt-3 max-w-[46ch] text-body text-fg-muted">
-              Solve interactive tactical puzzles in the Academy or play unlimited free practice games against Stockfish 16 AI in Telegram.
+              Solve interactive tactical puzzles in the Academy or play unlimited free practice games with Free Coach in Telegram.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <PlayButton size="lg" pulsating trackingLocation="rules_cta" />

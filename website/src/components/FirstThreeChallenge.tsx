@@ -5,7 +5,7 @@ import { Icon } from "@/icons";
 
 const steps = [
   { number: "01", title: "Join the free challenge", body: "Open Web3Chess in Telegram and join before starting a game." },
-  { number: "02", title: "Finish three AI games", body: "Each free game needs at least 10 moves per side. Wins, losses and draws count." },
+  { number: "02", title: "Finish three Free Coach games", body: "Each free game needs at least 10 moves per side. Wins, losses and draws count." },
   { number: "03", title: "Open your box", body: "Claim one in-app reward. See the exact odds in the app before you play." },
 ];
 
@@ -17,7 +17,7 @@ export function FirstThreeChallenge() {
         <Badge tone="accent" icon="gift">Free first-three challenge</Badge>
         <h3 className="text-heading-sm font-medium">Three games. One mystery box</h3>
         <p className="text-body text-fg-muted">
-          Start against the AI for free. Complete three qualifying games to reveal XP, a 24-hour XP boost, or a gold profile border. No deposit is needed.
+          Start for free with Free Coach, a computer opponent. Complete three qualifying games to reveal XP, a 24-hour XP boost, or a gold profile border. No deposit is needed.
         </p>
         <ButtonLink href="/play" variant="secondary">
           Start playing <Icon name="arrow-right" size={16} />

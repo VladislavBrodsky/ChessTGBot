@@ -1,11 +1,17 @@
-import { opponentIdentity, type OpponentLabels } from '@/lib/opponentIdentity';
+import { isComputerOpponentName, opponentIdentity, type OpponentLabels } from '@/lib/opponentIdentity';
 
-const labels: OpponentLabels = { aiCoach: 'A.I. Coach', opponent: 'Opponent', level: { easy: 'Easy', medium: 'Medium', hard: 'Hard' } };
+const labels: OpponentLabels = { aiCoach: 'Free Coach', opponent: 'Opponent', level: { easy: 'Easy', medium: 'Medium', hard: 'Hard' } };
 
 describe('opponentIdentity', () => {
-  it('shows a practice game as the A.I. engine with its level, never a human persona', () => {
+  it('shows a practice game as Free Coach with its level, never a human persona', () => {
     const state = { black_player_id: -1, black_username: 'AI Engine (Hard)', black_elo: 1600, difficulty: 'hard' };
-    expect(opponentIdentity(state, true, labels)).toEqual({ name: 'A.I. Coach', detail: 'Hard', isBot: true });
+    expect(opponentIdentity(state, true, labels)).toEqual({ name: 'Free Coach', detail: 'Hard', isBot: true });
+  });
+
+  it('recognizes legacy server names without relabeling a real player', () => {
+    expect(isComputerOpponentName('A.I. Coach')).toBe(true);
+    expect(isComputerOpponentName('AI Engine (Hard)')).toBe(true);
+    expect(isComputerOpponentName('Alice')).toBe(false);
   });
 
   it('defaults an unknown level to medium', () => {

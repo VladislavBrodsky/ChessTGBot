@@ -174,7 +174,7 @@ export function Nav() {
           </nav>
           <PlayButton trackingLocation="nav_mobile_drawer" size="lg" className="w-full" />
           <p className="mt-4 text-caption text-fg-muted">
-            No download · Free A.I. practice
+            No download · Free Coach practice
           </p>
         </div>
       </dialog>

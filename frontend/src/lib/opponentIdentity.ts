@@ -1,7 +1,7 @@
 export type AiLevel = 'easy' | 'medium' | 'hard';
 
 export interface OpponentLabels {
-  /** "A.I. Coach" */
+  /** Player-facing name for the free computer opponent. */
   aiCoach: string;
   /** Neutral label for a player whose profile has no name. */
   opponent: string;
@@ -20,7 +20,7 @@ interface OpponentState {
 
 export interface OpponentIdentity {
   name: string;
-  /** Second line of the player card: the A.I. level, or the opponent's rating. */
+  /** Second line of the player card: the computer level, or the opponent's rating. */
   detail: string;
   isBot: boolean;
 }
@@ -38,4 +38,9 @@ export function opponentIdentity(state: OpponentState | null | undefined, player
   const name = (playerIsWhite ? state?.black_username : state?.white_username)?.trim();
   const elo = playerIsWhite ? state?.black_elo : state?.white_elo;
   return { name: name || labels.opponent, detail: `ELO ${Number.isFinite(elo) ? elo : '—'}`, isBot: false };
+}
+
+/** Normalize only the known server-assigned computer names in legacy results. */
+export function isComputerOpponentName(name: string | null | undefined): boolean {
+  return name === 'A.I. Coach' || /^AI Engine \((Easy|Medium|Hard)\)$/.test(name || '');
 }

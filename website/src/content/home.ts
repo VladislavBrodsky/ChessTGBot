@@ -53,7 +53,7 @@ export const home = {
   faq: [
     {
       q: "Can I play chess for free on Web3Chess?",
-      a: "A.I. practice and tactical puzzles are free. Matches against other players use USDT stakes starting at 1 USDT. You can explore the Academy and practise before deciding whether to play a wager match.",
+      a: "Free Coach practice and tactical puzzles are free. Matches against other players use USDT stakes starting at 1 USDT. You can explore the Academy and practise before deciding whether to play a wager match.",
     },
     {
       q: "How does a wager match work and who gets the pot?",
@@ -73,7 +73,7 @@ export const home = {
     },
     {
       q: "What are the age and legal requirements to play?",
-      a: "Wager matches are for players aged 18 and older and are subject to local availability and rules. Check the terms and in-app eligibility requirements before playing for a stake. Free A.I. practice is available without committing a stake.",
+      a: "Wager matches are for players aged 18 and older and are subject to local availability and rules. Check the terms and in-app eligibility requirements before playing for a stake. Free Coach practice is available without committing a stake.",
     },
   ],
   footer: {
@@ -144,6 +144,6 @@ export const home = {
       },
     ],
     legal:
-      "18+. Wager matches carry risk; you can lose your stake. A.I. practice and puzzles are free.",
+      "18+. Wager matches carry risk; you can lose your stake. Free Coach practice and puzzles are free.",
   },
 } as const;

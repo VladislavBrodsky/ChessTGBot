@@ -74,7 +74,7 @@ const base: CreativeProject = {
   subtitle: "Notice it · Test a reply · Review the move",
   cta: "Explore the Academy",
   urlLabel: "web3chess.online",
-  note: "A.I. practice · No stake needed",
+  note: "Free Coach practice · No stake needed",
   proofs: ["Name the threat", "Test two replies", "Review one move"],
   proofIcons: ["target", "strategy", "book-open-text"],
   layers: [{ id: "art-1", kind: "academy", x: 0.75, y: 0.56, size: 0.43, rotation: 0 }],

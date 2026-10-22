@@ -209,7 +209,7 @@ export default function WagersPage() {
             <div className="statement-cta-copy">
               <p className="text-body">
                 Only play with a stake you can afford to lose. Never chase
-                losses. If you want to train or try a new idea, free A.I.
+                losses. If you want to train or try a new idea, Free Coach
                 practice is always an option.
               </p>
               <ButtonLink href="/academy" variant="secondary">

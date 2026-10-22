@@ -173,13 +173,13 @@ class GameService:
         if is_bot_game:
             state.black_player_id = -1 # Special ID for bot
             if difficulty == "easy":
-                state.black_username = "AI Engine (Easy)"
+                state.black_username = "Free Coach"
                 state.black_elo = 800
             elif difficulty == "hard":
-                state.black_username = "AI Engine (Hard)"
+                state.black_username = "Free Coach"
                 state.black_elo = 1600
             else:
-                state.black_username = "AI Engine (Medium)"
+                state.black_username = "Free Coach"
                 state.black_elo = 1200
         state.time_control_seconds = time_control_seconds
         state.white_time_left = float(time_control_seconds)
@@ -347,13 +347,13 @@ class GameService:
         if state.black_player_id == -1 and not state.black_username:
             diff = getattr(state, "difficulty", "medium") or "medium"
             if diff == "easy":
-                state.black_username = "AI Engine (Easy)"
+                state.black_username = "Free Coach"
                 state.black_elo = 800
             elif diff == "hard":
-                state.black_username = "AI Engine (Hard)"
+                state.black_username = "Free Coach"
                 state.black_elo = 1600
             else:
-                state.black_username = "AI Engine (Medium)"
+                state.black_username = "Free Coach"
                 state.black_elo = 1200
             changed = True
         

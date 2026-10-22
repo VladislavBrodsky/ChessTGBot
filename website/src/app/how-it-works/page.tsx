@@ -37,7 +37,7 @@ const questions = [
   },
   {
     question: "Can I practise chess for free?",
-    answer: "Yes. Interactive board vision puzzles, opening trainers, and Stockfish A.I. practice are 100% free with unlimited games. Real-money player matches use optional USDT stakes starting from 1 USDT.",
+    answer: "Yes. Interactive board vision puzzles, opening trainers, and Free Coach games are 100% free with unlimited games. Real-money player matches use optional USDT stakes starting from 1 USDT.",
   },
   {
     question: "How do I play chess with a friend?",
@@ -72,7 +72,7 @@ export default function HowItWorksPage() {
                   description: "Step-by-step guide to starting a chess match in Telegram using Web3Chess",
                   steps: [
                     { name: "Launch Web3Chess", text: "Tap Play inside any Telegram chat to open the lightweight Mini App." },
-                    { name: "Choose Game Mode", text: "Select free Stockfish AI practice, Tactics Academy, or PvP Arena." },
+                    { name: "Choose Game Mode", text: "Select Free Coach practice, Tactics Academy, or PvP Arena." },
                     { name: "Pair Opponent or Invite Friends", text: "Match with a global rival or share an invite link in Telegram chat." },
                   ],
                 }),
@@ -89,7 +89,7 @@ export default function HowItWorksPage() {
               in Telegram
             </>
           }
-          lead="Launch Web3Chess in Telegram, invite friends, and choose your pace. Enjoy free Stockfish A.I. practice or explore optional USDT matches."
+          lead="Launch Web3Chess in Telegram, invite friends, and choose your pace. Enjoy Free Coach practice or explore optional USDT matches."
           visual={<ChessSculpture variant="howItWorks" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
@@ -100,7 +100,7 @@ export default function HowItWorksPage() {
             </ButtonLink>
           </div>
           <p className="text-caption text-fg-muted">
-            Free A.I. practice · Human matches from 1 USDT · 18+ wagers
+            Free Coach practice · Human matches from 1 USDT · 18+ wagers
           </p>
         </PageHero>
         <section aria-labelledby="match-rules-heading">
@@ -129,8 +129,8 @@ export default function HowItWorksPage() {
             <DetailCard span="wide" tone="accent" icon="lightning" badge="Step 01" status="Instant onboarding" title="Open your new arena" meta="One-tap Telegram launch · Zero friction">
               <p>Tap Play in Telegram. Web3Chess opens as a Mini App, with your Telegram profile ready to get started. No passwords, seed phrases, or separate app downloads required.</p>
             </DetailCard>
-            <DetailCard icon="coins" badge="Step 02" status="Sub-cent fees" title="Pick your pace" meta="Free A.I. or USDT on GRAM">
-              <p>Choose your time control and match stake. Practise against Stockfish A.I. for free, or join a real-money player match with a USDT stake on GRAM rails.</p>
+            <DetailCard icon="coins" badge="Step 02" status="Sub-cent fees" title="Pick your pace" meta="Free Coach or USDT on GRAM">
+              <p>Choose your time control and match stake. Practise for free with Free Coach, a computer opponent, or join a real-money player match with a USDT stake on GRAM rails.</p>
             </DetailCard>
             <DetailCard icon="clock" badge="Step 03" status="Bullet · Blitz · Rapid" title="Meet your next rival" meta="Smart ELO matchmaking">
               <p>Matchmaking considers your rating, time control, and stake. You can close the Mini App while you wait; the bot notifies you in chat the second an opponent is paired.</p>
@@ -153,7 +153,7 @@ export default function HowItWorksPage() {
                 Built for competitive chess and real crypto rewards
               </h2>
               <p className="max-w-[48ch] section-lead text-fg-muted mt-2">
-                Start with free AI practice and a first-three-games mystery box. USDT-staked player matches remain optional, with the pot and fees shown before you join.
+                Start with Free Coach practice and a first-three-games mystery box. USDT-staked player matches remain optional, with the pot and fees shown before you join.
               </p>
             </div>
             <ButtonLink href="/wagers" variant="secondary">

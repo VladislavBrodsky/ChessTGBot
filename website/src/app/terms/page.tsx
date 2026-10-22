@@ -58,7 +58,7 @@ export default function TermsPage() {
               1. ELIGIBILITY &amp; AGE REQUIREMENTS
             </h2>
             <p>
-              Free A.I. practice and tactical puzzles do not require a stake.
+              Free Coach practice and tactical puzzles do not require a stake.
               You must be at least 18 years of age (or the higher legal age in
               your jurisdiction) to enter a USDT wager match. Availability
               depends on local rules and in-app eligibility requirements.
@@ -116,7 +116,7 @@ export default function TermsPage() {
             <p>
               Wager matches involve real cryptocurrency and you can lose your
               stake. Set a limit before joining, never chase losses, and stop
-              when play is no longer enjoyable. Free A.I. practice is available
+              when play is no longer enjoyable. Free Coach practice is available
               when you want to play without committing a stake.
             </p>
           </section>

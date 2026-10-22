@@ -21,7 +21,7 @@ export function ArenaSection({ visual }: { visual: ReactNode }) {
             { icon: "shield-check", title: "Server-validated moves", body: "The game server validates moves and records the match result." },
             { icon: "lightning", title: "Clear settlement", body: "A decided match credits the winner’s in-app balance with 95% of the combined pot." },
           ]} />
-          <dl className="showcase-facts"><div><dd>1 USDT</dd><dt>minimum stake</dt></div><div><dd>95%</dd><dt>winner share</dt></div><div><dd>Free</dd><dt>AI practice</dt></div></dl>
+          <dl className="showcase-facts"><div><dd>1 USDT</dd><dt>minimum stake</dt></div><div><dd>95%</dd><dt>winner share</dt></div><div><dd>Free</dd><dt>Free Coach practice</dt></div></dl>
           <div className="showcase-actions"><PlayButton size="md" pulsating trackingLocation="facts_banner" /><ButtonLink href="/how-it-works" variant="ghost">How matchmaking works<Icon name="arrow-right" size={18} /></ButtonLink></div>
         </div>
         <div className="showcase-section-visual">{visual}</div>
@@ -43,7 +43,7 @@ export function InfrastructureSection({ visual }: { visual: ReactNode }) {
           </div>
           <FeatureList items={[
             { icon: "lightning", title: "USDT deposits", status: "Follow the reference instructions", body: "Send the supported asset with the unique reference shown in Wallet so the platform can identify your deposit." },
-            { icon: "telegram-logo", title: "Telegram access", status: "No separate app download", body: "Open the chess Mini App from Telegram and start with free AI practice." },
+            { icon: "telegram-logo", title: "Telegram access", status: "No separate app download", body: "Open the chess Mini App from Telegram and start with Free Coach practice." },
             { icon: "shield-check", title: "Withdrawal confirmation", status: "Check status in Wallet", body: "Withdrawals follow a separate request and confirmation process; an in-app winner credit is not an on-chain transfer." },
           ]} />
           <div className="showcase-actions"><PlayButton size="md" pulsating trackingLocation="infrastructure" /><ButtonLink href="/how-it-works" variant="ghost">See how it works<Icon name="arrow-right" size={18} /></ButtonLink></div>

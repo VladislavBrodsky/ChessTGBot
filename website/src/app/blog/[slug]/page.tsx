@@ -450,7 +450,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         <Card className="max-w-3xl">
           <h2 className="text-heading-sm font-semibold">Put the idea into practice</h2>
           <p className="mt-3 text-body text-fg-muted">Build your next chess decision around what you learned.</p>
-          <ButtonLink href={post.cta?.href ?? "/play"} className="mt-4">{post.cta?.label ?? "Practise free against A.I."}<Icon name="arrow-up-right" size={18} /></ButtonLink>
+          <ButtonLink href={post.cta?.href ?? "/play"} className="mt-4">{post.cta?.label ?? "Practise free with Free Coach, a computer opponent"}<Icon name="arrow-up-right" size={18} /></ButtonLink>
         </Card>
         </div>
         {toc.length > 1 && (

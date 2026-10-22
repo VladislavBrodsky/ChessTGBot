@@ -11,6 +11,6 @@ export default async function Image() {
     title: "Play Chess Online: Telegram Bot & Web Arena",
     eyebrow: "PLAY CHESS ONLINE",
     description:
-      "Instant matchmaking inside Telegram. Free Stockfish A.I. practice and real USDT stakes.",
+      "Instant matchmaking inside Telegram. Free Coach practice and real USDT stakes.",
   });
 }

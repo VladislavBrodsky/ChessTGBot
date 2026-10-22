@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/Button';
 import { DepositDialog as DepositModal } from '@/components/Wallet/WalletDialogs';
 import { useUser } from '@/context/UserContext';
 import { useAudio } from '@/hooks/useAudio';
+import { isComputerOpponentName } from '@/lib/opponentIdentity';
 
 export default function PlayLobby() {
   const t = useTranslations('Index');
@@ -95,7 +96,7 @@ export default function PlayLobby() {
   const refreshAfterDeposit = useCallback(async () => { await syncBalance(); }, [syncBalance]);
 
   const getOpponentName = (name: string) => {
-    if (name === "A.I. Coach") {
+    if (isComputerOpponentName(name)) {
       return tg('ai_coach');
     }
     return name;

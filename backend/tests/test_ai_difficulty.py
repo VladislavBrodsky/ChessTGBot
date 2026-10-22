@@ -17,7 +17,7 @@ async def test_game_creation_with_difficulty():
     
     # Assign bot details
     state_easy_joined = await service.join_game(game_id_easy, 12345)
-    assert state_easy_joined.black_username == "AI Engine (Easy)"
+    assert state_easy_joined.black_username == "Free Coach"
     assert state_easy_joined.black_elo == 800
 
     # Test Hard
@@ -26,7 +26,7 @@ async def test_game_creation_with_difficulty():
     assert state_hard.difficulty == "hard"
     
     state_hard_joined = await service.join_game(game_id_hard, 12345)
-    assert state_hard_joined.black_username == "AI Engine (Hard)"
+    assert state_hard_joined.black_username == "Free Coach"
     assert state_hard_joined.black_elo == 1600
 
     # Test Medium (Default)
@@ -35,7 +35,7 @@ async def test_game_creation_with_difficulty():
     assert state_med.difficulty == "medium"
     
     state_med_joined = await service.join_game(game_id_med, 12345)
-    assert state_med_joined.black_username == "AI Engine (Medium)"
+    assert state_med_joined.black_username == "Free Coach"
     assert state_med_joined.black_elo == 1200
 
 @pytest.mark.asyncio

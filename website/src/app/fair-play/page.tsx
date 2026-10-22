@@ -201,12 +201,12 @@ export default function FairPlayPage() {
             </h2>
             <p className="mt-3 text-body text-fg-muted">
               Set your limits before you join a wager match. If you want to
-              experiment or learn without a stake, choose A.I. practice or the
+              experiment or learn without a stake, choose Free Coach practice or the
               Academy.
             </p>
             <div className="mt-auto w-full pt-6">
               <PlayButton size="lg" trackingLocation="fair_play_cta" />
-              <p className="mt-4 min-h-10 text-caption text-fg-muted">No stake for A.I. practice. Choose it in the Mini App.</p>
+              <p className="mt-4 min-h-10 text-caption text-fg-muted">No stake for Free Coach practice. Choose it in the Mini App.</p>
             </div>
           </Card>
         </section>

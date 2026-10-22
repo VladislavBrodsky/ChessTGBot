@@ -925,7 +925,7 @@ class TelegramService:
                     "⭐ <b>Your Premium Privileges are now active:</b>\n"
                     "• ⚡ <b>2x Rewards & XP Boost:</b> Double earnings and multipliers on every victory!\n"
                     "• 🏆 <b>6-Level Referral Income:</b> Unlock passive referral commission splits down to 6 levels.\n"
-                    "• 🧠 <b>Full Tactics Academy:</b> Play all 100 levels with unlimited AI analysis.\n"
+                    "• 🧠 <b>Full Tactics Academy:</b> Play all 100 levels with unlimited game analysis.\n"
                     "• 💎 <b>Exclusive 3D Skins:</b> Unlock premium 3D boards and animation packs.\n\n"
                     "<i>Go ahead and crush it in the Arena! ♟️🔥</i>"
         },
@@ -935,7 +935,7 @@ class TelegramService:
                     "⭐ <b>Ваши премиум-привилегии уже активны:</b>\n"
                     "• ⚡ <b>Удвоенные награды и XP:</b> Получайте в 2 раза больше наград и опыта за победы!\n"
                     "• 🏆 <b>6 уровней реферального дохода:</b> Зарабатывайте пассивную комиссию на 6 уровней вглубь.\n"
-                    "• 🧠 <b>Полная Академия:</b> Доступ ко всем 100 уровням и разбор партий с ИИ.\n"
+                    "• 🧠 <b>Полная Академия:</b> Доступ ко всем 100 уровням и разбор партий.\n"
                     "• 💎 <b>Эксклюзивные 3D-темы:</b> Уникальные стили оформления доски и фигур.\n\n"
                     "<i>Покажите своё мастерство на Арене! ♟️🔥</i>"
         },
@@ -945,7 +945,7 @@ class TelegramService:
                     "⭐ <b>Tus privilegios Premium ya están activos:</b>\n"
                     "• ⚡ <b>Doble recompensa y XP:</b> ¡Gana el doble en cada victoria!\n"
                     "• 🏆 <b>Comisiones de 6 niveles:</b> Desbloquea ingresos por referidos hasta 6 niveles.\n"
-                    "• 🧠 <b>Academia completa:</b> Acceso a los 100 niveles y análisis ilimitado con IA.\n"
+                    "• 🧠 <b>Academia completa:</b> Acceso a los 100 niveles y análisis ilimitado de partidas.\n"
                     "• 💎 <b>Tableros 3D exclusivos:</b> Diseños premium y animaciones exclusivas.\n\n"
                     "<i>¡Demuestra tu nivel en la Arena! ♟️🔥</i>"
         },
@@ -955,7 +955,7 @@ class TelegramService:
                     "⭐ <b>Vos privilèges Premium sont maintenant actifs :</b>\n"
                     "• ⚡ <b>Récompenses et XP doublés :</b> Gagnez le double à chaque victoire !\n"
                     "• 🏆 <b>Parrainage sur 6 niveaux :</b> Touchez des commissions passives jusqu'à 6 niveaux.\n"
-                    "• 🧠 <b>Académie complète :</b> Accédez aux 100 niveaux et profitez de l'analyse IA.\n"
+                    "• 🧠 <b>Académie complète :</b> Accédez aux 100 niveaux et profitez de l’analyse des parties.\n"
                     "• 💎 <b>Thèmes 3D exclusifs :</b> Personnalisez votre jeu avec des thèmes premiums.\n\n"
                     "<i>Brillez dans l'Arène dès maintenant ! ♟️🔥</i>"
         },
@@ -965,7 +965,7 @@ class TelegramService:
                     "⭐ <b>Deine Premium-Vorteile sind jetzt freigeschaltet:</b>\n"
                     "• ⚡ <b>2x Belohnungen & XP:</b> Doppelte Einnahmen bei jedem Sieg!\n"
                     "• 🏆 <b>6 Ebenen Referral-Einnahmen:</b> Schalte Provisionen bis zu 6 Ebenen tief frei.\n"
-                    "• 🧠 <b>Volle Akademie:</b> Spiele alle 100 Levels mit unbegrenzter KI-Analyse.\n"
+                    "• 🧠 <b>Volle Akademie:</b> Spiele alle 100 Levels mit unbegrenzter Partieanalyse.\n"
                     "• 💎 <b>Exklusive 3D-Designs:</b> Wunderschöne Spielfelder und Animationen.\n\n"
                     "<i>Zeige dein Können in der Arena! ♟️🔥</i>"
         },
@@ -975,7 +975,7 @@ class TelegramService:
                     "⭐ <b>Seus privilégios Premium já estão ativos:</b>\n"
                     "• ⚡ <b>Dobre recompensas e XP:</b> Ganhe o dobro em todas as vitórias!\n"
                     "• 🏆 <b>Indicações de 6 níveis:</b> Receba comissões de convidados em até 6 níveis.\n"
-                    "• 🧠 <b>Academia completa:</b> Jogue todos os 100 níveis e use a análise de IA.\n"
+                    "• 🧠 <b>Academia completa:</b> Jogue todos os 100 níveis e use a análise de partidas.\n"
                     "• 💎 <b>Temas 3D exclusivos:</b> Tabuleiros premium e animações exclusivas.\n\n"
                     "<i>Domine a Arena agora mesmo! ♟️🔥</i>"
         },
@@ -1005,7 +1005,7 @@ class TelegramService:
                     "⭐ <b>مزاياك المميزة حصرية ونشطة الآن:</b>\n"
                     "• ⚡ <b>ضعف المكافآت ونقاط الخبرة:</b> أرباح مضاعفة ونقاط خبرة أعلى عند كل فوز!\n"
                     "• 🏆 <b>أرباح إحالات حتى 6 مستويات:</b> عمولات إحالة لشبكة أصدقائك حتى 6 مستويات.\n"
-                    "• 🧠 <b>الأكاديمية كاملة:</b> العب جميع الألغاز الـ 100 مع تحليل غير محدود بالذكاء الاصطناعي.\n"
+                    "• 🧠 <b>الأكاديمية كاملة:</b> العب جميع الألغاز الـ 100 مع تحليل غير محدود للمباريات.\n"
                     "• 💎 <b>تصميمات لوحة 3D حصرية:</b> رقعة شطرنج متميزة بتأثيرات ثلاثية الأبعاد وحركات فريدة.\n\n"
                     "<i>انطلق وحقق الانتصارات في الساحة! ♟️🔥</i>"
         },
@@ -1015,7 +1015,7 @@ class TelegramService:
                     "⭐ <b>आपके प्रीमियम विशेषाधिकार अब सक्रिय हैं:</b>\n"
                     "• ⚡ <b>दोगुने इनाम और XP बूस्ट:</b> हर जीत पर दोगुने पुरस्कार और अनुभव प्राप्त करें!\n"
                     "• 🏆 <b>6-स्तरीय रेफ़रल कमाई:</b> 6 स्तरों तक रेफ़रल पैसिव इनकम कमिशन अनलॉक करें।\n"
-                    "• 🧠 <b>पूरी टैक्टिक्स अकादमी:</b> असीमित AI विश्लेषण के साथ सभी 100 स्तर खेलें।\n"
+                    "• 🧠 <b>पूरी टैक्टिक्स अकादमी:</b> असीमित गेम विश्लेषण के साथ सभी 100 स्तर खेलें।\n"
                     "• 💎 <b>खास 3D थीम्स:</b> शानदार 3D बोर्ड और एनिमेशन अनलॉक करें।\n\n"
                     "<i>अखाड़े में उतरें और जीत दर्ज करें! ♟️🔥</i>"
         }

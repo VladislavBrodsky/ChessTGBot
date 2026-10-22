@@ -143,7 +143,7 @@ async def _format_recent_games(db: AsyncSession, games: List, user_telegram_id: 
         
         opponent = opponents_map.get(opponent_id)
         if opponent_id == -1:
-            opponent_name = "A.I. Coach"
+            opponent_name = "Free Coach"
         else:
             if opponent:
                 first = opponent.first_name or ""

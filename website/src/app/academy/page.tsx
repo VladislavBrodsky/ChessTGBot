@@ -96,7 +96,7 @@ export default function AcademyPage() {
             </ButtonLink>
           </div>
           <p className="text-caption text-fg-muted">
-            Free lessons, puzzles, and A.I. practice. Choose Academy after opening the Mini App.
+            Free lessons, puzzles, and Free Coach practice. Choose Academy after opening the Mini App.
           </p>
         </PageHero>
         <section id="challenge" aria-label="Try a chess challenge">
@@ -239,7 +239,7 @@ export default function AcademyPage() {
                 Learn from the game
               </h2>
               <p className="mt-5 max-w-[45ch] text-body text-fg-muted">
-                Test a new opening or tactical pattern against the A.I. Pick a
+                Test a new opening or tactical pattern with Free Coach, a computer opponent. Pick a
                 difficulty in the app and learn from every move.
               </p>
             </div>
@@ -247,11 +247,11 @@ export default function AcademyPage() {
               <PlayButton
                 size="lg"
                 variant="onDark"
-                label="Start A.I. practice"
+                label="Start Free Coach practice"
                 trackingLocation="academy_ai_practice"
               />
               <p className="text-caption text-fg-muted">
-                Choose A.I. practice in the Mini App. Practice builds skills;
+                Choose Free Coach practice in the Mini App. Practice builds skills;
                 it does not guarantee a result in a player match.
               </p>
             </div>

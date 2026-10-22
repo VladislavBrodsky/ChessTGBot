@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { FaTrophy, FaFlag, FaHandshake, FaShareAlt } from 'react-icons/fa';
 import { FiChevronRight } from 'react-icons/fi';
 import { Button } from '@/components/ui/Button';
+import { isComputerOpponentName } from '@/lib/opponentIdentity';
 
 export interface RecentGame {
   game_id: string;
@@ -23,7 +24,7 @@ export function GameHistoryList({ games, onShare }: { games: RecentGame[]; onSha
       const win = game.result === 'win';
       const loss = game.result === 'loss';
       const result = t(win ? 'result_win' : loss ? 'result_loss' : 'result_draw');
-      const name = game.opponent?.name === 'A.I. Coach' ? t('ai_engine') : game.opponent?.name || t('ai_engine');
+      const name = isComputerOpponentName(game.opponent?.name) ? t('ai_engine') : game.opponent?.name || tg('opponent');
       return <li key={game.game_id} className="ui-list-row gap-2">
         <Link href={`/${locale}/game/review?gameId=${encodeURIComponent(game.game_id)}`} aria-label={`${t('recent_activity')}: ${name}, ${result}`} className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-control">
           <span className={`ui-icon-tile ${win ? 'ui-icon-tile--success' : loss ? 'ui-icon-tile--danger' : ''}`} aria-hidden="true">{win ? <FaTrophy /> : loss ? <FaFlag /> : <FaHandshake />}</span>

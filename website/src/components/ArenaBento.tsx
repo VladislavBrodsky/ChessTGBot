@@ -169,9 +169,9 @@ export function ArenaBento() {
             </Badge>
             <span className="arena-card-status">100 Levels</span>
           </div>
-          <h3 className="arena-card-title">100 Levels &amp; AI</h3>
+          <h3 className="arena-card-title">100 Levels &amp; Free Coach</h3>
           <p>
-            Sharpen openings, forks, pins, and endgames with unlimited free Stockfish A.I. practice.
+            Sharpen openings, forks, pins, and endgames with unlimited Free Coach practice.
           </p>
         </div>
         <Link href="/academy" className="arena-panel arena-panel-row arena-panel-link">

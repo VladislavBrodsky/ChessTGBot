@@ -2,8 +2,8 @@
   "slug": "mystery-jackpots-and-the-gamification-of-chess",
   "title": "How the first three-game mystery box works",
   "subtitle": "A free chess challenge with one in-app reward and published odds.",
-  "excerpt": "Join the free AI challenge, finish three qualifying games, and open one mystery box. See the exact in-app reward odds.",
-  "metaDescription": "Learn how to unlock the free Web3Chess mystery box after three qualifying AI games, including the rules and reward odds.",
+  "excerpt": "Join the Free Coach challenge, finish three qualifying games, and open one mystery box. See the exact in-app reward odds.",
+  "metaDescription": "Learn how to unlock the free Web3Chess mystery box after three qualifying Free Coach games, including the rules and reward odds.",
   "category": "Product",
   "author": {
     "name": "Web3Chess Research",
@@ -14,7 +14,7 @@
   "publishedAt": "2026-10-12",
   "readingTime": "2 min read",
   "takeaways": [
-    "Join before playing; only free AI games started afterward count.",
+    "Join before playing; only Free Coach games started afterward count.",
     "Finish three games with at least 10 moves per side each.",
     "Open one box per account for 250 XP, a 24-hour XP boost, or a gold profile border.",
     "Rewards are in-app items without cash value. No deposit or purchase is needed."
@@ -22,7 +22,7 @@
   "content": [
     {
       "type": "paragraph",
-      "text": "A useful chess challenge should make the next move clear. Web3Chess gives new players a simple path: join the first-three challenge, play free games against the AI, then open one mystery box."
+      "text": "A useful chess challenge should make the next move clear. Web3Chess gives new players a simple path: join the first-three challenge, play free games with Free Coach, a computer opponent, then open one mystery box."
     },
     {
       "type": "heading",
@@ -32,7 +32,7 @@
       "type": "list",
       "items": [
         "Join the challenge inside the Mini App before you start a game.",
-        "Finish three free AI games, each with at least 20 half-moves (10 moves per side). Wins, losses and draws count.",
+        "Finish three Free Coach games, each with at least 20 half-moves (10 moves per side). Wins, losses and draws count.",
         "Return to the challenge card and open your box. Games started before joining, paid games and abandoned games do not count."
       ]
     },
@@ -73,7 +73,7 @@
     }
   ],
   "cta": {
-    "label": "Start free AI practice",
+    "label": "Start Free Coach practice",
     "href": "/play"
   }
 }

@@ -16,7 +16,7 @@ export const academyContent = {
     headlineBefore: "Turn opening prep into",
     headlineAfter: "instant USDT",
     lead: "Stop blundering your edge in time trouble. Master high-percentage blitz openings, calculate killer tactical forks, and dominate the endgame before putting a single dollar on the board.",
-    ctaNote: "100% Free interactive lessons · Unlimited A.I. sparring · 0 download required",
+    ctaNote: "100% Free interactive lessons · Unlimited Free Coach games · 0 download required",
   },
   valueProps: [
     {
@@ -26,7 +26,7 @@ export const academyContent = {
     },
     {
       icon: "cpu",
-      title: "Unlimited A.I. Sparring",
+      title: "Unlimited Free Coach games",
       body: "Test your opening repertoire against Stockfish 17 tuned from Elo 800 to 2800. No clock pressure, zero risk, infinite practice rounds.",
     },
     {

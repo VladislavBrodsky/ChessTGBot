@@ -22,12 +22,12 @@ const PLAY_FAQS = [
   {
     question: "Can I play on desktop web browsers without Telegram?",
     answer:
-      "Yes. Tap 'Play in browser' to launch the full Web3Chess web arena in Chrome, Safari, Firefox, or Brave. You can log in via Telegram Web or practice against Stockfish AI anonymously.",
+      "Yes. Tap 'Play in browser' to launch the full Web3Chess web arena in Chrome, Safari, Firefox, or Brave. You can log in via Telegram Web or practice against Free Coach anonymously.",
   },
   {
     question: "Is Web3Chess free to play?",
     answer:
-      "AI training against Stockfish 16 and 100 tactical puzzle levels in the Academy are free. In a wagered match against another player, each person stakes at least 1 USDT.",
+      "Free Coach games and 100 tactical puzzle levels in the Academy are free. In a wagered match against another player, each person stakes at least 1 USDT.",
   },
   {
     question: "How do I challenge a friend to a chess game on Telegram?",
@@ -84,11 +84,11 @@ export default async function PlayPage() {
             <Badge tone="accent" icon="lightning">
               Instant Launch
             </Badge>
-            <MetaLine className="font-semibold win-ink" items="Free AI practice · Optional online matches" />
+            <MetaLine className="font-semibold win-ink" items="Free Coach practice · Optional online matches" />
           </div>
           <h1 id="page-title" className="poster play-heading">Play Chess Online: Telegram Chess Bot &amp; Web Arena</h1>
           <p className="max-w-[50ch] hero-lead text-fg-muted">
-            Launch directly in Telegram or play in your desktop browser. Enjoy free Stockfish A.I. practice, solve 100 tactics puzzles, or explore optional USDT matches.
+            Launch directly in Telegram or play in your desktop browser. Enjoy Free Coach practice, solve 100 tactics puzzles, or explore optional USDT matches.
           </p>
           </div>
         </section>
@@ -224,7 +224,7 @@ export default async function PlayPage() {
         </div>
 
         <p className="mt-6 max-w-[65ch] text-caption text-fg-muted">
-          A.I. practice and tactics puzzles are 100% free with unlimited games. Real-money matches use optional USDT stakes on GRAM rails. Wager matches are 18+ where available; play responsibly.
+          Free Coach practice and tactics puzzles are 100% free with unlimited games. Real-money matches use optional USDT stakes on GRAM rails. Wager matches are 18+ where available; play responsibly.
         </p>
       </main>
     </div>

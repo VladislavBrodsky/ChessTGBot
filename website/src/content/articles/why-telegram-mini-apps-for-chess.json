@@ -2,7 +2,7 @@
   "slug": "why-telegram-mini-apps-for-chess",
   "title": "How to play chess in Telegram with Web3Chess",
   "subtitle": "Open the Mini App, choose a practice session, and understand player matches before committing a stake.",
-  "excerpt": "Start chess inside Telegram: explore free A.I. practice, the Academy, opponent notifications, and the rules for USDT player matches.",
+  "excerpt": "Start chess inside Telegram: explore Free Coach practice, the Academy, opponent notifications, and the rules for USDT player matches.",
   "category": "Product",
   "author": {
     "name": "Web3Chess Editorial",
@@ -14,7 +14,7 @@
   "readingTime": "2 min read",
   "takeaways": [
     "The chess client opens inside Telegram.",
-    "A.I. practice and puzzles are free.",
+    "Free Coach practice and puzzles are free.",
     "Player matches use USDT stakes; withdrawals are a separate flow."
   ],
   "content": [
@@ -28,7 +28,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Open Web3Chess and choose free A.I. practice. Get comfortable with moving pieces and watching the clock before choosing a player match. The Academy gives you another route into the game through lessons and tactical puzzles."
+      "text": "Open Web3Chess and choose Free Coach practice. Get comfortable with moving pieces and watching the clock before choosing a player match. The Academy gives you another route into the game through lessons and tactical puzzles."
     },
     {
       "type": "heading",
@@ -56,7 +56,7 @@
     },
     {
       "type": "callout",
-      "text": "Wager matches are 18+, subject to local availability, and you can lose your stake. Free A.I. practice gives you a way to learn without committing one."
+      "text": "Wager matches are 18+, subject to local availability, and you can lose your stake. Free Coach practice gives you a way to learn without committing one."
     }
   ],
   "relatedSlugs": [
@@ -65,7 +65,7 @@
     "the-death-of-tap-to-earn-skill-based-web3-chess"
   ],
   "updatedAt": "2026-10-07",
-  "metaDescription": "Start chess inside Telegram: explore free A.I. practice, the Academy, opponent notifications, and the rules for USDT player matches.",
+  "metaDescription": "Start chess inside Telegram: explore Free Coach practice, the Academy, opponent notifications, and the rules for USDT player matches.",
   "sources": [
     {
       "title": "Web3Chess Academy and product guide",

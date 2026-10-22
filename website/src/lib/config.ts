@@ -86,7 +86,7 @@ export const SITE = {
   appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://app.web3chess.online",
   gaMeasurementId: GA_MEASUREMENT_ID,
   description:
-    "Play chess in Telegram. Practice free against A.I., explore the Academy, and challenge opponents in USDT matches with clear stakes and rules.",
+    "Play chess in Telegram. Practice free with Free Coach, a computer opponent, explore the Academy, and challenge opponents in USDT matches with clear stakes and rules.",
   telegramChannel:
     process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL ?? "https://t.me/chess_hub",
   telegramChat:

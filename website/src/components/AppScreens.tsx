@@ -5,7 +5,7 @@ import { MetaLine } from "@/components/ui/MetaLine";
 /**
  * Real Mini App screens, captured at 390 × 844 @2x from the dev-mock build with sample data
  * (2026-10-16). Every name, balance and result in them is an example, so the card always says so;
- * never present these as live activity. The board shot is a free A.I. practice game.
+ * never present these as live activity. The board shot is a Free Coach game.
  */
 const APP_SCREENS = {
   lobby: {
@@ -20,8 +20,8 @@ const APP_SCREENS = {
   },
   game: {
     title: "Play on the board",
-    note: "Shown: free practice against the A.I. coach.",
-    alt: "Example Mini App game in progress against the A.I. coach: the board, both clocks, the move history and Resign and Draw buttons.",
+    note: "Shown: free practice with Free Coach, a computer opponent.",
+    alt: "Example Mini App game in progress with Free Coach, a computer opponent: the board, both clocks, the move history and Resign and Draw buttons.",
   },
   result: {
     title: "See your result",
