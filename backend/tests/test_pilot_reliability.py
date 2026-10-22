@@ -458,7 +458,7 @@ async def test_free_game_claim_replaces_idle_ai_but_never_an_active_human_game(r
 
 
 async def test_returning_public_referral_routes_to_practice_across_workers(workers):
-    """A public referral attributes acquisition without becoming a game request."""
+    """A returning player reaches practice without a new acquisition or game request."""
     from app.models.user import User
     from app.models.friend_invite import FriendInvite
     from datetime import timedelta
@@ -480,7 +480,7 @@ async def test_returning_public_referral_routes_to_practice_across_workers(worke
         assert all(result.status_code == 410 for result in responses), [result.text for result in responses]
     async with factory() as db:
         from app.models.player_tracking import PlayerAcquisition
-        assert (await db.get(PlayerAcquisition, guest)).inviter_id == host
+        assert await db.get(PlayerAcquisition, guest) is None
         assert len((await db.execute(select(FriendInvite))).scalars().all()) == 0
         assert list((await db.execute(select(User.balance).where(User.telegram_id.in_((host, guest))))).scalars()) == [0, 0]
 
