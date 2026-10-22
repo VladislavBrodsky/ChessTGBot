@@ -77,8 +77,9 @@ class CmoDailyRoutine:
         total_likes = sum(t.get("public_metrics", {}).get("like_count", 0) for t in recent_tweets)
         total_replies = sum(t.get("public_metrics", {}).get("reply_count", 0) for t in recent_tweets)
 
-        bookmark_rate = round((total_bookmarks / max(total_impressions, 1)) * 100, 2)
-        engagement_rate = round(((total_likes + total_replies + total_bookmarks) / max(total_impressions, 1)) * 100, 2)
+        x_available = bool(live_x.get("available"))
+        bookmark_rate = round((total_bookmarks / max(total_impressions, 1)) * 100, 2) if x_available else None
+        engagement_rate = round(((total_likes + total_replies + total_bookmarks) / max(total_impressions, 1)) * 100, 2) if x_available else None
 
         kpis = self.cmo.directive.target_kpis
 
@@ -88,14 +89,15 @@ class CmoDailyRoutine:
             "telegram_published_count": len(tg_published),
             "x_published_count": len(x_published),
             "failed_count": len(failed_entries),
-            "telegram_subscribers": live_tg.get("members", 0),
-            "x_followers": x_account.get("followers", 0),
-            "x_total_impressions": total_impressions,
-            "x_bookmark_rate": f"{bookmark_rate}%",
-            "x_engagement_rate": f"{engagement_rate}%",
+            "telegram_subscribers": live_tg.get("members"),
+            "x_followers": x_account.get("followers") if x_available else None,
+            "x_total_impressions": total_impressions if x_available else None,
+            "x_bookmark_rate": f"{bookmark_rate}%" if x_available else None,
+            "x_engagement_rate": f"{engagement_rate}%" if x_available else None,
+            "metrics_availability": {"x": x_available, "telegram": bool(live_tg.get("available"))},
             "kpi_benchmarks": {
-                "telegram_ctr_target": kpis.get("telegram_ctr", ">= 8.5%"),
-                "x_bookmark_rate_target": kpis.get("x_bookmark_rate", ">= 2.5%"),
+                "telegram_ctr_target": kpis.get("telegram_ctr"),
+                "x_bookmark_rate_target": kpis.get("x_bookmark_rate"),
                 "wager_compliance": "not independently audited",
             },
             "top_posts": [
@@ -435,9 +437,9 @@ class CmoDailyRoutine:
             "|---|---|---|---|",
             f"| **Telegram Broadcasts** | `{audit_res['telegram_published_count']} published` | {len(queue.CONFIG['telegram']['slots_utc'])} daily slots | Active |",
             f"| **X (Twitter) Dispatches** | `{audit_res['x_published_count']} published` | {len(queue.CONFIG['x']['slots_utc'])} daily slots | Active |",
-            f"| **Telegram Channel Members** | `{audit_res['telegram_subscribers']}` | Growing | OK |",
-            f"| **X Impressions Tracked** | `{audit_res['x_total_impressions']}` | High reach | OK |",
-            f"| **X Bookmark Rate** | `{audit_res['x_bookmark_rate']}` | `{audit_res['kpi_benchmarks']['x_bookmark_rate_target']}` | Monitored |",
+            f"| **Telegram Channel Members** | `{audit_res['telegram_subscribers'] if audit_res['telegram_subscribers'] is not None else 'unavailable'}` | Complete-window baseline | {'Measured' if audit_res['metrics_availability']['telegram'] else 'Unavailable'} |",
+            f"| **X Impressions Tracked** | `{audit_res['x_total_impressions'] if audit_res['x_total_impressions'] is not None else 'unavailable'}` | Complete-window baseline | {'Measured' if audit_res['metrics_availability']['x'] else 'Unavailable'} |",
+            f"| **X Bookmark Rate** | `{audit_res['x_bookmark_rate'] if audit_res['x_bookmark_rate'] is not None else 'unavailable'}` | `{audit_res['kpi_benchmarks']['x_bookmark_rate_target']}` | {'Measured' if audit_res['metrics_availability']['x'] else 'Unavailable'} |",
             f"| **Wager Disclosures** | `{audit_res['kpi_benchmarks']['wager_compliance']}` | Full review | Verify |",
             "",
             "### Top Content Dispatched Yesterday",
@@ -457,14 +459,14 @@ class CmoDailyRoutine:
             for iss in health_res["issues_detected"]:
                 lines.append(f"- ⚠️ **Flagged:** {iss}")
         else:
-            lines.append("- ✅ Zero fatal crashes or unhandled exceptions in the last 24 hours.")
+            lines.append("- No matching issues found in the available local log sample; full production health was not verified.")
 
         lines.append("\n### Self-Healing Remedies Applied")
         if health_res.get("fixes_applied"):
             for fix in health_res["fixes_applied"]:
                 lines.append(f"- 🛠️ **Fixed:** {fix}")
         else:
-            lines.append("- ✅ All active queue slots validated, creatives verified, disk zero-bloat.")
+            lines.append("- No automatic remedies were applied in this run.")
 
         lines.extend([
             "",

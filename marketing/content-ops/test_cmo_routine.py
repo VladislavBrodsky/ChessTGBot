@@ -55,6 +55,17 @@ class TestCmoRoutine(unittest.TestCase):
         self.assertIn("kpi_benchmarks", perf)
         self.assertIn("telegram_subscribers", perf)
 
+    def test_unavailable_metrics_are_not_reported_as_zero_or_healthy(self):
+        with patch("agents.cmo_routine.analytics.fetch_x_metrics", return_value={"account": {}, "recent_tweets": [], "error": "account_http_403"}), patch("agents.cmo_routine.analytics.fetch_telegram_metrics", return_value={"members": None, "available": False}):
+            perf = self.routine.audit_previous_day_performance()
+        self.assertIsNone(perf["x_total_impressions"])
+        self.assertIsNone(perf["x_bookmark_rate"])
+        self.assertIsNone(perf["telegram_subscribers"])
+        self.assertEqual(perf["metrics_availability"], {"x": False, "telegram": False})
+        report = self.routine.generate_executive_report(perf, {"health_status": "healthy", "launchd_service_active": False, "issues_detected": [], "fixes_applied": []}, {"competitor_insights": [], "top_trending_topics": [], "curated_signals_count": 0}, [])
+        self.assertIn("`unavailable`", report)
+        self.assertNotIn("High reach | OK", report)
+
     def test_audit_logs_and_self_heal(self):
         health = self.routine.audit_logs_and_self_heal()
         self.assertIn(health["health_status"], ("healthy", "attention_required"))

@@ -30,19 +30,23 @@ def fetch_x_metrics(limit: int = 20) -> Dict[str, Any]:
             auth=auth,
             timeout=10,
         )
-        user_data = user_res.json().get("data", {}) if user_res.ok else {}
+        if not user_res.ok:
+            return {"account": {}, "recent_tweets": [], "error": f"account_http_{user_res.status_code}"}
+        user_data = user_res.json().get("data", {})
+        if not user_data.get("id"):
+            return {"account": {}, "recent_tweets": [], "error": "account_data_unavailable"}
 
         # 2. Recent tweet metrics
         uid = user_data.get("id")
         tweets_metrics = []
-        if uid:
-            t_res = requests.get(
-                f"https://api.x.com/2/users/{uid}/tweets?max_results={min(limit, 100)}&tweet.fields=public_metrics,created_at,text",
-                auth=auth,
-                timeout=10,
-            )
-            if t_res.ok:
-                tweets_metrics = t_res.json().get("data", [])
+        t_res = requests.get(
+            f"https://api.x.com/2/users/{uid}/tweets?max_results={min(limit, 100)}&tweet.fields=public_metrics,created_at,text",
+            auth=auth,
+            timeout=10,
+        )
+        if not t_res.ok:
+            return {"account": user_data, "recent_tweets": [], "error": f"tweets_http_{t_res.status_code}"}
+        tweets_metrics = t_res.json().get("data", [])
 
         return {
             "account": {
@@ -53,6 +57,7 @@ def fetch_x_metrics(limit: int = 20) -> Dict[str, Any]:
                 "tweet_count": (user_data.get("public_metrics") or {}).get("tweet_count", 0),
             },
             "recent_tweets": tweets_metrics,
+            "available": True,
         }
     except Exception as e:
         logger.warning("Error fetching live X metrics: %s", type(e).__name__)
@@ -63,18 +68,18 @@ def fetch_telegram_metrics() -> Dict[str, Any]:
     """Fetches channel subscriber count and chat metrics."""
     token, channel = telegram_publisher._credentials()
     if not token or not channel:
-        return {"members": None, "configured": False}
+        return {"members": None, "configured": False, "available": False}
     try:
         res = requests.get(
             f"https://api.telegram.org/bot{token}/getChatMemberCount?chat_id={channel}",
             timeout=10,
         )
         count = res.json().get("result") if res.ok else None
-        return {"channel": channel, "members": count, "configured": True}
+        return {"channel": channel, "members": count, "configured": True, "available": isinstance(count, int)}
     except Exception as e:
         # Request exceptions can embed the bot token in their URL.
         logger.warning("Error fetching Telegram metrics: %s", type(e).__name__)
-        return {"members": None, "configured": True, "error": type(e).__name__}
+        return {"members": None, "configured": True, "available": False, "error": type(e).__name__}
 
 
 def audit_performance() -> Dict[str, Any]:
@@ -90,10 +95,11 @@ def audit_performance() -> Dict[str, Any]:
     total_retweets = sum(t.get("public_metrics", {}).get("retweet_count", 0) for t in tweets)
     total_bookmarks = sum(t.get("public_metrics", {}).get("bookmark_count", 0) for t in tweets)
 
-    avg_impressions = round(total_impressions / len(tweets), 1) if tweets else 0
+    x_available = bool(x_data.get("available"))
+    avg_impressions = round(total_impressions / len(tweets), 1) if tweets else (0 if x_available else None)
     engagement_rate = (
         round(((total_likes + total_replies + total_retweets + total_bookmarks) / max(total_impressions, 1)) * 100, 2)
-        if total_impressions > 0 else 0.0
+        if total_impressions > 0 else (0.0 if x_available else None)
     )
 
     # Correlate with queue entries to identify top-performing categories
@@ -105,25 +111,27 @@ def audit_performance() -> Dict[str, Any]:
     report = {
         "timestamp": now_iso,
         "x_reach": {
+            "available": x_available,
+            "error": x_data.get("error"),
             "account": x_data.get("account", {}),
-            "tracked_tweets_count": len(tweets),
-            "total_impressions": total_impressions,
+            "tracked_tweets_count": len(tweets) if x_available else None,
+            "total_impressions": total_impressions if x_available else None,
             "avg_impressions_per_tweet": avg_impressions,
-            "total_likes": total_likes,
-            "total_replies": total_replies,
-            "total_retweets": total_retweets,
-            "total_bookmarks": total_bookmarks,
+            "total_likes": total_likes if x_available else None,
+            "total_replies": total_replies if x_available else None,
+            "total_retweets": total_retweets if x_available else None,
+            "total_bookmarks": total_bookmarks if x_available else None,
             "engagement_rate_pct": engagement_rate,
         },
         "telegram_reach": tg_data,
         "cmo_strategic_assessment": {
-            "account_stage": "Cold Discovery Phase (<100 followers)",
-            "primary_bottleneck": "Standalone posts to 21 followers receive 0-9 algorithmic impressions without external engagement.",
+            "account_stage": "Measure from the connected account before assigning a growth stage",
+            "primary_bottleneck": "Compare complete-window reach, handoffs, authenticated arrivals, and first games before assigning a bottleneck.",
             "recommended_growth_vectors": [
-                "Execute Reply Sniping: Comment on viral tweets from @GMHikaru, @GothamChess, @chesscom within 10 minutes of drop to tap 50k+ views.",
-                "Cross-Pollinate: Tease every X puzzle in Telegram @chess_hub to drive 20+ instant community retweets and ignite X algorithm.",
+                "Answer relevant chess discussions with useful analysis and measure qualified visits.",
+                "Share a reviewed puzzle across X and Telegram, then compare attributed handoffs by channel.",
                 "Optimize Profile Landing Page: use a Web3Chess banner, a clear value proposition, and a pinned product walkthrough.",
-                "Deploy High-Comment Formats: Scale 'Guess the Elo' and '3s Scramble Dilemmas' which trigger 10x higher reply velocity.",
+                "Test puzzle and clock-decision formats against comparable windows before scaling them.",
             ],
         },
     }
