@@ -1,0 +1,79 @@
+{
+  "id": "2026-10-24-tg-4",
+  "kind": "telegram",
+  "date": "2026-10-24",
+  "category": "Academy",
+  "format": "news",
+  "hook": "Ask what your opponent wants before you calculate your own attack",
+  "cta": "academy",
+  "text": "<b>Ask what your opponent wants before you calculate your own attack</b>\n\nIn blitz scrambles, overlooked counter-threats often decide the position.\n\nBefore committing an attacking piece, take 1 second to spot their best reply.\n\nStudy prophylactic thinking inside the Web3Chess Academy.",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "creative": {
+    "template": "tip",
+    "size": "square",
+    "tag": "Pro Tip: Prophylaxis",
+    "headline": "PROPHYLAXIS\n*MASTER PATTERN*",
+    "subhead": "Three candidate moves before any capture",
+    "cta_label": "Open Academy",
+    "steps": [
+      "Scan every check first",
+      "List all direct captures",
+      "Calculate forcing threats"
+    ],
+    "footer": "Free structured lessons inside Web3Chess Academy.",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-24-tg-4",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Pro Tip: Prophylaxis",
+      "title": "PROPHYLAXIS MASTER PATTERN",
+      "subtitle": "Three candidate moves before any capture",
+      "proofs": [
+        "Scan every check first",
+        "List all direct captures",
+        "Calculate forcing threats"
+      ],
+      "proofIcons": [
+        "graduation-cap",
+        "strategy",
+        "book-open-text"
+      ],
+      "cta": "Open Academy",
+      "urlLabel": "web3chess.online",
+      "note": "Free structured lessons inside Web3Chess Academy",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "academy",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-24T15:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-22T22:10:24Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-4.png"
+}

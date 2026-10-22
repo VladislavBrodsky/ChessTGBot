@@ -6,6 +6,7 @@ to discover trending tactical positions, viral chess controversies, and speed ch
 from __future__ import annotations
 
 import json
+from argparse import Namespace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
@@ -32,44 +33,40 @@ class ScraperAgent:
 
     def fetch_feed_trends(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Collects latest articles and tactical items from authorized RSS/Atom feeds."""
-        items: List[Dict[str, Any]] = []
         feed_sources = self.sources.get("sources", [])
-        for src in feed_sources:
-            if not src.get("url") or not src.get("hosts"):
-                continue
-            try:
-                raw_items = content_ops.collect(
-                    sources=[src],
-                    db_path=HERE.parent / "state" / "items.sqlite3",
-                    user_agent="Web3ChessTrendScout/2026.1",
-                )
-                items.extend(raw_items[:limit])
-            except Exception:
-                # Scraper handles network timeouts or offline mode gracefully
-                continue
-        return items
+        report = content_ops.collect(
+            Namespace(days=2, output=str(HERE.parent / "state" / "latest-feed-intel.json")),
+            sources=feed_sources,
+            quiet=True,
+        )
+        self.feed_status = report["sources"]
+        return report["candidates"][:limit]
 
     def inspect_telegram_competitors(self, channels: List[str] | None = None) -> List[Dict[str, Any]]:
         """Gathers engagement benchmarks from public Telegram previews."""
         target_channels = channels or ["chesscom_ru", "edchessss"]
         discovered = []
+        self.competitor_failures = []
+        fetcher = telegram_public.PoliteFetcher()
         for ch in target_channels:
             try:
-                posts = telegram_public.scrape_channel(ch, max_pages=1)
-                for p in posts:
+                page = telegram_public.parse_page(fetcher(telegram_public.page_url(ch)), ch)
+                for p in page["posts"]:
                     discovered.append({
                         "channel": ch,
                         "text": p.get("text", "")[:300],
-                        "views": p.get("views", 0),
+                        "permalink": p.get("permalink"),
+                        "views": p.get("views"),
                         "reactions": p.get("reactions", {}),
-                        "published_at": p.get("datetime"),
+                        "published_at": p.get("posted_at"),
                     })
-            except Exception:
+            except Exception as exc:
+                self.competitor_failures.append({"channel": ch, "error": str(exc)[:160]})
                 continue
         return discovered
 
     def get_curated_trend_signals(self) -> List[Dict[str, Any]]:
-        """Returns verified high-impact trend signals for the Q4 2026 chess landscape."""
+        """Returns evergreen editorial candidates; public performance is never implied."""
         return [
             {
                 "topic": "The Stafford Gambit Refutation Debate",
@@ -81,7 +78,7 @@ class ScraperAgent:
             {
                 "topic": "The 10-Second Flagging Dilemma: Delay vs Increment",
                 "category": "Chess Culture",
-                "viral_angle": "How pre-moves decide 90% of sub-1800 blitz endgames when clocks hit single digits.",
+                "viral_angle": "When pre-moves help, when they fail, and how delay differs from increment.",
                 "relevance_score": 88,
                 "fen": "8/8/4k3/8/8/4K3/5P2/8 w - - 0 1",
             },
@@ -93,9 +90,9 @@ class ScraperAgent:
                 "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
             },
             {
-                "topic": "Synchronized Daily Arenas vs Stale Matchmaking",
+                "topic": "From Match Setup to the Board",
                 "category": "Product",
-                "viral_angle": "Why scheduled 15-minute global tournament windows concentrate liquidity and create peak FOMO.",
+                "viral_angle": "Show the choices a player reviews before matching in the Telegram Mini App.",
                 "relevance_score": 91,
                 "fen": None,
             },

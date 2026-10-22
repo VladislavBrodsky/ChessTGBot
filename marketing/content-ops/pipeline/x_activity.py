@@ -110,7 +110,7 @@ def route_keyword_intent(
         return {
             "intent": "arena",
             "reply_text": (
-                "Enter today's synchronized Arena lobby ($500 Vault):\n"
+                "Open match setup, then review the stake, displayed payout, and time control:\n"
                 f"{brand.TG_ARENA}\n\n"
                 f"{brand.WAGER_DISCLOSURE}"
             ),
@@ -119,7 +119,7 @@ def route_keyword_intent(
         return {
             "intent": "academy",
             "reply_text": (
-                "Sharpen your board vision with 50+ master tactical drills:\n"
+                "Sharpen your board vision with free tactical drills:\n"
                 f"https://{primary_domain}/academy"
             ),
         }
@@ -137,8 +137,8 @@ def match_sniper_target_post(
             "name": "Hikaru Nakamura",
             "default_angle": "Dynamic complications and time trouble survival in blitz.",
             "recommended_comment": (
-                "When calculation drops below 5 seconds, positional advantage stops existing. "
-                "In bullet, the player who creates dynamic complications wins 80% of scramble games."
+                "When calculation time disappears, practical pressure matters as much as the evaluation. "
+                "Forcing moves make the opponent solve a new problem on every clock tick."
             ),
         },
         "gothamchess": {
@@ -153,8 +153,8 @@ def match_sniper_target_post(
             "name": "TON Blockchain",
             "default_angle": "Skill-based synchronous PvP as the future of Telegram Mini Apps.",
             "recommended_comment": (
-                "Tap-to-earn proved Telegram's distribution power, but skill-based synchronous PvP is what proves long-term user retention. "
-                "Sub-100ms chess sync inside a Bot API 8.0 Mini App is a game changer for real gaming."
+                "Telegram makes discovery unusually direct: a player can move from a chat into a live game flow. "
+                "The durable test is whether the match itself gives people a reason to return."
             ),
         },
         "magnuscarlsen": {

@@ -1,0 +1,49 @@
+{
+  "id": "2026-10-20-tg-4",
+  "kind": "telegram",
+  "date": "2026-10-20",
+  "category": "Academy",
+  "format": "news",
+  "hook": "Ask what your opponent wants before you calculate your own attack",
+  "cta": "academy",
+  "text": "<b>Ask what your opponent wants before you calculate your own attack</b>\n\nIn blitz scrambles, 70% of losses come from ignoring opponent counter-threats.\n\nBefore committing an attacking piece, take 1 second to spot their best reply.\n\nStudy prophylactic thinking inside the Web3Chess Academy.",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "creative": {
+    "template": "tip",
+    "size": "square",
+    "tag": "Pro Tip: Prophylaxis",
+    "headline": "PROPHYLAXIS\n*MASTER PATTERN*",
+    "subhead": "Three candidate moves before any capture",
+    "cta_label": "Open Academy",
+    "steps": [
+      "Scan every check first",
+      "List all direct captures",
+      "Calculate forcing threats"
+    ],
+    "footer": "Free structured lessons inside Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-20T09:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-19T16:22:43Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "updated_at": "2026-10-22T11:16:30Z",
+  "published": {
+    "message_id": 75,
+    "at": "2026-10-22T11:16:30Z"
+  },
+  "media_cleaned": true
+}

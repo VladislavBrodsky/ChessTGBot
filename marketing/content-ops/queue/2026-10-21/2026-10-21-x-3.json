@@ -1,0 +1,59 @@
+{
+  "id": "2026-10-21-x-3",
+  "kind": "x_post",
+  "date": "2026-10-21",
+  "category": "Product",
+  "hook": "The 14:00 UTC Midday Arena is open for blitz registration",
+  "text": "The 14:00 UTC Midday Arena is open for blitz registration\n\n3-Minute Blitz • Real-time Elo pairings • Live spectator lounge.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Daily Arena",
+    "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
+    "subhead": "20:00 UTC • Instant PvP Matchmaking",
+    "cta_label": "Enter Arena",
+    "steps": [
+      "Open Mini App",
+      "Choose stake tier",
+      "Win 95% of the pot"
+    ],
+    "footer": "18+ only · You can lose your stake · Rules at web3chess.online/wagers"
+  },
+  "docked_reply": {
+    "text": "Step onto the board inside Telegram:\nhttps://t.me/chess_matbot/Web3Chess?startapp=arena",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-21T16:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-20T00:00:40Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "updated_at": "2026-10-21T17:15:14Z",
+  "last_error": "HTTPSConnectionPool(host='upload.twitter.com', port=443): Read timed out. (read timeout=30)",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2112955882090758421",
+    "reply_id": "2112955884468887991",
+    "root_url": "https://x.com/defi_ambassador/status/2112955882090758421"
+  },
+  "published": {
+    "root_id": "2112955882090758421",
+    "root_url": "https://x.com/defi_ambassador/status/2112955882090758421",
+    "at": "2026-10-21T17:15:14Z"
+  },
+  "media_cleaned": true
+}

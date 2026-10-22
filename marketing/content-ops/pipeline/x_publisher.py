@@ -137,7 +137,10 @@ def post_tweet_with_docked_reply(
     root_res = post_tweet(root_text, image_path=image_path)
     root_id = root_res["data"]["id"]
 
-    reply_res = post_tweet(reply_text, reply_to_id=root_id)
+    try:
+        reply_res = post_tweet(reply_text, reply_to_id=root_id)
+    except Exception as exc:
+        raise DockedReplyError(f"Docked reply outcome unknown after root {root_id}", root_id) from exc
     reply_id = reply_res["data"]["id"]
 
     return {
@@ -146,6 +149,13 @@ def post_tweet_with_docked_reply(
         "reply_id": reply_id,
         "root_url": f"https://x.com/defi_ambassador/status/{root_id}",
     }
+
+
+class DockedReplyError(RuntimeError):
+    """A root X post exists; reconcile its reply before considering any retry."""
+    def __init__(self, message: str, root_id: str):
+        super().__init__(message)
+        self.root_id = root_id
 
 
 class ThreadPublishError(RuntimeError):

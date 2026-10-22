@@ -9,6 +9,15 @@ TG_TAGS = {"b", "strong", "i", "em", "u", "ins", "s", "strike", "del", "a", "cod
 STOCK = ("white to move", "black to move", "find the best move", "mate in one", "mate in two", "mate in 1", "mate in 2", "web3chess", "play chess in telegram", "free a.i. practice")
 ACRONYMS = {"USDT", "FIDE", "FEN", "SAN", "ELO", "XP", "USD", "CHESS", "PGN", "TON", "UTC", "AI"}
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿⭐⬆⬇⬛⬜⌀-⏿\U0001F000-\U0001F2FF]")
+QUANTIFIED_CLAIMS = (
+    re.compile(r"\$\s?\d[\d,.]*\s*(?:usdt\s*)?(?:vault|prize|pool)", re.I),
+    re.compile(r"\b(?:vault|registration|offer)\s+(?:locks|closes|ends)\s+in\b", re.I),
+    re.compile(r"\bsub[- ]?\d+\s*ms\b|\bzero (?:board )?lag\b|\bzero delay\b", re.I),
+    re.compile(r"\b\d+%\s+of\s+(?:club\s+)?(?:players|wins|blunders|games)\b", re.I),
+    re.compile(r"\bruns?\s+\d+\s+daily\s+arena\b", re.I),
+    re.compile(r"\bcash(?:ed)?\s+out\s+\$\s?\d", re.I),
+    re.compile(r"\$\s?\d[\d,.]*\s*(?:usdt\s*)?payout\b", re.I),
+)
 
 def words(text: str) -> list[str]:
     return re.findall(r"[^\W_]+(?:'[^\W_]+)?", html.unescape(re.sub(r"<[^>]+>", " ", text)).lower())
@@ -83,13 +92,37 @@ def compliance(text: str, cta_ids: list[str] | None = None) -> list[str]:
     low = plain(text).lower()
     for pattern in brand.BANNED:
         if re.search(pattern, low): issues.append(f"banned claim pattern: {pattern}")
-    wager = any(re.search(rf"\b{re.escape(w)}s?\b", low) for w in brand.WAGER_WORDS) or any(brand.CTAS[c][2] for c in (cta_ids or []) if c in brand.CTAS)
+    wager_scan = re.sub(r"\bno (?:usdt )?(?:wager|stake)s?(?: (?:is|are))? (?:needed|required)\b", "", low)
+    wager = any(re.search(rf"\b{re.escape(w)}s?\b", wager_scan) for w in brand.WAGER_WORDS) or any(brand.CTAS[c][2] for c in (cta_ids or []) if c in brand.CTAS)
     if wager:
         if "18+" not in low or "lose your stake" not in low:
             issues.append("wager content needs the adult disclosure: 18+ and 'You can lose your stake.'")
         if any(re.search(rf"\b{w}", low) for w in brand.YOUTH_WORDS):
             issues.append("wager content must not be paired with youth language")
     return issues
+
+
+def evidence_claims(post: dict) -> list[str]:
+    """Require source-backed evidence for numeric performance, prize, and deadline claims."""
+    spec = post.get("creative") or {}
+    text = " ".join((plain(post.get("text", "")), plain(post.get("hook", "")), renderer._text(spec)))
+    evidence = post.get("claim_evidence")
+    verified: list[str] = []
+    if isinstance(evidence, list):
+        for item in evidence:
+            if not isinstance(item, dict) or item.get("verified") is not True:
+                continue
+            claim = plain(str(item.get("claim", ""))).lower()
+            source = str(item.get("source", ""))
+            if claim and source.startswith("https://") and not check_link(source):
+                verified.append(claim)
+    issues: list[str] = []
+    for pattern in QUANTIFIED_CLAIMS:
+        for match in pattern.finditer(text):
+            value = plain(match.group(0)).lower()
+            if not any(value in claim or claim in value for claim in verified):
+                issues.append(f"unsupported quantified or time-bound claim: {match.group(0)}")
+    return list(dict.fromkeys(issues))
 
 def tone(text: str, max_emoji: int = 3) -> list[str]:
     issues: list[str] = []
@@ -102,6 +135,7 @@ def tone(text: str, max_emoji: int = 3) -> list[str]:
     return issues
 
 def check_telegram(post: dict, corpus: list[str] | None = None) -> dict:
+    renderer.prepare(post)
     issues: list[str] = []
     text = post.get("text", "")
     if post.get("category") not in brand.CATEGORIES: issues.append("invalid category")
@@ -124,6 +158,7 @@ def check_telegram(post: dict, corpus: list[str] | None = None) -> dict:
         if c not in brand.CTAS: issues.append(f"unknown CTA id {c}")
     for url in inline_links: issues += check_link(url)
     issues += compliance(text, ctas)
+    issues += evidence_claims(post)
     issues += tone(text)
     refs = [s.get("excerpt", "") for s in post.get("sources", []) if s.get("kind") == "competitor" and s.get("excerpt")]
     issues += originality(text, refs)
@@ -190,6 +225,7 @@ def twitter_length(text: str) -> int:
 
 def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
     """Validates single X (Twitter) post against 2026 algorithmic and compliance standards."""
+    renderer.prepare(post)
     issues: list[str] = []
     text = post.get("text", "")
     if not text.strip():
@@ -222,6 +258,7 @@ def check_x_post(post: dict, corpus: list[str] | None = None) -> dict:
         issues += compliance(text + " " + docked_text)
     else:
         issues += compliance(text)
+    issues += evidence_claims(post)
 
     chess_spec = post.get("chess")
     if chess_spec:

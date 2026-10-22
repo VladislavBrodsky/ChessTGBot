@@ -1,0 +1,131 @@
+{
+  "status": "draft-for-review",
+  "language": "en",
+  "local_date": "2026-10-22",
+  "timezone": "America/Mexico_City",
+  "created_at": "2026-10-22T18:27:36Z",
+  "intended_publication_date": null,
+  "actual_publication_date": null,
+  "human_approval": null,
+  "selection": {
+    "calendar_slot": "Chess News \u2014 current result with an original lesson; fallback why ratings differ by pool",
+    "selected": "Substantive update to the existing rating and XP guide using the evergreen rating-pool fallback",
+    "reason": "The strongest fresh result led to an official page that could not be read in full by the research tool. The verified evergreen fallback answers a durable player question with accessible primary rules pages.",
+    "duplicate_check": "The existing elo-xp-progression-guide already owns this intent. This package updates that article instead of creating a competing URL.",
+    "publication_url": "https://web3chess.online/blog/elo-xp-progression-guide",
+    "publication_url_status": "Existing article; this revision remains unpublished until owner approval"
+  },
+  "collection": {
+    "report": "research.json",
+    "fetched_at": "2026-10-22T18:27:36.015439+00:00",
+    "candidate_count": 11,
+    "sources": [
+      {
+        "id": "fide",
+        "http_status": 200,
+        "new": 10,
+        "updated": 0,
+        "unchanged": 0
+      },
+      {
+        "id": "lichess",
+        "http_status": 200,
+        "new": 2,
+        "updated": 0,
+        "unchanged": 22
+      },
+      {
+        "id": "chesscom",
+        "http_status": 200,
+        "new": 20,
+        "updated": 0,
+        "unchanged": 5
+      }
+    ],
+    "interpretation": "Feed snippets were used for discovery only. Opportunity scores are heuristics, not measured reach or virality."
+  },
+  "claims": [
+    {
+      "claim": "FIDE standard ratings use expected score, a K development coefficient, and monthly official lists",
+      "source_url": "https://handbook.fide.com/chapter/B022024",
+      "source_publication_date": "2024-03-01",
+      "captured_at": "2026-10-22T18:31:00Z",
+      "verification": "Read the full official FIDE regulations, including sections 7 and 8",
+      "status": "verified-primary"
+    },
+    {
+      "claim": "FIDE maintains separate rapid and blitz rating lists",
+      "source_url": "https://handbook.fide.com/chapter/B02RBRegulations2024",
+      "source_publication_date": "2024-03-01",
+      "captured_at": "2026-10-22T18:31:00Z",
+      "verification": "Read the full official rapid and blitz rating regulations, including section 6",
+      "status": "verified-primary"
+    },
+    {
+      "claim": "Lichess uses Glicko-2, including rating deviation and volatility, and warns against direct cross-pool comparisons",
+      "source_url": "https://lichess.org/page/rating-systems",
+      "source_publication_date": null,
+      "captured_at": "2026-10-22T18:31:00Z",
+      "verification": "Read the full official Lichess rating-systems page and FAQ",
+      "status": "verified-primary"
+    },
+    {
+      "claim": "Web3Chess uses an Elo-style result update and tracks XP separately",
+      "source_paths": [
+        "backend/app/services/user_stats.py",
+        "website/src/content/articles/elo-xp-progression-guide.json"
+      ],
+      "source_url": "https://web3chess.online/academy",
+      "source_publication_date": null,
+      "captured_at": "2026-10-22T18:34:00Z",
+      "verification": "Reviewed the current rating update path and existing product article. Reward amounts are deliberately omitted because they may change.",
+      "status": "verified-current-code"
+    }
+  ],
+  "ordered_review_passes": [
+    {
+      "order": 1,
+      "role": "CMO",
+      "finding": "Use the scheduled evergreen fallback for mobile chess improvers. The job is to reduce rating anxiety and move readers toward a stable practice comparison. Measure Academy visits and saves only when attributable data exists.",
+      "status": "passed"
+    },
+    {
+      "order": 2,
+      "role": "Research and keywords",
+      "finding": "The intent seed is chess rating comparison. Official FIDE and Lichess sources support the pool, formula, time-control, and uncertainty explanation. No search volume or audience size is claimed.",
+      "status": "passed"
+    },
+    {
+      "order": 3,
+      "role": "Chess editor",
+      "finding": "The article avoids a fixed cross-site conversion and distinguishes rating, time-control pool, provisional uncertainty, and XP. It makes no claim that a rating guarantees a result.",
+      "status": "passed"
+    },
+    {
+      "order": 4,
+      "role": "SMM",
+      "finding": "Telegram, X, future carousel, and story copy use two hooks and one clear payoff. The selected creative uses the Academy family with contextual pool, clock, and uncertainty icons.",
+      "status": "passed"
+    },
+    {
+      "order": 5,
+      "role": "SEO and performance",
+      "finding": "The existing canonical slug is preserved and updated substantively, avoiding a competing article. Metadata answers the query directly. Creative outputs use the shared Studio renderer and retain review-draft status.",
+      "status": "passed"
+    }
+  ],
+  "analytics_limitations": "No article-attributed visits, first-game starts, comparable reach, or Search Console query data were supplied. No performance or ranking outcome is inferred.",
+  "distribution": {
+    "article": "review-only",
+    "social": "review-only",
+    "broadcast": "not-authorized",
+    "budget_changes": "none"
+  },
+  "validation": {
+    "website_content_checker": "Passed --draft schema check on 2026-10-22 using a temporary non-conflicting slug; the production slug is intentionally preserved for a substantive update to the existing article",
+    "source_review": "Full official FIDE standard and rapid/blitz regulations and the official Lichess rating-systems page reviewed; fresh feeds collected from FIDE, Lichess, and Chess.com",
+    "creative_export": "Five PNGs and five editable Studio project JSON files in 1:1, 4:5, 9:16, 16:9, and 1200x630 blog-share format, plus proof sheet; manifest lists zero layout warnings",
+    "visual_review": "Proof sheet and full-size 9:16 story inspected at phone size; headline, 3D art, proof rows, CTA, URL pill, and footer are visible without overlap or truncation",
+    "distribution": "Unpublished review draft only; no push, deploy, broadcast, social post, or budget change"
+  }
+}

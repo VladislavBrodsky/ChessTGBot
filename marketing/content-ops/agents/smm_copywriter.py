@@ -90,46 +90,48 @@ class SmmCopywriterAgent:
     def draft_fomo_arena_alert(
         self,
         slot_id: str,
-        tournament_name: str = "Daily Blitz Vault ($500 USDT)",
+        tournament_name: str = "Competitive match setup",
         start_time_utc: str = "20:00 UTC",
         minutes_remaining: int = 15,
         wager_entry: int = 5,
         size: str = "square",
     ) -> Dict[str, Any]:
-        """Crafts a high-urgency arena countdown alert adhering to 18+ wager disclosures."""
+        """Crafts an evergreen, factual match-setup explainer.
+
+        Live prize pools and countdowns belong in a verified campaign record; this default
+        deliberately avoids manufacturing urgency from the legacy method parameters.
+        """
         canvas_size = size if size in ("square", "wide") else "square"
-        hook = f"Arena Alert: {tournament_name} locks in {minutes_remaining} minutes"
+        hook = "Before a USDT match, check these three numbers"
         body = (
-            f"⚡ <b>The {start_time_utc} Arena countdown is live.</b>\n\n"
-            f"3-Minute Blitz • Double-elimination bracket • Instant TON settlement.\n"
-            f"Free spectator lounge open for all community members.\n\n"
-            f"USDT matches are for adults (18+) where permitted. You can lose your stake.\n"
-            f"Registration locks the second the round clock starts."
+            f"Choose the stake, confirm the displayed payout, and check the time control before matching. "
+            f"A {wager_entry} USDT selection is only an example; the selector shows the available options.\n\n"
+            f"{brand.WAGER_DISCLOSURE}"
         )
         return {
             "id": slot_id,
             "kind": "telegram",
             "date": slot_id[:10],
-            "category": "Product",
-            "format": "product",
+            "category": "Match Rules",
+            "format": "rules",
             "hook": hook[:110],
-            "cta": "arena",
-            "text": body,
+            "cta": "rules",
+            "text": f"<b>{hook}</b>\n\n{body}",
             "status": "draft",
             "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/wagers"}],
             "creative": {
-                "template": "product",
+                "template": "rules",
                 "size": canvas_size,
-                "tag": "Daily Arena",
-                "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
-                "subhead": f"{start_time_utc} • Instant PvP Matchmaking",
-                "cta_label": "Enter Arena",
+                "tag": "Match setup",
+                "headline": "CHECK THE MATCH\n*BEFORE YOU JOIN*",
+                "subhead": "Stake · displayed payout · time control",
+                "cta_label": "Read Match Rules",
                 "steps": [
-                    "Open Mini App",
-                    "Choose stake tier",
-                    "Win 95% of the pot",
+                    "Choose the stake",
+                    "Confirm the displayed payout",
+                    "Check the time control",
                 ],
-                "footer": f"18+ only · You can lose your stake · Rules at {self.primary_domain}/wagers",
+                "footer": "USDT matches · 18+ where permitted · You can lose your stake",
             },
         }
 
@@ -295,14 +297,14 @@ class SmmCopywriterAgent:
         body: str,
         size: str = "square",
     ) -> Dict[str, Any]:
-        """Drafts a tech & infrastructure post highlighting zero-lag WebSockets."""
+        """Drafts a factual product-flow post without unsupported latency claims."""
         canvas_size = size if size in ("square", "wide") else "square"
         clean_hook = hook.rstrip(".")
         return {
             "id": slot_id,
             "kind": "telegram",
             "date": slot_id[:10],
-            "category": "Product",
+            "category": "Engineering",
             "format": "news",
             "hook": clean_hook[:110],
             "cta": "play",
@@ -312,12 +314,13 @@ class SmmCopywriterAgent:
             "creative": {
                 "template": "news",
                 "size": canvas_size,
-                "tag": "Architecture Update",
-                "headline": "SUB-50MS ENGINE\n*ZERO BOARD LAG*",
-                "subhead": "FastAPI + Socket.IO real-time sync on Bot API 8.0",
-                "cta_label": "Test Engine",
+                "tag": "Matching flow",
+                "headline": "FROM PLAY\n*TO THE BOARD*",
+                "subhead": "Choose the match options before matching",
+                "cta_label": "Open the Mini App",
                 "source": "Web3Chess Core Engineering",
-                "footer": "Built for competitive blitz on high-frequency mobile connections.",
+                "steps": ["Choose match options", "Choose a time control", "Enter matching"],
+                "footer": "One reviewed flow from match setup to the board",
             },
         }
 
@@ -329,14 +332,13 @@ class SmmCopywriterAgent:
         expires_hours: int = 24,
         size: str = "square",
     ) -> Dict[str, Any]:
-        """Crafts a gamified Mystery Box unboxing broadcast for Telegram channel."""
+        """Explains the current first-three-game mystery box mechanics."""
         canvas_size = size if size in ("square", "wide") else "square"
-        hook = f"Mystery Vault Drop: Unlock your {box_tier} Chess Chest with earned XP"
+        hook = "Finish three practice games to open your mystery box"
         body = (
-            f"🎁 <b>The {box_tier} Vault Drop is now claimable on Home.</b>\n\n"
-            f"Spend your earned gameplay XP to unlock rare piece skins, rating protection shields, and XP multipliers.\n\n"
-            f"No deposit or wagering required: finish today's tactical drill or win 1 blitz game to claim your keys.\n\n"
-            f"Every box opens instantly inside the Telegram Mini App."
+            "🎁 <b>Your first three qualifying practice games fill the box meter.</b>\n\n"
+            "Open the box for one in-app reward: XP, a 24-hour XP boost, or a gold profile border.\n\n"
+            "No deposit and no wager are required for this practice challenge."
         )
         return {
             "id": slot_id,
@@ -352,16 +354,16 @@ class SmmCopywriterAgent:
             "creative": {
                 "template": "product",
                 "size": canvas_size,
-                "tag": f"{box_tier} Vault Drop",
-                "headline": f"{box_tier.upper()} CHEST DROP\n*XP UNLOCK PASS*",
-                "subhead": "Earned through gameplay · Instant reveal",
-                "cta_label": "Claim Mystery Box",
+                "tag": "First-three challenge",
+                "headline": "THREE GAMES\n*ONE MYSTERY BOX*",
+                "subhead": "Complete the practice challenge on Home",
+                "cta_label": "Open the Challenge",
                 "steps": [
-                    "Solve daily drill for XP",
-                    "Unlock your Mystery Chest",
-                    "Equip custom piece skins",
+                    "Finish three practice games",
+                    "Fill the challenge meter",
+                    "Open one in-app reward",
                 ],
-                "footer": "Earned through gameplay XP · Web3Chess Telegram Mini App",
+                "footer": "Possible reward · XP, 24h XP boost, or gold profile border",
             },
         }
 
@@ -371,13 +373,13 @@ class SmmCopywriterAgent:
         challenger_angle: str = "speed",
         size: str = "square",
     ) -> Dict[str, Any]:
-        """Crafts a 1-tap peer-to-peer viral challenge post with instant Telegram sharing."""
+        """Crafts a factual Telegram share prompt for inviting a friend to play."""
         canvas_size = size if size in ("square", "wide") else "square"
         hook = "Challenge a Friend: Settle your chess debates in 3 minutes"
         body = (
             "⚡ <b>Stop arguing about chess in group chats.</b>\n\n"
-            "Put 3 minutes on the clock and prove your move. Tap below to generate an instant challenge link you can send directly to any friend or group chat.\n\n"
-            "Zero app download. Sub-100ms clock synchronization powered by Telegram Bot API 8.0."
+            "Share Web3Chess with a friend or group chat. Both players can open the Mini App, choose how to play, and meet on the board.\n\n"
+            "Pick the same time control before you start the challenge."
         )
         return {
             "id": slot_id,
@@ -394,16 +396,16 @@ class SmmCopywriterAgent:
                 "template": "product",
                 "size": canvas_size,
                 "art": "clock",
-                "tag": "1-Tap Friend Match",
+                "tag": "Friend challenge",
                 "headline": "CHALLENGE A FRIEND\n*3-MINUTE SPEED BLITZ*",
-                "subhead": "Sub-100ms sync · Monotonic clocks",
+                "subhead": "Share the Mini App · Choose a time control",
                 "cta_label": "Challenge a Friend",
                 "steps": [
-                    "Send invite in 1 tap",
-                    "Friend opens in Telegram",
-                    "Match starts with zero delay",
+                    "Share in Telegram",
+                    "Open the Mini App",
+                    "Choose how to play",
                 ],
-                "footer": "Play directly in Telegram · No app download required",
+                "footer": "Share the app, then choose the match setup together",
             },
         }
 
@@ -486,8 +488,11 @@ class SmmCopywriterAgent:
         solution: List[str],
         time_control: str = "3+0 Blitz",
         platform: str = "telegram",
+        verified_source_url: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Drafts a legitimate viral player spotlight post showcasing real tactical skills & leaderboard FOMO."""
+        """Drafts a spotlight only when the result has a reviewable first-party source."""
+        if not verified_source_url or not verified_source_url.startswith("https://"):
+            raise ValueError("player spotlight requires a verified_source_url; never invent player results")
         canvas_size = "square"
         clean_hook = f"Player Spotlight: How {player_name} scored a {streak_count}-game streak in the Blitz Arena (+{rating_gain} ELO)"
         disclosure = brand.WAGER_DISCLOSURE
@@ -513,7 +518,12 @@ class SmmCopywriterAgent:
                 "cta": "arena",
                 "text": full_text,
                 "status": "draft",
-                "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/leaderboard"}],
+                "sources": [{"kind": "own", "url": verified_source_url}],
+                "claim_evidence": [{
+                    "claim": f"cashed out ${winnings_usdt:.2f}",
+                    "source": verified_source_url,
+                    "verified": True,
+                }],
                 "chess": {
                     "fen": fen,
                     "solution": solution,
@@ -551,7 +561,12 @@ class SmmCopywriterAgent:
                 "hook": clean_hook,
                 "text": post_text,
                 "status": "draft",
-                "sources": [{"kind": "own", "url": f"https://{self.primary_domain}/leaderboard"}],
+                "sources": [{"kind": "own", "url": verified_source_url}],
+                "claim_evidence": [{
+                    "claim": f"${winnings_usdt:.0f} USDT payout",
+                    "source": verified_source_url,
+                    "verified": True,
+                }],
                 "chess": {
                     "fen": fen,
                     "solution": solution,
@@ -707,16 +722,16 @@ class SmmCopywriterAgent:
             post["creative"] = {
                 "template": "product",
                 "size": canvas_size,
-                "tag": "Daily Arena",
-                "headline": "BLITZ ARENA\n*VAULT CLOSES SOON*",
-                "subhead": "20:00 UTC • Instant PvP Matchmaking",
-                "cta_label": "Enter Arena",
+                "tag": "Match setup",
+                "headline": "CHOOSE THE MATCH\n*THEN FIND A PLAYER*",
+                "subhead": "Wager and time control stay visible before matching",
+                "cta_label": "Open Web3Chess",
                 "steps": [
-                    "Open Mini App",
-                    "Choose stake tier",
-                    "Win 95% of the pot",
+                    "Open the Mini App",
+                    "Choose the match setup",
+                    "Enter matching",
                 ],
-                "footer": f"18+ only · You can lose your stake · Rules at {self.primary_domain}/wagers",
+                "footer": "USDT matches · 18+ where permitted · You can lose your stake",
             }
         elif category in ("Chess Culture", "Chess News"):
             post["creative"] = {
@@ -761,23 +776,23 @@ class SmmCopywriterAgent:
             post["creative"] = {
                 "template": "product",
                 "size": canvas_size,
-                "tag": "Architecture",
-                "headline": "SUB-100MS SYNC\n*TELEGRAM MINI APP*",
-                "subhead": "Real-time WebSockets vs on-chain latency",
-                "cta_label": "Read Stack",
+                "tag": "Product flow",
+                "headline": "FROM PLAY\n*TO THE BOARD*",
+                "subhead": "A clear route through setup and matching",
+                "cta_label": "See the Flow",
                 "steps": [
-                    "FastAPI + Socket.IO realtime engine",
-                    "Telegram Bot API 8.0 seamless WebView",
-                    "Sub-100ms board state synchronization",
+                    "Open the Mini App",
+                    "Choose the match setup",
+                    "Enter the board",
                 ],
-                "footer": f"Built for high-speed PvP · web3chess.online",
+                "footer": "Claims require production evidence before publication",
             }
         elif category == "Tactical Matrix":
             post["creative"] = {
                 "template": "culture",
                 "size": canvas_size,
                 "tag": "Pattern Matrix",
-                "headline": "4 MOTIFS MATRIX\n*85% OF BLITZ WINS*",
+                "headline": "4 MOTIFS\n*ONE FAST SCAN*",
                 "subhead": "The core tactical patterns every 1500+ player must master",
                 "cta_label": "Save Pattern",
                 "panels": [
@@ -982,7 +997,7 @@ class SmmCopywriterAgent:
         """Crafts a 3-second scramble dilemma triggering loop calculations and comments."""
         clean_hook = f"{seconds_left} seconds left on the digital clock. White to move"
         body = (
-            "Black looks completely solid. 92% of club players panic and flag here.\n\n"
+            "Black looks completely solid, but the forcing line changes the position.\n\n"
             "Resign or spot the only winning move ♟️"
         )
         sol_text = ", ".join(solution)

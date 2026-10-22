@@ -7,7 +7,7 @@
   "hook": "How we built sub-50ms board sync inside Telegram Mini Apps",
   "cta": "play",
   "text": "<b>How we built sub-50ms board sync inside Telegram Mini Apps</b>\n\nFastAPI + Socket.IO real-time engine built for Bot API 8.0.\n\n• Microsecond server monotonic timestamps\n• Zero board lag on high-frequency mobile connections\n• Instant PvP matchmaking without leaving Telegram chats",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -31,10 +31,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-18T23:53:20Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-7.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-21T12:41:02Z",
+  "published": {
+    "message_id": 66,
+    "at": "2026-10-21T12:41:02Z"
+  },
+  "media_cleaned": true
 }

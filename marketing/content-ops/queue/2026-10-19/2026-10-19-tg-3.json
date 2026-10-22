@@ -7,7 +7,7 @@
   "hook": "Mystery Vault Drop: Unlock your Epic Chess Chest with earned XP",
   "cta": "mystery_box",
   "text": "🎁 <b>The Epic Vault Drop is now claimable on Home.</b>\n\nSpend your earned gameplay XP to unlock rare piece skins, rating protection shields, and XP multipliers.\n\nNo deposit or wagering required: finish today's tactical drill or win 1 blitz game to claim your keys.\n\nEvery box opens instantly inside the Telegram Mini App.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -35,10 +35,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-18T23:53:18Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-3.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-20T10:42:54Z",
+  "published": {
+    "message_id": 56,
+    "at": "2026-10-20T10:42:54Z"
+  },
+  "media_cleaned": true
 }

@@ -1,0 +1,44 @@
+{
+  "id": "2026-10-21-tg-3",
+  "kind": "telegram",
+  "date": "2026-10-21",
+  "category": "Product",
+  "format": "product",
+  "hook": "Mystery Vault Drop: Unlock your Epic Chess Chest with earned XP",
+  "cta": "mystery_box",
+  "text": "🎁 <b>The Epic Vault Drop is now claimable on Home.</b>\n\nSpend your earned gameplay XP to unlock rare piece skins, rating protection shields, and XP multipliers.\n\nNo deposit or wagering required: finish today's tactical drill or win 1 blitz game to claim your keys.\n\nEvery box opens instantly inside the Telegram Mini App.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Epic Vault Drop",
+    "headline": "EPIC CHEST DROP\n*XP UNLOCK PASS*",
+    "subhead": "Earned through gameplay · Instant reveal",
+    "cta_label": "Claim Mystery Box",
+    "steps": [
+      "Solve daily drill for XP",
+      "Unlock your Mystery Chest",
+      "Equip custom piece skins"
+    ],
+    "footer": "Earned through gameplay XP · Web3Chess Telegram Mini App"
+  },
+  "scheduled_at": "2026-10-21T06:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-20T00:00:44Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-3.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

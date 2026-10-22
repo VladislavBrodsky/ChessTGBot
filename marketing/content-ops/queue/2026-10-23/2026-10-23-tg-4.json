@@ -1,0 +1,78 @@
+{
+  "id": "2026-10-23-tg-4",
+  "kind": "telegram",
+  "date": "2026-10-23",
+  "category": "Academy",
+  "format": "news",
+  "hook": "Stop looking for the best move before you calculate all forcing checks",
+  "cta": "academy",
+  "text": "<b>Stop looking for the best move before you calculate all forcing checks</b>\n\nIn 3-minute blitz, players jump at the first plausible recapture.\n\nMaster players scan three things in under 2 seconds:\n1. Checks (every check must be calculated)\n2. Captures (every piece tension)\n3. Threats (forcing queen or rook moves)\n\nReview candidate calculation inside the free Web3Chess Academy.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "creative": {
+    "template": "tip",
+    "size": "square",
+    "tag": "Pro Tip: Candidate Moves",
+    "headline": "CANDIDATE MOVES\n*MASTER PATTERN*",
+    "subhead": "Three candidate moves before any capture",
+    "cta_label": "Open Academy",
+    "steps": [
+      "Scan every check first",
+      "List all direct captures",
+      "Calculate forcing threats"
+    ],
+    "footer": "Free structured lessons inside Web3Chess Academy.",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-23-tg-4",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Pro Tip: Candidate Moves",
+      "title": "CANDIDATE MOVES MASTER PATTERN",
+      "subtitle": "Three candidate moves before any capture",
+      "proofs": [
+        "Scan every check first",
+        "List all direct captures",
+        "Calculate forcing threats"
+      ],
+      "proofIcons": [
+        "graduation-cap",
+        "strategy",
+        "book-open-text"
+      ],
+      "cta": "Open Academy",
+      "urlLabel": "web3chess.online",
+      "note": "Free structured lessons inside Web3Chess Academy",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "academy",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-23T09:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-22T18:42:05Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-tg-4.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

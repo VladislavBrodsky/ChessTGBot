@@ -1,0 +1,65 @@
+{
+  "id": "2026-10-22-tg-1",
+  "kind": "telegram",
+  "date": "2026-10-22",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. Flanked by two rooks, the king cannot move",
+  "cta": "academy_app",
+  "text": "<b>White to move. Flanked by two rooks, the king cannot move</b>\n\nBlack's own rooks on d8 and f8 block any escape.\nSpot the central queen mate in 1.\n\n❤ Qe6#   🔥 Qd7+   👏 Qf6\nAnswer reveals in 6 hours.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+    "solution": [
+      "Qe6#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Epaulette Mate",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Qe6#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Qe6#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+      "cta_label": "Solve More in Academy"
+    },
+    "image": "marketing/content-ops/queue/2026-10-22/2026-10-22-tg-1.reveal.png"
+  },
+  "scheduled_at": "2026-10-22T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-21T00:00:42Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-22/2026-10-22-tg-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  }
+}

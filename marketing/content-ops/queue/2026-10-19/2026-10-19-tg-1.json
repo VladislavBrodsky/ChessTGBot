@@ -7,7 +7,7 @@
   "hook": "White to move. Black's rook and pawns cage their own king",
   "cta": "academy_app",
   "text": "<b>White to move. Black's rook and pawns cage their own king</b>\n\nBlack's king on h8 has no flight squares remaining.\nFind the leaping knight check that seals the smothered mate.\n\n❤ Nf7#   🔥 Nxf7+   👏 Nh7\nAnswer reveals in 6 hours.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -47,7 +47,11 @@
       "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
       "cta_label": "Solve More in Academy"
     },
-    "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-1.reveal.png"
+    "sent": {
+      "at": "2026-10-20T10:42:54Z",
+      "claimed": true,
+      "message_id": 57
+    }
   },
   "scheduled_at": "2026-10-19T00:00:00Z",
   "qa": {
@@ -56,10 +60,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-18T23:53:16Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-1.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 2
-  }
+  },
+  "updated_at": "2026-10-20T03:47:59Z",
+  "published": {
+    "message_id": 53,
+    "at": "2026-10-20T03:47:59Z"
+  },
+  "media_cleaned": true
 }

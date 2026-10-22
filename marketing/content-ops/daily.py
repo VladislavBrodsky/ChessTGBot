@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Daily content operations. Run from the repo root:  python3 marketing/content-ops/daily.py <command>
 
-  plan [--days N] [--date YYYY-MM-DD]   create the day's slots (5 Telegram posts + 5 articles)
+  plan [--days N] [--date YYYY-MM-DD]   create configured Telegram, X, and article slots
   briefs [--date ...]                   write a brief into every planned slot (agents/API fill them)
   write [--date ...]                    fill planned slots through the Anthropic API (needs ANTHROPIC_API_KEY)
   submit <id> <file.json>               attach a drafted post/article to its slot and run the QA gates
@@ -37,10 +37,28 @@ def cmd_plan(args):
     print(f"Planned {args.days} day(s) from {start}.")
 
 def cmd_briefs(args):
+    research = None
+    research_file = Path(__file__).resolve().parent / "state" / "latest-discovery.json"
+    if research_file.exists():
+        try:
+            candidate = json.loads(research_file.read_text())
+            captured = datetime.fromisoformat(candidate["captured_at"].replace("Z", "+00:00"))
+            if timedelta(0) <= queue.utcnow() - captured <= timedelta(hours=36):
+                research = candidate
+        except (ValueError, KeyError, TypeError):
+            pass
     for entry in queue.all_entries(day=_day(args).isoformat()):
         if entry["status"] == "planned":
-            entry["brief"] = writer.brief_for(entry); queue.save(entry)
+            entry["brief"] = writer.brief_for(entry, research=research); queue.save(entry)
     print("Briefs written.")
+
+def cmd_intel(args):
+    from discovery import build_report
+    output = Path(__file__).resolve().parent / "state" / "latest-discovery.json"
+    report = build_report(args.gsc_csv, args.vidiq_csv, not args.offline)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+    print(json.dumps({"report": str(output), "news": len(report["news"]), "youtube": len(report["youtube"]), "failures": report["failures"]}, indent=2))
 
 def cmd_write(args):
     for entry in queue.all_entries(status="planned", day=_day(args).isoformat()):
@@ -73,7 +91,7 @@ def _gate(entry: dict):
         if not rendered.get("ok") and not rendered.get("skipped"):
             result = {"passed": False, "issues": result["issues"] + ["creative render failed: " + rendered.get("error", "unknown")]}
             entry["qa"] = {**result, "checked_at": queue.iso(queue.utcnow())}
-    kind_key = "telegram" if entry["kind"] in ("telegram", "x_post", "x_thread") else "site"
+    kind_key = "telegram" if entry["kind"] == "telegram" else "x" if entry["kind"] in ("x_post", "x_thread") else "site"
     mode = queue.CONFIG["mode"].get(kind_key, "review")
     if not result["passed"]:
         queue.set_status(entry, "rejected")
@@ -112,13 +130,13 @@ def cmd_stage(args):
 
 def cmd_publish(args):
     dry = True if args.dry_run else None
-    day = _day(args).isoformat() if getattr(args, "date", None) else None
+    day = _day(args).isoformat()
     post_id = getattr(args, "id", None)
     if post_id:
         res = telegram_publisher.publish_post_by_id(post_id, dry_run=dry)
         print(json.dumps({"posts": [res], "reveals": []}, indent=2))
     else:
-        limit = getattr(args, "limit", 5) or 5
+        limit = getattr(args, "limit", 1) or 1
         print(json.dumps({
             "posts": telegram_publisher.publish_due(dry_run=dry, limit=limit, day=day),
             "reveals": telegram_publisher.publish_reveals(dry_run=dry)
@@ -127,13 +145,13 @@ def cmd_publish(args):
 def cmd_publish_x(args):
     from agents.publisher import PublisherAgent
     agent = PublisherAgent()
-    day = _day(args).isoformat() if getattr(args, "date", None) else None
+    day = _day(args).isoformat()
     res = agent.dispatch_x_posts(
         day=day,
         post_id=getattr(args, "id", None),
         dry_run=args.dry_run,
-        due_only=getattr(args, "due_only", False),
-        limit=getattr(args, "limit", None),
+        due_only=not getattr(args, "all_approved", False),
+        limit=getattr(args, "limit", None) or 1,
     )
     print(json.dumps(res, indent=2))
 
@@ -176,8 +194,14 @@ def main():
     p_x.add_argument("--id")
     p_x.add_argument("--dry-run", action="store_true")
     p_x.add_argument("--due-only", action="store_true")
+    p_x.add_argument("--all-approved", action="store_true", help="Explicitly dispatch future approved entries as well")
     p_x.add_argument("--limit", type=int, default=None)
     p_x.set_defaults(run=cmd_publish_x)
+    p_intel = sub.add_parser("intel", help="Refresh read-only keyword, news, competitor, and video discovery")
+    p_intel.add_argument("--gsc-csv")
+    p_intel.add_argument("--vidiq-csv")
+    p_intel.add_argument("--offline", action="store_true")
+    p_intel.set_defaults(run=cmd_intel)
     p_clean = sub.add_parser("clean-media")
     p_clean.add_argument("--dry-run", action="store_true")
     p_clean.set_defaults(run=cmd_clean_media)

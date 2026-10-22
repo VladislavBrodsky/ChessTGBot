@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-10-22T22:19:58.849Z",
+  "status": "draft-for-review",
+  "renderer": "/CREATIVES",
+  "briefId": "academy",
+  "outputs": [
+    {
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "png": "square.png",
+      "editableProject": "square.project.json",
+      "layoutWarnings": []
+    },
+    {
+      "format": "portrait",
+      "width": 1080,
+      "height": 1350,
+      "png": "portrait.png",
+      "editableProject": "portrait.project.json",
+      "layoutWarnings": []
+    },
+    {
+      "format": "story",
+      "width": 1080,
+      "height": 1920,
+      "png": "story.png",
+      "editableProject": "story.project.json",
+      "layoutWarnings": []
+    },
+    {
+      "format": "wide",
+      "width": 1920,
+      "height": 1080,
+      "png": "wide.png",
+      "editableProject": "wide.project.json",
+      "layoutWarnings": []
+    },
+    {
+      "format": "blog",
+      "width": 1200,
+      "height": 630,
+      "png": "blog.png",
+      "editableProject": "blog.project.json",
+      "layoutWarnings": []
+    }
+  ]
+}

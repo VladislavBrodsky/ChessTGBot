@@ -1,0 +1,290 @@
+{
+  "method": "Editorial seeds ranked by audience fit and task intent. Search volume, difficulty and global rank are unmeasured until Search Console or a licensed keyword export is joined. Localized terms need native editorial review before publication.",
+  "clusters": [
+    {
+      "name": "Telegram chess",
+      "intent": "transactional",
+      "destination": "/",
+      "market": "global",
+      "tier": "first",
+      "queries": [
+        "play chess on Telegram",
+        "Telegram chess game",
+        "chess Telegram Mini App",
+        "play chess with friends on Telegram",
+        "Telegram chess bot game",
+        "chess in Telegram group",
+        "start chess match in Telegram",
+        "Telegram multiplayer chess",
+        "Telegram chess invite link",
+        "how to play chess in Telegram"
+      ]
+    },
+    {
+      "name": "Blitz improvement",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "first",
+      "queries": [
+        "how to get better at blitz chess",
+        "3 minute chess strategy",
+        "blitz chess tips for beginners",
+        "how to manage time in blitz chess",
+        "avoid blunders in blitz chess",
+        "how to review a blitz game",
+        "blitz chess endgame tips",
+        "chess time scramble tips",
+        "how to think faster in chess",
+        "best blitz chess practice routine"
+      ]
+    },
+    {
+      "name": "Tactics practice",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "first",
+      "queries": [
+        "chess tactics for beginners",
+        "daily chess puzzle",
+        "chess fork practice",
+        "chess pin tactic examples",
+        "skewer chess examples",
+        "discovered attack chess puzzle",
+        "back rank mate practice",
+        "smothered mate puzzle",
+        "chess zwischenzug examples",
+        "checks captures threats chess"
+      ]
+    },
+    {
+      "name": "Opening defense",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "first",
+      "queries": [
+        "how to defend chess opening traps",
+        "Stafford gambit defense",
+        "fried liver attack defense",
+        "scholars mate defense",
+        "Italian game traps for beginners",
+        "Sicilian defense for beginners",
+        "London system counters",
+        "queen gambit declined basics",
+        "how to survive opening traps",
+        "best openings for blitz beginners"
+      ]
+    },
+    {
+      "name": "Chess fundamentals",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "first",
+      "queries": [
+        "how to learn chess from scratch",
+        "chess rules for beginners",
+        "how chess pieces move",
+        "what is checkmate in chess",
+        "how to castle in chess",
+        "en passant explained",
+        "chess notation explained",
+        "what is stalemate in chess",
+        "how to read a chess board",
+        "basic chess strategy for beginners"
+      ]
+    },
+    {
+      "name": "Endgame learning",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "next",
+      "queries": [
+        "king and pawn endgame basics",
+        "how to win rook endgames",
+        "opposition in chess endgame",
+        "queen versus pawn endgame",
+        "how to checkmate with king and rook",
+        "how to checkmate with king and queen",
+        "pawn promotion tactics",
+        "outside passed pawn chess",
+        "rook behind passed pawn",
+        "chess endgame drills for beginners"
+      ]
+    },
+    {
+      "name": "Game review",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "first",
+      "queries": [
+        "how to analyze your chess games",
+        "how to review chess mistakes",
+        "chess blunder checklist",
+        "why did I lose my chess game",
+        "post game chess analysis",
+        "how to improve chess calculation",
+        "how to spot opponent threats",
+        "chess move candidate checklist",
+        "how to study your own chess games",
+        "chess improvement plan for beginners"
+      ]
+    },
+    {
+      "name": "Play with friends",
+      "intent": "transactional",
+      "destination": "/",
+      "market": "global",
+      "tier": "first",
+      "queries": [
+        "play chess online with friends",
+        "challenge a friend to chess online",
+        "play chess in group chat",
+        "chess invite link for friends",
+        "free chess game with friends",
+        "private chess match online",
+        "mobile chess with friends",
+        "quick chess game with friend",
+        "chess rematch with friend",
+        "play chess on phone with friends"
+      ]
+    },
+    {
+      "name": "Chess clock formats",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "next",
+      "queries": [
+        "bullet vs blitz chess",
+        "rapid vs blitz chess",
+        "what is 3 plus 2 chess",
+        "chess increment explained",
+        "chess delay vs increment",
+        "best time control for beginners",
+        "how does a chess clock work",
+        "what is bullet chess",
+        "what is rapid chess",
+        "chess flagging rules"
+      ]
+    },
+    {
+      "name": "Notation and positions",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "next",
+      "queries": [
+        "what is FEN in chess",
+        "how to read a FEN string",
+        "chess screenshot to FEN",
+        "what is PGN in chess",
+        "how to read chess algebraic notation",
+        "how to record chess moves",
+        "FEN vs PGN chess",
+        "chess board coordinates explained",
+        "how to share a chess position",
+        "chess SAN notation examples"
+      ]
+    },
+    {
+      "name": "Chess psychology",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "global",
+      "tier": "next",
+      "queries": [
+        "how to stop chess tilt",
+        "how to focus during chess games",
+        "chess time pressure anxiety",
+        "how to recover after chess blunder",
+        "why do I blunder in chess",
+        "chess confidence for beginners",
+        "how to stay calm in blitz",
+        "how to handle losing streak in chess",
+        "chess decision making under pressure",
+        "how to avoid impulsive chess moves"
+      ]
+    },
+    {
+      "name": "Chess on mobile",
+      "intent": "transactional",
+      "destination": "/",
+      "market": "global",
+      "tier": "next",
+      "queries": [
+        "play chess on mobile browser",
+        "chess game without app download",
+        "mobile chess game free",
+        "online chess for Android browser",
+        "chess on iPhone browser",
+        "quick chess game on phone",
+        "chess Mini App on Telegram",
+        "play chess without registration",
+        "chess game with link sharing",
+        "online chess in messaging app"
+      ]
+    },
+    {
+      "name": "Adult match rules",
+      "intent": "informational",
+      "destination": "/rules",
+      "market": "global",
+      "tier": "next",
+      "queries": [
+        "USDT chess match rules",
+        "chess stake payout explained",
+        "chess wager fees explained",
+        "how chess match escrow works",
+        "chess match payout vs profit",
+        "chess for stakes rules",
+        "USDT chess game risk",
+        "chess stake refund rules",
+        "chess match settlement explained",
+        "chess wagering eligibility"
+      ]
+    },
+    {
+      "name": "Spanish chess learning",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "es",
+      "tier": "next",
+      "queries": [
+        "ajedrez para principiantes",
+        "cómo jugar ajedrez",
+        "tácticas de ajedrez",
+        "problemas de ajedrez diarios",
+        "mejorar en ajedrez blitz",
+        "aperturas de ajedrez para principiantes",
+        "cómo evitar errores en ajedrez",
+        "finales de ajedrez básicos",
+        "jugar ajedrez con amigos online",
+        "ajedrez en Telegram"
+      ]
+    },
+    {
+      "name": "Portuguese chess learning",
+      "intent": "informational",
+      "destination": "/blog",
+      "market": "pt",
+      "tier": "next",
+      "queries": [
+        "xadrez para iniciantes",
+        "como jogar xadrez",
+        "táticas de xadrez",
+        "problemas de xadrez diários",
+        "melhorar no xadrez blitz",
+        "aberturas de xadrez para iniciantes",
+        "como evitar erros no xadrez",
+        "finais de xadrez básicos",
+        "jogar xadrez com amigos online",
+        "xadrez no Telegram"
+      ]
+    }
+  ]
+}

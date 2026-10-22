@@ -7,8 +7,8 @@ Monitors premier chess influencers and ecosystem accounts:
 - @MagnusCarlsen (1.1M+ followers)
 - @ton_blockchain (2.2M+ followers)
 
-Generates contextual, high-IQ commentary within minutes of publication to siphon
-massive algorithmic reach into @defi_ambassador profile views.
+Generates contextual, chess-literate commentary for timely, relevant replies that
+can earn qualified profile visits without fabricated statistics or engagement bait.
 Enforces the X Golden Rule: Zero links in top-level replies to secure top reply ranking.
 """
 from __future__ import annotations
@@ -66,7 +66,7 @@ TARGET_ACCOUNTS = {
 REPLY_TEMPLATES: Dict[str, List[str]] = {
     "are_you_good": [
         "Good enough to calculate a 5-move tactic in 2 seconds, but humble enough to hang mate in 1 the instant my clock dips below 3 seconds. The board humbles everyone.",
-        "Good enough to spot brilliant exchange sacrifices on move 20, but amateur enough to forget back-rank luft on move 40. Speed chess is 80% psychology.",
+        "Good enough to spot brilliant exchange sacrifices on move 20, but human enough to forget back-rank luft on move 40. The clock exposes every habit.",
         "Rating says 1900, but time scramble calculation says 900. Under 5 seconds, nobody is truly good—we are all just guessing with style.",
     ],
     "brilliant_move": [
@@ -75,18 +75,18 @@ REPLY_TEMPLATES: Dict[str, List[str]] = {
         "A move is only truly brilliant if it looks completely absurd on move 1 and completely inevitable on move 5.",
     ],
     "blitz_scramble": [
-        "When the clock drops below 5 seconds, positional advantage stops existing. In scrambles, the player creating dynamic complications wins 80% of the time.",
+        "When the clock drops below 5 seconds, a clean evaluation can become a difficult practical problem. Forcing moves make every remaining second matter.",
         "Intuition in time scrambles is just pattern recognition compressed into subconscious reflex. The clock tests instinct far more than raw calculation.",
         "The fastest way to lose a won position in blitz is trying to play the cleanest engine line instead of the most uncomfortable human move.",
     ],
     "blunder_luft": [
         "The most dangerous illusion in blitz is thinking you are attacking when your king has zero air. Back-rank mates aren’t bad luck; they’re negligence.",
-        "90% of amateur blitz losses come from one disease: calculating your opponent's moves instead of calculating your own king's escape squares.",
+        "Many amateur blitz losses share one blind spot: calculating the attack before checking the king's escape squares.",
         "It takes 40 moves to build a positional masterpiece and exactly 0.5 seconds of premove carelessness to hang it all.",
     ],
     "ton_gaming": [
-        "Tap-to-earn was phase 1. Real retention on Telegram Mini Apps will be driven by synchronous, skill-based PvP with sub-100ms latency.",
-        "The real superpower of Telegram Bot API 8.0 isn't just payments—it's giving 900M users instant access to competitive multiplayer games in 1 tap.",
+        "Discovery can happen inside the chat, but retention still depends on whether the game earns a rematch. Skill-based live play is a strong test of that loop.",
+        "Telegram Mini Apps can shorten the path from conversation to game. The product still has to make setup clear and the first move worth taking.",
         "Gaming on TON succeeds when the gameplay is genuinely addictive first, and the blockchain settlement is invisible second.",
     ],
     "bongcloud": [
@@ -95,7 +95,7 @@ REPLY_TEMPLATES: Dict[str, List[str]] = {
     ],
     "general_chess": [
         "Chess calculation is easy when you have 3 minutes. The true test of mastery is whether your subconscious intuition makes the right move in 1.5 seconds.",
-        "Tactics are what you do when there is something to do; strategy is what you do when there is nothing to do. In blitz, it's tactics 100% of the time.",
+        "Tactics answer the forcing position; strategy improves the position before the tactic exists. Blitz asks you to switch between them quickly.",
         "The hardest piece to play against isn’t the opponent’s queen—it’s your own clock when you start second-guessing your first instinct.",
     ],
 }

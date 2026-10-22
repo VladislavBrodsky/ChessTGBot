@@ -4,15 +4,17 @@ from __future__ import annotations
 import json
 import shutil
 import sys
+import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from agents.cmo_routine import CmoDailyRoutine
-from pipeline import queue
+from pipeline import queue, renderer
 
 
 class TestCmoRoutine(unittest.TestCase):
@@ -75,13 +77,23 @@ class TestCmoRoutine(unittest.TestCase):
         self.assertTrue(any("Manifesto" in t for t in topics))
 
     def test_plan_five_viral_posts(self):
-        posts = self.routine.plan_five_viral_posts()
+        with tempfile.TemporaryDirectory() as directory:
+            def fake_render(post):
+                path = Path(directory) / f"{post['id']}.png"
+                path.write_bytes(b"test image")
+                post["image"] = str(path)
+                post["render"] = {"ok": True}
+            with patch.object(renderer, "render", side_effect=fake_render):
+                posts = self.routine.plan_five_viral_posts()
+            self._assert_review_posts(posts)
+
+    def _assert_review_posts(self, posts):
         self.assertEqual(len(posts), 5)
 
         for p in posts:
             # 1. Valid ID and slot
             self.assertTrue(p["id"].startswith("2099-01-02-tg-"))
-            self.assertEqual(p["status"], "approved")
+            self.assertEqual(p["status"], "draft")
 
             # 2. Hook Punctuation Law
             hook = p.get("hook", "")
@@ -95,7 +107,10 @@ class TestCmoRoutine(unittest.TestCase):
             # 4. Creative image rendered
             render_res = p.get("render", {})
             self.assertTrue(render_res.get("ok", False) or render_res.get("skipped", False))
-            self.assertTrue(Path(p["image"]).exists())
+            image_path = Path(p["image"])
+            if not image_path.is_absolute():
+                image_path = queue.ROOT / image_path
+            self.assertTrue(image_path.exists())
 
             # 5. Slot categories
             slot = p["slot"]
@@ -109,11 +124,11 @@ class TestCmoRoutine(unittest.TestCase):
             elif slot == 3:
                 self.assertEqual(p["category"], "Chess Culture")
             elif slot == 4:
-                self.assertEqual(p["category"], "Product")
+                self.assertEqual(p["category"], "Match Rules")
                 self.assertIn("18+", p["text"])
             elif slot == 5:
                 self.assertEqual(p["category"], "Chess Culture")
-                self.assertIn("Tap-to-earn", p["text"])
+                self.assertIn("Share Web3Chess", p["text"])
 
     def test_generate_executive_report(self):
         perf = self.routine.audit_previous_day_performance()

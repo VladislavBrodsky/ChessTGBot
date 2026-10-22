@@ -7,7 +7,7 @@
   "hook": "White to move. The knight guards the escape squares. Find the mate",
   "cta": "academy_app",
   "text": "<b>White to move. The knight guards the escape squares. Find the mate</b>\n\nBlack's king on h8 is locked down by White's knight on f6.\nOne rook move delivers instant checkmate.\n\n❤ Rh7#   🔥 Ra8+   👏 Ne8\nAnswer reveals in 6 hours.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -47,7 +47,11 @@
       "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
       "cta_label": "Solve More in Academy"
     },
-    "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-8.reveal.png"
+    "sent": {
+      "at": "2026-10-20T06:54:25Z",
+      "claimed": true,
+      "message_id": 55
+    }
   },
   "scheduled_at": "2026-10-18T21:00:00Z",
   "qa": {
@@ -56,10 +60,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-17T21:33:45Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-8.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 2
-  }
+  },
+  "updated_at": "2026-10-20T00:47:10Z",
+  "published": {
+    "message_id": 52,
+    "at": "2026-10-20T00:47:10Z"
+  },
+  "media_cleaned": true
 }

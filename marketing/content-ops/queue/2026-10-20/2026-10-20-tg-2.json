@@ -1,0 +1,60 @@
+{
+  "id": "2026-10-20-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-20",
+  "category": "Openings",
+  "format": "trap",
+  "hook": "Never take the knight on g4 when the h-file opens against your castled king",
+  "cta": "academy",
+  "text": "<b>Never take the knight on g4 when the h-file opens against your castled king</b>\n\nThe Fishing Pole trap catches players who play h3 automatically in the Ruy Lopez or Italian.\nBlack plays h5! After hxg4? hxg4, the open h-file and queen invasion on h4 force checkmate in 3.\n\nThe defense: Ignore the g4 bait or challenge Black's center immediately with d4.",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "r1bq1rk1/pppp1ppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RN1Q1RK1 b - - 0 6",
+    "solution": [
+      "Ng4"
+    ],
+    "claim": "line_legal"
+  },
+  "creative": {
+    "template": "trap",
+    "size": "square",
+    "tag": "Trap Breakdown: Fishing Pole Trap",
+    "headline": "FISHING POLE TRAP\n*PUNISH GREED*",
+    "subhead": "Can you spot the refutation line?",
+    "fen": "r1bq1rk1/pppp1ppp/5n2/4p3/2B1P3/3P1N2/PPP2PPP/RN1Q1RK1 b - - 0 6",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Nd4"
+    ],
+    "cta_label": "Learn in Academy",
+    "footer": "Study full lines in the Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-20T03:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-19T16:22:42Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "updated_at": "2026-10-22T01:11:18Z",
+  "published": {
+    "message_id": 70,
+    "at": "2026-10-22T01:11:18Z"
+  },
+  "media_cleaned": true
+}

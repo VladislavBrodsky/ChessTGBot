@@ -118,7 +118,10 @@
     let badge,hy;
     if(wide){
       meter.font=face('body',badgeSpec.font,500);const desired=Math.ceil(meter.measureText(tag).width)+90;
-      badge=pill(tag,x+w-desired,top+(spec.brand-badgeSpec.minHeight)/2,desired);
+      // Puzzle artwork occupies the right column on wide canvases. Keep its tag
+      // in the copy column so the two elements retain the required clear space.
+      const badgeX=d.id==='puzzle'?x+textW-desired:x+w-desired;
+      badge=pill(tag,badgeX,top+(spec.brand-badgeSpec.minHeight)/2,desired);
       hy=top+spec.brand+spec.headGap;
     } else {
       const tagW=w-logoW-48;meter.font=face('body',badgeSpec.font,500);const desired=Math.ceil(meter.measureText(tag).width)+90;
@@ -223,7 +226,9 @@
         const artSize=680;
         const artY=top+(bottom-top-artSize)/2;
         group='art';image(A.art[d.art],rx+(rw-artSize)/2,artY,artSize,artSize);block('art',rx+(rw-artSize)/2,artY,artSize,artSize);
-        const ph=Math.min(visualH, 250);
+        // Rival/opening cards need enough vertical room for their icon, title,
+        // and proof line at the minimum supported type size.
+        const ph=Math.min(visualH, 300);
         proofCard(x, visualY+(visualH-ph)/2, textW, ph);
       }
     }else{

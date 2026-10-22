@@ -1,0 +1,81 @@
+{
+  "id": "2026-10-24-x-3",
+  "kind": "x_post",
+  "date": "2026-10-24",
+  "category": "Product",
+  "hook": "A faster match still needs a deliberate setup",
+  "text": "A faster match still needs a deliberate setup\n\nCheck the time control, stake, and displayed payout before entering matching.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Match setup",
+    "headline": "CHOOSE THE MATCH\n*THEN FIND A PLAYER*",
+    "subhead": "Wager and time control stay visible before matching",
+    "cta_label": "Open Web3Chess",
+    "steps": [
+      "Open the Mini App",
+      "Choose the match setup",
+      "Enter matching"
+    ],
+    "footer": "USDT matches · 18+ where permitted · You can lose your stake",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-24-x-3",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Match setup",
+      "title": "CHOOSE THE MATCH THEN FIND A PLAYER",
+      "subtitle": "Wager and time control stay visible before matching",
+      "proofs": [
+        "Open the Mini App",
+        "Choose the match setup",
+        "Enter matching"
+      ],
+      "proofIcons": [
+        "telegram-logo",
+        "strategy",
+        "target"
+      ],
+      "cta": "Open Web3Chess",
+      "urlLabel": "t.me",
+      "note": "USDT matches · 18+ where permitted · You can lose your stake",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "sculpture",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Review the match rules before opening the Arena:\nhttps://t.me/chess_matbot/Web3Chess?startapp=arena",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-24T12:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-22T22:10:23Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-3.png"
+}

@@ -1,0 +1,49 @@
+{
+  "id": "2026-10-23-x-1",
+  "kind": "x_post",
+  "date": "2026-10-23",
+  "category": "Tactics",
+  "hook": "White to move. Two rooks seal every flight square",
+  "text": "White to move. Two rooks seal every flight square\n\nBlack's king on h8 is trapped behind the 7th-rank barrier.\n\nSpot the 1-move finish ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "7k/1R6/8/8/8/8/8/R5K1 w - - 0 1",
+    "solution": [
+      "Ra8#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "7k/1R6/8/8/8/8/8/R5K1 w - - 0 1",
+    "tag": "Mate In 1",
+    "headline": "LADDER MATE\n*SEAL THE 8TH RANK*",
+    "subhead": "White to move • Mate in 1",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Ra8# (Ladder Mate).\nOne rook holds the 7th rank while the second delivers checkmate on the 8th.\n\nPractise 50+ master patterns in our free Academy:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-23T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-22T00:00:19Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-x-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

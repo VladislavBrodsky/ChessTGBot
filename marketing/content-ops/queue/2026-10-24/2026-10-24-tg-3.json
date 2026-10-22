@@ -1,0 +1,79 @@
+{
+  "id": "2026-10-24-tg-3",
+  "kind": "telegram",
+  "date": "2026-10-24",
+  "category": "Product",
+  "format": "product",
+  "hook": "Finish three practice games to open your mystery box",
+  "cta": "mystery_box",
+  "text": "🎁 <b>Your first three qualifying practice games fill the box meter.</b>\n\nOpen the box for one in-app reward: XP, a 24-hour XP boost, or a gold profile border.\n\nNo deposit and no wager are required for this practice challenge.",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "First-three challenge",
+    "headline": "THREE GAMES\n*ONE MYSTERY BOX*",
+    "subhead": "Complete the practice challenge on Home",
+    "cta_label": "Open the Challenge",
+    "steps": [
+      "Finish three practice games",
+      "Fill the challenge meter",
+      "Open one in-app reward"
+    ],
+    "footer": "Possible reward · XP, 24h XP boost, or gold profile border",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-24-tg-3",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "First-three challenge",
+      "title": "THREE GAMES ONE MYSTERY BOX",
+      "subtitle": "Complete the practice challenge on Home",
+      "proofs": [
+        "Finish three practice games",
+        "Fill the challenge meter",
+        "Open one in-app reward"
+      ],
+      "proofIcons": [
+        "telegram-logo",
+        "strategy",
+        "target"
+      ],
+      "cta": "Open the Challenge",
+      "urlLabel": "t.me",
+      "note": "Possible reward · XP, 24h XP boost, or gold profile border",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "sculpture",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-24T12:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-22T22:10:23Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-3.png"
+}

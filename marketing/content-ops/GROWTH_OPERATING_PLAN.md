@@ -1,0 +1,28 @@
+# Search and social growth operating plan
+
+## Decision rules
+
+The objective is attributed first games and repeat practice, with search clicks and qualified visits as leading measures. The 150-query portfolio in `keywords-150.json` is a set of editorial targets, **not** a measured global top 150. Its order starts with task intent and product fit. Search volume, difficulty, rank and local phrasing remain unknown until a Search Console export and native language review are added. The discovery report suggests existing article candidates from word overlap; an editor must read the page to decide whether it satisfies the query. Avoid publishing 150 near-duplicate landing pages: cluster each intent under a useful canonical guide, update an existing guide where possible, and link from news to a durable lesson. A broad search phrase is a topic to evaluate, never a claim that we rank for it.
+
+Google's current guidance favors [original, helpful content](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) and [distinct, descriptive titles](https://developers.google.com/search/docs/appearance/title-link). The [meta-keywords tag does not affect Google ranking](https://developers.google.com/search/docs/crawling-indexing/special-tags), so this portfolio guides page content and editorial priorities rather than keyword stuffing.
+
+## Daily cycle
+
+1. Run `python3 marketing/content-ops/daily.py intel` on the trusted editorial runner, then `daily.py plan --date YYYY-MM-DD` and `daily.py briefs --date YYYY-MM-DD`. Optionally pass `--gsc-csv PATH` and `--vidiq-csv PATH` to `intel`. Set `YOUTUBE_API_KEY` for official YouTube upload and view data. `--offline` validates the keyword plan and supplied exports without network access. The report is ignored under `state/`; briefs use it for at most 36 hours and mark every lead as requiring verification.
+2. Inspect `failures` before selecting news. The feed collector obeys robots and host restrictions. Telegram competitor reads use public previews only. YouTube uses uploads playlists and batched statistics requests; no YouTube page scraping. A vidIQ CSV is context from an authorized export, and its numbers are not mixed with YouTube API counts.
+3. Select an idea by audience fit, evidence, recentness, original lesson and measured response. `signal=outlier` means current views per hour are at least twice the median of two or more other recent uploads on the *same channel*. It is a research lead, not a viral prediction. Missing baseline stays `unproven`. Read the primary story, verify event date and game notation, and record source URLs and observed times. Use an evergreen puzzle when news cannot be verified.
+4. Build a blog explanation for one intent, then a distinct Telegram post and X post from the same verified fact or position. Never copy a competitor's wording, image, clip or thumbnail. Give puzzle posts a complete payoff and product posts a working destination. Keep youth-facing chess education separate from adult stakes material.
+5. Use `daily.py submit`, `qa`, `render`, then editorial review and `approve`. The queue plans six Telegram and six X slots per UTC day, three hours apart. It remains in review mode. The autopilot fills missing drafts but preserves approved or published entries. Its reply sniper and legacy five-post CMO routine are off by default. `publish` and `publish-x` dispatch **approved, due** items from one trusted runner; GitHub Actions only runs checks. An uncertain send outcome enters `failed` for receipt reconciliation before a retry. Do not make multiple independent runners publish the same file-backed queue.
+6. At 24 hours and seven days, record source URL, channel, observed views/impressions, saves or shares, qualified link visits and attributed first games. Compare same format and observation windows. Stop a series that loses reach and downstream action for three comparable batches. Rework posts with attention but no useful action.
+
+## Cadence and capacity
+
+Six posts per channel per day is a *maximum prepared slate*, not a demand to fill every slot. The dispatcher enforces the cap and reads today's UTC queue; older approved items require deliberate review and rescheduling. If a post lacks a verified fact, legal chess line, original value, finished asset or valid link, leave its slot unapproved. Review performance after four weeks; reduce frequency if qualified visits per post, shares per view or audience retention deteriorate. Existing queues retain their saved schedule and status. A new plan does not rewrite previously approved or published items.
+
+## Market expansion
+
+Start with English guide quality and Search Console query/page/country/device exports. The Spanish and Portuguese entries are discovery hypotheses. Have native editors validate terms, routes, examples and CTAs before localizing a page; use translated canonicals and hreflang only once real localized pages exist. Revisit priority monthly from observed impressions, CTR, rank, game starts and content gaps.
+
+## Operational limits
+
+The daily legacy `cmo-morning-routine` still builds a five-post evergreen slate and contains static topic examples. Use the discovery report for fresh source selection and the six-slot queue for the new cadence. YouTube detection requires an API key; vidIQ analysis requires an authorized export or connected account. Credentials may exist on a local runner, but this change does not validate them or activate an unattended publisher. The app's automatic approval review rejected a new recurring social dispatch automation on 22 October 2026 because recurring external publication was not approved as an exact side effect; do not enable it indirectly.

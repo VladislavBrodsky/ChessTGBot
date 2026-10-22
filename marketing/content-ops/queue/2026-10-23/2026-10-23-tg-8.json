@@ -1,0 +1,65 @@
+{
+  "id": "2026-10-23-tg-8",
+  "kind": "telegram",
+  "date": "2026-10-23",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. Two rooks seal every flight square on the back rank",
+  "cta": "academy_app",
+  "text": "<b>White to move. Two rooks seal every flight square on the back rank</b>\n\nBlack's king on h8 is trapped behind the 7th-rank barrier.\nSpot the 1-move ladder mate.\n\n❤ Ra8#   🔥 Rb8+   👏 Kg2\nAnswer reveals in 6 hours.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "7k/1R6/8/8/8/8/8/R5K1 w - - 0 1",
+    "solution": [
+      "Ra8#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Ladder Mate",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "7k/1R6/8/8/8/8/8/R5K1 w - - 0 1",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Ra8#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Ra8#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "7k/1R6/8/8/8/8/8/R5K1 w - - 0 1",
+      "cta_label": "Solve More in Academy"
+    },
+    "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-tg-8.reveal.png"
+  },
+  "scheduled_at": "2026-10-23T21:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-22T00:00:40Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-tg-8.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  }
+}

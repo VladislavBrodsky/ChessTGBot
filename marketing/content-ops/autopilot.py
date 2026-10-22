@@ -8,7 +8,7 @@ Modes:
   --tick               Run a single check & dispatch tick, then exit.
   --daemon             Run continuously in background, sleeping between ticks.
   --interval-seconds   Seconds between daemon ticks (default: 300 = 5 minutes).
-  --min-spacing        Minimum minutes required between successive X posts (default: 30).
+  --min-spacing        Minimum minutes required between successive X posts (default: 180).
   --live               Enable live dispatch to X and Telegram (default: dry-run).
 """
 from __future__ import annotations
@@ -112,8 +112,14 @@ def _has_valid_image(entry: Dict[str, Any]) -> bool:
     return bool(p.exists() or (queue.ROOT / p).exists() or (queue.HERE / p).exists())
 
 
+def _published_today(kind: str, day: str) -> int:
+    return sum(1 for entry in queue.all_entries(day=day)
+               if entry.get("kind") in ({"x_post", "x_thread"} if kind == "x" else {"telegram"})
+               and entry.get("status") == "published")
+
+
 def ensure_x_queue_replenished(now: datetime, render_images: bool = True, lookahead_days: int = 1) -> int:
-    """Proactively ensures today and tomorrow have approved, pre-rendered X posts buffered."""
+    """Prepare missing X drafts while preserving reviewed or published entries."""
     created_total = 0
     today = now.date()
 
@@ -122,15 +128,14 @@ def ensure_x_queue_replenished(now: datetime, render_images: bool = True, lookah
         target_day_str = target_day.isoformat()
         day_entries = [e for e in queue.all_entries(day=target_day_str) if e.get("kind") in ("x_post", "x_thread")]
 
-        # If day has no entries, auto-generate complete batch
-        if not day_entries:
+        if len([e for e in day_entries if e.get("id", "").rsplit("-", 1)[-1].isdigit()]) < len(queue.CONFIG["x"]["slots_utc"]) or any(e.get("status") == "planned" for e in day_entries):
             try:
                 logger.info(f"Proactive Buffer: Auto-generating X batch for {target_day_str}...")
                 orchestrator = ContentEngineOrchestrator(plan_date=target_day)
                 batch = orchestrator.generate_x_daily_batch(target_date=target_day, render_images=render_images)
                 created = int(batch.get("posts_created", 0))
                 created_total += created
-                logger.info(f"Buffered {created} approved X posts for {target_day_str}.")
+                logger.info(f"Prepared {created} X queue slots for {target_day_str}.")
             except Exception as e:
                 logger.error(f"Failed buffering X batch for {target_day_str}: {e}", exc_info=True)
 
@@ -150,7 +155,7 @@ def ensure_x_queue_replenished(now: datetime, render_images: bool = True, lookah
 
 
 def ensure_tg_queue_replenished(now: datetime, render_images: bool = True, lookahead_days: int = 1) -> int:
-    """Proactively ensures today and tomorrow have approved, pre-rendered Telegram posts buffered."""
+    """Prepare missing Telegram drafts while preserving reviewed or published entries."""
     created_total = 0
     today = now.date()
 
@@ -159,15 +164,14 @@ def ensure_tg_queue_replenished(now: datetime, render_images: bool = True, looka
         target_day_str = target_day.isoformat()
         day_entries = [e for e in queue.all_entries(day=target_day_str) if e.get("kind") == "telegram"]
 
-        # If day has no entries, auto-generate complete batch
-        if not day_entries:
+        if len([e for e in day_entries if e.get("id", "").rsplit("-", 1)[-1].isdigit()]) < len(queue.CONFIG["telegram"]["slots_utc"]) or any(e.get("status") == "planned" for e in day_entries):
             try:
                 logger.info(f"Proactive Buffer: Auto-generating Telegram batch for {target_day_str}...")
                 orchestrator = ContentEngineOrchestrator(plan_date=target_day)
                 batch = orchestrator.generate_telegram_daily_batch(target_date=target_day, render_images=render_images)
                 created = int(batch.get("posts_created", 0))
                 created_total += created
-                logger.info(f"Buffered {created} approved Telegram posts for {target_day_str}.")
+                logger.info(f"Prepared {created} Telegram queue slots for {target_day_str}.")
             except Exception as e:
                 logger.error(f"Failed buffering Telegram batch for {target_day_str}: {e}", exc_info=True)
 
@@ -188,12 +192,12 @@ def ensure_tg_queue_replenished(now: datetime, render_images: bool = True, looka
 
 def run_tick(
     dry_run: bool = True,
-    min_spacing_minutes: int = 30,
+    min_spacing_minutes: int = 180,
     min_tg_spacing_minutes: int = 180,
     force_next: bool = False,
     force_next_tg: bool = False,
     auto_replenish: Optional[bool] = None,
-    enable_sniper: bool = True,
+    enable_sniper: bool = False,
     min_sniper_spacing_minutes: int = 120,
     force_sniper: bool = False,
     audit_analytics: bool = False,
@@ -204,6 +208,8 @@ def run_tick(
     """Executes a single check-and-dispatch pass across all content channels."""
     now = queue.utcnow()
     now_iso = queue.iso(now)
+    today_utc = now.date().isoformat()
+    earliest_due = queue.iso(now - timedelta(hours=3))
     should_replenish = (not dry_run) if auto_replenish is None else auto_replenish
     state = load_state()
     state["ticks"] = state.get("ticks", 0) + 1
@@ -226,11 +232,12 @@ def run_tick(
     }
 
     # 1. Stage any approved blog articles to website
-    try:
-        staged = site_publisher.stage_approved()
-        results["articles_staged"] = len(staged)
-    except Exception as e:
-        logger.warning(f"Blog staging error: {e}")
+    if not dry_run:
+        try:
+            staged = site_publisher.stage_approved()
+            results["articles_staged"] = len(staged)
+        except Exception as e:
+            logger.warning(f"Blog staging error: {e}")
 
     # 2. Check X publication queue (and auto-replenish if empty)
     if should_replenish:
@@ -240,7 +247,7 @@ def run_tick(
             logger.error(f"X queue auto-replenish error: {e}", exc_info=True)
 
     last_x = get_last_published_x_time()
-    can_post_x = True
+    can_post_x = _published_today("x", today_utc) < len(queue.CONFIG["x"]["slots_utc"])
     if last_x:
         spacing_elapsed = (now - last_x).total_seconds() / 60.0
         if not force_next and spacing_elapsed < min_spacing_minutes:
@@ -254,8 +261,12 @@ def run_tick(
 
     due_x_entries = []
     for entry in queue.all_entries():
-        if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") == "approved":
+        if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") == "approved" and (entry.get("qa") or {}).get("passed"):
+            if entry.get("date") != today_utc:
+                continue
             sched = entry.get("scheduled_at")
+            if not sched or sched < earliest_due:
+                continue
             if sched and sched > now_iso and not force_next:
                 continue
             if entry.get("kind") == "x_post" and entry.get("creative"):
@@ -295,7 +306,7 @@ def run_tick(
                 logger.error(f"Telegram queue auto-replenish error: {e}", exc_info=True)
 
         last_tg = get_last_published_tg_time()
-        can_post_tg = True
+        can_post_tg = _published_today("telegram", today_utc) < len(queue.CONFIG["telegram"]["slots_utc"])
         if last_tg:
             spacing_elapsed_tg = (now - last_tg).total_seconds() / 60.0
             if not force_next_tg and spacing_elapsed_tg < min_tg_spacing_minutes:
@@ -307,8 +318,12 @@ def run_tick(
 
         due_tg_entries = []
         for entry in queue.all_entries():
-            if entry.get("kind") == "telegram" and entry.get("status") == "approved":
+            if entry.get("kind") == "telegram" and entry.get("status") == "approved" and (entry.get("qa") or {}).get("passed"):
+                if entry.get("date") != today_utc:
+                    continue
                 sched = entry.get("scheduled_at")
+                if not sched or sched < earliest_due:
+                    continue
                 if sched and sched > now_iso and not force_next_tg:
                     continue
                 if entry.get("creative") and not _has_valid_image(entry):
@@ -393,7 +408,7 @@ def run_tick(
     today_local = local_now.date().isoformat()
     last_cmo_date = state.get("last_cmo_routine_date")
 
-    cmo_active = (not dry_run) if enable_cmo_routine is None else enable_cmo_routine
+    cmo_active = False if enable_cmo_routine is None else enable_cmo_routine
     should_run_cmo = run_cmo_routine or (cmo_active and local_now.hour >= 6 and last_cmo_date != today_local)
     if should_run_cmo:
         try:
@@ -428,11 +443,11 @@ def run_tick(
 
 def daemon_loop(
     interval_seconds: int = 60,
-    min_spacing_minutes: int = 30,
+    min_spacing_minutes: int = 180,
     min_tg_spacing_minutes: int = 180,
     min_sniper_spacing_minutes: int = 120,
     min_audit_spacing_minutes: int = 180,
-    enable_sniper: bool = True,
+    enable_sniper: bool = False,
     enable_cmo_routine: Optional[bool] = None,
     dry_run: bool = True,
 ) -> None:
@@ -487,14 +502,14 @@ def main():
     parser.add_argument("--tick", action="store_true", help="Run a single evaluation pass and exit")
     parser.add_argument("--daemon", action="store_true", help="Run continuously in background")
     parser.add_argument("--interval-seconds", type=int, default=60, help="Daemon sleep interval (default: 60s)")
-    parser.add_argument("--min-spacing", type=int, default=30, help="Min minutes between X posts (default: 30)")
+    parser.add_argument("--min-spacing", type=int, default=180, help="Min minutes between X posts (default: 180)")
     parser.add_argument("--min-tg-spacing", type=int, default=180, help="Min minutes between Telegram posts (default: 180)")
     parser.add_argument("--min-sniper-spacing", type=int, default=120, help="Min minutes between reply snipes (default: 120)")
     parser.add_argument("--min-audit-spacing", type=int, default=180, help="Min minutes between analytics audits (default: 180)")
     parser.add_argument("--force-next", action="store_true", help="Bypass spacing cooldown to dispatch next due X item")
     parser.add_argument("--force-next-tg", action="store_true", help="Bypass spacing cooldown to dispatch next due Telegram item")
     parser.add_argument("--snipe-now", action="store_true", help="Force an immediate Reply Sniper check and dispatch")
-    parser.add_argument("--no-sniper", action="store_true", help="Disable the Reply Sniper")
+    parser.add_argument("--sniper", action="store_true", help="Explicitly enable replies to third-party X posts")
     parser.add_argument("--audit", action="store_true", help="Run an immediate CMO analytics audit")
     parser.add_argument("--cmo-routine", action="store_true", help="Execute the CMO 6:00 AM morning routine")
     parser.add_argument("--live", dest="dry_run", action="store_false", default=True, help="Live mode (post to real APIs)")
@@ -508,7 +523,7 @@ def main():
             min_tg_spacing_minutes=args.min_tg_spacing,
             min_sniper_spacing_minutes=args.min_sniper_spacing,
             min_audit_spacing_minutes=args.min_audit_spacing,
-            enable_sniper=not args.no_sniper,
+            enable_sniper=args.sniper,
             dry_run=args.dry_run,
         )
     else:
@@ -520,7 +535,7 @@ def main():
             min_audit_spacing_minutes=args.min_audit_spacing,
             force_next=args.force_next,
             force_next_tg=args.force_next_tg,
-            enable_sniper=not args.no_sniper,
+            enable_sniper=args.sniper,
             force_sniper=args.snipe_now,
             audit_analytics=args.audit,
             run_cmo_routine=args.cmo_routine,

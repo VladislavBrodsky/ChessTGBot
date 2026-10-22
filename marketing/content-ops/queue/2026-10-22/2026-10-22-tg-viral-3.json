@@ -1,0 +1,85 @@
+{
+  "id": "2026-10-22-tg-viral-3",
+  "kind": "telegram",
+  "date": "2026-10-22",
+  "category": "Chess Culture",
+  "format": "news",
+  "hook": "You premoved a recapture. Your opponent found an in-between check",
+  "cta": "play",
+  "text": "<b>You premoved a recapture. Your opponent found an in-between check</b>\n\nThe zwischenzug changes the move order. Before recapturing in a time scramble, scan every forcing check and direct threat.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Blitz Culture",
+    "headline": "SPEED SCRAMBLE\n*PREMOVE TILT*",
+    "subhead": "Under 5 seconds, calculation collapses into survival",
+    "cta_label": "Challenge a Friend",
+    "panels": [
+      {
+        "label": "Mistake",
+        "text": "Premove Recapture",
+        "piece": "K"
+      },
+      {
+        "label": "Counter",
+        "text": "In-Between Check",
+        "piece": "Q"
+      }
+    ],
+    "studio": {
+      "version": 1,
+      "name": "2026-10-22-tg-viral-3",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Blitz Culture",
+      "title": "SPEED SCRAMBLE PREMOVE TILT",
+      "subtitle": "Under 5 seconds, calculation collapses into survival",
+      "proofs": [
+        "Mistake: Premove Recapture",
+        "Counter: In-Between Check",
+        "Check the clock"
+      ],
+      "proofIcons": [
+        "clock",
+        "strategy",
+        "users-three"
+      ],
+      "cta": "Challenge a Friend",
+      "urlLabel": "t.me",
+      "note": "Web3Chess editorial",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "clock",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-22T13:30:00Z",
+  "slot": 3,
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-22T18:42:05Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-22/2026-10-22-tg-viral-3.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

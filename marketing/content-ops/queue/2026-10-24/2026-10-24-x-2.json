@@ -1,0 +1,87 @@
+{
+  "id": "2026-10-24-x-2",
+  "kind": "x_post",
+  "date": "2026-10-24",
+  "category": "Psychology",
+  "hook": "Save clock time early so the sharp position gets your attention",
+  "text": "Save clock time early so the sharp position gets your attention\n\nA long think in a familiar opening leaves less time for the first new position.\n\nMove by principle early, then spend time where the board changes.\n\n#Chess #MentalStamina #CognitivePerformance",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Neuro Performance",
+    "headline": "THE 6-SECOND TILT\n*ADRENALINE OVERLOAD*",
+    "subhead": "Why tunnel vision breaks calculation",
+    "cta_label": "Test Instincts",
+    "panels": [
+      {
+        "label": "State 1",
+        "text": "Calculation collapses",
+        "piece": "N"
+      },
+      {
+        "label": "State 2",
+        "text": "Subconscious instinct takes over",
+        "piece": "R"
+      }
+    ],
+    "studio": {
+      "version": 1,
+      "name": "2026-10-24-x-2",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Neuro Performance",
+      "title": "THE 6-SECOND TILT ADRENALINE OVERLOAD",
+      "subtitle": "Why tunnel vision breaks calculation",
+      "proofs": [
+        "State 1: Calculation collapses",
+        "State 2: Subconscious instinct takes over",
+        "Read the position"
+      ],
+      "proofIcons": [
+        "clock",
+        "strategy",
+        "target"
+      ],
+      "cta": "Test Instincts",
+      "urlLabel": "t.me",
+      "note": "Web3Chess editorial",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "clock",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Time on the digital clock is a physical piece on the board.\n\nPlay a 3+0 game inside Telegram:\nhttps://t.me/chess_matbot/Web3Chess",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-24T09:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-22T22:19:50Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-2.png"
+}

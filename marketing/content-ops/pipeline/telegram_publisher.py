@@ -1,6 +1,6 @@
 """Publish queued posts to the Telegram channel through the Bot API. Dry run unless credentials are set."""
 from __future__ import annotations
-import json, os, time, uuid
+import html, json, os, time, uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -67,8 +67,8 @@ def _call(token: str, method: str, fields: dict, file: tuple[str, Path] | None =
                 time.sleep(min(60, int(payload.get("parameters", {}).get("retry_after", 5)))); continue
             raise RuntimeError(f"Telegram {method} failed: {exc.code} {payload.get('description', '')}") from None
         except URLError as exc:
-            if attempt == 2: raise RuntimeError(f"Telegram unreachable: {exc.reason}") from None
-            time.sleep(2 ** attempt)
+            # A timeout after acceptance is ambiguous; retrying can duplicate a broadcast.
+            raise RuntimeError(f"Telegram {method} outcome unknown: {type(exc.reason).__name__}") from None
     raise RuntimeError("unreachable")
 
 def _deliver(token: str, channel: str, text: str, image: Path | None, markup: dict, reply_to: int | None = None) -> int:
@@ -111,13 +111,26 @@ def publish(post: dict, dry_run: bool | None = None) -> dict:
 
 def publish_post_by_id(post_id: str, dry_run: bool | None = None) -> dict:
     post = queue.load(post_id)
+    if post.get("status") != "approved":
+        raise ValueError("Only approved Telegram posts may be dispatched")
+    if not (post.get("qa") or {}).get("passed"):
+        raise ValueError("Telegram post lacks a passing QA record")
+    now = queue.utcnow()
+    scheduled = post.get("scheduled_at", "")
+    if post.get("date") != now.date().isoformat() or not scheduled or not queue.iso(now - timedelta(hours=3)) <= scheduled <= queue.iso(now):
+        raise ValueError("Telegram post is outside today's due window")
+    if len(queue.all_entries("telegram", "published", day=post["date"])) >= len(queue.CONFIG["telegram"]["slots_utc"]):
+        raise ValueError("Telegram daily post cap reached")
+    last_sent = max(((e.get("published") or {}).get("at", "") for e in queue.all_entries("telegram", "published")), default="")
+    if last_sent and last_sent > queue.iso(now - timedelta(hours=3)):
+        raise ValueError("Telegram three-hour spacing is active")
     token, channel = _credentials()
     live = bool(token and channel) and dry_run is not True
     if live: queue.set_status(post, "publishing")
     try:
         outcome = publish(post, dry_run)
     except Exception as exc:
-        if live: queue.set_status(post, "approved", last_error=str(exc)[:200])
+        if live: queue.set_status(post, "failed", last_error=str(exc)[:200])
         raise
     if not outcome.get("dry_run"):
         queue.set_status(post, "published", published={"message_id": outcome["message_id"], "at": queue.iso(queue.utcnow())})
@@ -161,7 +174,8 @@ def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:
         try:
             message_id = _deliver(token, channel, reveal["text"], image, {"inline_keyboard": []}, reply_to=post["published"]["message_id"])
         except Exception as exc:
-            reveal.pop("sent"); queue.save(post)
+            reveal["sent"]["error"] = str(exc)[:200]
+            queue.save(post)
             report.append({"id": post["id"], "error": str(exc)[:200]}); continue
         reveal["sent"]["message_id"] = message_id; queue.save(post)
         try:
@@ -172,11 +186,21 @@ def publish_reveals(now=None, dry_run: bool | None = None) -> list[dict]:
         report.append({"id": post["id"], "revealed": message_id})
     return report
 
-def publish_due(now=None, dry_run: bool | None = None, limit: int = 5, day: str | None = None) -> list[dict]:
+def publish_due(now=None, dry_run: bool | None = None, limit: int = 1, day: str | None = None) -> list[dict]:
     now = now or queue.utcnow()
+    day = day or now.date().isoformat()
+    already_published = len(queue.all_entries("telegram", "published", day=day))
+    limit = min(limit, max(0, len(queue.CONFIG["telegram"]["slots_utc"]) - already_published))
+    last_sent = max(((e.get("published") or {}).get("at", "") for e in queue.all_entries("telegram", "published")), default="")
+    if last_sent and last_sent > queue.iso(now - timedelta(hours=3)):
+        return []
     report = []
     for post in queue.all_entries("telegram", "approved", day=day):
+        if not (post.get("qa") or {}).get("passed"):
+            continue
         sched = post.get("scheduled_at")
+        if not sched or sched < queue.iso(now - timedelta(hours=3)):
+            continue
         if sched and sched > queue.iso(now):
             continue
         if not sched and post.get("date") and post["date"] > queue.iso(now)[:10]:
@@ -187,8 +211,8 @@ def publish_due(now=None, dry_run: bool | None = None, limit: int = 5, day: str 
         if live: queue.set_status(post, "publishing")  # at-most-once: a crash mid-send must not double-post
         try:
             outcome = publish(post, dry_run)
-        except Exception as exc:  # confirmed failure: release it so the next run retries
-            if live: queue.set_status(post, "approved", last_error=str(exc)[:200])
+        except Exception as exc:  # outcome may be ambiguous after a network timeout; require manual reconciliation
+            if live: queue.set_status(post, "failed", last_error=str(exc)[:200])
             report.append({"id": post["id"], "error": str(exc)[:200]}); continue
         if not outcome["dry_run"]:
             queue.set_status(post, "published", published={"message_id": outcome["message_id"], "at": queue.iso(queue.utcnow())})
@@ -211,7 +235,7 @@ def notify_x_post_in_channel(
     """Sends a curated, beautifully styled community debate spotlight to Telegram channel."""
     token, channel = _credentials()
     live = bool(token and channel) and dry_run is not True
-    clean_hook = hook.strip()
+    clean_hook = html.escape(hook.strip())
     if clean_hook.endswith("."):
         clean_hook = clean_hook[:-1]
 

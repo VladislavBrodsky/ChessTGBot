@@ -1,0 +1,46 @@
+{
+  "id": "2026-10-21-tg-viral-5",
+  "kind": "telegram",
+  "date": "2026-10-21",
+  "category": "Chess Culture",
+  "format": "product",
+  "hook": "Challenge a Friend: Settle your chess debates in 3-minute blitz (Oct 21)",
+  "cta": "duel_friend",
+  "text": "<b>Challenge a Friend: Settle your chess debates in 3-minute blitz (Oct 21)</b>\n\nTap-to-earn was an illusion. Real PvP is for minds.\n\nSend one link into your Telegram group or DM:\n• Instant 3-minute blitz pairing\n• Sub-50ms synchronized WebSocket clocks\n• Zero download required inside Telegram",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "art": "clock",
+    "tag": "1-Tap Friend Match",
+    "headline": "CHALLENGE A FRIEND\n*3-MINUTE SPEED BLITZ*",
+    "subhead": "Sub-100ms sync · Monotonic clocks",
+    "cta_label": "Challenge a Friend",
+    "steps": [
+      "Send invite in 1 tap",
+      "Friend opens in Telegram",
+      "Match starts with zero delay"
+    ],
+    "footer": "Play directly in Telegram · No app download required"
+  },
+  "slot": 5,
+  "scheduled_at": "2026-10-21T20:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-21T12:09:49Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-viral-5.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

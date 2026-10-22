@@ -31,6 +31,13 @@ OUTPUT_CONTRACT = {
         "chess": "{fen, solution:[SAN], claim:'mate_in_1'|'mate_in_2'|null} when a position is shown",
         "sources": "[{kind:'competitor'|'primary'|'own', url, excerpt?}] — keep competitor excerpts short; they feed the originality gate",
     },
+    "x_post": {
+        "hook": "first sentence, original and specific",
+        "text": "one native X post of at most 280 characters; no unsupported news or metrics",
+        "docked_reply": "optional separate approved destination and complete puzzle solution",
+        "creative": "square image spec; legal FEN and solution when showing a position",
+        "sources": "primary URLs for factual claims; competitor posts are inspiration only",
+    },
     "article": {
         "slug": "kebab-case, unique", "title": "<=100 chars", "subtitle": "", "excerpt": "", "metaDescription": "<=160 chars",
         "category": f"one of {brand.CATEGORIES}", "readingTime": "e.g. '5 min read'", "author": "{name, role, avatar, kind:'Organization'}",
@@ -39,23 +46,32 @@ OUTPUT_CONTRACT = {
     },
 }
 
-def brief_for(entry: dict, patterns: list[dict] | None = None, ideas: list[dict] | None = None) -> dict:
+def brief_for(entry: dict, patterns: list[dict] | None = None, ideas: list[dict] | None = None, research: dict | None = None) -> dict:
     """Assemble everything a writer needs for one planned slot."""
     pool = [i for i in (ideas or idea_bank.all_ideas())]
     themed = [i for i in pool if (entry["category"] in {"Tactics", "Openings", "Academy"})]
     idea = None
     if entry["category"] == "Tactics": idea = next((i for i in themed if i["kind"] == "puzzle"), None)
     if entry["category"] == "Openings": idea = next((i for i in themed if i["kind"] == "trap"), None)
-    return {
+    brief = {
         "slot": {k: entry[k] for k in ("id", "kind", "date", "slot", "category", "scheduled_at")},
         "tov": brand.TOV,
         "idea": idea,
         "competitor_patterns": patterns if patterns is not None else load_patterns(entry["category"]),
-        "creative_default": queue.CONFIG.get("telegram", {}).get("creative_defaults", {}).get(entry["category"]) if entry["kind"] == "telegram" else {"template": queue.CONFIG.get("site", {}).get("cover_template", "cover")},
+        "creative_default": queue.CONFIG.get("telegram" if entry["kind"] == "telegram" else "x", {}).get("creative_defaults", {}).get(entry["category"]) if entry["kind"] in {"telegram", "x_post"} else {"template": queue.CONFIG.get("site", {}).get("cover_template", "cover")},
         "ctas": {k: {"label": v[0], "url": v[1], "wager": v[2]} for k, v in brand.CTAS.items()},
         "wager_disclosure": brand.WAGER_DISCLOSURE,
-        "output": OUTPUT_CONTRACT["telegram" if entry["kind"] == "telegram" else "article"],
+        "output": OUTPUT_CONTRACT[entry["kind"]],
     }
+    if research:
+        # Discovery is a lead list, not authorization to publish a claim.
+        brief["research"] = {"captured_at": research.get("captured_at"),
+                             "news_candidates": [{k: item.get(k) for k in ("title", "url", "published_at", "source")}
+                                                 for item in research.get("news", [])[:5]],
+                             "youtube_candidates": [{k: item.get(k) for k in ("title", "url", "published_at", "signal", "velocity_lift")}
+                                                   for item in research.get("youtube", [])[:5]],
+                             "verification_required": True}
+    return brief
 
 def api_write(brief: dict) -> dict:
     """Draft through the Anthropic Messages API. Needs ANTHROPIC_API_KEY; model via W3_WRITER_MODEL."""

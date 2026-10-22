@@ -5,7 +5,7 @@
   "category": "Chess Debate",
   "hook": "Endgame technique beats opening memory under a 3-minute clock",
   "text": "Endgame technique beats opening memory under a 3-minute clock\n\nClub players spend 90% of study time memorizing 15 moves of theory.\n\nThen move 16 arrives and rook endgames decide everything.\n\n#Chess #SpeedChess #ChessCommunity",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -43,10 +43,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-19T16:08:43Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-20/2026-10-20-x-2.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-20T08:10:57Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2112456519195202042",
+    "reply_id": "2112456521384595597",
+    "root_url": "https://x.com/defi_ambassador/status/2112456519195202042"
+  },
+  "published": {
+    "root_id": "2112456519195202042",
+    "root_url": "https://x.com/defi_ambassador/status/2112456519195202042",
+    "at": "2026-10-20T08:10:57Z"
+  },
+  "media_cleaned": true
 }

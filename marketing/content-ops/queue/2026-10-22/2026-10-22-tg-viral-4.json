@@ -1,0 +1,79 @@
+{
+  "id": "2026-10-22-tg-viral-4",
+  "kind": "telegram",
+  "date": "2026-10-22",
+  "category": "Match Rules",
+  "format": "rules",
+  "hook": "Before a USDT match, check these three numbers",
+  "cta": "rules",
+  "text": "<b>Before a USDT match, check these three numbers</b>\n\nChoose the stake, confirm the displayed payout, and check the time control before matching. A 5 USDT selection is only an example; the selector shows the available options.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/wagers"
+    }
+  ],
+  "creative": {
+    "template": "rules",
+    "size": "square",
+    "tag": "Match setup",
+    "headline": "CHECK THE MATCH\n*BEFORE YOU JOIN*",
+    "subhead": "Stake · displayed payout · time control",
+    "cta_label": "Read Match Rules",
+    "steps": [
+      "Choose the stake",
+      "Confirm the displayed payout",
+      "Check the time control"
+    ],
+    "footer": "USDT matches · 18+ where permitted · You can lose your stake",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-22-tg-viral-4",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Match setup",
+      "title": "CHECK THE MATCH BEFORE YOU JOIN",
+      "subtitle": "Stake · displayed payout · time control",
+      "proofs": [
+        "Choose the stake",
+        "Confirm the displayed payout",
+        "Check the time control"
+      ],
+      "proofIcons": [
+        "coins",
+        "clock",
+        "shield-check"
+      ],
+      "cta": "Read Match Rules",
+      "urlLabel": "web3chess.online",
+      "note": "USDT matches · 18+ where permitted · You can lose your stake",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "stakes",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-22T17:30:00Z",
+  "slot": 4,
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-22T18:42:05Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-22/2026-10-22-tg-viral-4.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

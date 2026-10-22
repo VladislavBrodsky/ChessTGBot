@@ -106,7 +106,7 @@ try{
   if(failures.length)throw Error(`Layout matrix: ${JSON.stringify(failures)}`);
   qa.regressions=await page.evaluate(()=>{
     const c=W3Campaigns[0],base=W3Renderer.scene(c,'story');
-    const longBadge=W3Renderer.scene(c,'story',{tag:'A much longer campaign label here'});
+    const longBadge=W3Renderer.scene(c,'story',{tag:'A deliberately overlong campaign label that cannot share the brand row'});
     const moved=role=>{const s=structuredClone(base);const item=s.shapes.find(i=>i.role===role);item.x=0;return W3Renderer.validate(s).some(w=>w.includes('safe area'));};
     const collision=structuredClone(base);collision.blocks.find(b=>b.role==='body').y=collision.blocks.find(b=>b.role==='headline').y;
     const overflow=field=>W3Renderer.scene(c,'story',{[field]:('LONG COPY THAT CANNOT FIT. ').repeat(20)}).warnings.length>0;

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -69,17 +70,37 @@ class PublisherAgent:
         day: Optional[str] = None,
         post_id: Optional[str] = None,
         dry_run: bool = True,
-        due_only: bool = False,
+        due_only: bool = True,
         limit: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Dispatches or dry-run previews approved X (Twitter) posts and threads."""
         entries = []
         now_iso = queue.iso(queue.utcnow())
+        earliest_due = queue.iso(queue.utcnow() - timedelta(hours=3))
+        day = day or now_iso[:10]
+        published_today = sum(1 for entry in queue.all_entries(day=day)
+                              if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") == "published")
+        remaining = max(0, len(queue.CONFIG["x"]["slots_utc"]) - published_today)
+        if remaining == 0:
+            return {"dry_run": dry_run, "count": 0, "entries": [], "reason": "daily cap reached"}
+        last_sent = max(((entry.get("published") or {}).get("at", "") for entry in queue.all_entries()
+                         if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") == "published"), default="")
+        if last_sent and last_sent > earliest_due:
+            return {"dry_run": dry_run, "count": 0, "entries": [], "reason": "three-hour spacing active"}
+        limit = min(limit or 1, remaining)
         for entry in queue.all_entries(day=day):
             if entry.get("kind") not in ("x_post", "x_thread"):
                 continue
+            if not (entry.get("qa") or {}).get("passed"):
+                continue
+            if not entry.get("scheduled_at") or entry["scheduled_at"] < earliest_due:
+                continue
             if post_id:
                 if entry.get("id") != post_id:
+                    continue
+                if entry.get("status") != "approved":
+                    continue
+                if due_only and entry.get("scheduled_at") and entry["scheduled_at"] > now_iso:
                     continue
             else:
                 if entry.get("status") != "approved":
@@ -163,10 +184,15 @@ class PublisherAgent:
                                 item["tg_cross_post"] = tg_res
                             except Exception as tg_err:
                                 logger.warning(f"Failed to cross-post X post to Telegram: {tg_err}")
+                    except x_publisher.DockedReplyError as err:
+                        item["status"] = "partially_published"
+                        item["root_id"] = err.root_id
+                        item["error"] = str(err)
+                        queue.set_status(e, "failed", published_root_id=err.root_id, last_error=str(err)[:200])
                     except Exception as err:
                         item["status"] = "failed"
                         item["error"] = str(err)
-                        queue.set_status(e, "approved", last_error=str(err)[:200])
+                        queue.set_status(e, "failed", last_error=str(err)[:200])
             else:
                 item = {
                     "id": eid,
@@ -232,11 +258,11 @@ class PublisherAgent:
                         item["status"] = "partially_published"
                         item["error"] = str(t_err)
                         e["published_tweet_ids"] = t_err.published_ids
-                        queue.set_status(e, "approved", published_tweet_ids=t_err.published_ids, last_error=str(t_err)[:200])
+                        queue.set_status(e, "failed", published_tweet_ids=t_err.published_ids, last_error=str(t_err)[:200])
                     except Exception as err:
                         item["status"] = "failed"
                         item["error"] = str(err)
-                        queue.set_status(e, "approved", last_error=str(err)[:200])
+                        queue.set_status(e, "failed", last_error=str(err)[:200])
 
             dispatched.append(item)
 

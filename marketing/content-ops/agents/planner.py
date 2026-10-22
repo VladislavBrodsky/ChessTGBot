@@ -49,7 +49,7 @@ SLOT_SCHEDULE = [
         "slot": 5,
         "utc_time": "20:30",
         "pillar": "Product",
-        "objective": "Peak FOMO Arena Alert: Synchronized daily tournament drop ($500 Vault), countdown timer.",
+        "objective": "Match Setup: Explain the stake, displayed payout, time control, and adult-risk disclosure.",
         "template": "product",
         "format": "product",
     },

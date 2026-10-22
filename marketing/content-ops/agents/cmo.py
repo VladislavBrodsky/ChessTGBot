@@ -16,18 +16,19 @@ from pipeline import brand, queue
 @dataclass
 class StrategicDirective:
     quarter: str = "Q4 2026"
-    positioning: str = "The definitive cerebral speed chess arena inside Telegram. Anti-brainrot, skill-based, high-stakes."
+    positioning: str = "Make useful speed-chess practice and transparent adult competitive matches easy to discover inside Telegram."
     primary_domain: str = "web3chess.online"
     bot_app: str = "https://t.me/chess_matbot/Web3Chess"
     target_kpis: Dict[str, Any] = field(default_factory=lambda: {
-        "telegram_ctr": ">= 8.5%",
-        "viral_forward_rate": ">= 4.0%",
-        "first_game_conversion": ">= 18.0%",
-        "daily_active_streakers": ">= 25.0%",
+        "telegram_ctr": "measure a complete-window baseline, then improve it",
+        "viral_forward_rate": "measure forwards per reached user before setting a target",
+        "first_game_conversion": "track handoff, authenticated arrival, and first game as separate stages",
+        "returning_player_rate": "measure comparable 7-day cohorts before setting a target",
+        "creative_render_success": "100% before review",
         "wager_rules_completion": "100% compliant",
-        "x_bookmark_rate": ">= 2.5%",
-        "x_reply_rate": ">= 1.5%",
-        "x_profile_click_rate": ">= 2.0%",
+        "x_bookmark_rate": "measure a complete-window baseline, then improve it",
+        "x_reply_rate": "measure qualified replies, not raw engagement alone",
+        "x_profile_click_rate": "measure profile visits and downstream handoffs separately",
         "x_docked_link_compliance": "100%",
     })
     viral_hooks: List[Dict[str, str]] = field(default_factory=lambda: [
@@ -38,22 +39,22 @@ class StrategicDirective:
         },
         {
             "id": "VH2_FOMO_TIME_DROP",
-            "formula": "Synchronized Arena Drop: '08:00 UTC Arena starts in 15 mins. $500 Vault. Once the clock starts, registration locks.'",
+            "formula": "Match Setup: 'Before you enter matching, check the stake, displayed payout, and time control.'",
             "pillar": "Product"
         },
         {
             "id": "VH3_SPECTATOR_DRAMA",
-            "formula": "High-Stakes Blunder Breakdown: '1,200 USDT on the board. 4 seconds left. One tragic mouse-slip.'",
+            "formula": "Clock Drama: 'Four seconds left. The natural recapture loses to one in-between check.'",
             "pillar": "Chess Culture"
         },
         {
             "id": "VH4_ANTI_BRAINROT",
-            "formula": "Intellectual Mastery: 'Tap-to-earn was for bots. Real PvP is for minds. Play a grandmaster line.'",
+            "formula": "Free Coach Challenge: 'One position. One decisive move. One explanation you can reuse.'",
             "pillar": "Academy"
         },
         {
             "id": "VH5_STREAK_LOSS_AVERSION",
-            "formula": "Loss Aversion: 'Your 7-day Tactician streak expires at midnight UTC. Protect your status.'",
+            "formula": "Progress Hook: 'One reviewed pattern today makes tomorrow's calculation faster.'",
             "pillar": "Product"
         },
         {
@@ -63,7 +64,7 @@ class StrategicDirective:
         },
         {
             "id": "VH7_X_TECH_MANIFESTO",
-            "formula": "Sub-100ms Tech Architecture: 'Why tap-to-earn died and how real-time WebSockets powered skill gaming.'",
+            "formula": "Product Architecture: 'Why the server, not the browser, owns the match state.'",
             "pillar": "Product"
         }
     ])
@@ -89,10 +90,10 @@ class CmoAgent:
                 "Hook Punctuation Law: NEVER end hooks or headlines with a period ('.'); keep them open, punchy, or end with '?' to preserve curiosity momentum.",
                 "Anti-brainrot high-status framing: Chess players are cerebral tacticians.",
                 "1-Tap frictionless CTA: Direct deep link to Telegram Mini App or Blog on web3chess.online.",
-                "Zero deceptive hype: Authentic FOMO comes from real arena clocks, tournament cutoffs, and streak limits.",
+                "Zero deceptive hype: urgency may describe only a verified, current deadline or availability window.",
                 "Compliance non-negotiable: 18+ wager disclosures whenever stakes are mentioned.",
-                "X Docked Link Law: Zero outbound links in root tweets; links belong in Reply #1 or final thread CTA to preserve 2x algorithmic reach.",
-                "X Format Hygiene: Max 1 hashtag, max 2 emojis, clean double-spacing between thoughts.",
+                "X Docked Link Law: keep outbound links in Reply #1 or the final thread CTA so the root post stays readable.",
+                "X Format Hygiene: 0-3 relevant hashtags, max 2 emojis, clean double-spacing between thoughts.",
             ],
         }
 

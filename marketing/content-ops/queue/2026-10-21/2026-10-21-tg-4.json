@@ -1,0 +1,44 @@
+{
+  "id": "2026-10-21-tg-4",
+  "kind": "telegram",
+  "date": "2026-10-21",
+  "category": "Academy",
+  "format": "news",
+  "hook": "An active knight in the center out-evaluates a passive rook on the rim",
+  "cta": "academy",
+  "text": "<b>An active knight in the center out-evaluates a passive rook on the rim</b>\n\nMaterial count is deceptive in 3-minute blitz. Piece mobility wins games.\n\nKeep pieces pointing at the enemy king and control open outposts.\n\nSharpen your piece activity in our free Academy.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "creative": {
+    "template": "tip",
+    "size": "square",
+    "tag": "Pro Tip: Piece Activity",
+    "headline": "PIECE ACTIVITY\n*MASTER PATTERN*",
+    "subhead": "Three candidate moves before any capture",
+    "cta_label": "Open Academy",
+    "steps": [
+      "Scan every check first",
+      "List all direct captures",
+      "Calculate forcing threats"
+    ],
+    "footer": "Free structured lessons inside Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-21T09:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-20T00:00:45Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-4.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

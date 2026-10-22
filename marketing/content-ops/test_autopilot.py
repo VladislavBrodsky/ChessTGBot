@@ -66,9 +66,9 @@ class TestAutopilot(unittest.TestCase):
                 # If other approved posts exist in real queue, created may be 0; test direct orchestrator batch too
                 orch = autopilot.ContentEngineOrchestrator(plan_date=date(2099, 2, 1))
                 batch = orch.generate_x_daily_batch(target_date=date(2099, 2, 1), render_images=False)
-                self.assertEqual(batch["posts_created"], 3)
+                self.assertEqual(batch["posts_created"], 6)
                 hooks = [queue.load(p["id"])["hook"] for p in batch["posts"]]
-                self.assertEqual(len(set(hooks)), 3)
+                self.assertEqual(len(set(hooks)), 6)
         finally:
             if test_dir.exists():
                 shutil.rmtree(test_dir, ignore_errors=True)

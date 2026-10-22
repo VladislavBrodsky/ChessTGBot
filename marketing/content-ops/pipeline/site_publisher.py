@@ -5,12 +5,53 @@ five articles can be committed together and still appear on schedule. Deployment
 push-to-main flow; this module never pushes.
 """
 from __future__ import annotations
-import json, subprocess
+import json, shutil, struct, subprocess
 from pathlib import Path
 from . import queue
 
 SITE_DIR = queue.ROOT / "website"
 ARTICLES = SITE_DIR / "src/content/articles"
+SOCIAL_ART = SITE_DIR / "public/blog/social"
+
+
+def _repo_file(value: str) -> Path:
+    path = (queue.ROOT / value).resolve()
+    if queue.ROOT.resolve() not in path.parents or not path.is_file():
+        raise ValueError(f"creative asset is missing or outside the repository: {value}")
+    return path
+
+
+def _stage_blog_creative(entry: dict, slug: str) -> tuple[Path, Path] | None:
+    creative = entry.get("blog_creative")
+    if not creative:
+        return None
+    if not isinstance(creative, dict) or not creative.get("image") or not creative.get("project"):
+        raise ValueError("blog_creative requires image and editable project paths")
+    image = _repo_file(creative["image"])
+    project_file = _repo_file(creative["project"])
+    header = image.read_bytes()[:24]
+    if header[:8] != b"\x89PNG\r\n\x1a\n" or len(header) < 24:
+        raise ValueError("blog creative must be a PNG")
+    width, height = struct.unpack(">II", header[16:24])
+    if (width, height) != (1200, 630):
+        raise ValueError("blog creative must be exactly 1200x630")
+    project = json.loads(project_file.read_text())
+    if project.get("version") != 1 or (project.get("width"), project.get("height")) != (1200, 630):
+        raise ValueError("blog creative project must be an editable 1200x630 Studio project")
+    SOCIAL_ART.mkdir(parents=True, exist_ok=True)
+    image_target = SOCIAL_ART / f"{slug}.png"
+    project_target = SOCIAL_ART / f"{slug}.project.json"
+    image_tmp = image_target.with_suffix(".png.tmp")
+    project_tmp = project_target.with_suffix(".project.json.tmp")
+    try:
+        shutil.copyfile(image, image_tmp)
+        shutil.copyfile(project_file, project_tmp)
+        image_tmp.replace(image_target)
+        project_tmp.replace(project_target)
+    finally:
+        image_tmp.unlink(missing_ok=True)
+        project_tmp.unlink(missing_ok=True)
+    return image_target, project_target
 
 def stage(entry: dict, reviewed_by: str, overwrite: bool = False) -> Path:
     article = dict(entry["article"])
@@ -22,11 +63,23 @@ def stage(entry: dict, reviewed_by: str, overwrite: bool = False) -> Path:
         if existing != article:
             raise ValueError(f"slug {article['slug']} already exists with different content")
         return target
+    previous = target.read_bytes() if target.exists() else None
     target.write_text(json.dumps(article, indent=2, ensure_ascii=False) + "\n")
     result = subprocess.run(["node", "scripts/check-content.mjs"], cwd=SITE_DIR, capture_output=True, text=True)
     if result.returncode:
-        target.unlink(missing_ok=True)
+        if previous is None:
+            target.unlink(missing_ok=True)
+        else:
+            target.write_bytes(previous)
         raise ValueError((result.stdout + result.stderr).strip()[:600])
+    try:
+        _stage_blog_creative(entry, article["slug"])
+    except Exception:
+        if previous is None:
+            target.unlink(missing_ok=True)
+        else:
+            target.write_bytes(previous)
+        raise
     log = queue.HERE / "state/review-log.jsonl"
     log.parent.mkdir(exist_ok=True)
     with log.open("a") as stream:

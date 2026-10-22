@@ -7,7 +7,7 @@
   "hook": "White to move. Pawn on f6 guards the decisive blow",
   "cta": "academy_app",
   "text": "<b>White to move. Pawn on f6 guards the decisive blow</b>\n\nDark square invasion: Black cannot defend g7.\nExecute the 1-move finish.\n\n❤ Qg7#   🔥 Qh4   👏 g4\nAnswer reveals in 6 hours.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -47,7 +47,11 @@
       "fen": "5rk1/5p1p/5PpQ/8/8/8/5PPP/6K1 w - - 0 1",
       "cta_label": "Solve More in Academy"
     },
-    "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-8.reveal.png"
+    "sent": {
+      "at": "2026-10-22T01:11:18Z",
+      "claimed": true,
+      "message_id": 71
+    }
   },
   "scheduled_at": "2026-10-19T21:00:00Z",
   "qa": {
@@ -56,10 +60,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-18T23:53:20Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-8.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 2
-  }
+  },
+  "updated_at": "2026-10-21T18:59:55Z",
+  "published": {
+    "message_id": 68,
+    "at": "2026-10-21T18:59:55Z"
+  },
+  "media_cleaned": true
 }

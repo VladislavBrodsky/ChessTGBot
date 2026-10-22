@@ -1,0 +1,114 @@
+{
+  "slug": "elo-xp-progression-guide",
+  "title": "Why chess ratings differ across sites and time controls",
+  "subtitle": "A rating compares results inside one player pool. Change the pool, formula, or clock and the number can change too.",
+  "excerpt": "Learn why chess ratings do not translate directly across sites or time controls, how Elo and Glicko-2 differ, and what to track instead.",
+  "metaDescription": "Why do chess ratings differ across sites and time controls? Compare player pools, rating systems, uncertainty, and progress without chasing a universal number.",
+  "category": "Academy",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-09-18",
+  "updatedAt": "2026-10-22",
+  "readingTime": "4 min read",
+  "takeaways": [
+    "A rating is meaningful inside its own player pool and rules, not as a universal chess score.",
+    "FIDE uses an Elo system; Lichess uses Glicko-2 and tracks rating uncertainty.",
+    "Classical, rapid, blitz, and bullet ratings should be compared within the same time control.",
+    "Web3Chess XP records progression activity; it is separate from match rating."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Two ratings can describe the same player without matching. A 1600 on one server and a 1450 in another pool do not prove that the player became stronger or weaker. Ratings are estimates built from results against a particular group, under a particular formula and time control. Compare the context before comparing the number."
+    },
+    {
+      "type": "heading",
+      "text": "A rating is a position inside a pool"
+    },
+    {
+      "type": "paragraph",
+      "text": "Think of a rating as a coordinate on one map. It helps estimate results against other players on that map. Move to a different server, federation, or time control and the map changes: the opponents are different, the starting conditions may differ, and the update formula may react differently. There is no reliable rule such as subtracting a fixed number to convert every online rating into a FIDE rating."
+    },
+    {
+      "type": "heading",
+      "text": "The formula changes how quickly the estimate moves"
+    },
+    {
+      "type": "paragraph",
+      "text": "FIDE's published regulations use an Elo expected-score calculation and a development coefficient called K. FIDE publishes rating lists on a monthly cycle. Lichess uses Glicko-2, which adds rating deviation and volatility. A new or inactive account can therefore move more quickly while the system is less certain, then settle as more results accumulate. The displayed numbers are not interchangeable because the models and their implementations differ."
+    },
+    {
+      "type": "heading",
+      "text": "The clock creates another pool"
+    },
+    {
+      "type": "paragraph",
+      "text": "Fast and slow chess test overlapping skills in different proportions. Calculation depth, clock handling, opening recall, and error recovery all change when the clock changes. FIDE maintains separate standard, rapid, and blitz rating lists. Online platforms also calculate time-control pools independently. A gap between your blitz and rapid ratings can be normal, especially when one pool has fewer recent games."
+    },
+    {
+      "type": "heading",
+      "text": "Read provisional ratings as estimates in motion"
+    },
+    {
+      "type": "paragraph",
+      "text": "A rating with high uncertainty should not be treated like a settled label. Lichess marks ratings provisional when its rating deviation is high. FIDE publishes an initial rating after the required rated results and then applies its own update rules. In either case, one result provides less information than a stable run of games against established opponents."
+    },
+    {
+      "type": "heading",
+      "text": "Compare progress without chasing a conversion table"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Choose one platform and one time control for your main comparison.",
+        "Review a block of games instead of reacting to one win or loss.",
+        "Track one repeatable decision, such as checking the opponent's threat before every move.",
+        "Record whether that decision improved, alongside the rating trend.",
+        "Treat a new or provisional rating as a starting estimate, not a verdict."
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Rating and XP answer different questions"
+    },
+    {
+      "type": "paragraph",
+      "text": "Web3Chess uses an Elo-style match update to estimate performance inside its own Arena pool. XP supports progression through activities in the app. Rating asks how your match results compare with this pool; XP records progression activity. Neither should be converted into a FIDE or another site's number. Check the current app for activity requirements and rewards because those values can change."
+    },
+    {
+      "type": "callout",
+      "text": "Use ratings to find useful opponents and observe a trend inside one pool. Use your game review to decide what to practise next."
+    }
+  ],
+  "relatedSlugs": [
+    "free-ai-chess-practice-three-game-threat-drill",
+    "how-to-calculate-candidate-moves-in-30-seconds",
+    "the-5-second-pawn-endgame-rules-every-player-needs"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Rating Regulations effective from 1 March 2024",
+      "url": "https://handbook.fide.com/chapter/B022024"
+    },
+    {
+      "title": "FIDE Rapid and Blitz Rating Regulations effective from 1 March 2024",
+      "url": "https://handbook.fide.com/chapter/B02RBRegulations2024"
+    },
+    {
+      "title": "Lichess chess rating systems",
+      "url": "https://lichess.org/page/rating-systems"
+    },
+    {
+      "title": "Web3Chess Academy",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "cta": {
+    "label": "Practise in the Academy",
+    "href": "/academy"
+  }
+}

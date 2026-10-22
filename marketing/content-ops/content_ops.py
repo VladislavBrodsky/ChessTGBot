@@ -106,11 +106,11 @@ def store_items(db,items,now):
         db.execute('INSERT INTO items VALUES(?,?,?,?,?) ON CONFLICT(url) DO UPDATE SET fingerprint=excluded.fingerprint,payload=excluded.payload,last_seen=excluded.last_seen',(item['url'],fingerprint,value,now,now))
     db.commit();return counts
 
-def collect(args):
-    config=json.loads((HERE/'sources.json').read_text());db=open_db(HERE/'state/research.sqlite3');now=datetime.now(timezone.utc)
+def collect(args, sources=None, db_path=None, quiet=False):
+    config=json.loads((HERE/'sources.json').read_text());db=open_db(Path(db_path) if db_path else HERE/'state/research.sqlite3');now=datetime.now(timezone.utc)
     report={'fetched_at':now.isoformat(),'sources':[],'candidates':[],'limitations':['Opportunity scores are heuristics, not measured virality. Social views and search volume are unavailable unless supplied.']}
     try:
-        for source in config['sources']:
+        for source in (sources if sources is not None else config['sources']):
             record={'id':source['id']}
             try:
                 allowed,delay=robots_allowed(source['url'],source['hosts'],config['user_agent'])
@@ -142,7 +142,9 @@ def collect(args):
         report['candidates'].sort(key=lambda item:item['opportunity_score'],reverse=True)
         report['candidates']=report['candidates'][:30]
         output=Path(args.output);output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(report,indent=2)+'\n')
-        print(json.dumps({'report':str(output),'candidates':len(report['candidates']),'sources':report['sources']},indent=2))
+        if not quiet:
+            print(json.dumps({'report':str(output),'candidates':len(report['candidates']),'sources':report['sources']},indent=2))
+        return report
     finally:db.close()
 
 def validate_article(post):

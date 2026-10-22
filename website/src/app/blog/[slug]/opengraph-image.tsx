@@ -17,6 +17,15 @@ export default async function Image({
 }) {
   const { slug } = await params;
   const post = getBlogPostBySlug(slug);
+  if (post && /^[a-z0-9-]+$/.test(slug)) {
+    try {
+      const png = await readFile(join(process.cwd(), "public/blog/social", `${slug}.png`));
+      return new Response(new Uint8Array(png), { headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400" } });
+    } catch (error) {
+      const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
+      if (code !== "ENOENT") throw error;
+    }
+  }
   if (slug === "free-ai-chess-practice-three-game-threat-drill") {
     const png = await readFile(join(process.cwd(), "public/blog/three-game-threat-drill-social.png"));
     return new Response(new Uint8Array(png), { headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400" } });

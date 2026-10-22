@@ -16,6 +16,30 @@ All canvas generators, rendering scripts, and marketing workflows must adhere st
 
 Review source, offer, chess facts, required disclosures, readability, crop, destination, filename and rendered pixels before marking a post approved. A Studio graphic is promotional art, not evidence of a game result, live player count or prize. New platform accounts and distribution schedules require their own channel approval. No automatic reposting from this export step.
 
+### Required content-to-canvas routing
+
+- Telegram and X posts with a legal position, FEN, puzzle, trap, or reveal use the exact board renderer. Studio artwork must never replace the position being discussed
+- Every other Telegram or X post with a creative uses an editable `/CREATIVES` Studio project. The queue stores that project beside the caption and renders the attached PNG from it
+- The Studio headline, subtitle, tag, proof rows, action, URL pill, and compliance note must come from the reviewed post record. A generic campaign graphic cannot be reused for a different caption
+- The action URL pill must name the actual destination behind the post button or docked reply. Telegram links show `t.me`; website links show the exact Web3Chess host
+- Blog promotions use a 1200×630 Studio project and PNG named for the article slug. The website Open Graph route uses that image automatically when present
+- The image and native caption are one review unit. A post cannot be approved when either part fails QA, the image is missing, or the project JSON is missing
+- Prize amounts, deadlines, live participation, performance percentages, latency numbers, player results, and payout claims require a structured evidence record with a verified source. Without it, rewrite the claim using the product behavior that can be checked
+- Exporting never publishes. Telegram, X, blog staging, and future platforms retain separate human review and distribution controls
+
+### Context mapping
+
+| Post context | 3D art | Proof icon direction |
+| :--- | :--- | :--- |
+| Academy, openings, calculation | Academy book | Learning, strategy, target |
+| Blitz culture, time pressure | Chess clock | Time, strategy, community |
+| Product journey, Telegram entry | Chess sculpture | Telegram, strategy, action |
+| Match rules and USDT stakes | Balance scale | Coins, time, fair play |
+| Fair play and engineering | Fair-play kings | Telegram, shield, system flow |
+| Leaderboards and verified players | Chess sculpture | Trophy, community, target |
+
+Use a different mapping only when the new art is more specific to the reviewed post. Decorative variety alone is not a valid reason.
+
 ---
 
 ## 1. Context-Connected Icons

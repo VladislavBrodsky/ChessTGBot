@@ -1,26 +1,28 @@
 {
-  "version": 2,
+  "version": 3,
   "mode": {
     "telegram": "review",
     "site": "review",
     "x": "review"
   },
-  "note": "24/7 non-stop publishing engine: 1 post every 3 hours (8 daily slots) on X and Telegram, with high-authority blog articles. Channel differentiation strictly enforced.",
+  "note": "Six reviewable posts per channel per day, spaced three hours during active UTC windows. Publication requires approved queue entries and a trusted runner.",
   "telegram": {
     "channel_env": "W3_TG_CHANNEL",
     "token_env": "W3_TG_BOT_TOKEN",
     "slots_utc": [
-      "07:30",
-      "11:00",
-      "14:30",
-      "17:30",
-      "20:30"
+      "06:30",
+      "09:30",
+      "12:30",
+      "15:30",
+      "18:30",
+      "21:30"
     ],
     "rotation": {
       "mon": [
         "Tactics",
         "Chess News",
         "Academy",
+        "Openings",
         "Chess Culture",
         "Product"
       ],
@@ -28,6 +30,7 @@
         "Tactics",
         "Chess News",
         "Openings",
+        "Academy",
         "Chess Culture",
         "Chess Culture"
       ],
@@ -35,6 +38,7 @@
         "Tactics",
         "Chess News",
         "Academy",
+        "Openings",
         "Chess Culture",
         "Match Rules"
       ],
@@ -42,6 +46,7 @@
         "Tactics",
         "Chess News",
         "Openings",
+        "Academy",
         "Chess Culture",
         "Product"
       ],
@@ -49,6 +54,7 @@
         "Tactics",
         "Chess News",
         "Academy",
+        "Openings",
         "Chess Culture",
         "Chess Culture"
       ],
@@ -56,6 +62,7 @@
         "Tactics",
         "Chess News",
         "Openings",
+        "Academy",
         "Chess Culture",
         "Tactics"
       ],
@@ -63,25 +70,45 @@
         "Tactics",
         "Chess News",
         "Academy",
+        "Openings",
         "Chess Culture",
         "Chess News"
       ]
     },
     "creative_defaults": {
-      "Tactics": { "template": "puzzle", "format": "puzzle" },
-      "Openings": { "template": "trap", "format": "trap" },
-      "Academy": { "template": "tip", "format": "lesson" },
-      "Chess News": { "template": "news", "format": "news" },
-      "Chess Culture": { "template": "culture", "format": "culture" },
-      "Product": { "template": "product", "format": "product" },
-      "Match Rules": { "template": "rules", "format": "rules" }
+      "Tactics": {
+        "template": "puzzle",
+        "format": "puzzle"
+      },
+      "Openings": {
+        "template": "trap",
+        "format": "trap"
+      },
+      "Academy": {
+        "template": "tip",
+        "format": "lesson"
+      },
+      "Chess News": {
+        "template": "news",
+        "format": "news"
+      },
+      "Chess Culture": {
+        "template": "culture",
+        "format": "culture"
+      },
+      "Product": {
+        "template": "product",
+        "format": "product"
+      },
+      "Match Rules": {
+        "template": "rules",
+        "format": "rules"
+      }
     },
     "min_gap_hours": 3
   },
   "x": {
     "slots_utc": [
-      "00:00",
-      "03:00",
       "06:00",
       "09:00",
       "12:00",
@@ -90,23 +117,96 @@
       "21:00"
     ],
     "rotation": {
-      "mon": ["Tactics", "Chess Culture", "Psychology", "Tactical Matrix", "Chess Debate", "Openings", "Engineering", "Product"],
-      "tue": ["Tactics", "Chess Culture", "Psychology", "Tactical Matrix", "Chess Debate", "Openings", "Engineering", "Product"],
-      "wed": ["Tactics", "Chess Culture", "Psychology", "Tactical Matrix", "Chess Debate", "Openings", "Engineering", "Product"],
-      "thu": ["Tactics", "Chess Culture", "Psychology", "Tactical Matrix", "Chess Debate", "Openings", "Engineering", "Product"],
-      "fri": ["Tactics", "Chess Culture", "Psychology", "Tactical Matrix", "Chess Debate", "Openings", "Engineering", "Product"],
-      "sat": ["Tactics", "Chess Culture", "Psychology", "Tactical Matrix", "Chess Debate", "Openings", "Engineering", "Product"],
-      "sun": ["Tactics", "Chess Culture", "Psychology", "Tactical Matrix", "Chess Debate", "Openings", "Engineering", "Product"]
+      "mon": [
+        "Tactics",
+        "Chess Culture",
+        "Psychology",
+        "Tactical Matrix",
+        "Openings",
+        "Product"
+      ],
+      "tue": [
+        "Tactics",
+        "Chess Culture",
+        "Psychology",
+        "Tactical Matrix",
+        "Openings",
+        "Product"
+      ],
+      "wed": [
+        "Tactics",
+        "Chess Culture",
+        "Psychology",
+        "Tactical Matrix",
+        "Openings",
+        "Product"
+      ],
+      "thu": [
+        "Tactics",
+        "Chess Culture",
+        "Psychology",
+        "Tactical Matrix",
+        "Openings",
+        "Product"
+      ],
+      "fri": [
+        "Tactics",
+        "Chess Culture",
+        "Psychology",
+        "Tactical Matrix",
+        "Openings",
+        "Product"
+      ],
+      "sat": [
+        "Tactics",
+        "Chess Culture",
+        "Psychology",
+        "Tactical Matrix",
+        "Openings",
+        "Product"
+      ],
+      "sun": [
+        "Tactics",
+        "Chess Culture",
+        "Psychology",
+        "Tactical Matrix",
+        "Openings",
+        "Product"
+      ]
     },
     "creative_defaults": {
-      "Tactics": { "template": "puzzle", "size": "square" },
-      "Chess Culture": { "template": "culture", "size": "square" },
-      "Psychology": { "template": "culture", "size": "square" },
-      "Tactical Matrix": { "template": "culture", "size": "square" },
-      "Chess Debate": { "template": "culture", "size": "square" },
-      "Openings": { "template": "trap", "size": "square" },
-      "Engineering": { "template": "product", "size": "square" },
-      "Product": { "template": "product", "size": "square" }
+      "Tactics": {
+        "template": "puzzle",
+        "size": "square"
+      },
+      "Chess Culture": {
+        "template": "culture",
+        "size": "square"
+      },
+      "Psychology": {
+        "template": "culture",
+        "size": "square"
+      },
+      "Tactical Matrix": {
+        "template": "culture",
+        "size": "square"
+      },
+      "Chess Debate": {
+        "template": "culture",
+        "size": "square"
+      },
+      "Openings": {
+        "template": "trap",
+        "size": "square"
+      },
+      "Engineering": {
+        "template": "product",
+        "size": "square"
+      },
+      "Product": {
+        "template": "product",
+        "size": "square"
+      }
     },
     "min_gap_hours": 3
   },
@@ -117,13 +217,41 @@
       "17:00"
     ],
     "rotation": {
-      "mon": ["Tactics", "Openings", "Academy"],
-      "tue": ["Tactics", "Openings", "Chess Culture"],
-      "wed": ["Tactics", "Openings", "Product"],
-      "thu": ["Tactics", "Openings", "Academy"],
-      "fri": ["Tactics", "Openings", "Match Rules"],
-      "sat": ["Tactics", "Openings", "Product"],
-      "sun": ["Tactics", "Openings", "Chess News"]
+      "mon": [
+        "Tactics",
+        "Openings",
+        "Academy"
+      ],
+      "tue": [
+        "Tactics",
+        "Openings",
+        "Chess Culture"
+      ],
+      "wed": [
+        "Tactics",
+        "Openings",
+        "Product"
+      ],
+      "thu": [
+        "Tactics",
+        "Openings",
+        "Academy"
+      ],
+      "fri": [
+        "Tactics",
+        "Openings",
+        "Match Rules"
+      ],
+      "sat": [
+        "Tactics",
+        "Openings",
+        "Product"
+      ],
+      "sun": [
+        "Tactics",
+        "Openings",
+        "Chess News"
+      ]
     },
     "cover_template": "cover"
   }

@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "packageDate": "2026-10-22",
+  "status": "draft-for-review",
+  "topic": "Why chess ratings differ across sites and time controls",
+  "platforms": {
+    "telegram": {
+      "enabled": true,
+      "status": "draft-for-review",
+      "captionSource": "social.md#telegram",
+      "destination": "https://web3chess.online/academy",
+      "image": "creative/square.png",
+      "editableProject": "creative/square.project.json",
+      "format": "1080x1080"
+    },
+    "x": {
+      "enabled": true,
+      "status": "draft-for-review",
+      "captionSource": "social.md#x",
+      "linkPlacement": "docked-reply",
+      "destination": "https://web3chess.online/academy",
+      "image": "creative/square.png",
+      "editableProject": "creative/square.project.json",
+      "format": "1080x1080"
+    },
+    "blog": {
+      "enabled": true,
+      "status": "draft-for-review",
+      "slug": "elo-xp-progression-guide",
+      "destination": "https://web3chess.online/blog/elo-xp-progression-guide",
+      "image": "creative/blog.png",
+      "editableProject": "creative/blog.project.json",
+      "format": "1200x630"
+    },
+    "instagramFeed": {
+      "enabled": false,
+      "status": "awaiting-channel-connection",
+      "captionSource": "social.md#instagram-caption",
+      "image": "creative/portrait.png",
+      "editableProject": "creative/portrait.project.json",
+      "format": "1080x1350"
+    },
+    "stories": {
+      "enabled": false,
+      "status": "awaiting-channel-connection",
+      "captionSource": "social.md#three-frame-story",
+      "image": "creative/story.png",
+      "editableProject": "creative/story.project.json",
+      "format": "1080x1920"
+    }
+  }
+}

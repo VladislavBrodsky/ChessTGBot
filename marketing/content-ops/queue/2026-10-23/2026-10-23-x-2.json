@@ -1,0 +1,86 @@
+{
+  "id": "2026-10-23-x-2",
+  "kind": "x_post",
+  "date": "2026-10-23",
+  "category": "Chess Culture",
+  "hook": "Up +5.0 on the eval bar with 3 seconds left on the clock (Oct 23)",
+  "text": "Up +5.0 on the eval bar with 3 seconds left on the clock (Oct 23)\n\nIn sudden-death blitz, a complex win is harder than a simple draw.\n\nWhen the clock turns red, trade queens and simplify.\n\n#Chess #BlitzChess #ChessLife",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Blitz Culture",
+    "headline": "4 SECONDS LEFT\n*PREMOVE COLLAPSE*",
+    "subhead": "Under 5 seconds, calculation collapses into survival",
+    "cta_label": "Play in Telegram",
+    "panels": [
+      {
+        "label": "You",
+        "text": "Premove a queen recapture",
+        "piece": "Q"
+      },
+      {
+        "label": "Opponent",
+        "text": "Find an in-between check",
+        "piece": "K"
+      }
+    ],
+    "studio": {
+      "version": 1,
+      "name": "2026-10-23-x-2",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Blitz Culture",
+      "title": "4 SECONDS LEFT PREMOVE COLLAPSE",
+      "subtitle": "Under 5 seconds, calculation collapses into survival",
+      "proofs": [
+        "You: Premove a queen recapture",
+        "Opponent: Find an in-between check",
+        "Check the clock"
+      ],
+      "proofIcons": [
+        "clock",
+        "strategy",
+        "users-three"
+      ],
+      "cta": "Play in Telegram",
+      "urlLabel": "t.me",
+      "note": "Web3Chess editorial",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "clock",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Can you hold your nerve under the 10-second countdown?\n\nLaunch a 3-minute match in Telegram:\nhttps://t.me/chess_matbot/Web3Chess",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-23T08:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-22T18:42:05Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-x-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

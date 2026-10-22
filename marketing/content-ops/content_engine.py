@@ -42,7 +42,7 @@ def main():
     parser.add_argument("--status", action="store_true", help="Display status of today's queued content slots")
     parser.add_argument("--run-strategy", action="store_true", help="Run CMO strategy brief and competitive research audit")
     parser.add_argument("--first-post", action="store_true", help="Create, validate and stage the first viral flagship post & article")
-    parser.add_argument("--generate-today", action="store_true", help="Generate, QA-validate, approve and stage all 5 Telegram posts and 5 Blog articles for today")
+    parser.add_argument("--generate-today", action="store_true", help="Run the legacy configured Telegram and article batch for today")
     parser.add_argument("--plan", action="store_true", help="Generate daily slots for the calendar")
     parser.add_argument("--days", type=int, default=1, help="Number of days to plan (default: 1)")
     parser.add_argument("--stage", action="store_true", help="Stage all approved articles into website/src/content/articles/")
@@ -51,7 +51,7 @@ def main():
     parser.add_argument("--post-id", default=None, help="Specific post ID to publish (e.g. 2026-10-12-tg-1)")
     parser.add_argument("--date", default=None, help="Filter date (e.g. 2026-10-12)")
     parser.add_argument("--domain", default="web3chess.online", help="Target landing page domain (default: web3chess.online)")
-    parser.add_argument("--tg-batch", action="store_true", help="Generate, QA-validate, render, and queue today's 8 viral Telegram posts")
+    parser.add_argument("--tg-batch", action="store_true", help="Generate, QA-validate, render, and queue today's six Telegram review drafts")
     parser.add_argument("--x-batch", action="store_true", help="Generate, QA-validate, and queue today's daily X (Twitter) posts")
     parser.add_argument("--x-thread", action="store_true", help="Generate, QA-validate, and queue the flagship 5-tweet viral X manifesto thread")
     parser.add_argument("--x-sniper", action="store_true", help="Generate targeted high-leverage Reply Sniper scripts for top chess & TON accounts")
@@ -100,9 +100,10 @@ def main():
             if args.date
             else queue.utcnow().date()
         )
-        print(f"\n🚀 Generating Telegram Daily Batch (8 slots spaced every 3 hours for {target_day})...")
-        res = orchestrator.generate_telegram_daily_batch(target_date=target_day)
-        print("\n✅ Successfully generated, QA-approved, and queued Telegram posts:")
+        print(f"\n🚀 Generating Telegram Daily Batch (six review drafts for {target_day})...")
+        res = orchestrator.generate_telegram_daily_batch(target_date=target_day, render_images=True)
+        marker = "✅ Ready for review" if res["status"] == "success" else "⚠️ Needs attention"
+        print(f"\n{marker} — Telegram batch result:")
         print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.x_batch:
@@ -111,9 +112,10 @@ def main():
             if args.date
             else queue.utcnow().date()
         )
-        print(f"\n🚀 Generating X (Twitter) Daily Batch (3 slots: Tactics, Culture, Arena for {target_day})...")
+        print(f"\n🚀 Generating X Daily Batch (six review drafts for {target_day})...")
         res = orchestrator.generate_x_daily_batch(target_date=target_day, render_images=True)
-        print("\n✅ Successfully generated, rendered, and queued X posts:")
+        marker = "✅ Ready for review" if res["status"] == "success" else "⚠️ Needs attention"
+        print(f"\n{marker} — X batch result:")
         print(json.dumps(res, indent=2, ensure_ascii=False))
 
     elif args.x_thread:

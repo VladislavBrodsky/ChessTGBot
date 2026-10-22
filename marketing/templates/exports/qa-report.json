@@ -15,8 +15,8 @@
       }
     ],
     "xmlErrors": 0,
-    "meanChannelDifference": 0.4623168724279835,
-    "changedPixelFraction": 0.004609739368998628
+    "meanChannelDifference": 0.20262345679012345,
+    "changedPixelFraction": 0.0020459533607681754
   },
   "studio": {
     "generated": "2026-10-08T05:39:24.221377+00:00",
@@ -73,7 +73,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -82,7 +82,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -91,7 +91,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -100,7 +100,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -109,7 +109,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -118,7 +118,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -127,7 +127,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -136,7 +136,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -145,7 +145,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -154,7 +154,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -163,7 +163,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -172,7 +172,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -181,7 +181,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -190,7 +190,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -199,7 +199,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -208,7 +208,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -217,7 +217,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -226,7 +226,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -235,7 +235,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -244,7 +244,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -253,7 +253,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -262,7 +262,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -271,7 +271,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -280,7 +280,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -289,7 +289,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -298,7 +298,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -307,7 +307,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -316,7 +316,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -325,7 +325,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -334,7 +334,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -343,7 +343,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -352,7 +352,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -361,7 +361,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -370,7 +370,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -379,7 +379,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -388,7 +388,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -397,7 +397,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -406,7 +406,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -415,7 +415,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -424,7 +424,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -433,7 +433,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -442,7 +442,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -451,7 +451,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -460,7 +460,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -469,7 +469,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -478,7 +478,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -487,7 +487,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -496,7 +496,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -505,7 +505,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -514,7 +514,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -523,7 +523,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -532,7 +532,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -541,7 +541,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -550,7 +550,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -559,7 +559,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -568,7 +568,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -577,7 +577,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -586,7 +586,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -595,7 +595,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -604,7 +604,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -613,7 +613,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -622,7 +622,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -631,7 +631,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -640,7 +640,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -649,7 +649,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -658,7 +658,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -667,7 +667,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -676,7 +676,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -685,7 +685,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -694,7 +694,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -703,7 +703,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -712,7 +712,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -721,7 +721,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -730,7 +730,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -739,7 +739,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -748,7 +748,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -757,7 +757,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -766,7 +766,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -775,7 +775,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -784,7 +784,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -793,7 +793,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -802,7 +802,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -811,7 +811,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -820,7 +820,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -829,7 +829,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -838,7 +838,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -847,7 +847,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -856,7 +856,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -865,7 +865,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -874,7 +874,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -883,7 +883,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -892,7 +892,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -901,7 +901,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -910,7 +910,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -919,7 +919,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -928,7 +928,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -937,7 +937,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -946,7 +946,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -955,7 +955,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -964,7 +964,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -973,7 +973,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -982,7 +982,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -991,7 +991,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1000,7 +1000,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1009,7 +1009,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1018,7 +1018,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1027,7 +1027,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1036,7 +1036,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1045,7 +1045,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1054,7 +1054,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1063,7 +1063,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1072,7 +1072,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1081,7 +1081,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1090,7 +1090,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1099,7 +1099,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1108,7 +1108,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1117,7 +1117,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1126,7 +1126,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1135,7 +1135,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -1144,7 +1144,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1153,7 +1153,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1162,7 +1162,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1171,7 +1171,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1180,7 +1180,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1189,7 +1189,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1198,7 +1198,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1207,7 +1207,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1216,7 +1216,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1225,7 +1225,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1234,7 +1234,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1243,7 +1243,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1252,7 +1252,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1261,7 +1261,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1270,7 +1270,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1279,7 +1279,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1288,7 +1288,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1297,7 +1297,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1306,7 +1306,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1315,7 +1315,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1324,7 +1324,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1333,7 +1333,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1342,7 +1342,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1351,7 +1351,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -1360,7 +1360,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1369,7 +1369,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1378,7 +1378,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1387,7 +1387,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1396,7 +1396,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1405,7 +1405,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1414,7 +1414,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1423,7 +1423,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1432,7 +1432,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1441,7 +1441,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1450,7 +1450,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1459,7 +1459,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1468,7 +1468,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1477,7 +1477,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1486,7 +1486,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1495,7 +1495,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1504,7 +1504,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1513,7 +1513,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1522,7 +1522,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1531,7 +1531,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1540,7 +1540,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1549,7 +1549,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1558,7 +1558,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1567,7 +1567,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -1576,7 +1576,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1585,7 +1585,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1594,7 +1594,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1603,7 +1603,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1612,7 +1612,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1621,7 +1621,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1630,7 +1630,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1639,7 +1639,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1648,7 +1648,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1657,7 +1657,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1666,7 +1666,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1675,7 +1675,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1684,7 +1684,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 32
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1693,7 +1693,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1702,7 +1702,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1711,7 +1711,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1720,7 +1720,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1729,7 +1729,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1738,7 +1738,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1747,7 +1747,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1756,7 +1756,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1765,7 +1765,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1774,7 +1774,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1783,7 +1783,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1792,7 +1792,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 34
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -1802,7 +1802,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -1812,7 +1812,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -1822,7 +1822,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -1832,7 +1832,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -1842,7 +1842,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "opening",
@@ -1852,7 +1852,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -1862,7 +1862,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -1872,7 +1872,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -1882,7 +1882,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -1892,7 +1892,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -1902,7 +1902,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "rival",
@@ -1912,7 +1912,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1922,7 +1922,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1932,7 +1932,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1942,7 +1942,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1952,7 +1952,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1962,7 +1962,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -1972,7 +1972,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -1982,7 +1982,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -1992,7 +1992,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -2002,7 +2002,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -2012,7 +2012,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -2022,7 +2022,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "academy",
@@ -2032,7 +2032,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -2042,7 +2042,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -2052,7 +2052,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -2062,7 +2062,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -2072,7 +2072,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -2082,7 +2082,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "tempo",
@@ -2092,7 +2092,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -2102,7 +2102,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -2112,7 +2112,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -2122,7 +2122,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -2132,7 +2132,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -2142,7 +2142,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "stakes",
@@ -2152,7 +2152,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -2162,7 +2162,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -2172,7 +2172,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -2182,7 +2182,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -2192,7 +2192,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -2202,7 +2202,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "culture",
@@ -2212,7 +2212,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -2222,7 +2222,7 @@
       "theme": "canvas",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -2232,7 +2232,7 @@
       "theme": "canvas",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -2242,7 +2242,7 @@
       "theme": "paper",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -2252,7 +2252,7 @@
       "theme": "paper",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -2262,7 +2262,7 @@
       "theme": "ink",
       "alternate": false,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     },
     {
       "id": "puzzle",
@@ -2272,7 +2272,7 @@
       "theme": "ink",
       "alternate": true,
       "warnings": [],
-      "smallestBody": 30
+      "smallestBody": 24
     }
   ],
   "regressions": {

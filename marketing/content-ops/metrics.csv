@@ -1,25 +1,92 @@
 content_id,url,channel,pillar,format,variant,published_at,window_start,window_end,reach,impressions,engagements,saves,shares,clicks,attributed_visits,game_starts,academy_starts,return_practice_starts
-2026-10-12-x-1,https://x.com/defi_ambassador/status/2109741220180148653,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-12T14:00:00Z,2026-10-12T14:00:00Z,2026-10-13T23:59:59Z,2600,3420,172,48,27,62,54,21,28,14
-2026-10-12-x-2,https://x.com/defi_ambassador/status/2109834432915857574,x_twitter,Chess Culture,1:1_single_post,obsidian_canvas,2026-10-12T16:30:00Z,2026-10-12T16:30:00Z,2026-10-13T23:59:59Z,3180,4180,246,65,42,88,76,28,34,18
-2026-10-12-x-3,https://x.com/defi_ambassador/status/2110129827852279849,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-13T22:05:30Z,2026-10-13T22:05:30Z,2026-10-13T23:59:59Z,2200,2890,135,38,20,52,44,16,22,11
-2026-10-12-x-4,https://x.com/defi_ambassador/status/2110131949893271673,x_twitter,Chess Debate,1:1_single_post,obsidian_canvas,2026-10-13T22:13:56Z,2026-10-13T22:13:56Z,2026-10-13T23:59:59Z,2360,3110,158,42,26,58,50,19,25,12
-2026-10-12-x-5,https://x.com/defi_ambassador/status/2110144593752719650,x_twitter,Tactical Matrix,1:1_single_post,obsidian_canvas,2026-10-13T23:04:11Z,2026-10-13T23:04:11Z,2026-10-13T23:59:59Z,2080,2740,129,35,18,48,40,15,20,10
-2026-10-12-x-6,https://x.com/defi_ambassador/status/2110152349683479019,x_twitter,Psychology,1:1_single_post,obsidian_canvas,2026-10-13T23:35:00Z,2026-10-13T23:35:00Z,2026-10-13T23:59:59Z,2780,3650,198,54,32,74,62,24,31,16
-2026-10-12-x-7,https://x.com/defi_ambassador/status/2110159949623972243,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-14T00:05:12Z,2026-10-14T00:05:12Z,2026-10-13T23:59:59Z,1920,2530,114,31,16,44,38,14,19,9
-2026-10-12-x-8,https://x.com/defi_ambassador/status/2110181120331428004,x_twitter,Engineering,1:1_single_post,obsidian_canvas,2026-10-14T01:29:20Z,2026-10-14T01:29:20Z,2026-10-13T23:59:59Z,2900,3820,205,58,35,78,68,26,33,17
-2026-10-12-x-9,https://x.com/defi_ambassador/status/2110190353198240216,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-14T02:06:01Z,2026-10-14T02:06:01Z,2026-10-13T23:59:59Z,2260,2980,147,40,22,54,46,18,23,12
-2026-10-12-x-10,https://x.com/defi_ambassador/status/2110167543801360479,x_twitter,Psychology,1:1_single_post,obsidian_canvas,2026-10-14T00:35:22Z,2026-10-14T00:35:22Z,2026-10-13T23:59:59Z,2470,3250,168,46,25,60,52,20,26,13
-2026-10-11-tg-1,https://t.me/chess_hub/12,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-11T07:30:00Z,2026-10-11T07:30:00Z,2026-10-13T23:59:59Z,3840,4680,234,42,38,114,98,42,31,22
-2026-10-12-tg-2,https://t.me/chess_hub/13,telegram,Chess News,news,emoji_reaction_button,2026-10-12T14:22:28Z,2026-10-12T14:22:28Z,2026-10-13T23:59:59Z,3380,4120,189,32,28,92,82,34,26,18
-2026-10-12-tg-3,https://t.me/chess_hub/14,telegram,Openings,news,emoji_reaction_button,2026-10-12T14:22:41Z,2026-10-12T14:22:41Z,2026-10-13T23:59:59Z,3240,3950,178,29,26,88,78,31,24,16
-2026-10-12-tg-4,https://t.me/chess_hub/15,telegram,Chess Culture,news,emoji_reaction_button,2026-10-12T14:23:10Z,2026-10-12T14:23:10Z,2026-10-13T23:59:59Z,4440,5420,312,58,52,148,132,54,42,30
-2026-10-12-tg-5,https://t.me/chess_hub/16,telegram,Product,product,emoji_reaction_button,2026-10-12T14:23:58Z,2026-10-12T14:23:58Z,2026-10-13T23:59:59Z,3530,4310,196,35,31,102,90,38,28,20
-2026-10-12-tg-6,https://t.me/chess_hub/17,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-13T22:23:44Z,2026-10-13T22:23:44Z,2026-10-13T23:59:59Z,4010,4890,251,46,41,126,110,48,35,24
-2026-10-12-tg-7,https://t.me/chess_hub/21,telegram,Engineering,rules,emoji_reaction_button,2026-10-14T02:05:40Z,2026-10-14T02:05:40Z,2026-10-13T23:59:59Z,3060,3740,165,27,24,82,72,29,21,15
-2026-10-14-tg-community,https://t.me/chess_hub/22,telegram,Chess Culture,news,emoji_reaction_button,2026-10-14T02:18:30Z,2026-10-14T02:18:30Z,2026-10-13T23:59:59Z,3650,4450,218,39,34,108,96,40,30,21
-2026-10-11-art-1,https://web3chess.online/blog/london-system-counter-attacks,website_blog,Tactics,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5490,8450,412,112,62,305,280,76,138,49
-2026-10-12-art-1,https://web3chess.online/blog/sicilian-defense-tactical-traps,website_blog,Tactics,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5980,9210,486,134,74,342,312,88,158,58
-2026-10-12-art-2,https://web3chess.online/blog/speed-chess-clock-management,website_blog,Culture,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5120,7890,374,98,54,278,252,68,124,44
-2026-10-12-art-3,https://web3chess.online/blog/endgame-pawn-structures,website_blog,Tactics,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5810,8940,442,120,68,320,294,82,148,52
-2026-10-12-art-4,https://web3chess.online/blog/psychology-of-bullet-chess,website_blog,Psychology,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,4820,7420,358,92,50,264,238,62,116,40
-2026-10-12-art-5,https://web3chess.online/blog/queens-gambit-accepted-guide,website_blog,Openings,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,2026-10-13T23:59:59Z,5280,8120,395,106,58,290,266,72,132,46
+2026-10-12-x-1,https://x.com/defi_ambassador/status/2109741220180148653,x_twitter,Tactics,1:1_single_post,obsidian_canvas,,,,,,,,,,,,,
+2026-10-12-x-10,https://x.com/defi_ambassador/status/2110167543801360479,x_twitter,Psychology,1:1_single_post,obsidian_canvas,2026-10-14T00:35:22Z,2026-10-14T00:35:22Z,,,,,,,,,,,
+2026-10-12-x-2,https://x.com/defi_ambassador/status/2109834432915857574,x_twitter,Chess Culture,1:1_single_post,obsidian_canvas,,,,,,,,,,,,,
+2026-10-12-x-3,https://x.com/defi_ambassador/status/2110129827852279849,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-13T22:05:30Z,2026-10-13T22:05:30Z,,,,,,,,,,,
+2026-10-12-x-4,https://x.com/defi_ambassador/status/2110131949893271673,x_twitter,Chess Debate,1:1_single_post,obsidian_canvas,2026-10-13T22:13:56Z,2026-10-13T22:13:56Z,,,,,,,,,,,
+2026-10-12-x-5,https://x.com/defi_ambassador/status/2110144593752719650,x_twitter,Tactical Matrix,1:1_single_post,obsidian_canvas,2026-10-13T23:04:11Z,2026-10-13T23:04:11Z,,,,,,,,,,,
+2026-10-12-x-6,https://x.com/defi_ambassador/status/2110152349683479019,x_twitter,Psychology,1:1_single_post,obsidian_canvas,2026-10-13T23:35:00Z,2026-10-13T23:35:00Z,,,,,,,,,,,
+2026-10-12-x-7,https://x.com/defi_ambassador/status/2110159949623972243,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-14T00:05:12Z,2026-10-14T00:05:12Z,,,,,,,,,,,
+2026-10-12-x-8,https://x.com/defi_ambassador/status/2110181120331428004,x_twitter,Engineering,1:1_single_post,obsidian_canvas,2026-10-14T01:29:20Z,2026-10-14T01:29:20Z,,,,,,,,,,,
+2026-10-12-x-9,https://x.com/defi_ambassador/status/2110190353198240216,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-14T02:06:01Z,2026-10-14T02:06:01Z,,,,,,,,,,,
+2026-10-12-x-thread-flagship,,x_twitter,Product,thread,obsidian_canvas,2026-10-14T15:21:00Z,2026-10-14T15:21:00Z,,,,,,,,,,,
+2026-10-14-x-spotlight,https://x.com/defi_ambassador/status/2110387147777651013,x_twitter,Player Spotlight,1:1_single_post,obsidian_canvas,2026-10-14T15:08:00Z,2026-10-14T15:08:00Z,,,,,,,,,,,
+2026-10-16-x-1,https://x.com/defi_ambassador/status/2111338620787326994,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-17T06:08:49Z,2026-10-17T06:08:49Z,,,,,,,,,,,
+2026-10-16-x-2,https://x.com/defi_ambassador/status/2111346328080920739,x_twitter,Tactical Matrix,1:1_single_post,obsidian_canvas,2026-10-17T06:39:27Z,2026-10-17T06:39:27Z,,,,,,,,,,,
+2026-10-16-x-3,https://x.com/defi_ambassador/status/2111467196253675810,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-17T14:39:44Z,2026-10-17T14:39:44Z,,,,,,,,,,,
+2026-10-17-x-1,https://x.com/defi_ambassador/status/2111474845732979084,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-17T15:10:07Z,2026-10-17T15:10:07Z,,,,,,,,,,,
+2026-10-17-x-2,https://x.com/defi_ambassador/status/2111490067386499336,x_twitter,Chess Culture,1:1_single_post,obsidian_canvas,2026-10-17T16:10:37Z,2026-10-17T16:10:37Z,,,,,,,,,,,
+2026-10-17-x-3,https://x.com/defi_ambassador/status/2111522303041270134,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-17T18:18:42Z,2026-10-17T18:18:42Z,,,,,,,,,,,
+2026-10-17-x-viral-group-duel,https://x.com/defi_ambassador/status/2111530138001092910,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-17T18:49:50Z,2026-10-17T18:49:50Z,,,,,,,,,,,
+2026-10-17-x-viral-guess-elo,https://x.com/defi_ambassador/status/2111482453638443155,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-17T15:40:22Z,2026-10-17T15:40:22Z,,,,,,,,,,,
+2026-10-17-x-viral-manifesto,https://x.com/defi_ambassador/status/2111509773929627989,x_twitter,Chess Debate,1:1_single_post,obsidian_canvas,2026-10-17T17:28:55Z,2026-10-17T17:28:55Z,,,,,,,,,,,
+2026-10-17-x-viral-scramble,https://x.com/defi_ambassador/status/2111497678076944598,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-17T16:40:51Z,2026-10-17T16:40:51Z,,,,,,,,,,,
+2026-10-18-x-1,https://x.com/defi_ambassador/status/2111608260218270176,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-18T00:00:16Z,2026-10-18T00:00:16Z,,,,,,,,,,,
+2026-10-18-x-2,https://x.com/defi_ambassador/status/2111959033179451735,x_twitter,Chess Culture,1:1_single_post,obsidian_canvas,2026-10-18T23:14:07Z,2026-10-18T23:14:07Z,,,,,,,,,,,
+2026-10-18-x-3,https://x.com/defi_ambassador/status/2111966734919864776,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-18T23:44:43Z,2026-10-18T23:44:43Z,,,,,,,,,,,
+2026-10-18-x-yt-hikaru,https://x.com/defi_ambassador/status/2111626526118588726,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-18T01:12:51Z,2026-10-18T01:12:51Z,,,,,,,,,,,
+2026-10-19-x-1,https://x.com/defi_ambassador/status/2111979076336439760,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-19T00:33:45Z,2026-10-19T00:33:45Z,,,,,,,,,,,
+2026-10-19-x-2,https://x.com/defi_ambassador/status/2112092962205127133,x_twitter,Psychology,1:1_single_post,obsidian_canvas,2026-10-19T08:06:18Z,2026-10-19T08:06:18Z,,,,,,,,,,,
+2026-10-19-x-3,https://x.com/defi_ambassador/status/2112212254934311406,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-19T16:00:19Z,2026-10-19T16:00:19Z,,,,,,,,,,,
+2026-10-20-x-1,https://x.com/defi_ambassador/status/2112333149787033717,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-20T00:00:43Z,2026-10-20T00:00:43Z,,,,,,,,,,,
+2026-10-20-x-2,https://x.com/defi_ambassador/status/2112456519195202042,x_twitter,Chess Debate,1:1_single_post,obsidian_canvas,2026-10-20T08:10:57Z,2026-10-20T08:10:57Z,,,,,,,,,,,
+2026-10-20-x-3,https://x.com/defi_ambassador/status/2112574793195155848,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-20T16:00:55Z,2026-10-20T16:00:55Z,,,,,,,,,,,
+2026-10-21-x-1,https://x.com/defi_ambassador/status/2112695532984451112,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-21T00:00:42Z,2026-10-21T00:00:42Z,,,,,,,,,,,
+2026-10-21-x-2,https://x.com/defi_ambassador/status/2112818068401385823,x_twitter,Engineering,1:1_single_post,obsidian_canvas,2026-10-21T08:07:37Z,2026-10-21T08:07:37Z,,,,,,,,,,,
+2026-10-21-x-3,https://x.com/defi_ambassador/status/2112955882090758421,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-21T17:15:14Z,2026-10-21T17:15:14Z,,,,,,,,,,,
+2026-10-22-x-1,https://x.com/defi_ambassador/status/2113057856840782229,x_twitter,Tactics,1:1_single_post,obsidian_canvas,2026-10-22T00:00:27Z,2026-10-22T00:00:27Z,,,,,,,,,,,
+2026-10-22-x-2,https://x.com/defi_ambassador/status/2113182493637562588,x_twitter,Tactical Matrix,1:1_single_post,obsidian_canvas,2026-10-22T08:15:42Z,2026-10-22T08:15:42Z,,,,,,,,,,,
+2026-10-22-x-3,https://x.com/defi_ambassador/status/2113299599641174373,x_twitter,Product,1:1_single_post,obsidian_canvas,2026-10-22T16:01:03Z,2026-10-22T16:01:03Z,,,,,,,,,,,
+2026-10-11-tg-1,https://t.me/chess_hub/12,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-11T07:30:00Z,2026-10-11T07:30:00Z,,,,,,,,,,,
+2026-10-12-tg-1,https://t.me/chess_hub/12,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-12T14:21:47Z,2026-10-12T14:21:47Z,,,,,,,,,,,
+2026-10-12-tg-2,https://t.me/chess_hub/13,telegram,Chess News,news,emoji_reaction_button,2026-10-12T14:22:28Z,2026-10-12T14:22:28Z,,,,,,,,,,,
+2026-10-12-tg-3,https://t.me/chess_hub/14,telegram,Openings,news,emoji_reaction_button,2026-10-12T14:22:41Z,2026-10-12T14:22:41Z,,,,,,,,,,,
+2026-10-12-tg-4,https://t.me/chess_hub/15,telegram,Chess Culture,news,emoji_reaction_button,2026-10-12T14:23:10Z,2026-10-12T14:23:10Z,,,,,,,,,,,
+2026-10-12-tg-5,https://t.me/chess_hub/16,telegram,Product,product,emoji_reaction_button,2026-10-12T14:23:58Z,2026-10-12T14:23:58Z,,,,,,,,,,,
+2026-10-12-tg-6,https://t.me/chess_hub/17,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-13T22:23:44Z,2026-10-13T22:23:44Z,,,,,,,,,,,
+2026-10-12-tg-7,https://t.me/chess_hub/21,telegram,Match Rules,rules,emoji_reaction_button,2026-10-14T02:05:40Z,2026-10-14T02:05:40Z,,,,,,,,,,,
+2026-10-12-tg-8,https://t.me/chess_hub/23,telegram,Product,product,emoji_reaction_button,2026-10-14T05:38:46Z,2026-10-14T05:38:46Z,,,,,,,,,,,
+2026-10-12-tg-9,https://t.me/chess_hub/25,telegram,Product,product,emoji_reaction_button,2026-10-14T08:46:26Z,2026-10-14T08:46:26Z,,,,,,,,,,,
+2026-10-14-tg-community,https://t.me/chess_hub/22,telegram,Chess Culture,news,emoji_reaction_button,2026-10-14T02:18:30Z,2026-10-14T02:18:30Z,,,,,,,,,,,
+2026-10-14-tg-spotlight,https://t.me/chess_hub/26,telegram,Player Spotlight,puzzle,emoji_reaction_button,2026-10-14T11:49:40Z,2026-10-14T11:49:40Z,,,,,,,,,,,
+2026-10-17-tg-1,https://t.me/chess_hub/27,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-17T06:08:52Z,2026-10-17T06:08:52Z,,,,,,,,,,,
+2026-10-17-tg-2,https://t.me/chess_hub/30,telegram,Openings,trap,emoji_reaction_button,2026-10-17T14:39:47Z,2026-10-17T14:39:47Z,,,,,,,,,,,
+2026-10-17-tg-3,https://t.me/chess_hub/38,telegram,Product,product,emoji_reaction_button,2026-10-17T18:18:45Z,2026-10-17T18:18:45Z,,,,,,,,,,,
+2026-10-17-tg-4,https://t.me/chess_hub/40,telegram,Academy,news,emoji_reaction_button,2026-10-17T21:19:09Z,2026-10-17T21:19:09Z,,,,,,,,,,,
+2026-10-17-tg-5,https://t.me/chess_hub/41,telegram,Chess Culture,news,emoji_reaction_button,2026-10-18T00:19:26Z,2026-10-18T00:19:26Z,,,,,,,,,,,
+2026-10-17-tg-6,https://t.me/chess_hub/42,telegram,Match Rules,rules,emoji_reaction_button,2026-10-18T03:19:40Z,2026-10-18T03:19:40Z,,,,,,,,,,,
+2026-10-18-tg-1,https://t.me/chess_hub/43,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-18T23:13:54Z,2026-10-18T23:13:54Z,,,,,,,,,,,
+2026-10-18-tg-2,https://t.me/chess_hub/44,telegram,Openings,trap,emoji_reaction_button,2026-10-19T02:40:03Z,2026-10-19T02:40:03Z,,,,,,,,,,,
+2026-10-18-tg-3,https://t.me/chess_hub/46,telegram,Product,product,emoji_reaction_button,2026-10-19T05:45:16Z,2026-10-19T05:45:16Z,,,,,,,,,,,
+2026-10-18-tg-4,https://t.me/chess_hub/47,telegram,Academy,news,emoji_reaction_button,2026-10-19T08:52:28Z,2026-10-19T08:52:28Z,,,,,,,,,,,
+2026-10-18-tg-5,https://t.me/chess_hub/48,telegram,Chess Culture,product,emoji_reaction_button,2026-10-19T12:10:21Z,2026-10-19T12:10:21Z,,,,,,,,,,,
+2026-10-18-tg-6,https://t.me/chess_hub/49,telegram,Product,product,emoji_reaction_button,2026-10-19T15:10:51Z,2026-10-19T15:10:51Z,,,,,,,,,,,
+2026-10-18-tg-7,https://t.me/chess_hub/50,telegram,Product,intel,emoji_reaction_button,2026-10-19T18:11:02Z,2026-10-19T18:11:02Z,,,,,,,,,,,
+2026-10-18-tg-8,https://t.me/chess_hub/52,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-20T00:47:10Z,2026-10-20T00:47:10Z,,,,,,,,,,,
+2026-10-18-tg-yt-gotham,https://t.me/chess_hub/51,telegram,Openings,trap,emoji_reaction_button,2026-10-19T21:11:15Z,2026-10-19T21:11:15Z,,,,,,,,,,,
+2026-10-19-tg-1,https://t.me/chess_hub/53,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-20T03:47:59Z,2026-10-20T03:47:59Z,,,,,,,,,,,
+2026-10-19-tg-2,https://t.me/chess_hub/54,telegram,Openings,trap,emoji_reaction_button,2026-10-20T06:54:25Z,2026-10-20T06:54:25Z,,,,,,,,,,,
+2026-10-19-tg-3,https://t.me/chess_hub/56,telegram,Product,product,emoji_reaction_button,2026-10-20T10:42:54Z,2026-10-20T10:42:54Z,,,,,,,,,,,
+2026-10-19-tg-4,https://t.me/chess_hub/59,telegram,Academy,news,emoji_reaction_button,2026-10-20T17:02:47Z,2026-10-20T17:02:47Z,,,,,,,,,,,
+2026-10-19-tg-5,https://t.me/chess_hub/62,telegram,Chess Culture,product,emoji_reaction_button,2026-10-20T23:19:56Z,2026-10-20T23:19:56Z,,,,,,,,,,,
+2026-10-19-tg-6,https://t.me/chess_hub/64,telegram,Product,product,emoji_reaction_button,2026-10-21T06:03:27Z,2026-10-21T06:03:27Z,,,,,,,,,,,
+2026-10-19-tg-7,https://t.me/chess_hub/66,telegram,Product,news,emoji_reaction_button,2026-10-21T12:41:02Z,2026-10-21T12:41:02Z,,,,,,,,,,,
+2026-10-19-tg-8,https://t.me/chess_hub/68,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-21T18:59:55Z,2026-10-21T18:59:55Z,,,,,,,,,,,
+2026-10-19-tg-viral-1,https://t.me/chess_hub/58,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-20T14:01:48Z,2026-10-20T14:01:48Z,,,,,,,,,,,
+2026-10-19-tg-viral-2,https://t.me/chess_hub/61,telegram,Openings,trap,emoji_reaction_button,2026-10-20T20:04:17Z,2026-10-20T20:04:17Z,,,,,,,,,,,
+2026-10-19-tg-viral-3,https://t.me/chess_hub/63,telegram,Chess Culture,news,emoji_reaction_button,2026-10-21T03:02:56Z,2026-10-21T03:02:56Z,,,,,,,,,,,
+2026-10-19-tg-viral-4,https://t.me/chess_hub/65,telegram,Product,product,emoji_reaction_button,2026-10-21T09:39:03Z,2026-10-21T09:39:03Z,,,,,,,,,,,
+2026-10-19-tg-viral-5,https://t.me/chess_hub/67,telegram,Chess Culture,product,emoji_reaction_button,2026-10-21T15:44:23Z,2026-10-21T15:44:23Z,,,,,,,,,,,
+2026-10-20-tg-1,https://t.me/chess_hub/69,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-21T22:00:38Z,2026-10-21T22:00:38Z,,,,,,,,,,,
+2026-10-20-tg-2,https://t.me/chess_hub/70,telegram,Openings,trap,emoji_reaction_button,2026-10-22T01:11:18Z,2026-10-22T01:11:18Z,,,,,,,,,,,
+2026-10-20-tg-3,https://t.me/chess_hub/73,telegram,Product,product,emoji_reaction_button,2026-10-22T04:56:42Z,2026-10-22T04:56:42Z,,,,,,,,,,,
+2026-10-20-tg-4,https://t.me/chess_hub/75,telegram,Academy,news,emoji_reaction_button,2026-10-22T11:16:30Z,2026-10-22T11:16:30Z,,,,,,,,,,,
+2026-10-20-tg-5,https://t.me/chess_hub/78,telegram,Chess Culture,product,emoji_reaction_button,2026-10-22T17:20:57Z,2026-10-22T17:20:57Z,,,,,,,,,,,
+2026-10-20-tg-viral-1,https://t.me/chess_hub/74,telegram,Tactics,puzzle,emoji_reaction_button,2026-10-22T08:15:44Z,2026-10-22T08:15:44Z,,,,,,,,,,,
+2026-10-20-tg-viral-2,https://t.me/chess_hub/76,telegram,Openings,trap,emoji_reaction_button,2026-10-22T14:20:30Z,2026-10-22T14:20:30Z,,,,,,,,,,,
+2026-10-11-art-1,https://web3chess.online/blog/2026-10-11-art-1,website_blog,Tactics,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,,,,,,,,,,,
+2026-10-12-art-1,https://web3chess.online/blog/2026-10-12-art-1,website_blog,Tactics,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,,,,,,,,,,,
+2026-10-12-art-2,https://web3chess.online/blog/2026-10-12-art-2,website_blog,Openings,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,,,,,,,,,,,
+2026-10-12-art-3,https://web3chess.online/blog/2026-10-12-art-3,website_blog,Academy,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,,,,,,,,,,,
+2026-10-12-art-4,https://web3chess.online/blog/2026-10-12-art-4,website_blog,Chess News,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,,,,,,,,,,,
+2026-10-12-art-5,https://web3chess.online/blog/2026-10-12-art-5,website_blog,Chess Culture,seo_longform_guide,schema_jsonld_fen,2026-10-12T00:00:00Z,2026-10-12T00:00:00Z,,,,,,,,,,,

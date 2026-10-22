@@ -21,6 +21,34 @@ from .publisher import PublisherAgent
 from pipeline import queue, brand, renderer
 
 
+def _render_and_gate(post: Dict[str, Any]) -> bool:
+    """Render a creative and make the render result part of the publish gate.
+
+    Copy QA alone cannot approve a post whose required image failed to render.
+    Keeping this decision beside orchestration prevents a queue entry from looking
+    healthy when Chromium, a template, or a dependency failed downstream.
+    """
+    renderer.render(post)
+    creative_required = bool(post.get("creative"))
+    render_result = post.get("render") or {}
+    render_ok = bool(render_result.get("ok")) or not creative_required
+    if render_ok:
+        return True
+
+    qa_result = dict(post.get("qa") or {})
+    issues = list(qa_result.get("issues") or [])
+    detail = str(render_result.get("error") or "required creative was not rendered").strip()
+    issue = f"creative render failed: {detail[:300]}"
+    if issue not in issues:
+        issues.append(issue)
+    qa_result["passed"] = False
+    qa_result["issues"] = issues
+    qa_result["checked_at"] = queue.iso(queue.utcnow())
+    post["qa"] = qa_result
+    post["status"] = "rejected"
+    return False
+
+
 class ContentEngineOrchestrator:
     """Master orchestrator managing autonomous and supervised content flows."""
 
@@ -346,7 +374,7 @@ class ContentEngineOrchestrator:
                     "• Stop looking for perfection; find the forcing check.\n"
                     "• Never premove recaptures when your opponent has a check.\n"
                     "• Keep pawns connected so you never lose on pre-click lag.\n\n"
-                    "The Web3Chess Mini App uses sub-50ms synchronized server clocks so your speed is never stolen by lag."
+                    "The server validates moves and keeps the authoritative match state while the board stays inside the Mini App."
                 ),
                 "cta": "play",
                 "fen": None,
@@ -380,7 +408,7 @@ class ContentEngineOrchestrator:
                 "hook": "You premoved a recapture. Your opponent played an in-between check. Familiar pain?",
                 "body": (
                     "The German masters named it a century ago: <i>Zwischenzug</i> (the in-between move).\n"
-                    "In 3-minute blitz, 80% of lost pieces come from assuming the opponent will play the expected move.\n\n"
+                    "In blitz, automatic recaptures fail when a forcing check changes the expected move order.\n\n"
                     "Before you snatch a bishop back, ask:\n"
                     "Does my opponent have a forcing check first?\n\n"
                     "If they do, your premove just gave away a rook.\n"
@@ -392,17 +420,14 @@ class ContentEngineOrchestrator:
                 "claim": None,
                 "reveal_text": None,
             },
-            # S5: Product - Arena Flash Alert
+            # S5: Product - match setup explainer
             {
                 "slot": 5,
                 "category": "Product",
-                "hook": "Arena Alert: The 20:00 UTC Blitz Arena registration locks in 15 minutes",
+                "hook": "Before a USDT match, check the setup shown on screen",
                 "body": (
-                    "⚡ <b>The night's premier global tournament window is open.</b>\n\n"
-                    "3-Minute Blitz • Synchronized matchmaking • $500 USDT Vault.\n"
-                    "Double-elimination bracket with live spectator room for community chat.\n\n"
-                    "USDT matches are for adults (18+) where permitted. You can lose your stake.\n"
-                    "Once the countdown hits zero, pairings lock automatically."
+                    "Confirm the stake, displayed payout, and time control before matching.\n\n"
+                    "USDT matches are for adults (18+) where permitted. You can lose your stake."
                 ),
                 "cta": "arena",
                 "fen": None,
@@ -418,7 +443,7 @@ class ContentEngineOrchestrator:
             if s["category"] == "Product":
                 post = self.copywriter.draft_fomo_arena_alert(
                     slot_id=slot_id,
-                    tournament_name="Daily Blitz Vault ($500 USDT)",
+                    tournament_name="Competitive match setup",
                     start_time_utc="20:00 UTC",
                     minutes_remaining=15,
                 )
@@ -878,21 +903,14 @@ class ContentEngineOrchestrator:
     def generate_telegram_daily_batch(self, target_date: Optional[date] = None, render_images: bool = True) -> Dict[str, Any]:
         """Generates, verifies, renders, and stages 8 daily Telegram posts spaced every 3 hours.
         
-        Pillars:
-        - TG-1 (00:00 UTC): Tactics Puzzle (Back rank with 7h spoiler reveal)
-        - TG-2 (03:00 UTC): Opening Trap (Blackburne-Shilling Gambiteer lesson)
-        - TG-3 (06:00 UTC): Arena Vault FOMO (Morning Vault countdown with 18+ wager disclaimer)
-        - TG-4 (09:00 UTC): Academy Pro Tip (Candidate move calculation & prophylactic thinking)
-        - TG-5 (12:00 UTC): Speed Chess Culture (Zwischenzug / Premove tilt)
-        - TG-6 (15:00 UTC): Match Rules & Fair Play (95% pot return & zero-cheat engine)
-        - TG-7 (18:00 UTC): Product Architecture (Sub-50ms sync on Bot API 8.0)
-        - TG-8 (21:00 UTC): Evening Tactics Puzzle (Arabian Mate with 7h spoiler reveal)
+        Six reviewed Telegram slots follow pipeline/config.json, three hours apart.
+        Each post requires original chess or product value and passes QA before review.
         """
         d = target_date or self.plan_date
         d_str = d.isoformat()
         results: List[Dict[str, Any]] = []
 
-        slots_utc = ["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00"]
+        slots_utc = queue.CONFIG["telegram"]["slots_utc"]
         date_badge = d.strftime("%b %d")
 
         # Collect previously used hooks to guarantee zero Telegram duplicates across days
@@ -1223,7 +1241,7 @@ class ContentEngineOrchestrator:
              "3. Threats (forcing queen or rook moves)\n\n"
              "Review candidate calculation inside the free Web3Chess Academy."),
             ("Prophylaxis", "Ask what your opponent wants before you calculate your own attack",
-             "In blitz scrambles, 70% of losses come from ignoring opponent counter-threats.\n\n"
+             "In blitz scrambles, overlooked counter-threats often decide the position.\n\n"
              "Before committing an attacking piece, take 1 second to spot their best reply.\n\n"
              "Study prophylactic thinking inside the Web3Chess Academy."),
             ("Piece Activity", "An active knight in the center out-evaluates a passive rook on the rim",
@@ -1250,65 +1268,51 @@ class ContentEngineOrchestrator:
         )
         p5["scheduled_at"] = f"{d_str}T{slots_utc[4]}:00Z"
 
-        # 6. TG-6: Arena Vault Countdown ($500 USDT)
+        # 6. TG-6: evergreen, factual match setup explainer
         p6 = self.copywriter.draft_fomo_arena_alert(
             slot_id=f"{d_str}-tg-6",
-            tournament_name="Daily Blitz Vault ($500 USDT)",
+            tournament_name="Competitive match setup",
             start_time_utc="18:00 UTC",
             minutes_remaining=15,
             wager_entry=5,
         )
         p6["scheduled_at"] = f"{d_str}T{slots_utc[5]}:00Z"
 
-        # 7. TG-7: Product Engineering & Zero-Cheat
-        p7 = self.copywriter.draft_engineering_telegram_post(
-            slot_id=f"{d_str}-tg-7",
-            hook="How we built sub-50ms board sync inside Telegram Mini Apps",
-            body=(
-                "FastAPI + Socket.IO real-time engine built for Bot API 8.0.\n\n"
-                "• Microsecond server monotonic timestamps\n"
-                "• Zero board lag on high-frequency mobile connections\n"
-                "• Instant PvP matchmaking without leaving Telegram chats"
-            ),
-        )
-        p7["scheduled_at"] = f"{d_str}T{slots_utc[6]}:00Z"
-
-        # 8. TG-8: Evening Tactics Interactive Drill
-        t8_spec = _pick_tg_unique(tg_evening_pool, 2)
-        p8 = self.copywriter.draft_interactive_academy_drill(
-            slot_id=f"{d_str}-tg-8",
-            fen=t8_spec["fen"],
-            solution=t8_spec["solution"],
-            tactic_name=t8_spec["tactic_name"],
-            claim=t8_spec["claim"],
-            hook=t8_spec["hook"],
-            body=t8_spec["body"],
-        )
-        p8["scheduled_at"] = f"{d_str}T{slots_utc[7]}:00Z"
-
-        posts = [p1, p2, p3, p4, p5, p6, p7, p8]
+        posts = [p1, p2, p3, p4, p5, p6]
 
         for p in posts:
+            if queue.path_for(p["id"]).exists() and queue.load(p["id"]).get("status") != "planned":
+                existing = queue.load(p["id"])
+                if render_images and existing.get("creative") and not (existing.get("render") or {}).get("ok"):
+                    _render_and_gate(existing)
+                    queue.save(existing)
+                results.append({"id": p["id"], "category": existing.get("category"),
+                                "scheduled_at": existing.get("scheduled_at"),
+                                "qa_passed": (existing.get("qa") or {}).get("passed", False),
+                                "render_ok": (existing.get("render") or {}).get("ok") if render_images else None,
+                                "image": existing.get("image"), "preserved": True})
+                continue
             qa_res = self.qa.inspect_telegram_post(p)
             if not qa_res["passed"]:
                 raise RuntimeError(f"Post {p['id']} QA failed: {qa_res['issues']}")
             p["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
-            p["status"] = "approved"
+            p["status"] = "approved" if queue.CONFIG["mode"]["telegram"] == "auto" else "draft"
 
             if render_images:
-                renderer.render(p)
+                _render_and_gate(p)
 
             queue.save(p)
             results.append({
                 "id": p["id"],
                 "category": p["category"],
                 "scheduled_at": p["scheduled_at"],
-                "qa_passed": True,
+                "qa_passed": (p.get("qa") or {}).get("passed", False),
+                "render_ok": (p.get("render") or {}).get("ok") if render_images else None,
                 "image": p.get("image"),
             })
 
         return {
-            "status": "success",
+            "status": "success" if all(item["qa_passed"] for item in results) else "needs_attention",
             "date": d_str,
             "posts_created": len(results),
             "posts": results,
@@ -1319,12 +1323,7 @@ class ContentEngineOrchestrator:
         target_date: Optional[date] = None,
         render_images: bool = False,
     ) -> Dict[str, Any]:
-        """Generates, QA-gates, approves, and queues 3 high-impact daily posts for X (Twitter).
-
-        - X-1 (00:00 UTC): Tactics & Calculation Bookmark Magnet
-        - X-2 (08:00 UTC): Blitz Scramble, Psychology, Debate & Engineering
-        - X-3 (16:00 UTC): Synchronized Arena & Competitive Integrity (18+ compliant)
-        """
+        """Generate six distinct, QA-gated X drafts at configured three-hour slots."""
         d = target_date or self.plan_date
         d_str = d.isoformat()
         date_badge = d.strftime("%b %d")
@@ -1354,7 +1353,7 @@ class ContentEngineOrchestrator:
                 "reply": (
                     "Solution: 1. Ra8# (Ladder Mate).\n"
                     "One rook holds the 7th rank while the second delivers checkmate on the 8th.\n\n"
-                    f"Practise 50+ master patterns in our free Academy:\nhttps://{self.primary_domain}/academy"
+                    f"Practise this pattern in our free Academy:\nhttps://{self.primary_domain}/academy"
                 ),
                 "headline": "LADDER MATE\n*SEAL THE 8TH RANK*",
                 "subhead": "White to move • Mate in 1",
@@ -1493,7 +1492,7 @@ class ContentEngineOrchestrator:
                 "hook": "You premoved a recapture. Your opponent played an in-between check",
                 "body": (
                     "The masters call it Zwischenzug.\n\n"
-                    "In 3-minute blitz, 80% of blunders come from assuming an automatic recapture."
+                    "In blitz, automatic recaptures fail when a forcing check changes the move order."
                 ),
                 "reply": (
                     "Before snatching a piece back, always ask: do they have a forcing check first?\n\n"
@@ -1502,22 +1501,24 @@ class ContentEngineOrchestrator:
             },
             {
                 "category": "Psychology",
-                "hook": "Bank 25 seconds in the first 10 moves or lose the scramble",
+                "hook": "Save clock time early so the sharp position gets your attention",
                 "body": (
-                    "In 3+0 blitz, each move averages 4.5 seconds.\n\n"
-                    "Burning 40 seconds on move 8 guarantees panic when the endgame gets sharp."
+                    "A long think in a familiar opening leaves less time for the first new position.\n\n"
+                    "Move by principle early, then spend time where the board changes."
                 ),
                 "reply": (
                     "Time on the digital clock is a physical piece on the board.\n\n"
-                    f"Play zero-lag 3+0 blitz inside Telegram:\n{brand.TG_APP}"
+                    f"Play a 3+0 game inside Telegram:\n{brand.TG_APP}"
                 ),
+                "headline": "THE 6-SECOND TILT\n*ADRENALINE OVERLOAD*",
+                "subhead": "Why tunnel vision breaks calculation",
             },
             {
                 "category": "Chess Debate",
                 "hook": "Endgame technique beats opening memory under a 3-minute clock",
                 "body": (
-                    "Club players spend 90% of study time memorizing 15 moves of theory.\n\n"
-                    "Then move 16 arrives and rook endgames decide everything."
+                    "Opening memory expires as soon as the position leaves your notes.\n\n"
+                    "Endgame patterns still help when the clock is low and the board is simplified."
                 ),
                 "reply": (
                     "Do you study openings or endgame patterns more for blitz?\n\n"
@@ -1526,10 +1527,10 @@ class ContentEngineOrchestrator:
             },
             {
                 "category": "Engineering",
-                "hook": "How server-side monotonic clocks stop lag manipulation in blitz",
+                "hook": "Why the server, not the browser, owns the match clock",
                 "body": (
-                    "Client timers can be spoofed by packet drops.\n\n"
-                    "Our FastAPI + Socket.IO engine timestamps every move with sub-50ms precision."
+                    "A browser can pause or reconnect. The server keeps the authoritative match state and validates each move.\n\n"
+                    "That makes reconnect and timing behavior easier to audit."
                 ),
                 "reply": (
                     "Read our engineering breakdown and test the real-time board:\n"
@@ -1565,21 +1566,21 @@ class ContentEngineOrchestrator:
         arena_pool = [
             {
                 "category": "Product",
-                "hook": "Why Web3Chess runs 4 daily Arena windows instead of dead queues",
+                "hook": "Choose the match setup before Web3Chess starts matching",
                 "body": (
-                    "Matchmaking at 02:00, 08:00, 14:00, and 20:00 UTC guarantees tight Elo pairings.\n\n"
+                    "Select the wager and time control, then confirm the options shown in the matching flow.\n\n"
                     "USDT matches: adults (18+) only. You can lose your stake."
                 ),
                 "reply": (
-                    "Enter the next scheduled Arena window inside Telegram:\n"
+                    "Open the Mini App and review the match setup:\n"
                     f"{brand.TG_ARENA}"
                 ),
             },
             {
                 "category": "Product",
-                "hook": "Skill-gated PvP: 95% of every match pool goes to the winner",
+                "hook": "Read the payout preview before you start a USDT match",
                 "body": (
-                    "Zero house-edge luck, zero bots, and server-validated moves on every turn.\n\n"
+                    "The match setup shows the selected stake and winner payout before play begins.\n\n"
                     "USDT matches: adults (18+) only. You can lose your stake."
                 ),
                 "reply": (
@@ -1589,33 +1590,33 @@ class ContentEngineOrchestrator:
             },
             {
                 "category": "Product",
-                "hook": "Double-elimination Blitz Brackets lock at 20:00 UTC tonight",
+                "hook": "A faster match still needs a deliberate setup",
                 "body": (
-                    "One slip never ends your run—battle through the lower bracket live.\n\n"
+                    "Check the time control, stake, and displayed payout before entering matching.\n\n"
                     "USDT matches: adults (18+) only. You can lose your stake."
                 ),
                 "reply": (
-                    "Join the Arena lobby or spectate top boards free in Telegram:\n"
+                    "Review the match rules before opening the Arena:\n"
                     f"{brand.TG_ARENA}"
                 ),
             },
             {
                 "category": "Product",
-                "hook": "From checkmate on the board to instant TON wallet settlement",
+                "hook": "From match setup to the board in one Mini App flow",
                 "body": (
-                    "Every move is verified by python-chess and settled transparently.\n\n"
+                    "Choose the options, enter matching, and keep the selected terms visible before play.\n\n"
                     "USDT matches: adults (18+) only. You can lose your stake."
                 ),
                 "reply": (
-                    "Open the Web3Chess Mini App and play free or competitive matches:\n"
+                    "Open Free Coach practice or review the competitive match setup:\n"
                     f"{brand.TG_APP}"
                 ),
             },
             {
                 "category": "Product",
-                "hook": "The 14:00 UTC Midday Arena is open for blitz registration",
+                "hook": "What to check before tapping Start Game",
                 "body": (
-                    "3-Minute Blitz • Real-time Elo pairings • Live spectator lounge.\n\n"
+                    "Confirm the wager, time control, and displayed winner payout in the setup modal.\n\n"
                     "USDT matches: adults (18+) only. You can lose your stake."
                 ),
                 "reply": (
@@ -1625,15 +1626,23 @@ class ContentEngineOrchestrator:
             },
             {
                 "category": "Product",
-                "hook": "Zero engine assistance: real-time timing & move integrity checks",
+                "hook": "Fair play starts with server-validated legal moves",
                 "body": (
-                    "Every rated Arena duel runs automated fair-play screening before payout.\n\n"
+                    "The game service validates legal moves and keeps the authoritative match state.\n\n"
                     "USDT matches: adults (18+) only. You can lose your stake."
                 ),
                 "reply": (
                     "Read how we protect competitive integrity at:\n"
                     f"https://{self.primary_domain}/wagers"
                 ),
+                "tag": "Fair play",
+                "headline": "LEGAL MOVES\n*SERVER CHECKED*",
+                "subhead": "Authoritative match state",
+                "steps": [
+                    "Server receives the move",
+                    "Legal move is validated",
+                    "Match state updates",
+                ],
             },
         ]
 
@@ -1648,72 +1657,52 @@ class ContentEngineOrchestrator:
             fallback["hook"] = f"{fallback['hook']} ({date_badge})"
             return fallback
 
-        # Slot X-1: Morning Tactics (00:00 UTC)
-        x1_id = f"{d_str}-x-1"
-        t_spec = _pick_unique(tactics_pool, 0)
-        x1_post = self.copywriter.draft_x_single_post(
-            slot_id=x1_id,
-            category="Tactics",
-            hook=t_spec["hook"],
-            body=t_spec["body"],
-            docked_reply_text=t_spec["reply"],
-            fen=t_spec["fen"],
-            solution=t_spec["solution"],
-            claim=t_spec["claim"],
-            size="square",
-        )
-        x1_post["creative"]["headline"] = t_spec["headline"]
-        x1_post["creative"]["subhead"] = t_spec["subhead"]
-        x1_post["scheduled_at"] = f"{d_str}T00:00:00Z"
-
-        # Slot X-2: Midday Culture / Psychology / Debate / Engineering (08:00 UTC)
-        x2_id = f"{d_str}-x-2"
-        c_spec = _pick_unique(culture_pool, 1)
-        x2_post = self.copywriter.draft_x_single_post(
-            slot_id=x2_id,
-            category=c_spec["category"],
-            hook=c_spec["hook"],
-            body=c_spec["body"],
-            docked_reply_text=c_spec["reply"],
-            size="square",
-        )
-        x2_post["scheduled_at"] = f"{d_str}T08:00:00Z"
-
-        # Slot X-3: Evening Arena / Product (16:00 UTC)
-        x3_id = f"{d_str}-x-3"
-        a_spec = _pick_unique(arena_pool, 2)
-        x3_post = self.copywriter.draft_x_single_post(
-            slot_id=x3_id,
-            category=a_spec["category"],
-            hook=a_spec["hook"],
-            body=a_spec["body"],
-            docked_reply_text=a_spec["reply"],
-            size="square",
-        )
-        x3_post["scheduled_at"] = f"{d_str}T16:00:00Z"
-
-        for idx, (post, pillar) in enumerate(
-            [(x1_post, "Tactics"), (x2_post, c_spec["category"]), (x3_post, "Product")],
-            start=1,
-        ):
+        slots = queue.CONFIG["x"]["slots_utc"]
+        families = ("tactics", "culture", "arena", "culture", "tactics", "arena")
+        pools = {"tactics": tactics_pool, "culture": culture_pool, "arena": arena_pool}
+        for idx, (hhmm, family) in enumerate(zip(slots, families), start=1):
+            post_id = f"{d_str}-x-{idx}"
+            if queue.path_for(post_id).exists() and queue.load(post_id).get("status") != "planned":
+                existing = queue.load(post_id)
+                if render_images and existing.get("creative") and not (existing.get("render") or {}).get("ok"):
+                    _render_and_gate(existing)
+                    queue.save(existing)
+                results.append({"id": post_id, "pillar": existing.get("category"),
+                                "scheduled_at": existing.get("scheduled_at"), "qa_passed": (existing.get("qa") or {}).get("passed", False),
+                                "render_ok": (existing.get("render") or {}).get("ok") if render_images else None,
+                                "image": existing.get("image"), "preserved": True})
+                continue
+            spec = _pick_unique(pools[family], idx)
+            used_hooks.add(spec["hook"].strip().lower())
+            kwargs = {"slot_id": post_id, "category": "Tactics" if family == "tactics" else spec["category"],
+                      "hook": spec["hook"], "body": spec["body"], "docked_reply_text": spec["reply"], "size": "square"}
+            if family == "tactics":
+                kwargs.update(fen=spec["fen"], solution=spec["solution"], claim=spec["claim"])
+            post = self.copywriter.draft_x_single_post(**kwargs)
+            if spec.get("headline"):
+                post["creative"]["headline"] = spec["headline"]
+            if spec.get("subhead"):
+                post["creative"]["subhead"] = spec["subhead"]
+            if spec.get("tag"):
+                post["creative"]["tag"] = spec["tag"]
+            if spec.get("steps"):
+                post["creative"]["steps"] = spec["steps"]
+            post["scheduled_at"] = f"{d_str}T{hhmm}:00Z"
             qa_res = self.qa.inspect_x_post(post)
             if not qa_res["passed"]:
                 raise RuntimeError(f"X-{idx} QA failed: {qa_res['issues']}")
             post["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
-            post["status"] = "approved"
+            post["status"] = "approved" if queue.CONFIG["mode"]["x"] == "auto" else "draft"
             if render_images:
-                renderer.render(post)
+                _render_and_gate(post)
             queue.save(post)
-            results.append({
-                "id": post["id"],
-                "pillar": pillar,
-                "scheduled_at": post.get("scheduled_at"),
-                "qa_passed": True,
-                "image": post.get("image"),
-            })
+            results.append({"id": post_id, "pillar": post["category"], "scheduled_at": post["scheduled_at"],
+                            "qa_passed": (post.get("qa") or {}).get("passed", False),
+                            "render_ok": (post.get("render") or {}).get("ok") if render_images else None,
+                            "image": post.get("image")})
 
         return {
-            "status": "success",
+            "status": "success" if all(item["qa_passed"] for item in results) else "needs_attention",
             "date": d_str,
             "posts_created": len(results),
             "posts": results,
@@ -1727,31 +1716,23 @@ class ContentEngineOrchestrator:
 
         thread = self.copywriter.draft_x_thread(
             thread_id=thread_id,
-            topic="The Death of Tap-to-Earn: Why Intellectual Speed Chess is Taking Over Telegram",
+            topic="How a Telegram chess match moves from setup to the board",
             category="Product",
             hook_tweet_text=(
-                "Tap-to-earn was an illusion.\n\n"
-                "Millions clicked digital coins for months, only to receive dust tokens and inflation.\n\n"
-                "The next phase of Web3 gaming is not clicking — it is intellectual mastery and skill-based PvP. Here is why speed chess is taking over: 🧵"
+                "A good chess flow makes the important choices visible before the clock starts.\n\n"
+                "Here is how Web3Chess moves from match setup to the board inside Telegram: 🧵"
             ),
             body_tweets=[
                 (
-                    "In classical crypto games, token emissions dilute value.\n\n"
-                    "In pure speed chess, value is zero-sum and skill-gated:\n"
-                    "• No bots running scripts\n"
-                    "• No fake grinding loops\n"
-                    "• Every victory is calculated under a 3-minute clock\n\n"
-                    "Rating cannot be bought."
+                    "First, choose how to play and review the time control.\n\n"
+                    "The selected match options remain visible before matching."
                 ),
                 (
-                    "The real bottleneck on Telegram wasn't interest — it was latency.\n\n"
-                    "Classical Web3 chess forced on-chain transactions per move, killing blitz flow.\n\n"
-                    "We solved this with sub-100ms WebSockets and instant matchmaking in Bot API 8.0"
+                    "Next, matching finds an opponent and carries the selected options into the game.\n\n"
+                    "The server keeps the authoritative match state and validates each legal move."
                 ),
                 (
-                    "Synchronized liquidity beats random queues.\n\n"
-                    "4 daily global Arena Windows (02:00, 08:00, 14:00, 20:00 UTC).\n"
-                    "Transparent settlement: 95% winner payout, 3% fee, 2% referral pool.\n\n"
+                    "Before starting a USDT match, read the rules and confirm every number shown in the setup.\n\n"
                     "USDT matches: adults (18+) only. You can lose your stake."
                 ),
             ],
@@ -1786,8 +1767,8 @@ class ContentEngineOrchestrator:
                 "handle": "@Hikaru",
                 "context": "Post-match blitz review or stream recap",
                 "comment": (
-                    "When calculation drops below 5 seconds, positional advantage stops existing. "
-                    "In bullet, the player who creates dynamic tactical complications wins 80% of scramble games."
+                    "When the clock drops below five seconds, simple forcing moves become easier to execute than a complex advantage. "
+                    "Checks, captures, and safe king moves deserve the first scan."
                 ),
             },
             {
@@ -1804,8 +1785,8 @@ class ContentEngineOrchestrator:
                 "handle": "@ton_blockchain",
                 "context": "Telegram Mini Apps or Web3 gaming announcement",
                 "comment": (
-                    "Tap-to-earn proved Telegram's distribution power, but skill-based synchronous PvP is what proves long-term user retention. "
-                    "Sub-100ms chess sync inside a Bot API 8.0 Mini App is a game changer for real gaming."
+                    "Telegram Mini Apps can shorten the route from a shared challenge to a playable board. "
+                    "The product question is whether setup, matching, and reconnect behavior stay clear on mobile."
                 ),
             },
             {
@@ -1845,9 +1826,12 @@ class ContentEngineOrchestrator:
         fen: Optional[str] = None,
         solution: Optional[List[str]] = None,
         time_control: str = "3+0 Blitz",
+        verified_source_url: Optional[str] = None,
         render_images: bool = True,
     ) -> Dict[str, Any]:
         """Generates, QA-gates, renders creatives, and queues a multi-platform Player Spotlight campaign."""
+        if not verified_source_url:
+            raise ValueError("verified_source_url is required for player spotlight campaigns")
         d = target_date or self.plan_date
         d_str = d.isoformat()
         clean_fen = fen or "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1"
@@ -1865,6 +1849,7 @@ class ContentEngineOrchestrator:
             solution=clean_sol,
             time_control=time_control,
             platform="telegram",
+            verified_source_url=verified_source_url,
         )
         tg_qa = self.qa.inspect_telegram_post(tg_post)
         if not tg_qa["passed"]:
@@ -1888,6 +1873,7 @@ class ContentEngineOrchestrator:
             solution=clean_sol,
             time_control=time_control,
             platform="x",
+            verified_source_url=verified_source_url,
         )
         x_qa = self.qa.inspect_x_post(x_post)
         if not x_qa["passed"]:

@@ -1,0 +1,55 @@
+{
+  "id": "2026-10-22-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-22",
+  "category": "Openings",
+  "format": "trap",
+  "hook": "White grabs central space early. Black's bishop counter-strike flips the board",
+  "cta": "academy",
+  "text": "<b>White grabs central space early. Black's bishop counter-strike flips the board</b>\n\n1.e4 e5 2.Nf3 d5!? Black sacrifices a central pawn to open diagonals for both bishops.\nUnprepared players get suffocated before reaching move 10.\n\nReview the complete refutation line inside the free Web3Chess Academy.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "rnbqkbnr/ppp2ppp/8/3pp3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+    "solution": [
+      "Nxe5"
+    ],
+    "claim": "line_legal"
+  },
+  "creative": {
+    "template": "trap",
+    "size": "square",
+    "tag": "Trap Breakdown: Elephant Gambit",
+    "headline": "ELEPHANT GAMBIT\n*PUNISH GREED*",
+    "subhead": "Can you spot the refutation line?",
+    "fen": "rnbqkbnr/ppp2ppp/8/3pp3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Nd4"
+    ],
+    "cta_label": "Learn in Academy",
+    "footer": "Study full lines in the Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-22T03:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-21T00:00:43Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-22/2026-10-22-tg-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

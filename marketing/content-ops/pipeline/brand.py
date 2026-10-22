@@ -35,21 +35,21 @@ VIRAL_KEYWORD_CLUSTERS = {
         "tilt", "flow state", "mental stamina"
     ],
     "telegram": [
-        "Telegram Mini App", "Telegram game", "Bot API 8.0", "TON ecosystem", "instant PvP",
-        "zero latency", "sub-100ms sync", "no app download", "play in group chat"
+        "Telegram Mini App", "Telegram game", "Bot API 8.0", "TON ecosystem", "live PvP",
+        "server-authoritative play", "reconnect handling", "no app download", "play in Telegram"
     ],
     "skill_wager": [
-        "skill-based gaming", "anti-brainrot", "zero-sum", "prize vault", "arena brackets",
-        "USDT payout", "instant settlement", "provably fair", "peer-to-peer duel", "monotonic clock",
-        "zero-cheat engine", "speed bounty", "crypto betting", "iGaming"
+        "skill-based gaming", "competitive chess", "match setup", "displayed payout", "time control",
+        "USDT match", "server-validated legal moves", "peer-to-peer duel", "authoritative clock",
+        "fair-play controls", "adult competitive play", "wager rules", "iGaming"
     ],
     "web3_p2e": [
-        "PlayToEarn", "P2E", "GameFi", "Web3 gaming", "TON blockchain", "non-custodial",
-        "instant payout", "anti-tap", "skill economics", "smart contracts"
+        "GameFi", "Web3 gaming", "TON blockchain", "Telegram gaming", "wallet connection",
+        "match settlement", "skill gaming", "Mini Apps"
     ],
     "tech_arch": [
-        "FastAPI", "Socket.IO", "WebSockets", "sub-100ms latency", "Bot API 8.0",
-        "monotonic timestamps", "distributed cache", "Next.js App Router"
+        "FastAPI", "Socket.IO", "WebSockets", "server-authoritative state", "Bot API 8.0",
+        "monotonic timestamps", "reconnect handling", "Next.js App Router"
     ]
 }
 
@@ -94,7 +94,7 @@ AUDIENCE_TAG_PRESETS = {
 CTAS = {
     "play": ("Play a free game", TG_APP, False),
     "arena": ("Open the Arena", TG_ARENA, True),
-    "arena_vault": ("Enter $500 Arena", TG_ARENA, True),
+    "arena_vault": ("Review Match Setup", TG_ARENA, True),
     "academy": ("Open the Academy", f"{SITE}/academy", False),
     "academy_app": ("Solve in Academy", TG_ACADEMY, False),
     "mystery_box": ("Claim Mystery Box", TG_BOX, False),

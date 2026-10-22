@@ -9,6 +9,7 @@ post an entry that has a `creative` but no image (it never silently falls back t
 from __future__ import annotations
 import json, re, shutil, subprocess
 from pathlib import Path
+from urllib.parse import urlsplit
 from . import brand, queue
 
 ENGINE = queue.ROOT / "marketing" / "templates" / "tg"
@@ -19,6 +20,108 @@ STUDIO_FORMATS = {"square": (1080, 1080), "portrait": (1080, 1350), "story": (10
 STUDIO_ART = {"sculpture", "academy", "clock", "stakes", "fair-play", "castling"}
 STUDIO_ICONS = {"target", "strategy", "book-open-text", "graduation-cap", "lightning", "clock", "coins", "telegram-logo", "shield-check", "trophy", "users-three"}
 SPEC_TEXT_FIELDS = ("headline", "subhead", "tag", "cta_label", "footer", "source", "reward_note", "tracker", "category", "score", "title", "blueprint", "command", "telemetry")
+
+STUDIO_CONTEXT = {
+    "Academy": ("academy", ["graduation-cap", "strategy", "book-open-text"]),
+    "Openings": ("academy", ["book-open-text", "strategy", "target"]),
+    "Chess Culture": ("clock", ["clock", "strategy", "users-three"]),
+    "Product": ("sculpture", ["telegram-logo", "strategy", "target"]),
+    "Engineering": ("fair-play", ["telegram-logo", "shield-check", "strategy"]),
+    "Match Rules": ("stakes", ["coins", "clock", "shield-check"]),
+    "Chess Debate": ("sculpture", ["users-three", "strategy", "target"]),
+    "Psychology": ("clock", ["clock", "strategy", "target"]),
+    "Tactical Matrix": ("academy", ["target", "strategy", "book-open-text"]),
+    "Player Spotlight": ("sculpture", ["trophy", "strategy", "users-three"]),
+    "Leaderboard": ("sculpture", ["trophy", "users-three", "target"]),
+}
+
+
+def _clean_ui(value: object, limit: int) -> str:
+    """Convert legacy renderer markup into Studio-safe, terminal-period-free UI copy."""
+    text = re.sub(r"[*_`{}]", "", str(value or ""))
+    text = re.sub(r"\s+", " ", text.replace("\\n", "\n")).strip()
+    return text.rstrip(". ")[:limit].rstrip(". ")
+
+
+def _destination(post: dict) -> tuple[str, str]:
+    cta_id = post.get("cta")
+    if cta_id in brand.CTAS:
+        url = brand.CTAS[cta_id][1]
+        return url, urlsplit(url).hostname or "web3chess.online"
+    docked = post.get("docked_reply")
+    docked_text = docked.get("text", "") if isinstance(docked, dict) else str(docked or "")
+    match = re.search(r"https://[^\s<]+", docked_text)
+    if match:
+        url = match.group(0).rstrip(".,)")
+        return url, urlsplit(url).hostname or "web3chess.online"
+    return brand.SITE, "web3chess.online"
+
+
+def _proofs(spec: dict, category: str) -> list[str]:
+    values: list[str] = []
+    values.extend(str(item) for item in spec.get("steps", []) if str(item).strip())
+    values.extend(
+        f"{item.get('label')}: {item.get('text')}" if item.get("label") else str(item.get("text", ""))
+        for item in spec.get("panels", []) if isinstance(item, dict) and item.get("text")
+    )
+    values.extend(
+        f"{item.get('val')} {item.get('label')}" for item in spec.get("metrics", [])
+        if isinstance(item, dict) and (item.get("val") or item.get("label"))
+    )
+    fallbacks = {
+        "Academy": ["Name the pattern", "Check forcing moves", "Review the answer"],
+        "Chess Culture": ["Check the clock", "Scan the position", "Choose one move"],
+        "Product": ["Open the Mini App", "Choose how to play", "Make your first move"],
+        "Engineering": ["Open the Mini App", "Start matching", "Play on one board"],
+        "Match Rules": ["Choose a stake", "Check the payout", "Read the rules"],
+        "Tactical Matrix": ["Check every check", "Scan every capture", "Name the threat"],
+    }.get(category, ["Read the position", "Choose a plan", "Try the next move"])
+    for fallback in fallbacks:
+        if len(values) >= 3:
+            break
+        values.append(fallback)
+    return [_clean_ui(value, 80) for value in values[:3]]
+
+
+def prepare(post: dict) -> dict:
+    """Attach a context-bound Studio project to promotional social creative.
+
+    Exact chess positions remain on the board renderer. This mutation is intentional: QA,
+    render, and publishing inspect the same editable project that /CREATIVES can import.
+    """
+    spec = post.get("creative")
+    if not isinstance(spec, dict) or spec.get("studio") is not None:
+        return post
+    if spec.get("fen") or post.get("chess") or spec.get("template") in FEN_TEMPLATES:
+        return post
+    category = post.get("category") or spec.get("category") or "Product"
+    art, icons = STUDIO_CONTEXT.get(category, ("sculpture", ["target", "strategy", "users-three"]))
+    art = spec.get("art") if spec.get("art") in STUDIO_ART else art
+    _, host = _destination(post)
+    proofs = _proofs(spec, category)
+    title = _clean_ui(spec.get("headline") or post.get("hook") or category, 140)
+    subtitle = _clean_ui(spec.get("subhead") or post.get("hook") or "One clear move at a time", 180)
+    note = _clean_ui(spec.get("footer") or "Web3Chess editorial", 140)
+    project = {
+        "version": 1,
+        "name": _clean_ui(post.get("id") or title, 80),
+        "format": "square",
+        "width": 1080,
+        "height": 1080,
+        "theme": "canvas",
+        "tag": _clean_ui(spec.get("tag") or category, 50),
+        "title": title,
+        "subtitle": subtitle,
+        "proofs": proofs,
+        "proofIcons": icons,
+        "cta": _clean_ui(spec.get("cta_label") or "Explore Web3Chess", 70),
+        "urlLabel": host,
+        "note": note,
+        "layers": [{"id": "art-1", "kind": art, "x": 0.75, "y": 0.56, "size": 0.43, "rotation": 0}],
+    }
+    spec["studio"] = project
+    spec["studio_source"] = "pipeline-v1"
+    return post
 
 def _text(spec: dict) -> str:
     parts = [str(spec.get(k, "")) for k in SPEC_TEXT_FIELDS]
@@ -102,6 +205,22 @@ def _check_studio(post: dict, spec: dict, project: object) -> list[str]:
         issues.append("creative.studio layers must use the approved 3D art library")
     if project.get("urlLabel") not in {"web3chess.online", "app.web3chess.online", "t.me"}:
         issues.append("creative.studio URL pill must name an approved destination")
+    bindings = {
+        "title": spec.get("headline"),
+        "subtitle": spec.get("subhead"),
+        "cta": spec.get("cta_label"),
+        "tag": spec.get("tag"),
+    }
+    for studio_field, source_value in bindings.items():
+        if source_value and _clean_ui(project.get(studio_field), 180) != _clean_ui(source_value, 180):
+            issues.append(f"creative.studio.{studio_field} must match the reviewed post creative")
+    if post.get("cta") in brand.CTAS:
+        expected_host = urlsplit(brand.CTAS[post["cta"]][1]).hostname
+        if project.get("urlLabel") != expected_host:
+            issues.append("creative.studio URL pill must match the post CTA destination")
+    expected_proofs = _proofs(spec, post.get("category") or spec.get("category") or "Product")
+    if any(spec.get(field) for field in ("steps", "panels", "metrics")) and proofs != expected_proofs:
+        issues.append("creative.studio proof rows must match the reviewed post context")
     studio_text = " ".join(str(project.get(field, "")) for field in ("title", "subtitle", "cta", "tag", "urlLabel", "note"))
     if isinstance(proofs, list):
         studio_text += " " + " ".join(str(p) for p in proofs)
@@ -109,13 +228,16 @@ def _check_studio(post: dict, spec: dict, project: object) -> list[str]:
     for pattern in brand.BANNED:
         if re.search(pattern, low):
             issues.append(f"Studio canvas matches banned claim pattern: {pattern}")
-    wager_scan = re.sub(r"\bno (?:usdt )?stakes?\b", "", low)
+    wager_scan = re.sub(r"\bno (?:usdt )?(?:wager|stake)s?(?: (?:is|are))? (?:needed|required)\b", "", low)
     wager = spec.get("template") == "rules" or any(re.search(rf"\b{re.escape(w)}s?\b", wager_scan) for w in brand.WAGER_WORDS)
     if wager and ("18+" not in low or "lose your stake" not in low):
         issues.append("Studio wager canvas needs the 18+ / 'You can lose your stake' note")
     if wager and any(re.search(rf"\b{w}", low) for w in brand.YOUTH_WORDS):
         issues.append("Studio wager canvas must not use youth language")
-    if any(str(project.get(field, "")).rstrip().endswith(".") for field in ("title", "subtitle", "cta", "tag", "note")):
+    ui_lines = [str(project.get(field, "")) for field in ("title", "subtitle", "cta", "tag", "note")]
+    if isinstance(proofs, list):
+        ui_lines.extend(str(item) for item in proofs)
+    if any(line.rstrip().endswith(".") for line in ui_lines):
         issues.append("Studio UI copy must not end with a period")
     return issues
 
@@ -153,6 +275,12 @@ def _render_spec(entry: dict, spec: dict, suffix: str, timeout: int) -> dict:
 
 def render(entry: dict, timeout: int = 120) -> dict:
     """Render entry['creative'] (and entry['reveal']['creative']) to queue/<day>/<id>[.reveal].png. Mutates the entry; caller saves."""
+    prepare(entry)
+    issues = check(entry)
+    if issues:
+        entry.pop("image", None)
+        entry["render"] = {"ok": False, "skipped": False, "error": "; ".join(issues)[:600]}
+        return entry
     jobs = [("", entry.get("creative"))]
     if entry.get("reveal", {}).get("creative"):
         jobs.append((".reveal", entry["reveal"]["creative"]))

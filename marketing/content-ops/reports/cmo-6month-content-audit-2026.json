@@ -1,21 +1,22 @@
 {
   "audit_period": "2026-05-01 to 2026-10-13 (Last 6 Months)",
-  "generated_at": "2026-10-14T02:18:50.715917+00:00",
+  "generated_at": "2026-10-22T18:53:36.379995+00:00",
   "executive_summary": {
     "total_posts_monitored": 655,
     "total_views_evaluated": 2323529,
-    "total_own_published_assets": 25,
-    "top_performing_format": "Emoji-as-Answer Tactical Position & Interactive Reveal",
-    "highest_retention_channel": "Telegram Mini App (startapp attribution: 42% click-to-game)",
-    "highest_seo_dwell_time": "Long-form Tactical Anatomy & Gambits (avg dwell: 3m 48s)"
+    "total_own_published_assets": 91,
+    "top_performing_format": null,
+    "highest_retention_channel": null,
+    "highest_seo_dwell_time": null,
+    "measurement_note": "Performance rankings require comparable observed channel exports"
   },
   "platform_breakdowns": {
     "x_twitter": {
-      "posts_published": 10,
+      "posts_published": 38,
       "key_findings": [
-        "Docked Link Law: Root tweets with 0 outbound links gained ~2.4x algorithmic reach compared to legacy tweets containing external URLs.",
-        "Hashtag Optimization: Switching from 4+ hashtags to strictly 2-3 focused audience tags (#Chess #SpeedChess #ChessTactics) reduced feed clutter penalties.",
-        "Creative Visuals: 1:1 square obsidian-styled graphics (#000000 void with mint accent) outperform text-only posts by 310% in impressions."
+        "Use native copy, one square context-matched image, and a docked reply for the destination.",
+        "Compare hook variants only after like-for-like observation windows are available.",
+        "Do not infer reach or ranking impact from layout choices alone."
       ],
       "sample_receipts": [
         "https://x.com/defi_ambassador/status/2109741220180148653",
@@ -27,44 +28,84 @@
         "https://x.com/defi_ambassador/status/2110152349683479019",
         "https://x.com/defi_ambassador/status/2110159949623972243",
         "https://x.com/defi_ambassador/status/2110181120331428004",
-        "https://x.com/defi_ambassador/status/2110190353198240216"
+        "https://x.com/defi_ambassador/status/2110190353198240216",
+        "https://x.com/defi_ambassador/status/2110387147777651013",
+        "https://x.com/defi_ambassador/status/2111338620787326994",
+        "https://x.com/defi_ambassador/status/2111346328080920739",
+        "https://x.com/defi_ambassador/status/2111467196253675810",
+        "https://x.com/defi_ambassador/status/2111474845732979084",
+        "https://x.com/defi_ambassador/status/2111490067386499336",
+        "https://x.com/defi_ambassador/status/2111522303041270134",
+        "https://x.com/defi_ambassador/status/2111530138001092910",
+        "https://x.com/defi_ambassador/status/2111482453638443155",
+        "https://x.com/defi_ambassador/status/2111509773929627989",
+        "https://x.com/defi_ambassador/status/2111497678076944598",
+        "https://x.com/defi_ambassador/status/2111608260218270176",
+        "https://x.com/defi_ambassador/status/2111959033179451735",
+        "https://x.com/defi_ambassador/status/2111966734919864776",
+        "https://x.com/defi_ambassador/status/2111626526118588726",
+        "https://x.com/defi_ambassador/status/2111979076336439760",
+        "https://x.com/defi_ambassador/status/2112092962205127133",
+        "https://x.com/defi_ambassador/status/2112212254934311406",
+        "https://x.com/defi_ambassador/status/2112333149787033717",
+        "https://x.com/defi_ambassador/status/2112456519195202042",
+        "https://x.com/defi_ambassador/status/2112574793195155848",
+        "https://x.com/defi_ambassador/status/2112695532984451112",
+        "https://x.com/defi_ambassador/status/2112818068401385823",
+        "https://x.com/defi_ambassador/status/2112955882090758421",
+        "https://x.com/defi_ambassador/status/2113057856840782229",
+        "https://x.com/defi_ambassador/status/2113182493637562588",
+        "https://x.com/defi_ambassador/status/2113299599641174373"
       ]
     },
     "telegram": {
-      "posts_published": 9,
-      "channel_metrics": {
-        "chess_hub": "Median 4,450 views/post, 4.90% avg reaction engagement rate, zero drop-off"
-      },
+      "posts_published": 47,
+      "benchmark_data": [
+        {
+          "channel": "chesscom_ru",
+          "post_count": 326,
+          "avg_views": 4695.429447852761,
+          "min_date": "2025-11-25T12:41:38+00:00",
+          "max_date": "2026-10-08T16:47:58+00:00"
+        },
+        {
+          "channel": "edchessss",
+          "post_count": 329,
+          "avg_views": 2409.7841945288756,
+          "min_date": "2025-05-24T08:56:08+00:00",
+          "max_date": "2026-10-10T09:39:31+00:00"
+        }
+      ],
       "key_findings": [
-        "Reaction Engagement: Interactive emoji reaction voting (❤, 🔥, 👏) generates 2.1x more total interactions than link previews alone.",
-        "Cadence Decay: Posting >3 times within 12 hours produces a 7-10% view drop per post. The 3-hour minimum gap between Telegram posts is empirically optimal.",
-        "Mini App Conversion: Buttons passing ?startapp=mk_tg_<post_id> convert directly into registered users with 0 authentication drops."
+        "Keep the caption concise and attach the reviewed square canvas from the same queue entry.",
+        "Record message URL, observation window, views, reactions, shares, and button actions when available.",
+        "Treat unknown conversion and engagement fields as unknown."
       ]
     },
     "website_blog": {
       "articles_published": 6,
       "key_findings": [
-        "Search Intent Alignment: 450+ word guides with embedded FEN diagrams and Schema.org JSON-LD rank for tactical problem keywords.",
-        "Academy Funnel: Articles with interactive board diagrams convert 27% of readers to Academy drills or free AI practice games."
+        "Match the 1200×630 share image to the verified article angle and destination.",
+        "Use Search Console and attributed product events before making SEO or conversion claims."
       ]
     }
   },
   "cmo_data_driven_recommendations": [
     {
       "rule": "Enforce Strict 2-3 Audience Hashtags on X",
-      "rationale": "Empirical data shows 4+ hashtags trigger algorithmic spam suppression, while 2-3 hashtags index accurately into high-intent search clusters."
+      "rationale": "Keep the post readable and test hashtag choices in comparable windows."
     },
     {
       "rule": "Maintain 3-Hour Telegram Spacing with 7-Hour Threaded Reveals",
-      "rationale": "Double engagement curve: Morning puzzle creates immediate voting reactions, evening reveal reactivates the message thread and pushes notification to users."
+      "rationale": "Use consistent spacing and measure the response before changing cadence."
     },
     {
       "rule": "Zero Outbound Links in Root Tweets",
-      "rationale": "Twitter/X heavily suppresses posts containing external URLs in the root body. Docking links in the delayed reply preserves algorithmic reach."
+      "rationale": "Keep the root focused on the idea and place the approved destination in the docked reply."
     },
     {
       "rule": "Skill-Based Wager Transparency (18+ Compliant)",
-      "rationale": "Competitors promising unbacked 'earn crypto' suffer falling reach. Highlighting 95% pot return and sub-4s TON settlement builds durable trust."
+      "rationale": "Show the current rules and adult-risk disclosure; publish numeric claims only with verified evidence."
     }
   ]
 }

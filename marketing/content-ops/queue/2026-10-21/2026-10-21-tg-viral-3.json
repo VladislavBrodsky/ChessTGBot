@@ -1,0 +1,51 @@
+{
+  "id": "2026-10-21-tg-viral-3",
+  "kind": "telegram",
+  "date": "2026-10-21",
+  "category": "Chess Culture",
+  "format": "news",
+  "hook": "You premoved a recapture. Your opponent found an in-between check (Oct 21)",
+  "cta": "play",
+  "text": "<b>You premoved a recapture. Your opponent found an in-between check (Oct 21)</b>\n\nThe German masters named it a century ago: Zwischenzug (the in-between move).\n\nIn 3-minute blitz, 80% of blunders come from assuming an automatic recapture.\nBefore snatching a piece back, ask:\nDoes my opponent have a forcing check first?",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Blitz Culture",
+    "headline": "SPEED SCRAMBLE\n*PREMOVE TILT*",
+    "subhead": "Under 5 seconds, calculation collapses into survival",
+    "cta_label": "Challenge a Friend",
+    "panels": [
+      {
+        "label": "Mistake",
+        "text": "Premove Recapture",
+        "piece": "K"
+      },
+      {
+        "label": "Counter",
+        "text": "In-Between Check",
+        "piece": "Q"
+      }
+    ]
+  },
+  "slot": 3,
+  "scheduled_at": "2026-10-21T13:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-21T12:09:48Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-viral-3.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

@@ -7,7 +7,7 @@
   "hook": "You premoved a recapture. Your opponent found an in-between check (Oct 19)",
   "cta": "play",
   "text": "<b>You premoved a recapture. Your opponent found an in-between check (Oct 19)</b>\n\nThe German masters named it a century ago: Zwischenzug (the in-between move).\n\nIn 3-minute blitz, 80% of blunders come from assuming an automatic recapture.\nBefore snatching a piece back, ask:\nDoes my opponent have a forcing check first?",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -42,10 +42,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-19T16:07:27Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-viral-3.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-21T03:02:56Z",
+  "published": {
+    "message_id": 63,
+    "at": "2026-10-21T03:02:56Z"
+  },
+  "media_cleaned": true
 }

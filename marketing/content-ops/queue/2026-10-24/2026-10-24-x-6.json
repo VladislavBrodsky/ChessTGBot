@@ -1,0 +1,81 @@
+{
+  "id": "2026-10-24-x-6",
+  "kind": "x_post",
+  "date": "2026-10-24",
+  "category": "Product",
+  "hook": "Fair play starts with server-validated legal moves",
+  "text": "Fair play starts with server-validated legal moves\n\nThe game service validates legal moves and keeps the authoritative match state.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Fair play",
+    "headline": "LEGAL MOVES\n*SERVER CHECKED*",
+    "subhead": "Authoritative match state",
+    "cta_label": "Open Web3Chess",
+    "steps": [
+      "Server receives the move",
+      "Legal move is validated",
+      "Match state updates"
+    ],
+    "footer": "USDT matches · 18+ where permitted · You can lose your stake",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-24-x-6",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Fair play",
+      "title": "LEGAL MOVES SERVER CHECKED",
+      "subtitle": "Authoritative match state",
+      "proofs": [
+        "Server receives the move",
+        "Legal move is validated",
+        "Match state updates"
+      ],
+      "proofIcons": [
+        "telegram-logo",
+        "strategy",
+        "target"
+      ],
+      "cta": "Open Web3Chess",
+      "urlLabel": "web3chess.online",
+      "note": "USDT matches · 18+ where permitted · You can lose your stake",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "sculpture",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Read how we protect competitive integrity at:\nhttps://web3chess.online/wagers",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-24T21:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-22T22:18:33Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-6.png"
+}

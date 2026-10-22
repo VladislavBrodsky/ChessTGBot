@@ -151,11 +151,14 @@ export async function renderProject(project: CreativeProject, options: { guides?
 
   const subtitleY = titleY + title.lines.length * lineHeight + 22 * unit;
   const subtitle = cleanLabel(project.subtitle);
-  const subtitleSize = fitSingleLine(ctx, subtitle, titleWidth, 30 * unit, 19 * unit, '"Onest", sans-serif', 500);
+  // Social presets place artwork in the right half of the canvas. Constrain the
+  // supporting line to the copy column so it cannot disappear beneath that art.
+  const subtitleWidth = project.layers.length && !isWide ? safeWidth * 0.52 : titleWidth;
+  const subtitleSize = fitSingleLine(ctx, subtitle, subtitleWidth, 30 * unit, 19 * unit, '"Onest", sans-serif', 500);
   ctx.fillStyle = muted;
   ctx.font = `500 ${subtitleSize}px "Onest", sans-serif`;
-  ctx.fillText(subtitle, padX, subtitleY, titleWidth);
-  if (ctx.measureText(subtitle).width > titleWidth) warnings.push("Subtitle is too long for this size. Shorten it before export.");
+  ctx.fillText(subtitle, padX, subtitleY, subtitleWidth);
+  if (ctx.measureText(subtitle).width > subtitleWidth) warnings.push("Subtitle is too long for this size. Shorten it before export.");
 
   // Draw artwork after text so selected objects remain tactile in the editor.
   for (const layer of project.layers) {

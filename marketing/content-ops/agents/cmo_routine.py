@@ -96,7 +96,7 @@ class CmoDailyRoutine:
             "kpi_benchmarks": {
                 "telegram_ctr_target": kpis.get("telegram_ctr", ">= 8.5%"),
                 "x_bookmark_rate_target": kpis.get("x_bookmark_rate", ">= 2.5%"),
-                "wager_compliance": "100% compliant",
+                "wager_compliance": "not independently audited",
             },
             "top_posts": [
                 {"id": p["id"], "kind": p["kind"], "hook": p.get("hook", "")[:60]}
@@ -202,33 +202,25 @@ class CmoDailyRoutine:
             })
 
         if not competitor_insights:
-            # Baseline competitor benchmarks if live scraping is offline or sandboxed
-            competitor_insights = [
-                {
-                    "channel": "@chesscom_ru",
-                    "views": 14200,
-                    "angle": "Daily tactical puzzle with multiple choice poll buttons",
-                    "takeaway": "Reaction voting buttons drive 3.2x higher engagement than plain text",
-                },
-                {
-                    "channel": "@edchessss",
-                    "views": 8500,
-                    "angle": "Opening trap video clip featuring Scandinavian defense mistake",
-                    "takeaway": "Short-form opening blunders generate highest bookmark velocity",
-                },
-            ]
+            competitor_insights = [{
+                "channel": "Unavailable",
+                "views": None,
+                "status": "unavailable",
+                "angle": "No accessible competitor sample was collected",
+                "takeaway": "Do not infer views, engagement, or performance without source data",
+            }]
 
         # Trending Topics curated for Q4 2026
         trending_topics = [
             {
-                "topic": "The 0.4-Second Flag Scramble (Hikaru Nakamura Style)",
-                "viral_angle": "How muscle-memory pre-moves decide blitz games under 3 seconds.",
+                "topic": "Flag Scramble under five seconds",
+                "viral_angle": "How forcing moves and simple positions help when the clock is low.",
                 "pillar": "Chess Culture",
                 "target_format": "scramble_instinct",
             },
             {
-                "topic": "Stafford Gambit Refutation Breakdown (GothamChess Viral Moment)",
-                "viral_angle": "Why 2000-Elo players still greedily grab on e5 without calculating.",
+                "topic": "Stafford Gambit refutation breakdown",
+                "viral_angle": "Show one legal line and the defensive idea behind it.",
                 "pillar": "Openings",
                 "target_format": "trap",
             },
@@ -239,14 +231,14 @@ class CmoDailyRoutine:
                 "target_format": "puzzle",
             },
             {
-                "topic": "Double-Elimination $500 USDT Arena Vaults",
-                "viral_angle": "Why scheduled 15-minute global tournament windows create tight, non-empty Elo pairings.",
+                "topic": "Arena match setup: how to read a USDT match",
+                "viral_angle": "Show the stake, displayed payout, and time control before matching.",
                 "pillar": "Product",
                 "target_format": "fomo_arena",
             },
             {
-                "topic": "Anti-Brainrot Manifesto: Skill-Gated PvP vs Tap-to-Earn",
-                "viral_angle": "Why 100M clickers burned out and how Telegram gamers shifted to authentic chess wagering.",
+                "topic": "Product Flow Manifesto: from match setup to the Telegram board",
+                "viral_angle": "Explain the choices a player sees before matching.",
                 "pillar": "Product",
                 "target_format": "contrarian_manifesto",
             },
@@ -271,7 +263,7 @@ class CmoDailyRoutine:
         # Slot 1: Tactics Drill with 6h spoiler reveal (07:30 UTC)
         # Slot 2: Viral Opening Trap (10:30 UTC)
         # Slot 3: Scramble Instinct / Culture (13:30 UTC)
-        # Slot 4: $500 Arena Vault FOMO (17:30 UTC)
+        # Slot 4: evergreen Match Rules explainer (17:30 UTC)
         # Slot 5: 1-Tap Friend Challenge / Manifesto (20:30 UTC)
 
         post_specs = [
@@ -316,23 +308,20 @@ class CmoDailyRoutine:
                 "hook": f"You premoved a recapture. Your opponent found an in-between check ({date_badge})",
                 "body": (
                     "The German masters named it a century ago: Zwischenzug (the in-between move).\n\n"
-                    "In 3-minute blitz, 80% of blunders come from assuming an automatic recapture.\n"
+                    "In blitz, automatic recaptures fail when a forcing check changes the move order.\n"
                     "Before snatching a piece back, ask:\n"
                     "Does my opponent have a forcing check first?"
                 ),
             },
-            # 4. Arena FOMO Vault
+            # 4. Match setup explainer
             {
                 "slot_id": f"{d_str}-tg-viral-4",
                 "type": "arena",
                 "time_utc": "17:30",
-                "hook": f"Arena Alert: The Daily Blitz Vault ($500 USDT) locks in 15 minutes ({date_badge})",
+                "hook": f"Before a USDT match, check these three numbers ({date_badge})",
                 "body": (
-                    "⚡ The premier global speed chess tournament window is open.\n\n"
-                    "3-Minute Blitz • Synchronized matchmaking • $500 USDT Vault.\n"
-                    "Double-elimination bracket with live spectator room.\n\n"
-                    "USDT matches: adults (18+) only. You can lose your stake.\n"
-                    "Once the countdown hits zero, pairings lock automatically."
+                    "Choose the stake, confirm the displayed payout, and check the time control before matching.\n\n"
+                    "USDT matches: adults (18+) only. You can lose your stake."
                 ),
             },
             # 5. Anti-Brainrot Duel
@@ -342,11 +331,8 @@ class CmoDailyRoutine:
                 "time_utc": "20:30",
                 "hook": f"Challenge a Friend: Settle your chess debates in 3-minute blitz ({date_badge})",
                 "body": (
-                    "Tap-to-earn was an illusion. Real PvP is for minds.\n\n"
-                    "Send one link into your Telegram group or DM:\n"
-                    "• Instant 3-minute blitz pairing\n"
-                    "• Sub-50ms synchronized WebSocket clocks\n"
-                    "• Zero download required inside Telegram"
+                    "Share Web3Chess in a Telegram group or DM.\n\n"
+                    "Both players can open the Mini App, choose the same time control, and decide how to play."
                 ),
             },
         ]
@@ -375,7 +361,7 @@ class CmoDailyRoutine:
             elif s["type"] == "arena":
                 post = self.copywriter.draft_fomo_arena_alert(
                     slot_id=slot_id,
-                    tournament_name="Daily Blitz Vault ($500 USDT)",
+                    tournament_name="Competitive match setup",
                     start_time_utc="18:00 UTC",
                     minutes_remaining=15,
                     wager_entry=5,
@@ -409,13 +395,15 @@ class CmoDailyRoutine:
             if not qa_res["passed"]:
                 logger.warning(f"QA issues in {slot_id}: {qa_res['issues']}")
             post["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
-            post["status"] = "approved"
+            post["status"] = "draft"
 
             # Render creative visual
             try:
                 renderer.render(post)
             except Exception as e:
                 logger.warning(f"Rendering note for {slot_id}: {e}")
+            if qa_res["passed"] and (post.get("render") or {}).get("ok") and queue.CONFIG["mode"]["telegram"] == "auto":
+                post["status"] = "approved"
 
             queue.save(post)
             planned_results.append(post)
@@ -445,12 +433,12 @@ class CmoDailyRoutine:
             "",
             "| Metric | Result | Target Benchmark | Status |",
             "|---|---|---|---|",
-            f"| **Telegram Broadcasts** | `{audit_res['telegram_published_count']} published` | 8 daily slots | Active |",
-            f"| **X (Twitter) Dispatches** | `{audit_res['x_published_count']} published` | 3 daily posts | Active |",
+            f"| **Telegram Broadcasts** | `{audit_res['telegram_published_count']} published` | {len(queue.CONFIG['telegram']['slots_utc'])} daily slots | Active |",
+            f"| **X (Twitter) Dispatches** | `{audit_res['x_published_count']} published` | {len(queue.CONFIG['x']['slots_utc'])} daily slots | Active |",
             f"| **Telegram Channel Members** | `{audit_res['telegram_subscribers']}` | Growing | OK |",
             f"| **X Impressions Tracked** | `{audit_res['x_total_impressions']}` | High reach | OK |",
             f"| **X Bookmark Rate** | `{audit_res['x_bookmark_rate']}` | `{audit_res['kpi_benchmarks']['x_bookmark_rate_target']}` | Monitored |",
-            f"| **Wager Disclosures** | `100% compliant` | `100% compliant` | PASS |",
+            f"| **Wager Disclosures** | `{audit_res['kpi_benchmarks']['wager_compliance']}` | Full review | Verify |",
             "",
             "### Top Content Dispatched Yesterday",
         ]
@@ -483,14 +471,15 @@ class CmoDailyRoutine:
             "---",
             "## 3. Scraped Viral Trends & Competitor Intelligence",
             "",
-            "### Trending Viral Signals (Q4 2026 Meta)",
+            "### Evergreen angle hypotheses and observed source leads",
         ])
         for top in viral_intel.get("top_trending_topics", []):
             lines.append(f"- **{top['topic']}** (`{top['pillar']}`): {top['viral_angle']}")
 
         lines.append("\n### Competitor Intelligence Check")
         for comp in viral_intel.get("competitor_insights", []):
-            lines.append(f"- **{comp['channel']}** (`{comp['views']} views`): *\"{comp['angle']}\"* → Key Takeaway: {comp['takeaway']}")
+            observation = f"{comp['views']} views" if comp.get("views") is not None else "metrics unavailable"
+            lines.append(f"- **{comp.get('channel', 'Unavailable')}** (`{observation}`): *\"{comp['angle']}\"* → Key Takeaway: {comp['takeaway']}")
 
         lines.extend([
             "",
@@ -501,14 +490,14 @@ class CmoDailyRoutine:
             "|---|---|---|---|---|",
         ])
         for p in planned_posts:
-            lines.append(f"| `{p['id']}` | `{p['scheduled_at'][11:16]} UTC` | **{p['category']}** | *\"{p['hook'][:65]}\"* | `Approved (Rendered)` |")
+            lines.append(f"| `{p['id']}` | `{p['scheduled_at'][11:16]} UTC` | **{p['category']}** | *\"{p['hook'][:65]}\"* | `{p['status']}` |")
 
         lines.extend([
             "",
             "---",
             "## 5. Strategic Directives for Today's Execution",
             "1. **Never End Hooks With a Period:** Dwell time and click curiosity thrive on open hooks or questions.",
-            "2. **X Docked Link Law:** Keep root tweets 100% media/text; outbound Telegram links belong strictly in Reply #1 for 2x algorithmic reach.",
+            "2. **X Link Placement:** Keep root tweets focused on native media/text; place the approved destination in Reply #1 and measure the result.",
             "3. **Telegram Interactive CTAs:** Every puzzle must feature reaction voting buttons and deep-link to the Mini App (`startapp=academy` or `startapp=play`).",
             "4. **Strict 18+ Compliance:** Every wagering and Arena prize post must maintain the adult disclaimer.",
         ])

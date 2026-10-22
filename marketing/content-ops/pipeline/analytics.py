@@ -55,25 +55,26 @@ def fetch_x_metrics(limit: int = 20) -> Dict[str, Any]:
             "recent_tweets": tweets_metrics,
         }
     except Exception as e:
-        logger.warning(f"Error fetching live X metrics: {e}")
-        return {"account": {}, "recent_tweets": [], "error": str(e)}
+        logger.warning("Error fetching live X metrics: %s", type(e).__name__)
+        return {"account": {}, "recent_tweets": [], "error": type(e).__name__}
 
 
 def fetch_telegram_metrics() -> Dict[str, Any]:
     """Fetches channel subscriber count and chat metrics."""
     token, channel = telegram_publisher._credentials()
     if not token or not channel:
-        return {"members": 0, "configured": False}
+        return {"members": None, "configured": False}
     try:
         res = requests.get(
             f"https://api.telegram.org/bot{token}/getChatMemberCount?chat_id={channel}",
             timeout=10,
         )
-        count = res.json().get("result", 0) if res.ok else 0
+        count = res.json().get("result") if res.ok else None
         return {"channel": channel, "members": count, "configured": True}
     except Exception as e:
-        logger.warning(f"Error fetching Telegram metrics: {e}")
-        return {"members": 0, "configured": True, "error": str(e)}
+        # Request exceptions can embed the bot token in their URL.
+        logger.warning("Error fetching Telegram metrics: %s", type(e).__name__)
+        return {"members": None, "configured": True, "error": type(e).__name__}
 
 
 def audit_performance() -> Dict[str, Any]:
@@ -121,7 +122,7 @@ def audit_performance() -> Dict[str, Any]:
             "recommended_growth_vectors": [
                 "Execute Reply Sniping: Comment on viral tweets from @GMHikaru, @GothamChess, @chesscom within 10 minutes of drop to tap 50k+ views.",
                 "Cross-Pollinate: Tease every X puzzle in Telegram @chess_hub to drive 20+ instant community retweets and ignite X algorithm.",
-                "Optimize Profile Landing Page: Brand @defi_ambassador with Web3Chess banner, clear value prop, and pinned $500 Arena video.",
+                "Optimize Profile Landing Page: use a Web3Chess banner, a clear value proposition, and a pinned product walkthrough.",
                 "Deploy High-Comment Formats: Scale 'Guess the Elo' and '3s Scramble Dilemmas' which trigger 10x higher reply velocity.",
             ],
         },

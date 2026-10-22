@@ -7,7 +7,7 @@
   "hook": "Challenge a Friend: Settle your chess debates in 3-minute blitz (Oct 19)",
   "cta": "duel_friend",
   "text": "<b>Challenge a Friend: Settle your chess debates in 3-minute blitz (Oct 19)</b>\n\nTap-to-earn was an illusion. Real PvP is for minds.\n\nSend one link into your Telegram group or DM:\n• Instant 3-minute blitz pairing\n• Sub-50ms synchronized WebSocket clocks\n• Zero download required inside Telegram",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -37,10 +37,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-19T16:07:28Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-viral-5.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-21T15:44:23Z",
+  "published": {
+    "message_id": 67,
+    "at": "2026-10-21T15:44:23Z"
+  },
+  "media_cleaned": true
 }

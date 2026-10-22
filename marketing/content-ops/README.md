@@ -1,6 +1,6 @@
 # Web3Chess content operations
 
-Daily autoposting (5 Telegram posts + 5 articles): [OPERATIONS.md](OPERATIONS.md). Read [the strategy](STRATEGY.md), [daily workflow](WORKFLOW.md), [28-day calendar](CALENDAR.md), [initial research](RESEARCH.md) and [site audit](reports/AUDIT.md). The [first daily package](drafts/2026-10-08/article.md) includes original channel copy and source evidence. Review is the current publishing mode.
+The current review workflow prepares up to six Telegram drafts, six X drafts, and three article slots per day: [OPERATIONS.md](OPERATIONS.md). Read [the strategy](STRATEGY.md), [daily workflow](WORKFLOW.md), [growth operating plan](GROWTH_OPERATING_PLAN.md), [28-day calendar](CALENDAR.md), [initial research](RESEARCH.md) and [site audit](reports/AUDIT.md). The [first daily package](drafts/2026-10-08/article.md) includes original channel copy and source evidence. Review is the current publishing mode.
 
 ## Collect and verify
 

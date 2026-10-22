@@ -1,7 +1,7 @@
 import json, sys, tempfile, unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pipeline import brand, chesscheck, idea_bank, qa, queue, renderer, telegram_publisher, writer
+from pipeline import brand, chesscheck, idea_bank, qa, queue, renderer, site_publisher, telegram_publisher, writer
 
 class IdeaBank(unittest.TestCase):
     def test_every_idea_is_verified(self):
@@ -110,6 +110,39 @@ class Creative(unittest.TestCase):
         self.assertTrue(any("banned claim" in i for i in renderer.check({"creative": {**post["creative"], "studio": {**project, "title": "Earn $500 a day"}}})))
         self.assertTrue(any("size" in i for i in renderer.check({"creative": {**post["creative"], "studio": {**project, "width": 900}}})))
 
+    def test_promotional_posts_are_bound_to_an_editable_studio_project(self):
+        post = {
+            "id": "2099-01-01-tg-product", "kind": "telegram", "category": "Product", "cta": "play",
+            "creative": {"template": "product", "headline": "PLAY IN TELEGRAM", "subhead": "Choose how to play",
+                         "tag": "Product flow", "cta_label": "Open the Mini App",
+                         "steps": ["Open the Mini App", "Choose how to play", "Make your first move"]},
+        }
+        renderer.prepare(post)
+        studio = post["creative"]["studio"]
+        self.assertEqual(studio["urlLabel"], "t.me")
+        self.assertEqual(studio["title"], "PLAY IN TELEGRAM")
+        self.assertEqual(studio["proofs"], post["creative"]["steps"])
+        self.assertEqual(studio["layers"][0]["kind"], "sculpture")
+        self.assertEqual(renderer.check(post), [])
+
+    def test_exact_position_posts_never_receive_studio_art(self):
+        post = {**self.post, "id": "2099-01-01-tg-board", "kind": "telegram", "category": "Tactics"}
+        renderer.prepare(post)
+        self.assertNotIn("studio", post["creative"])
+
+    def test_studio_destination_and_caption_binding_are_enforced(self):
+        post = {
+            "id": "2099-01-01-tg-product", "kind": "telegram", "category": "Product", "cta": "play",
+            "creative": {"template": "product", "headline": "PLAY IN TELEGRAM", "subhead": "Choose how to play",
+                         "tag": "Product flow", "cta_label": "Open the Mini App"},
+        }
+        renderer.prepare(post)
+        post["creative"]["studio"]["title"] = "UNRELATED CAMPAIGN"
+        post["creative"]["studio"]["urlLabel"] = "web3chess.online"
+        issues = renderer.check(post)
+        self.assertTrue(any("title must match" in issue for issue in issues))
+        self.assertTrue(any("CTA destination" in issue for issue in issues))
+
     def test_reveal_needs_a_verified_position_and_sane_delay(self):
         post = {**self.post, "reveal": {"after_hours": 7, "text": "Solved", "creative": {"template": "puzzle", "reveal": True, "moves": ["Nf7#"], "headline": "h", "cta_label": "c", "fen": FEN}}}
         self.assertEqual(renderer.check(post), [])
@@ -146,6 +179,29 @@ class Publisher(unittest.TestCase):
             if day.exists():
                 day.rmdir()
 
+
+class BlogCreative(unittest.TestCase):
+    def test_stages_exact_blog_canvas_with_editable_project(self):
+        with tempfile.TemporaryDirectory(dir=queue.ROOT) as tmp:
+            folder = Path(tmp)
+            image = folder / "blog.png"
+            project = folder / "blog.project.json"
+            image.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\0" * 8 + (1200).to_bytes(4, "big") + (630).to_bytes(4, "big"))
+            project.write_text(json.dumps({"version": 1, "format": "custom", "width": 1200, "height": 630}))
+            out = folder / "out"
+            original = site_publisher.SOCIAL_ART
+            site_publisher.SOCIAL_ART = out
+            try:
+                result = site_publisher._stage_blog_creative({"blog_creative": {
+                    "image": str(image.relative_to(queue.ROOT)),
+                    "project": str(project.relative_to(queue.ROOT)),
+                }}, "reviewed-article")
+            finally:
+                site_publisher.SOCIAL_ART = original
+            self.assertIsNotNone(result)
+            self.assertTrue((out / "reviewed-article.png").exists())
+            self.assertTrue((out / "reviewed-article.project.json").exists())
+
 class WagerWords(unittest.TestCase):
     def test_substrings_do_not_trigger_the_wager_rule(self):
         self.assertEqual(qa.compliance("A costly mistake in a great spot with potential."), [])
@@ -153,6 +209,23 @@ class WagerWords(unittest.TestCase):
     def test_real_wager_words_still_do(self):
         self.assertTrue(qa.compliance("Put a stake on the arena match."))
         self.assertTrue(qa.compliance("Your stakes are real."))
+
+    def test_no_wager_required_is_not_a_wager_promotion(self):
+        self.assertEqual(qa.compliance("No deposit and no wager are required"), [])
+
+
+class Claims(unittest.TestCase):
+    def test_unsupported_prize_and_latency_claims_fail(self):
+        base = {"text": "The $500 USDT vault closes soon with sub-50ms sync", "hook": "A live vault",
+                "creative": {"template": "product", "headline": "A live vault", "cta_label": "Open"}}
+        issues = qa.evidence_claims(base)
+        self.assertGreaterEqual(len(issues), 2)
+
+    def test_verified_claim_evidence_must_match_and_use_an_allowed_source(self):
+        post = {"text": "The $500 USDT prize is live", "hook": "Verified campaign",
+                "creative": {"template": "product", "headline": "Verified campaign", "cta_label": "Open"},
+                "claim_evidence": [{"claim": "$500 USDT prize", "source": "https://web3chess.online/rules", "verified": True}]}
+        self.assertEqual(qa.evidence_claims(post), [])
 
 class Queue(unittest.TestCase):
     def test_render_specs_are_not_queue_entries(self):
@@ -165,13 +238,13 @@ class Queue(unittest.TestCase):
             (day / "x-tg-1.spec.json").unlink(); day.rmdir()
 
 class Plan(unittest.TestCase):
-    def test_five_slots_three_hours_apart_and_known_pillars(self):
+    def test_configured_slots_are_three_hours_apart_and_use_known_pillars(self):
         cfg = queue.CONFIG["telegram"]
         hours = [int(s[:2]) * 60 + int(s[3:]) for s in cfg["slots_utc"]]
-        self.assertEqual(len(hours), 5)
+        self.assertGreaterEqual(len(hours), 5)
         self.assertTrue(all(b - a >= queue.CONFIG["telegram"]["min_gap_hours"] * 60 for a, b in zip(hours, hours[1:])))
         for day, pillars in cfg["rotation"].items():
-            self.assertEqual(len(pillars), 5, day)
+            self.assertEqual(len(pillars), len(hours), day)
             self.assertTrue(set(pillars) <= set(brand.CATEGORIES), day)
         # wager content only on Wednesday evening, and never beside youth-adjacent Academy slots
         self.assertEqual([d for d, p in cfg["rotation"].items() if "Match Rules" in p], ["wed"])

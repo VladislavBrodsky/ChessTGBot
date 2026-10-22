@@ -4,6 +4,7 @@ from __future__ import annotations
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 from agents import (
     CmoAgent,
@@ -23,9 +24,10 @@ class TestAgents(unittest.TestCase):
     def tearDownClass(cls):
         from pipeline import queue
         import shutil
-        test_dir = queue.QUEUE / "2099-01-01"
-        if test_dir.exists():
-            shutil.rmtree(test_dir, ignore_errors=True)
+        for day in ("2099-01-01", "2099-01-02"):
+            test_dir = queue.QUEUE / day
+            if test_dir.exists():
+                shutil.rmtree(test_dir, ignore_errors=True)
 
     def setUp(self):
         self.orchestrator = ContentEngineOrchestrator(
@@ -164,8 +166,29 @@ class TestAgents(unittest.TestCase):
     def test_x_orchestrator_daily_batch(self):
         batch = self.orchestrator.generate_x_daily_batch()
         self.assertEqual(batch["status"], "success")
-        self.assertEqual(batch["posts_created"], 3)
+        self.assertEqual(batch["posts_created"], 6)
         self.assertTrue(all(p["qa_passed"] for p in batch["posts"]))
+
+    def test_render_failure_rejects_batch_instead_of_reporting_success(self):
+        from pipeline import queue, renderer
+
+        orchestrator = ContentEngineOrchestrator(
+            plan_date=date(2099, 1, 2),
+            primary_domain="web3chess.online",
+        )
+
+        def fail_render(post):
+            post.pop("image", None)
+            post["render"] = {"ok": False, "skipped": False, "error": "browser failed"}
+            return post
+
+        with patch.object(renderer, "render", side_effect=fail_render):
+            batch = orchestrator.generate_x_daily_batch(render_images=True)
+
+        self.assertEqual(batch["status"], "needs_attention")
+        self.assertTrue(all(not item["qa_passed"] for item in batch["posts"]))
+        self.assertTrue(all(item["render_ok"] is False for item in batch["posts"]))
+        self.assertTrue(all("creative render failed" in issue for item in batch["posts"] for issue in (queue.load(item["id"])["qa"]["issues"])))
 
     def test_x_reply_sniper_kit(self):
         kit = self.orchestrator.generate_x_reply_sniper_kit()
@@ -208,6 +231,7 @@ class TestAgents(unittest.TestCase):
         arena_intent = x_activity.route_keyword_intent("Enter the arena vault")
         self.assertIsNotNone(arena_intent)
         self.assertEqual(arena_intent["intent"], "arena")
+        self.assertNotIn("$500", arena_intent["reply_text"])
 
     def test_x_activity_sniper_match(self):
         from pipeline import x_activity
@@ -301,7 +325,7 @@ class TestAgents(unittest.TestCase):
         # 3. Motif matrix post
         matrix = cw.draft_x_motif_matrix_post(
             slot_id="2026-10-12-x-matrix",
-            hook="The 4 tactical motifs that decide 85% of blitz games",
+            hook="The 4 tactical motifs to scan before every blitz move",
             body="Pin, Fork, Deflection, Decoy.\n\nSave this calculation matrix before your next speed session.",
         )
         res_matrix = qa.inspect_x_post(matrix)
@@ -324,6 +348,7 @@ class TestAgents(unittest.TestCase):
             solution=["Ra8#"],
             time_control="3+0 Blitz",
             platform="telegram",
+            verified_source_url="https://web3chess.online/leaderboard",
         )
         res_spot_tg = qa.inspect_telegram_post(spot_tg)
         self.assertTrue(res_spot_tg["passed"], res_spot_tg["issues"])
@@ -339,6 +364,7 @@ class TestAgents(unittest.TestCase):
             solution=["Ra8#"],
             time_control="3+0 Blitz",
             platform="x",
+            verified_source_url="https://web3chess.online/leaderboard",
         )
         res_spot_x = qa.inspect_x_post(spot_x)
         self.assertTrue(res_spot_x["passed"], res_spot_x["issues"])
@@ -386,7 +412,7 @@ class TestAgents(unittest.TestCase):
     def test_viral_telegram_daily_batch(self):
         batch = self.orchestrator.generate_telegram_daily_batch(target_date=date(2099, 1, 1), render_images=False)
         self.assertEqual(batch["status"], "success")
-        self.assertEqual(batch["posts_created"], 8)
+        self.assertEqual(batch["posts_created"], 6)
         self.assertTrue(all(p["qa_passed"] for p in batch["posts"]))
 
     def test_viral_youtube_breakdowns(self):

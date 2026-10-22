@@ -1,0 +1,51 @@
+{
+  "id": "2026-10-24-x-1",
+  "kind": "x_post",
+  "date": "2026-10-24",
+  "category": "Tactics",
+  "hook": "Morphy's Opera House finish: White to move and mate in 2 (Oct 24)",
+  "text": "Morphy's Opera House finish: White to move and mate in 2 (Oct 24)\n\nBlack's king on e8 is pinned down by the d1 rook and g5 bishop.\n\nFind the queen sacrifice that forces mate ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+    "solution": [
+      "Qb8+",
+      "Nxb8",
+      "Rd8#"
+    ],
+    "claim": "mate_in_2"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+    "tag": "Mate In 2",
+    "headline": "OPERA MATE\n*DEFLECTION SAC*",
+    "subhead": "White to move • Forced Mate in 2",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Qb8+! Nxb8 2. Rd8# (The Opera Mate).\nThe queen deflection drags the b8 knight away from defending d8.\n\nStudy classical combinations at:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-24T06:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-22T22:10:22Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

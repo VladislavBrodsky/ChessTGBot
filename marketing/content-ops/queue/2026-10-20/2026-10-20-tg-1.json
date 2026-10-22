@@ -1,0 +1,74 @@
+{
+  "id": "2026-10-20-tg-1",
+  "kind": "telegram",
+  "date": "2026-10-20",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. The knight on e7 locks down g8 and g6",
+  "cta": "academy_app",
+  "text": "<b>White to move. The knight on e7 locks down g8 and g6</b>\n\nBlack's king on h7 is boxed against the edge.\nOne rook move finishes the corridor mate.\n\n❤ Rh3#   🔥 Re4   👏 f4\nAnswer reveals in 6 hours.",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "5r2/4Nppk/8/8/8/4R3/5PPP/6K1 w - - 0 1",
+    "solution": [
+      "Rh3#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Anastasia's Mate",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "5r2/4Nppk/8/8/8/4R3/5PPP/6K1 w - - 0 1",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Rh3#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Rh3#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "5r2/4Nppk/8/8/8/4R3/5PPP/6K1 w - - 0 1",
+      "cta_label": "Solve More in Academy"
+    },
+    "sent": {
+      "at": "2026-10-22T04:06:42Z",
+      "claimed": true,
+      "message_id": 72
+    }
+  },
+  "scheduled_at": "2026-10-20T00:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-19T16:22:41Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  },
+  "updated_at": "2026-10-21T22:00:38Z",
+  "published": {
+    "message_id": 69,
+    "at": "2026-10-21T22:00:38Z"
+  },
+  "media_cleaned": true
+}

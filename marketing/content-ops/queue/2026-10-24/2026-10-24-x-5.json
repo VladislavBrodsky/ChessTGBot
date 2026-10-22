@@ -1,0 +1,49 @@
+{
+  "id": "2026-10-24-x-5",
+  "kind": "x_post",
+  "date": "2026-10-24",
+  "category": "Tactics",
+  "hook": "White to move. Black's rooks on d8 and f8 trap their own king (Oct 24)",
+  "text": "White to move. Black's rooks on d8 and f8 trap their own king (Oct 24)\n\nThe king on e8 is flanked by two friendly rooks blocking sideways flight.\n\nFind the queen mate in 1 ♟️\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "chess": {
+    "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+    "solution": [
+      "Qe6#"
+    ],
+    "claim": "mate_in_1"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "fen": "3rkr2/8/3Q4/8/8/8/5PPP/6K1 w - - 0 1",
+    "tag": "Mate In 1",
+    "headline": "EPAULETTE MATE\n*TRAPPED BY ROOKS*",
+    "subhead": "White to move • Mate in 1",
+    "cta_label": "Solve in Mini App",
+    "footer": "Answer with reactions or in replies."
+  },
+  "docked_reply": {
+    "text": "Solution: 1. Qe6# (Epaulette Mate).\nThe queen covers d7, e7, and f7 while Black's rooks block d8 and f8.\n\nExplore mating motifs in our free Academy:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-24T18:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-22T22:10:24Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-5.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

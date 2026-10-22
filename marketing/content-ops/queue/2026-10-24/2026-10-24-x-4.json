@@ -1,0 +1,81 @@
+{
+  "id": "2026-10-24-x-4",
+  "kind": "x_post",
+  "date": "2026-10-24",
+  "category": "Engineering",
+  "hook": "Why the server, not the browser, owns the match clock",
+  "text": "Why the server, not the browser, owns the match clock\n\nA browser can pause or reconnect. The server keeps the authoritative match state and validates each move.\n\nThat makes reconnect and timing behavior easier to audit.\n\n#TelegramMiniApp #WebSockets #BuildInPublic",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Product flow",
+    "headline": "FROM PLAY\n*TO THE BOARD*",
+    "subhead": "A clear route through setup and matching",
+    "cta_label": "See the Flow",
+    "steps": [
+      "Open the Mini App",
+      "Choose the match setup",
+      "Enter the board"
+    ],
+    "footer": "Claims require production evidence before publication",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-24-x-4",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Product flow",
+      "title": "FROM PLAY TO THE BOARD",
+      "subtitle": "A clear route through setup and matching",
+      "proofs": [
+        "Open the Mini App",
+        "Choose the match setup",
+        "Enter the board"
+      ],
+      "proofIcons": [
+        "telegram-logo",
+        "shield-check",
+        "strategy"
+      ],
+      "cta": "See the Flow",
+      "urlLabel": "web3chess.online",
+      "note": "Claims require production evidence before publication",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "fair-play",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Read our engineering breakdown and test the real-time board:\nhttps://web3chess.online/blog",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-24T15:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-22T22:19:51Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-4.png"
+}

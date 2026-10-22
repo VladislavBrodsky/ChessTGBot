@@ -1,0 +1,55 @@
+{
+  "id": "2026-10-23-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-23",
+  "category": "Openings",
+  "format": "trap",
+  "hook": "The Blackmar-Diemer trap that punishes passive pawn captures in under 8 moves",
+  "cta": "academy",
+  "text": "<b>The Blackmar-Diemer trap that punishes passive pawn captures in under 8 moves</b>\n\nWhite sacrifices the e-pawn for rapid open-file development.\nWhen Black greedily grabs on d4, White's bishop sacrifice on f7 tears off the king's shield.\n\nSpeed chess rule: Lead in development is worth more than a single flank pawn in blitz.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "rnbqk1nr/ppp1ppbp/6p1/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4",
+    "solution": [
+      "e4"
+    ],
+    "claim": "line_legal"
+  },
+  "creative": {
+    "template": "trap",
+    "size": "square",
+    "tag": "Trap Breakdown: Halosar Trap",
+    "headline": "HALOSAR TRAP\n*PUNISH GREED*",
+    "subhead": "Can you spot the refutation line?",
+    "fen": "rnbqk1nr/ppp1ppbp/6p1/3p4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Nd4"
+    ],
+    "cta_label": "Learn in Academy",
+    "footer": "Study full lines in the Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-23T03:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-22T00:00:30Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-tg-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

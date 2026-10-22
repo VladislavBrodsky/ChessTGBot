@@ -1,0 +1,152 @@
+{
+  "fetched_at": "2026-10-22T18:27:36.015439+00:00",
+  "sources": [
+    {
+      "id": "fide",
+      "http_status": 200,
+      "new": 10,
+      "updated": 0,
+      "unchanged": 0
+    },
+    {
+      "id": "lichess",
+      "http_status": 200,
+      "new": 2,
+      "updated": 0,
+      "unchanged": 22
+    },
+    {
+      "id": "chesscom",
+      "http_status": 200,
+      "new": 20,
+      "updated": 0,
+      "unchanged": 5
+    }
+  ],
+  "candidates": [
+    {
+      "event_date": null,
+      "published_at": "2026-10-22T11:21:50+00:00",
+      "source": "fide",
+      "summary": "The 6th Intercontinental Online Chess Championship for Prisoners took place from October 13 to 15, bringing together incarcerated players from around the world for three days of international online competition. This year\u2019s championship established a new participation record, with 140 teams from 56 countries competing. The event was held across men\u2019s, women\u2019s, and youth sections, with teams compet",
+      "title": "Moving forward: The global impact of the Intercontinental Online Chess Championship for Prisoners",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/moving-forward-the-global-impact-of-the-intercontinental-online-chess-championship-for-prisoners/",
+      "opportunity_score": 46.7
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-21T16:20:16+00:00",
+      "source": "fide",
+      "summary": "With an outstanding medal haul across the age categories, Kazakhstan emerged as one of the leading forces at the 2026 World Youth Championships, showcasing the strength of its next generation of chess talent. The 2026 World U7\u2013U17 Chess Championships came to a close in Roquetas de Mar, Spain, with a festive closing ceremony celebrating the achievements of hundreds of young players from around the ",
+      "title": "Kazakhstan dominates World U7\u2013U17 Championships in Roquetas de Mar",
+      "trust": "primary",
+      "updated_at": null,
+      "url": "https://www.fide.com/kazakhstan-dominates-world-u7-u17-championships-in-roquetas-de-mar/",
+      "opportunity_score": 45.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-21T16:37:14.559000+00:00",
+      "source": "lichess",
+      "summary": "",
+      "title": "Ending the Boycott",
+      "trust": "primary",
+      "updated_at": "2026-10-21T16:37:14.559000+00:00",
+      "url": "https://lichess.org/@/Lichess/blog/ending-the-boycott/Y82ZBf6S",
+      "opportunity_score": 38.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-21T23:33:00+00:00",
+      "source": "chesscom",
+      "summary": "Nobody is happier after 11 rounds of the 2026 U.S. Chess Championship than GM Fabiano Caruana, who has a new chance to win his fifth consecutive title. GM Wesley So entered the final round with a full-point lead, but the most likely result was not...",
+      "title": "Rookie Rachael Li Wins U.S. Women's Title; Wesley So Loses, Faces Caruana In Playoffs",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/rachael-li-wins-2026-us-womens-chess-championship",
+      "opportunity_score": 38.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-21T22:50:00+00:00",
+      "source": "chesscom",
+      "summary": "GM Nihal Sarin could afford to take a draw in a won position against GM Wei Yi as GMs David Anton and Pentala Harikrishna gave Novy Bor Chess Club a 4-2 victory over second-seed Alkaloid in round five of the 2026 European Chess Club Cup. In the pe...",
+      "title": "Anton, Harikrishna Give Novy Bor Crucial Win Over Alkaloid",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-european-chess-club-cup-round-5",
+      "opportunity_score": 38.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-21T20:55:00+00:00",
+      "source": "chesscom",
+      "summary": "Argentinian superstar Lionel Messi shared a chess-themed ad for ChatGPT with his 517 million Instagram followers on Wednesday, in a post that is bound to generate massive interest. The world's second-most followed person on Instagram, behind only...",
+      "title": "Lionel Messi Shares ChatGPT Chess Lesson With 517 Million Instagram Followers",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/lionel-messi-chatgpt-chess-instagram",
+      "opportunity_score": 38.1
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-21T17:00:17+00:00",
+      "source": "chesscom",
+      "summary": "Think you can dunk on an NBA player at chess? Houston Rockets star Steven Adams is now a bot on Chess.com! Head to the Play Bots page and try your luck against our tallest chess bot ever! With a towering 6'11\" presence and a tough chess rating of...",
+      "title": "Play Chess Against NBA Star Steven Adams",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/play-chess-against-steven-adams",
+      "opportunity_score": 37.9
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-21T04:25:00+00:00",
+      "source": "chesscom",
+      "summary": "It's the GM Wesley So show at the 2026 U.S. Chess Championship as the three-time winner coasts to the final round with a full-point lead over GMs Fabiano Caruana and Grigoriy Oparin. He made a quick draw with GM Hans Niemann to maintain that lead,...",
+      "title": "Wesley So, Rachael Li Lead By Full Point Ahead Of Final Round",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-us-chess-championships-round-10",
+      "opportunity_score": 37.4
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-20T23:20:00+00:00",
+      "source": "chesscom",
+      "summary": "GMs Nodirbek Abdusattorov, Anish Giri, and Yagiz Kaan Erdogmus all lost in round four of the 2026 European Chess Club Cup, falling to GMs Aydin Suleymanli, Pranav Venkatesh, and Karthikeyan Murali respectively. While Abdusattorov was rescued by hi...",
+      "title": "Abdusattorov, Giri, Erdogmus All Beaten In European Club Cup Round 4",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/2026-european-chess-club-cup-round-4",
+      "opportunity_score": 37.2
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-20T21:46:57+00:00",
+      "source": "chesscom",
+      "summary": "IM Levy Rozman has another New York Times bestseller. His new book, How to Win at Chess, Next Level, has reached the prestigious list, while his two How to Win at Chess titles currently rank in the top two spots on Amazon&rsquo;s bestselling chess...",
+      "title": "GothamChess Returns To NYT Bestseller List, Holds Amazon\u2019s Top 2 Chess Spots",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/gothamchess-returns-to-new-york-times-bestseller-list-holds-amazons-top-2-chess-spots",
+      "opportunity_score": 37.1
+    },
+    {
+      "event_date": null,
+      "published_at": "2026-10-20T19:00:00+00:00",
+      "source": "chesscom",
+      "summary": "GM Hikaru Nakamura won a dramatic Titled Tuesday on October 20, taking down GM Alireza Firouzja in the final round to win the event with 9.5/11. Nakamura also needed tiebreaks to beat out GMs Dmitry Andreikin and Sina Movahed, who finished in seco...",
+      "title": "Nakamura Starts 7/7, Wins Titled Tuesday",
+      "trust": "competitor-primary",
+      "updated_at": null,
+      "url": "https://www.chess.com/news/view/nakamura-wins-titled-tuesday-october-20-2026",
+      "opportunity_score": 30.0
+    }
+  ],
+  "limitations": [
+    "Opportunity scores are heuristics, not measured virality. Social views and search volume are unavailable unless supplied."
+  ]
+}

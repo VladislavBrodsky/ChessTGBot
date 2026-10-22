@@ -1,0 +1,79 @@
+{
+  "id": "2026-10-22-tg-7",
+  "kind": "telegram",
+  "date": "2026-10-22",
+  "category": "Engineering",
+  "format": "news",
+  "hook": "How the Mini App moves from setup to matching",
+  "cta": "play",
+  "text": "<b>How the Mini App moves from setup to matching</b>\n\nOpen Play, choose the match options, and confirm the setup before matching.\n\nThe server owns the match state while the client keeps the selected terms visible.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "news",
+    "size": "square",
+    "tag": "Matching flow",
+    "headline": "FROM PLAY\n*TO THE BOARD*",
+    "subhead": "Choose the match options before matching",
+    "cta_label": "Open the Mini App",
+    "source": "Web3Chess Core Engineering",
+    "steps": [
+      "Choose match options",
+      "Choose a time control",
+      "Enter matching"
+    ],
+    "footer": "One reviewed flow from match setup to the board",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-22-tg-7",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Matching flow",
+      "title": "FROM PLAY TO THE BOARD",
+      "subtitle": "Choose the match options before matching",
+      "proofs": [
+        "Choose match options",
+        "Choose a time control",
+        "Enter matching"
+      ],
+      "proofIcons": [
+        "telegram-logo",
+        "shield-check",
+        "strategy"
+      ],
+      "cta": "Open the Mini App",
+      "urlLabel": "t.me",
+      "note": "One reviewed flow from match setup to the board",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "fair-play",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-22T18:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-22T18:42:05Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-22/2026-10-22-tg-7.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

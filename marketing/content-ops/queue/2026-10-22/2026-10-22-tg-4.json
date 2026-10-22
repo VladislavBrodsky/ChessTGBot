@@ -1,0 +1,78 @@
+{
+  "id": "2026-10-22-tg-4",
+  "kind": "telegram",
+  "date": "2026-10-22",
+  "category": "Academy",
+  "format": "news",
+  "hook": "Activate your rook behind enemy passed pawns, never in front of them",
+  "cta": "academy",
+  "text": "<b>Activate your rook behind enemy passed pawns, never in front of them</b>\n\nTarrasch's classic rule holds true in 2026 digital blitz:\n\nA rook behind a passed pawn controls the entire promotion file.\n\nMaster practical endgame technique in the Web3Chess Academy.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "creative": {
+    "template": "tip",
+    "size": "square",
+    "tag": "Pro Tip: Rook Endgames",
+    "headline": "ROOK ENDGAMES\n*MASTER PATTERN*",
+    "subhead": "Three candidate moves before any capture",
+    "cta_label": "Open Academy",
+    "steps": [
+      "Scan every check first",
+      "List all direct captures",
+      "Calculate forcing threats"
+    ],
+    "footer": "Free structured lessons inside Web3Chess Academy.",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-22-tg-4",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Pro Tip: Rook Endgames",
+      "title": "ROOK ENDGAMES MASTER PATTERN",
+      "subtitle": "Three candidate moves before any capture",
+      "proofs": [
+        "Scan every check first",
+        "List all direct captures",
+        "Calculate forcing threats"
+      ],
+      "proofIcons": [
+        "graduation-cap",
+        "strategy",
+        "book-open-text"
+      ],
+      "cta": "Open Academy",
+      "urlLabel": "web3chess.online",
+      "note": "Free structured lessons inside Web3Chess Academy",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "academy",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-22T09:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-22T18:42:05Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-22/2026-10-22-tg-4.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

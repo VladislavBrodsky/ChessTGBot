@@ -8,7 +8,7 @@
   "hook": "Why 2000-Elo players still fall for the Stafford Gambit in 3-minute blitz",
   "cta": "academy_app",
   "text": "<b>Why 2000-Elo players still fall for the Stafford Gambit in 3-minute blitz</b>\n\n🎬 <b>Breakdown: The Dirtiest Stafford Gambit Trap in Blitz (@GothamChess)</b>\n\nIn this viral clip, the game swings at [03:45]:\nGreedy opening captures without king development lead directly to devastating tactical refutations.\n\nWatch the original moment:\nhttps://www.youtube.com/watch?v=k5j4Y8g77R0\n\nCan you spot the master refutation on the board below?",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "competitor",
@@ -44,10 +44,15 @@
     "cta_label": "Solve in Academy",
     "footer": "Breakdown inspired by @GothamChess · Web3Chess Academy"
   },
-  "image": "marketing/content-ops/queue/2026-10-18/2026-10-18-tg-yt-gotham.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-19T21:11:15Z",
+  "published": {
+    "message_id": 51,
+    "at": "2026-10-19T21:11:15Z"
+  },
+  "media_cleaned": true
 }

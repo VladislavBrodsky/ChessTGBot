@@ -1,0 +1,34 @@
+{
+  "id": "academy",
+  "number": "15",
+  "name": "Same player, different rating",
+  "purpose": "Explain rating pools without a false conversion table",
+  "icon": "users-three",
+  "theme": "canvas",
+  "art": "academy",
+  "tag": "Rating guide",
+  "headline": "SAME PLAYER\nDIFFERENT RATING",
+  "body": "Compare the pool before you compare the number",
+  "cta": "Practise in the Academy",
+  "note": "One platform · One time control · One useful trend",
+  "proof": [
+    "Compare one player pool",
+    "Keep one time control",
+    "Read uncertainty first"
+  ],
+  "proofIcons": [
+    "users-three",
+    "clock",
+    "target"
+  ],
+  "alternate": "A RATING NEEDS\nITS CONTEXT",
+  "caption": "Why chess ratings differ across sites and time controls. Draft for review",
+  "destination": "https://web3chess.online/academy",
+  "measure": "Saves per reach at 72 hours and seven days after approved publication; compare like channel and format windows",
+  "sequence": [
+    "Name the pool before reading the number",
+    "Separate the formula from the time control",
+    "Invite one stable comparison and one reviewed decision"
+  ],
+  "status": "draft-for-review"
+}

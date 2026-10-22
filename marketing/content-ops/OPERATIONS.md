@@ -1,10 +1,10 @@
-# Autoposting operations: 5 Telegram posts and 5 articles a day
+# Viral content operations: six Telegram drafts, six X drafts, and three article slots
 
 This is the runbook for the content engine in `pipeline/`, the exact-position board renderer in `../templates/tg/`, and the campaign [Creatives Studio](https://web3chess.online/CREATIVES). It supersedes the
-one-article-a-day sections of [WORKFLOW.md](WORKFLOW.md) for the Telegram channel and the blog; the research and review
+older one-article-a-day sections of [WORKFLOW.md](WORKFLOW.md) for channel production and the blog; the research and review
 rules there still apply.
 
-**Status (2026-10-20):** the pipeline plans, briefs, gates, renders and can publish approved items when the channel runner has its credentials. The repository's current mode is **review**: a human checks each post and rendered image before approval. Check queue state before preparing or rescheduling an item; prior entries may already be approved or published. The one-article daily editorial desk is a separate review workflow from this five-slot queue.
+**Status (2026-10-22):** the pipeline plans, briefs, gates, renders and can publish approved items when the channel runner has its credentials. The repository's current mode is **review**: a human checks each post and rendered image before approval. The current maximum daily plan is six Telegram drafts, six X drafts, and three article slots. Check queue state before preparing or rescheduling an item; prior entries may already be approved or published. The editorial desk remains a separate review workflow from social publication.
 
 ## 1. Who does what
 
@@ -26,7 +26,7 @@ ordered passes (human or agent), not separate deployed services.
 All commands run from the repo root. `--date` defaults to today (UTC).
 
 ```bash
-python3 marketing/content-ops/daily.py plan --days 2           # create tomorrow's 5 slots + 5 article slots
+python3 marketing/content-ops/daily.py plan --days 2           # create configured Telegram, X, and article slots
 python3 marketing/content-ops/daily.py briefs                  # attach briefs (voice, idea, audit patterns, CTA registry)
 # writer fills each slot (an agent, a human, or `daily.py write` with ANTHROPIC_API_KEY):
 python3 marketing/content-ops/daily.py submit <id> <draft.json>    # QA gates + image render
@@ -48,15 +48,14 @@ double-post). Puzzle reveals are threaded replies sent `reveal.after_hours` afte
 It is a four-week hypothesis built on spacing and time zones (the data shows almost no time-of-day effect), not a
 measured optimum.
 
-| Slot | UTC | Default pillar | Default image template |
-|---|---|---|---|
-| S1 | 07:30 | Tactics (emoji-as-answer puzzle) | `puzzle`, threaded reveal 7 h later |
-| S2 | 11:00 | Chess News (number-first, one lesson) | `news` |
-| S3 | 14:30 | Academy / Openings | `tip` / `trap` |
-| S4 | 17:30 | Chess Culture | `culture` |
-| S5 | 20:30 | Product / Match Rules / poll / recap | `product` / `rules` / `poll` |
+| Channel | Configured UTC slots | Daily maximum |
+|---|---|---|
+| Telegram | 06:30, 09:30, 12:30, 15:30, 18:30, 21:30 | 6 review drafts |
+| X | 06:00, 09:00, 12:00, 15:00, 18:00, 21:00 | 6 review drafts |
+| Website | 05:00, 11:00, 17:00 | 3 article slots |
 
-Articles run on `site.slots_utc` (05:00, 08:00, 11:00, 14:00, 17:00) with a matching pillar mix and a `cover` image.
+Pillars and template families rotate through `pipeline/config.json`; exact-position tactics keep the board renderer while non-position campaigns use the shared Studio canvas contract.
+Articles run on `site.slots_utc` with a matching pillar mix and a `cover` image.
 Articles carry `publishAt`, so the site shows each one only from its slot time (ISR revalidate 600 s).
 
 ### What the gates enforce (a failing item is `rejected`, never posted)

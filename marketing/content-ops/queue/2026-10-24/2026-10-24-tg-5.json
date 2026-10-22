@@ -1,0 +1,80 @@
+{
+  "id": "2026-10-24-tg-5",
+  "kind": "telegram",
+  "date": "2026-10-24",
+  "category": "Chess Culture",
+  "format": "product",
+  "hook": "Challenge a Friend: Settle your chess debates in 3 minutes",
+  "cta": "duel_friend",
+  "text": "⚡ <b>Stop arguing about chess in group chats.</b>\n\nShare Web3Chess with a friend or group chat. Both players can open the Mini App, choose how to play, and meet on the board.\n\nPick the same time control before you start the challenge.",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "art": "clock",
+    "tag": "Friend challenge",
+    "headline": "CHALLENGE A FRIEND\n*3-MINUTE SPEED BLITZ*",
+    "subhead": "Share the Mini App · Choose a time control",
+    "cta_label": "Challenge a Friend",
+    "steps": [
+      "Share in Telegram",
+      "Open the Mini App",
+      "Choose how to play"
+    ],
+    "footer": "Share the app, then choose the match setup together",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-24-tg-5",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Friend challenge",
+      "title": "CHALLENGE A FRIEND 3-MINUTE SPEED BLITZ",
+      "subtitle": "Share the Mini App · Choose a time control",
+      "proofs": [
+        "Share in Telegram",
+        "Open the Mini App",
+        "Choose how to play"
+      ],
+      "proofIcons": [
+        "clock",
+        "strategy",
+        "users-three"
+      ],
+      "cta": "Challenge a Friend",
+      "urlLabel": "t.me",
+      "note": "Share the app, then choose the match setup together",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "clock",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-24T18:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-22T22:10:25Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-5.png"
+}

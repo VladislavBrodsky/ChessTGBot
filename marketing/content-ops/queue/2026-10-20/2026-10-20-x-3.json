@@ -5,7 +5,7 @@
   "category": "Product",
   "hook": "From checkmate on the board to instant TON wallet settlement",
   "text": "From checkmate on the board to instant TON wallet settlement\n\nEvery move is verified by python-chess and settled transparently.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -37,10 +37,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-19T16:08:44Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-20/2026-10-20-x-3.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-20T16:00:55Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2112574793195155848",
+    "reply_id": "2112574795782988183",
+    "root_url": "https://x.com/defi_ambassador/status/2112574793195155848"
+  },
+  "published": {
+    "root_id": "2112574793195155848",
+    "root_url": "https://x.com/defi_ambassador/status/2112574793195155848",
+    "at": "2026-10-20T16:00:55Z"
+  },
+  "media_cleaned": true
 }

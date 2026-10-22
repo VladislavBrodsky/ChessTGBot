@@ -1,0 +1,55 @@
+{
+  "id": "2026-10-21-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-21",
+  "category": "Openings",
+  "format": "trap",
+  "hook": "Greedy bishop pushes in the Ruy Lopez get trapped on b3 every time",
+  "cta": "academy",
+  "text": "<b>Greedy bishop pushes in the Ruy Lopez get trapped on b3 every time</b>\n\nIn the Spanish opening, White's light-squared bishop on b3 seems powerful.\nBlack plays a6, b5, and c4, locking the bishop in a wooden box with no escape.\n\nThe defense: White must preserve an escape route with a4 or c3 before pushing the d-pawn.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "r1bqk2r/2ppbppp/p1n5/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 b kq - 0 7",
+    "solution": [
+      "d6"
+    ],
+    "claim": "line_legal"
+  },
+  "creative": {
+    "template": "trap",
+    "size": "square",
+    "tag": "Trap Breakdown: Noah's Ark Trap",
+    "headline": "NOAH'S ARK TRAP\n*PUNISH GREED*",
+    "subhead": "Can you spot the refutation line?",
+    "fen": "r1bqk2r/2ppbppp/p1n5/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 b kq - 0 7",
+    "moves": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Nd4"
+    ],
+    "cta_label": "Learn in Academy",
+    "footer": "Study full lines in the Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-21T03:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-20T00:00:44Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

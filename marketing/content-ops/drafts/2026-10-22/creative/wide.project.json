@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "Same player, different rating",
+  "format": "wide",
+  "width": 1920,
+  "height": 1080,
+  "theme": "canvas",
+  "tag": "Rating guide",
+  "title": "SAME PLAYER\nDIFFERENT RATING",
+  "subtitle": "Compare the pool before you compare the number",
+  "proofs": [
+    "Compare one player pool",
+    "Keep one time control",
+    "Read uncertainty first"
+  ],
+  "proofIcons": [
+    "users-three",
+    "clock",
+    "target"
+  ],
+  "cta": "Practise in the Academy",
+  "urlLabel": "web3chess.online",
+  "note": "One platform · One time control · One useful trend",
+  "layers": [
+    {
+      "id": "art-1",
+      "kind": "academy",
+      "x": 0.75,
+      "y": 0.56,
+      "size": 0.31,
+      "rotation": 0
+    }
+  ]
+}

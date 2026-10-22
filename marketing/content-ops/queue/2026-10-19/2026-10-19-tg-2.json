@@ -7,7 +7,7 @@
   "hook": "Black thought they won White's queen. Two moves later, checkmate landed on d5",
   "cta": "academy",
   "text": "<b>Black thought they won White's queen. Two moves later, checkmate landed on d5</b>\n\nThe most famous minor-piece queen sacrifice in chess history.\nWhen Black pins the knight with Bg4, White calculates: 5.Nxe5! Bxd1 6.Bxf7+ Ke7 7.Nd5#.\n\nThe lesson: Never capture an undefended queen without calculating forcing king checks first.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -45,10 +45,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-18T23:53:18Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-19/2026-10-19-tg-2.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-20T06:54:25Z",
+  "published": {
+    "message_id": 54,
+    "at": "2026-10-20T06:54:25Z"
+  },
+  "media_cleaned": true
 }

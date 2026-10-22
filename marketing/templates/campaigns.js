@@ -1,11 +1,11 @@
 window.W3Campaigns = [
   {
     id: 'opening', number: '01', name: 'The opening move', purpose: 'Awareness', icon: 'strategy', theme: 'canvas', art: 'sculpture',
-    tag: 'Your next move', headline: 'LESS SCROLL\nMORE CHESS', body: 'Free A.I. practice right inside Telegram', cta: 'Make your first move', note: 'A.I. practice is free',
-    alternate: 'YOUR CHAT\nYOUR CHESS', proof: ['No download', 'Free A.I. practice', 'Play in Telegram'],
-    caption: 'One less scroll. One more good move. Open Web3Chess in Telegram and try a free game against A.I. Send this to someone who needs a chess break.',
-    destination: 'https://t.me/chess_matbot/Web3Chess', measure: 'Telegram opens → first A.I. game started',
-    sequence: ['Hook: Less scroll. More chess.', 'Proof: Show real A.I. practice in the app.', 'Action: Make your first move.'],
+    tag: 'Your next move', headline: 'LESS SCROLL\nMORE CHESS', body: 'Free Coach practice right inside Telegram', cta: 'Make your first move', note: 'Free Coach practice · No download',
+    alternate: 'YOUR CHAT\nYOUR CHESS', proof: ['No download', 'Free Coach practice', 'Play in Telegram'],
+    caption: 'One less scroll. One more good move. Open Web3Chess in Telegram and try a free Coach game. Send this to someone who needs a chess break.',
+    destination: 'https://t.me/chess_matbot/Web3Chess', measure: 'Telegram opens → first Coach game started',
+    sequence: ['Hook: Less scroll. More chess.', 'Proof: Show real Coach practice in the app.', 'Action: Make your first move.'],
   },
   {
     id: 'rival', number: '02', name: 'The friendly rivalry', purpose: 'Shares → invitation', icon: 'users-three', theme: 'ink', art: 'fair-play',
@@ -49,9 +49,9 @@ window.W3Campaigns = [
   },
   {
     id: 'culture', number: '07', name: 'The one-more-game meme', purpose: 'Shares / chess culture', icon: 'chats-circle', theme: 'paper', art: 'clock',
-    tag: 'Chess players know', headline: 'ONE MORE GAME\nTHREE GAMES AGO', body: 'Every chess group has that friend', cta: 'Play one more game', note: 'A.I. practice is free · No download',
+    tag: 'Chess players know', headline: 'ONE MORE GAME\nTHREE GAMES AGO', body: 'Every chess group has that friend', cta: 'Play one more game', note: 'Free Coach practice · No download',
     alternate: 'THE CLOCK SAID\nLAST GAME', proof: ['“Last one”', '“Okay, one more”', '“After this game”'],
-    caption: '“One more game” is a time control of its own. Tag the friend who keeps saying it. Open Web3Chess in Telegram for a free A.I. practice game.',
+    caption: '“One more game” is a time control of its own. Tag the friend who keeps saying it. Open Web3Chess in Telegram for a free Coach game.',
     destination: 'https://t.me/chess_matbot/Web3Chess', measure: 'Shares / reach; relevant replies / reach',
     sequence: ['Hook: A familiar chess-group moment.', 'Value: Make the joke recognizable without inventing a quote or result.', 'Action: Tag a friend or play a free practice game.'],
   },

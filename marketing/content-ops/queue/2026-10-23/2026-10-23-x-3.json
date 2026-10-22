@@ -1,0 +1,81 @@
+{
+  "id": "2026-10-23-x-3",
+  "kind": "x_post",
+  "date": "2026-10-23",
+  "category": "Product",
+  "hook": "Check the match setup before you enter matching",
+  "text": "Check the match setup before you enter matching\n\nConfirm the selected stake, displayed payout, and time control before play.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Match setup",
+    "headline": "CHOOSE THE MATCH\n*THEN FIND A PLAYER*",
+    "subhead": "Wager and time control stay visible before matching",
+    "cta_label": "Open Web3Chess",
+    "steps": [
+      "Open the Mini App",
+      "Choose the match setup",
+      "Enter matching"
+    ],
+    "footer": "USDT matches · 18+ where permitted · You can lose your stake",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-23-x-3",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Match setup",
+      "title": "CHOOSE THE MATCH THEN FIND A PLAYER",
+      "subtitle": "Wager and time control stay visible before matching",
+      "proofs": [
+        "Open the Mini App",
+        "Choose the match setup",
+        "Enter matching"
+      ],
+      "proofIcons": [
+        "telegram-logo",
+        "strategy",
+        "target"
+      ],
+      "cta": "Open Web3Chess",
+      "urlLabel": "web3chess.online",
+      "note": "USDT matches · 18+ where permitted · You can lose your stake",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "sculpture",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Read the match rules, then open the Mini App:\nhttps://web3chess.online/wagers",
+    "delay_seconds": 30
+  },
+  "cta": "rules",
+  "scheduled_at": "2026-10-23T16:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "checked_at": "2026-10-22T18:42:05Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-x-3.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "2026-10-24-tg-1",
+  "kind": "telegram",
+  "date": "2026-10-24",
+  "category": "Tactics",
+  "format": "puzzle",
+  "hook": "White to move. Paul Morphy's classical queen deflection sacrifice (Oct 24)",
+  "cta": "academy_app",
+  "text": "<b>White to move. Paul Morphy's classical queen deflection sacrifice (Oct 24)</b>\n\nBlack's king on e8 is pinned down.\nCalculate the forced mate in 2.\n\n❤ Qb8+   🔥 Rd8+   👏 Bxf7+\nAnswer reveals in 6 hours.",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+    "solution": [
+      "Qb8+",
+      "Nxb8",
+      "Rd8#"
+    ],
+    "claim": "mate_in_2"
+  },
+  "creative": {
+    "template": "puzzle",
+    "size": "square",
+    "tag": "Academy Drill: Morphy's Opera Mate",
+    "headline": "White to play\n*One decisive move*",
+    "subhead": "Spot the tactical finish",
+    "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+    "cta_label": "Solve in Academy",
+    "footer": "Answer in replies. Full analysis in Web3Chess Academy."
+  },
+  "reveal": {
+    "after_hours": 6,
+    "text": "<b>Academy Drill Solution: Qb8+ Nxb8 Rd8#</b>\n\nCalculation complete. Launch the Academy to practice 100+ interactive master patterns with instant move validation.",
+    "creative": {
+      "template": "puzzle",
+      "size": "square",
+      "reveal": true,
+      "moves": [
+        "Qb8+",
+        "Nxb8",
+        "Rd8#"
+      ],
+      "tag": "Solved",
+      "headline": "Decisive Strike.\n*The winning line.*",
+      "subhead": "Calculated to the end.",
+      "fen": "4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 16",
+      "cta_label": "Solve More in Academy"
+    },
+    "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-1.reveal.png"
+  },
+  "scheduled_at": "2026-10-24T06:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-22T22:10:22Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-1.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 2
+  }
+}

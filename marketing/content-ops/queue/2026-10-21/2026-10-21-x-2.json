@@ -1,0 +1,58 @@
+{
+  "id": "2026-10-21-x-2",
+  "kind": "x_post",
+  "date": "2026-10-21",
+  "category": "Engineering",
+  "hook": "How server-side monotonic clocks stop lag manipulation in blitz",
+  "text": "How server-side monotonic clocks stop lag manipulation in blitz\n\nClient timers can be spoofed by packet drops.\n\nOur FastAPI + Socket.IO engine timestamps every move with sub-50ms precision.\n\n#TelegramMiniApp #WebSockets #BuildInPublic",
+  "status": "published",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "product",
+    "size": "square",
+    "tag": "Architecture",
+    "headline": "SUB-100MS SYNC\n*TELEGRAM MINI APP*",
+    "subhead": "Real-time WebSockets vs on-chain latency",
+    "cta_label": "Read Stack",
+    "steps": [
+      "FastAPI + Socket.IO realtime engine",
+      "Telegram Bot API 8.0 seamless WebView",
+      "Sub-100ms board state synchronization"
+    ],
+    "footer": "Built for high-speed PvP · web3chess.online"
+  },
+  "docked_reply": {
+    "text": "Read our engineering breakdown and test the real-time board:\nhttps://web3chess.online/blog",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-21T08:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-20T00:00:40Z"
+  },
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "updated_at": "2026-10-21T08:07:37Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2112818068401385823",
+    "reply_id": "2112818070863352157",
+    "root_url": "https://x.com/defi_ambassador/status/2112818068401385823"
+  },
+  "published": {
+    "root_id": "2112818068401385823",
+    "root_url": "https://x.com/defi_ambassador/status/2112818068401385823",
+    "at": "2026-10-21T08:07:37Z"
+  },
+  "media_cleaned": true
+}
