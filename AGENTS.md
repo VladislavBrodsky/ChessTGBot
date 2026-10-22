@@ -2,6 +2,13 @@
 
 Telegram Mini App chess game. Next.js frontend + FastAPI backend.
 
+## Project development north star: Pareto principle
+
+- Aim for the smallest roughly 20% of work that can deliver 80–100% of the useful outcome. Treat that ratio as a prioritization target, not a guaranteed measurement or a reason to leave critical work incomplete.
+- Before implementation, identify the user outcome, the main bottleneck, and the simplest change likely to move it. Rank alternatives by expected impact, confidence, effort, and risk; ship the highest-impact slice first.
+- Reuse existing components and infrastructure. Avoid broad rewrites, speculative features, and polish with little user value. Verify the result with an observable product signal or a focused test, then update priorities from what actually happened.
+- Security, money correctness, accessibility, reliability, and required CI checks remain hard gates even when they are not the most visible 20%.
+
 ## Brand & UI system
 
 - All frontend visual work **MUST** follow [`BRAND_DESIGN_SYSTEM.md`](BRAND_DESIGN_SYSTEM.md) and [`design-system/MASTER.md`](design-system/MASTER.md). Read them before creating or changing pages, modals, drawers, cards, navigation, state UI, or animation.

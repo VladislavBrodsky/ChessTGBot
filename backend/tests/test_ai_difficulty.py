@@ -111,6 +111,9 @@ async def test_make_bot_move_with_process_pool():
     # Initialize game
     await service.create_game(game_id, is_bot_game=True, difficulty="medium")
     await service.join_game(game_id, 12345)
+    assert await service.make_bot_move(game_id) is None  # White plays first.
+    assert (await service.make_move(game_id, "e2e4", player_id=12345)).turn == 'b'
+    assert await service.make_move(game_id, "e7e5", player_id=12345) is None
     
     # Mock _process_pool to be a dummy object (non-None)
     dummy_executor = mock.MagicMock()
@@ -123,5 +126,6 @@ async def test_make_bot_move_with_process_pool():
         with mock.patch("asyncio.BaseEventLoop.run_in_executor", mock_run_in_executor):
             new_state = await service.make_bot_move(game_id)
             assert new_state is not None
-            assert len(new_state.move_history) == 1
-            assert new_state.turn == 'b'
+            assert len(new_state.move_history) == 2
+            assert new_state.turn == 'w'
+            assert await service.make_bot_move(game_id) is None  # No duplicate reply.

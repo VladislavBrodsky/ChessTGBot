@@ -128,22 +128,23 @@ test.describe('browser safety net', () => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem('onboarding_completed'))).toBe('true');
   });
 
-  test('opens the game lobby and lets a player select an AI difficulty', async ({ page }) => {
+  test('opens Free Coach and lets a player select a difficulty', async ({ page }) => {
     await prepareAuthenticatedPage(page);
 
     await page.goto('/en/game', { waitUntil: 'domcontentloaded' });
-    await page.getByRole('button', { name: /Train\s+Against A\.I\./i }).click();
-    await expect(page.getByRole('dialog', { name: 'Choose AI difficulty' })).toBeVisible();
+    await page.getByRole('button', { name: /Play Free Coach/i }).click();
+    await expect(page.getByRole('dialog', { name: 'Choose Free Coach difficulty' })).toBeVisible();
+    await expect(page.getByText('Play free against a computer opponent. Choose a difficulty.')).toBeVisible();
     await page.getByRole('button', { name: 'Easy 800 Elo' }).click();
     await expect(page.getByRole('button', { name: 'Start practice game' })).toBeVisible();
   });
 
-  test('starts an AI game and opens its active-game route', async ({ page }) => {
+  test('starts a Free Coach game and opens its active-game route', async ({ page }) => {
     const requests = new Map<string, number>();
     await prepareAuthenticatedPage(page, requests);
 
     await page.goto('/en/game', { waitUntil: 'domcontentloaded' });
-    await page.getByRole('button', { name: /Train\s+Against A\.I\./i }).click();
+    await page.getByRole('button', { name: /Play Free Coach/i }).click();
     await page.getByRole('button', { name: 'Easy 800 Elo' }).click();
     await page.getByRole('button', { name: 'Start practice game' }).click();
     await expect(page).toHaveURL(/\/en\/game\?id=e2e-ai-game$/);

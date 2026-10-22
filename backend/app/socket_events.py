@@ -14,6 +14,7 @@ OFFLINE_FIRST_MOVE_GRACE_SECONDS = 180.0
 
 # One background matchmaking poller per user; a re-join replaces the old one.
 _active_matchmaking_pollers: dict = {}
+_active_coach_turns: dict[str, asyncio.Task] = {}
 _rematch_locks = WeakValueDictionary()
 
 from app.core.config import get_settings
@@ -104,6 +105,29 @@ from app.models.user import User  # noqa: E402
 from app.models.gamification import Referral  # noqa: E402
 
 from sqlalchemy import select, and_  # noqa: E402
+
+
+async def _play_coach_turn(game_id: str) -> None:
+    """Apply and broadcast the computer reply without blocking the socket handler."""
+    try:
+        service = GameService()
+        state = await service.make_bot_move(game_id)
+        if state is None:
+            return
+        await sio.emit('game_state', state.model_dump(), room=game_id)
+        if not state.is_game_over:
+            service.start_timeout_monitor(game_id, len(state.move_history), state.white_time_left, 'w')
+    except Exception:
+        logger.exception("Free Coach reply failed for game %s", game_id)
+    finally:
+        if _active_coach_turns.get(game_id) is asyncio.current_task():
+            _active_coach_turns.pop(game_id, None)
+
+
+def _schedule_coach_turn(game_id: str) -> None:
+    active = _active_coach_turns.get(game_id)
+    if active is None or active.done():
+        _active_coach_turns[game_id] = asyncio.create_task(_play_coach_turn(game_id))
 
 # ---------------------------------------------------------------------------
 # Pending draw-offer tracking
@@ -387,6 +411,8 @@ async def join_room(sid, data):
             active_turn = state.turn
             time_left = state.white_time_left if active_turn == 'w' else state.black_time_left
             service.start_timeout_monitor(room, len(state.move_history), time_left, active_turn)
+            if state.black_player_id == -1 and active_turn == 'b':
+                _schedule_coach_turn(room)
 
 async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponent_sid: str, bid_amount: int, time_control: int):
     # Generate clean unique game_id
@@ -1152,18 +1178,16 @@ async def make_move(sid, data):
         
         if turn_color == 'w':
              if is_white_bot:
-                  if not is_black:
-                       await sio.emit('error', {'message': 'Not your turn'}, room=sid)
-                       return
+                  await sio.emit('error', {'message': 'Not your turn'}, room=sid)
+                  return
              else:
                   if not is_white:
                        await sio.emit('error', {'message': 'Not your turn'}, room=sid)
                        return
         elif turn_color == 'b':
              if is_black_bot:
-                  if not is_white:
-                       await sio.emit('error', {'message': 'Not your turn'}, room=sid)
-                       return
+                  await sio.emit('error', {'message': 'Not your turn'}, room=sid)
+                  return
              else:
                   if not is_black:
                        await sio.emit('error', {'message': 'Not your turn'}, room=sid)
@@ -1178,6 +1202,8 @@ async def make_move(sid, data):
                 active_turn = new_state.turn
                 time_left = new_state.white_time_left if active_turn == 'w' else new_state.black_time_left
                 service.start_timeout_monitor(game_id, len(new_state.move_history), time_left, active_turn)
+                if new_state.black_player_id == -1 and active_turn == 'b':
+                    _schedule_coach_turn(game_id)
                 
                 # If White just moved (move history length is 1), Black has 30 seconds to make their first move
                 # (extended when the match was established while Black was offline)

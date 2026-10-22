@@ -200,6 +200,43 @@ async def _fetch_players(factory):
     return users[PLAYER_A], users[PLAYER_B]
 
 
+async def test_free_coach_replies_to_each_move_over_socket(socket_server):
+    from app.services.game_service import GameService
+
+    url, factory = socket_server["url"], socket_server["factory"]
+    await _seed_players(factory)
+    game_id = "free_coach_socket_test"
+    service = GameService()
+    state = await service.create_game(game_id, is_bot_game=True,
+                                      difficulty="easy", time_control_seconds=300)
+    state.white_player_id = PLAYER_A
+    state.white_username = "E2E-A"
+    await service.session_manager.save_game(game_id, state)
+
+    client = E2EClient()
+    await client.connect(url, PLAYER_A, "E2E-A", ip="203.0.113.10")
+    try:
+        await client.sio.emit("join_room", {"room": game_id})
+        initial = await client.next_state()
+        assert initial["black_username"] == "Free Coach"
+        assert initial["bid_amount"] == 0
+
+        await client.sio.emit("make_move", {"game_id": game_id, "uci": "e2e4"})
+        reply = await client.state_after_move(2)
+        assert reply["turn"] == "w"
+        assert len(reply["move_history"]) == 2
+        assert reply["white_time_left"] > 0
+
+        await client.sio.emit("make_move", {"game_id": game_id, "uci": "g1f3"})
+        second_reply = await client.state_after_move(4)
+        assert second_reply["turn"] == "w"
+        assert len(second_reply["move_history"]) == 4
+        assert (await service.get_game_state(game_id)).move_history == second_reply["move_history"]
+        assert (await _fetch_players(factory))[0].balance == START_BALANCE
+    finally:
+        await client.sio.disconnect()
+
+
 async def test_private_wager_requires_guest_consent_and_survives_reconnect_heal(socket_server):
     from app.services.game_service import GameService
 

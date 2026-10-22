@@ -16,6 +16,10 @@
 
 **ChessTGBot** is a production-grade Telegram Mini App chess platform engineered for competitive PvP matchmaking, real-time gameplay, and game telemetry inside Telegram.
 
+### Development north star: Pareto principle
+
+We aim to find the roughly 20% of engineering effort that delivers 80–100% of useful product impact. For each change, name the player or operator outcome, identify its main bottleneck, choose the smallest high-impact solution, and verify it with a focused test or observable product signal. Reuse the design system and existing services before adding new infrastructure. The ratio guides prioritization; it is not a promise of results or permission to skip security, money correctness, accessibility, reliability, or required CI checks. Reassess the backlog using measured outcomes after release.
+
 Built on a **Next.js 16 (App Router)** client and a **FastAPI + Socket.IO** real-time server, the application delivers the **Obsidian Chess** experience—a dark, high-contrast, tactile UI optimized for Telegram mobile viewports and iOS safe-area insets.
 
 ```text
@@ -50,7 +54,7 @@ The core match lifecycle is managed through Socket.IO WebSocket connections and 
 
 ## 📐 Production Topology & Host Routing
 
-The application operates across **two separate Railway services** auto-deployed on push to `main`:
+The application operates across **three separate Railway services** auto-deployed on push to `main`:
 
 <p align="center">
   <img src="assets/readme/architecture.svg" alt="ChessTGBot Production Architecture & Topology Diagram" width="100%" />
@@ -60,11 +64,12 @@ The application operates across **two separate Railway services** auto-deployed 
 
 | Component | Production Domain | Railway Internal Host | Tech Stack |
 | --- | --- | --- | --- |
-| **Frontend** | [`web3chess.online`](https://web3chess.online) | [`chesstgbot-frontend-production.up.railway.app`](https://chesstgbot-frontend-production.up.railway.app) | Next.js 16 (App Router), `next start` |
+| **Marketing website** | [`web3chess.online`](https://web3chess.online) | Railway website service | Next.js 16 (App Router), `website/` |
+| **Mini App and desktop web** | [`app.web3chess.online`](https://app.web3chess.online) | Railway frontend service | Next.js 16 (App Router), `frontend/` |
 | **Backend API** | [`api.web3chess.online`](https://api.web3chess.online) | [`chesstgbot-backend-production.up.railway.app`](https://chesstgbot-backend-production.up.railway.app) | FastAPI, Socket.IO, SQLAlchemy, Redis |
 
 > [!CAUTION]
-> The single-container monolith host (`chesstgbot-production.up.railway.app`) is **DEAD / INACTIVE**. Do not test against or send traffic to it. Runtime routing in [`frontend/src/lib/api.ts`](frontend/src/lib/api.ts) maps `web3chess.online` directly to `api.web3chess.online`.
+> The single-container monolith host (`chesstgbot-production.up.railway.app`) is **DEAD / INACTIVE**. Do not test against or send traffic to it. Runtime routing in [`frontend/src/lib/api.ts`](frontend/src/lib/api.ts) maps the app and website domains directly to `api.web3chess.online`.
 
 ---
 

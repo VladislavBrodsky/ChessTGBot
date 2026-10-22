@@ -483,8 +483,7 @@ class GameService:
             if player_id is not None:
                 active_id = current_state.white_player_id if current_state.turn == 'w' else current_state.black_player_id
                 if active_id == -1:
-                    if player_id not in (current_state.white_player_id, current_state.black_player_id):
-                        return None
+                    return None  # The computer turn can only be applied by make_bot_move.
                 elif active_id != player_id:
                     return None
 
@@ -545,7 +544,8 @@ class GameService:
     async def make_bot_move(self, game_id: str) -> Optional[GameState]:
         """Calculates and applies the best move for the bot."""
         current_state = await self.session_manager.get_game(game_id)
-        if not current_state or current_state.is_game_over:
+        if (not current_state or current_state.is_game_over
+                or current_state.black_player_id != -1 or current_state.turn != 'b'):
             return None
 
         difficulty = getattr(current_state, "difficulty", "medium") or "medium"
@@ -566,7 +566,22 @@ class GameService:
                 depth = 2 if difficulty == "easy" else (4 if difficulty == "hard" else 3)
                 bot_move_uci = await asyncio.to_thread(engine.get_best_move, depth)
 
-        if bot_move_uci and engine.make_move(bot_move_uci):
+        if not bot_move_uci:
+            return None
+
+        # Computing a move can take seconds. Recheck under the same game lock as
+        # human moves so reconnects, resignations and duplicate workers cannot
+        # apply a reply to a stale position.
+        async with game_lock(self.session_manager.redis, game_id, use_memory=self.session_manager._use_memory):
+            latest = await self.session_manager.get_game(game_id)
+            if (not latest or latest.is_game_over or latest.black_player_id != -1
+                    or latest.turn != 'b' or latest.fen != current_state.fen
+                    or len(latest.move_history) != len(current_state.move_history)):
+                return None
+            current_state = latest
+            engine.board = chess.Board(current_state.fen)
+            if not engine.make_move(bot_move_uci):
+                return None
             new_state = engine.get_state()
             new_state.revision = current_state.revision
             new_state.invite_token = current_state.invite_token
