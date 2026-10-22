@@ -81,7 +81,7 @@ For the daily editorial package, `node marketing/content-ops/export-creative.mjs
 5. Confirm with the product owner (not verified by this repo): the geo rules for wager messaging, and Telegram's rules for
    crypto/gambling content in any paid placement. The first Match Rules post (Wednesday S5) waits for that answer.
 
-The GitHub workflow `.github/workflows/content-ops.yml` runs the tests and the QA gates on demand. It does **not**
+The normal CI workflow runs content engine unit tests on every PR and push to `main`. The GitHub workflow `.github/workflows/content-ops.yml` re-runs tests and queue QA gates on demand. It does **not**
 publish: live posting needs durable queue state (at-most-once), which should live on one trusted runner until the team
 chooses where it belongs.
 
