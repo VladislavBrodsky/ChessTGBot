@@ -945,6 +945,15 @@
     "gas_fee_needed": "تحتاج محفظتك إلى TON لدفع رسوم الشبكة. أضف TON قبل المحاولة مجدداً.",
     "deposit_not_confirmed": "لم يتم تأكيد الإيداع. إذا وافقت على تحويل، تحقق منه قبل إرسال آخر."
   },
+  "PayReturn": {
+    "title_success": "تم إرسال الدفع",
+    "body_success": "يتحدّث رصيدك تلقائيًا بمجرد تأكيد الدفع. افتح Web3Chess في تيليجرام للتحقق.",
+    "title_cancel": "تم إلغاء الدفع",
+    "body_cancel": "لم تتم أي عملية دفع. عُد إلى Web3Chess متى أردت المحاولة مجددًا.",
+    "title_unknown": "العودة إلى Web3Chess",
+    "body_unknown": "افتح Web3Chess في تيليجرام للمتابعة.",
+    "open_app": "افتح Web3Chess في تيليجرام"
+  },
   "Membership": {
     "title": "اشتراك CHESS PREMIUM",
     "subtitle": "ضاعف أرباحك وافتح مزايا حصرية لا حدود لها.",

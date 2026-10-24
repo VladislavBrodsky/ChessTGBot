@@ -945,6 +945,15 @@
     "gas_fee_needed": "नेटवर्क शुल्क के लिए वॉलेट में TON चाहिए। फिर प्रयास करने से पहले TON जोड़ें।",
     "deposit_not_confirmed": "जमा की पुष्टि नहीं हुई। यदि ट्रांसफ़र मंज़ूर किया है, तो दोबारा भेजने से पहले उसकी जाँच करें।"
   },
+  "PayReturn": {
+    "title_success": "भुगतान भेज दिया गया",
+    "body_success": "भुगतान की पुष्टि होते ही आपका बैलेंस अपने आप अपडेट हो जाएगा। जाँचने के लिए Telegram में Web3Chess खोलें।",
+    "title_cancel": "भुगतान रद्द किया गया",
+    "body_cancel": "कोई भुगतान नहीं हुआ। जब चाहें, फिर से कोशिश करने के लिए Web3Chess पर लौटें।",
+    "title_unknown": "Web3Chess पर वापस जाएँ",
+    "body_unknown": "जारी रखने के लिए Telegram में Web3Chess खोलें।",
+    "open_app": "Telegram में Web3Chess खोलें"
+  },
   "Membership": {
     "title": "चेस प्रीमियम (CHESS PREMIUM)",
     "subtitle": "अधिकतम पुरस्कार और एक्सक्लूसिव फीचर्स अनलॉक करें।",

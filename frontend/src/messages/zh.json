@@ -945,6 +945,15 @@
     "gas_fee_needed": "钱包需要TON支付网络费用，请补充TON后重试。",
     "deposit_not_confirmed": "充值尚未确认。如已批准转账，请先验证该交易再考虑重新发送。"
   },
+  "PayReturn": {
+    "title_success": "付款已提交",
+    "body_success": "付款确认后，您的余额将自动更新。请在 Telegram 中打开 Web3Chess 查看。",
+    "title_cancel": "付款已取消",
+    "body_cancel": "未产生任何付款。想再试一次时，请返回 Web3Chess。",
+    "title_unknown": "返回 Web3Chess",
+    "body_unknown": "请在 Telegram 中打开 Web3Chess 继续。",
+    "open_app": "在 Telegram 中打开 Web3Chess"
+  },
   "Membership": {
     "title": "CHESS PREMIUM",
     "subtitle": "解锁最大奖励额度与专属功能特权",

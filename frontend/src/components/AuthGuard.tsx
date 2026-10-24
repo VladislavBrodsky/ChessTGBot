@@ -32,7 +32,7 @@ const SDK_WAIT_MS = 2500;
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const tc = useTranslations('Common');
     const pathname = usePathname();
-    const isPublicRoute = Boolean(pathname && /\/(login|qr)(?:\/|$)/.test(pathname));
+    const isPublicRoute = Boolean(pathname && /\/(login|qr|pay)(?:\/|$)/.test(pathname));
     // 'checking' → still verifying | 'authed' → show children | 'redirecting' → blocking
     const [authState, setAuthState] = useState<'checking' | 'authed' | 'redirecting'>(
         () => isPublicRoute ? 'authed' : 'checking'
@@ -44,7 +44,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
         const w = window as any;
 
-        // Login and shareable referral QR pages are public entry points.
+        // Login, the shareable referral QR page and the card-checkout return page are public entry points.
         if (isPublicRoute) {
             setAuthState('authed');
             if (w.Telegram?.WebApp?.initData) {

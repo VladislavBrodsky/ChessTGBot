@@ -945,6 +945,15 @@
     "gas_fee_needed": "ネットワーク手数料にTONが必要です。TONを追加してから再試行してください。",
     "deposit_not_confirmed": "入金が未確認です。送金を承認済みなら、再送する前に取引を確認してください。"
   },
+  "PayReturn": {
+    "title_success": "お支払いを送信しました",
+    "body_success": "お支払いが確認され次第、残高が自動で更新されます。Telegramで Web3Chess を開いてご確認ください。",
+    "title_cancel": "お支払いをキャンセルしました",
+    "body_cancel": "お支払いは行われていません。もう一度試すときは Web3Chess に戻ってください。",
+    "title_unknown": "Web3Chess に戻る",
+    "body_unknown": "続けるには Telegram で Web3Chess を開いてください。",
+    "open_app": "Telegram で Web3Chess を開く"
+  },
   "Membership": {
     "title": "CHESS PREMIUM 会員",
     "subtitle": "報酬を最大化し、限定機能をアンロックしましょう",

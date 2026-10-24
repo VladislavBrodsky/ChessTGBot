@@ -945,6 +945,15 @@
     "gas_fee_needed": "Votre portefeuille a besoin de TON pour les frais réseau. Ajoutez des TON avant de réessayer.",
     "deposit_not_confirmed": "Dépôt non confirmé. Si vous avez approuvé un transfert, vérifiez-le avant d'en envoyer un autre."
   },
+  "PayReturn": {
+    "title_success": "Paiement envoyé",
+    "body_success": "Votre solde se met à jour automatiquement dès que le paiement est confirmé. Ouvrez Web3Chess dans Telegram pour vérifier.",
+    "title_cancel": "Paiement annulé",
+    "body_cancel": "Aucun paiement n’a été effectué. Revenez sur Web3Chess quand vous voulez réessayer.",
+    "title_unknown": "Retour à Web3Chess",
+    "body_unknown": "Ouvrez Web3Chess dans Telegram pour continuer.",
+    "open_app": "Ouvrir Web3Chess dans Telegram"
+  },
   "Membership": {
     "title": "CHESS PREMIUM",
     "subtitle": "Maximisez vos gains et débloquez des fonctionnalités exclusives.",

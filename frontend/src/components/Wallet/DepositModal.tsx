@@ -718,10 +718,12 @@ function DepositModalContent({
     telegramHaptic('medium');
 
     try {
-      const currentPath = typeof window !== 'undefined' ? window.location.pathname : "/wallet";
+      // Stripe returns the player in Telegram's browser, which has no Mini App
+      // session: send it to the public return page, not back to a guarded one.
+      const returnLocale = window.location.pathname.match(/^\/([a-z]{2})(?:\/|$)/)?.[1] ?? 'en';
       const res = await apiFetch("/api/v1/wallet/stripe/create-session", {
         method: "POST",
-        body: JSON.stringify({ amount: amt, redirect_path: currentPath })
+        body: JSON.stringify({ amount: amt, redirect_path: `/${returnLocale}/pay/return` })
       });
       if (!res.ok) {
         logTelemetryEvent('deposit_card_failed', { stage: 'create_session', status: res.status });

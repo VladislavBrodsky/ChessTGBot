@@ -68,6 +68,8 @@ it('opens checkout, watches the payment, and credits it once when it lands', asy
   renderModal();
   await startCheckout();
   expect(openLink).toHaveBeenCalledWith('https://checkout.stripe.test/c/1');
+  const createCall = (apiFetch as jest.Mock).mock.calls.find(([url]) => String(url).startsWith('/api/v1/wallet/stripe/create-session'));
+  expect(JSON.parse(createCall[1].body)).toEqual({ amount: 10, redirect_path: '/en/pay/return' });
   expect(screen.getByRole('status')).toHaveTextContent('waiting_card_payment');
   expect(JSON.parse(window.sessionStorage.getItem('deposit_pending_stripe')!).sessionId).toBe(SESSION);
 
@@ -85,6 +87,15 @@ it('opens checkout, watches the payment, and credits it once when it lands', asy
   await advance(30000);
   expect(verifyCalls()).toHaveLength(callsAtSuccess);
   expect(onSuccess).toHaveBeenCalledTimes(1);
+});
+
+it('returns the player to the public page in their own language, not to a guarded page', async () => {
+  window.history.replaceState({}, '', '/ru/wallet');
+  renderModal();
+  await startCheckout();
+  const createCall = (apiFetch as jest.Mock).mock.calls.find(([url]) => String(url).startsWith('/api/v1/wallet/stripe/create-session'));
+  expect(JSON.parse(createCall[1].body).redirect_path).toBe('/ru/pay/return');
+  window.history.replaceState({}, '', '/');
 });
 
 it('checks the moment the player returns to the app', async () => {

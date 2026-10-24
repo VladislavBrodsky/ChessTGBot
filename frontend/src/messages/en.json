@@ -945,6 +945,15 @@
     "gas_fee_needed": "Your wallet needs TON to pay the blockchain network fee. Add TON before retrying.",
     "deposit_not_confirmed": "Deposit not confirmed. If you approved a transfer, verify it before sending another."
   },
+  "PayReturn": {
+    "title_success": "Payment submitted",
+    "body_success": "Your balance updates automatically once the payment is confirmed. Open Web3Chess in Telegram to check.",
+    "title_cancel": "Payment cancelled",
+    "body_cancel": "No payment was made. Return to Web3Chess whenever you want to try again.",
+    "title_unknown": "Back to Web3Chess",
+    "body_unknown": "Open Web3Chess in Telegram to continue.",
+    "open_app": "Open Web3Chess in Telegram"
+  },
   "Membership": {
     "title": "Chess Premium",
     "subtitle": "Unlock full reward potential and exclusive features.",
