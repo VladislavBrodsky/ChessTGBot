@@ -4,10 +4,12 @@ import Home from '../app/[locale]/home/page'
 
 // Mock the dependencies
 jest.mock('next/link', () => {
-    return ({ children }: { children: React.ReactNode }) => {
-        return children;
+    return ({ children, href }: { children: React.ReactNode; href?: string }) => {
+        return <a href={href}>{children}</a>;
     }
 });
+
+let mockWalletBalance = 1000;
 
 jest.mock('next/navigation', () => ({
     useRouter: () => ({
@@ -59,7 +61,7 @@ jest.mock('@/context/UserContext', () => ({
             losses: 10,
             draws: 2,
         },
-        walletBalance: 1000,
+        walletBalance: mockWalletBalance,
         loadingStats: false,
         balanceError: false,
         statsError: false,
@@ -126,5 +128,20 @@ describe('Home', () => {
         expect(screen.getByText('28')).toBeInTheDocument()
         expect(screen.getByTestId('xp-progress-bar')).toBeInTheDocument()
         expect(screen.queryByText('16/10/2')).not.toBeInTheDocument()
+    })
+
+    describe('balance chip', () => {
+        afterEach(() => { mockWalletBalance = 1000 })
+
+        it('opens the wallet page when there is a balance to look at or withdraw', () => {
+            render(<Home />)
+            expect(screen.getByText('$10.00').closest('a')).toHaveAttribute('href', '/en/wallet')
+        })
+
+        it('opens the deposit drawer directly when the balance is empty', () => {
+            mockWalletBalance = 0
+            render(<Home />)
+            expect(screen.getByText('$0.00').closest('a')).toHaveAttribute('href', '/en/wallet?deposit=1')
+        })
     })
 })

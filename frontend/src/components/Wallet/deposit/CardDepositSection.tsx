@@ -15,6 +15,12 @@ export interface CardDepositSectionProps {
   processing: boolean;
   onCardTopUp: () => void;
   onPresetSelect?: (amount: number) => void;
+  /** A checkout was opened in the browser and has not been confirmed yet. */
+  awaitingPayment?: boolean;
+  checkingPayment?: boolean;
+  onCheckPayment?: () => void;
+  /** Always-available way out of card checkout, for when it fails or is not wanted. */
+  onUseCrypto?: () => void;
 }
 
 export function CardDepositSection({
@@ -23,6 +29,10 @@ export function CardDepositSection({
   processing,
   onCardTopUp,
   onPresetSelect,
+  awaitingPayment = false,
+  checkingPayment = false,
+  onCheckPayment,
+  onUseCrypto,
 }: CardDepositSectionProps) {
   const tw = useTranslations('Wallet');
   const parsedAmt = parseFloat(depositAmount);
@@ -111,6 +121,20 @@ export function CardDepositSection({
         </div>
       )}
 
+      {awaitingPayment && (
+        <div role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 space-y-2.5">
+          <p className="flex items-start gap-2 text-caption font-semibold text-emerald-400 leading-snug">
+            <span className="mt-1 w-1.5 h-1.5 shrink-0 rounded-full bg-emerald-400 animate-ping" aria-hidden="true" />
+            <span>{tw('waiting_card_payment')}</span>
+          </p>
+          {onCheckPayment && (
+            <Button variant="secondary" size="sm" className="w-full" isLoading={checkingPayment} onClick={onCheckPayment}>
+              {tw('check_payment_now')}
+            </Button>
+          )}
+        </div>
+      )}
+
       <button
         type="button"
         onClick={onCardTopUp}
@@ -133,6 +157,16 @@ export function CardDepositSection({
           {tw('secure_checkout')}
         </span>
       </div>
+      {onUseCrypto && (
+        <button
+          type="button"
+          onClick={onUseCrypto}
+          disabled={processing}
+          className="ui-tap-target w-full py-1 text-caption font-semibold text-brand-muted hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer disabled:opacity-50"
+        >
+          {tw('prefer_crypto')}
+        </button>
+      )}
     </div>
   );
 }

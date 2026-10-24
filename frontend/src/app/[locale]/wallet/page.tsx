@@ -13,6 +13,7 @@ import CyberCard from "@/components/Wallet/CyberCard";
 import TransactionLedger from "@/components/Wallet/TransactionLedger";
 import { useUser } from "@/context/UserContext";
 import { useAudio } from "@/hooks/useAudio";
+import { logTelemetryEvent } from "@/lib/telemetry";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FiCreditCard } from 'react-icons/fi';
@@ -65,6 +66,15 @@ export default function WalletPage() {
       const sessionId = params.get('session_id');
       if (status === 'success' && sessionId) {
         setActiveModal('deposit');
+      }
+      // One-shot: Home sends a player with an empty balance straight to the
+      // deposit drawer. Drop the parameter so a reload does not reopen it.
+      if (params.get('deposit') === '1') {
+        setActiveModal('deposit');
+        logTelemetryEvent('topup_entry', { source: 'home_zero_balance' });
+        params.delete('deposit');
+        const query = params.toString();
+        window.history.replaceState(window.history.state, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
       }
     }
   }, []);

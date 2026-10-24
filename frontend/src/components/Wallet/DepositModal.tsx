@@ -33,6 +33,61 @@ type DepositTab = 'crypto' | 'direct' | 'card';
 // Tab indicator offsets for the three-segment control, by position.
 const TAB_INDICATOR_LEFT = ['4px', 'calc(33.333% + 1px)', 'calc(66.666% - 1px)'] as const;
 
+// Card checkout happens outside the Mini App (Telegram opens Stripe in its
+// browser), so the player returns to a modal that knows nothing about the
+// payment. Remember the session, and keep asking the server about it, so the
+// balance and a success screen appear without the player doing anything.
+// verify-session asks Stripe and credits through the idempotent server path.
+const PENDING_STRIPE_KEY = 'deposit_pending_stripe';
+const PENDING_STRIPE_MAX_AGE_MS = 30 * 60 * 1000;
+const STRIPE_POLL_INTERVAL_MS = 4000;
+const STRIPE_POLL_WINDOW_MS = 10 * 60 * 1000;
+
+type PendingStripe = { sessionId: string; startedAt: number };
+
+const CARD_UNAVAILABLE_KEY = 'deposit_card_unavailable';
+
+function cardMarkedUnavailable(): boolean {
+  try {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem(CARD_UNAVAILABLE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markCardUnavailable() {
+  try {
+    window.sessionStorage.setItem(CARD_UNAVAILABLE_KEY, '1');
+  } catch {
+    // Best effort only.
+  }
+}
+
+function readPendingStripe(): PendingStripe | null {
+  try {
+    const raw = typeof window !== 'undefined' ? window.sessionStorage.getItem(PENDING_STRIPE_KEY) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.sessionId !== 'string' || typeof parsed?.startedAt !== 'number') return null;
+    if (Date.now() - parsed.startedAt > PENDING_STRIPE_MAX_AGE_MS) {
+      window.sessionStorage.removeItem(PENDING_STRIPE_KEY);
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writePendingStripe(pending: PendingStripe | null) {
+  try {
+    if (pending) window.sessionStorage.setItem(PENDING_STRIPE_KEY, JSON.stringify(pending));
+    else window.sessionStorage.removeItem(PENDING_STRIPE_KEY);
+  } catch {
+    // Storage can be unavailable in some WebViews; polling still works in memory.
+  }
+}
+
 export interface DepositModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -72,7 +127,7 @@ function DepositModalContent({
   // reorder under the player's thumb are worse than a stale default.
   const hasWallet = Boolean(walletAddress || linkedWalletAddress || wallet);
   const [tabOrder] = useState<DepositTab[]>(() =>
-    hasWallet ? ['crypto', 'direct', 'card'] : ['card', 'crypto', 'direct']);
+    hasWallet || cardMarkedUnavailable() ? ['crypto', 'direct', 'card'] : ['card', 'crypto', 'direct']);
   const [activeTab, setActiveTab] = useState<DepositTab>(tabOrder[0]);
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>({ width: 400, height: 600 });
@@ -106,6 +161,12 @@ function DepositModalContent({
   const [manualTxHash, setManualTxHash] = useState<string>("");
 
   const funnelStateRef = useRef<'opened' | 'initiated' | 'submitted' | 'completed'>('opened');
+  // A card checkout opened in the browser and not yet confirmed. Seeded from
+  // storage so reopening the modal resumes watching the same payment.
+  const [pendingStripe, setPendingStripe] = useState<PendingStripe | null>(() => readPendingStripe());
+  const [checkingPayment, setCheckingPayment] = useState<boolean>(false);
+  const stripeFinishedRef = useRef<boolean>(false);
+  const stripeCheckInFlightRef = useRef<boolean>(false);
   const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
   const [gasGrantBusy, setGasGrantBusy] = useState<boolean>(false);
   const [balanceTelegramId, setBalanceTelegramId] = useState<number | null>(null);
@@ -499,67 +560,137 @@ function DepositModalContent({
     }
   }, []);
 
-  // Poll server to verify Stripe Checkout completion
+  // Latest translator and parent callback, so the payment watchers below keep a
+  // stable identity however the parent re-renders.
+  const twRef = useRef(tw);
+  twRef.current = tw;
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
+
+  // The single success path for a card payment: the return page, the polling
+  // loop and the Check button all land here, once.
+  const finishStripeDeposit = useCallback((creditedCents: number) => {
+    if (stripeFinishedRef.current) return;
+    stripeFinishedRef.current = true;
+    writePendingStripe(null);
+    setPendingStripe(null);
+    trackDepositCompleted('stripe', creditedCents);
+    setVerificationSuccess(true);
+    setSuccessMessage(twRef.current('deposit_credited', { amount: `$${(creditedCents / 100).toFixed(2)}` }));
+    setShowConfetti(true);
+    telegramHaptic('success');
+    onSuccessRef.current(); // updates user balance on parent
+
+    // Clear the return-page query params without a reload.
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('status') || url.searchParams.has('session_id')) {
+      url.searchParams.delete('status');
+      url.searchParams.delete('session_id');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, []);
+
+  // One status check of a card payment. 'unknown' means the server has no such
+  // payment for this player (nothing left to watch); 'error' is a failed request.
+  const checkStripeSession = useCallback(async (sessionId: string): Promise<'completed' | 'pending' | 'unknown' | 'error'> => {
+    try {
+      const res = await apiFetch(`/api/v1/wallet/stripe/verify-session?session_id=${encodeURIComponent(sessionId)}`);
+      if (res.status === 404) return 'unknown';
+      if (!res.ok) return 'error';
+      const data = await res.json();
+      if (data.status === 'completed') {
+        finishStripeDeposit(data.credited_amount);
+        return 'completed';
+      }
+      return data.status === 'failed' ? 'unknown' : 'pending';
+    } catch {
+      return 'error';
+    }
+  }, [finishStripeDeposit]);
+
+  // Never two checks at once, and a payment the server does not know is dropped.
+  const runStripeCheck = useCallback(async (pending: PendingStripe) => {
+    if (stripeCheckInFlightRef.current) return null;
+    stripeCheckInFlightRef.current = true;
+    try {
+      const outcome = await checkStripeSession(pending.sessionId);
+      if (outcome === 'unknown') {
+        writePendingStripe(null);
+        setPendingStripe(null);
+      }
+      return outcome;
+    } finally {
+      stripeCheckInFlightRef.current = false;
+    }
+  }, [checkStripeSession]);
+
+  // Verify a payment the Stripe return page told us about (the webhook can lag
+  // the redirect by a few seconds).
   const verifyStripeSession = useCallback(async (sessionId: string) => {
     setProcessing(true);
     setErrorMessage("");
     setSuccessMessage("");
     try {
-      const res = await apiFetch(`/api/v1/wallet/stripe/verify-session?session_id=${sessionId}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.status === "completed") {
-          trackDepositCompleted('stripe', data.credited_amount);
-          setVerificationSuccess(true);
-          setSuccessMessage(tw('deposit_credited', { amount: `$${(data.credited_amount / 100).toFixed(2)}` }));
-          setShowConfetti(true);
-          telegramHaptic('success');
-          onSuccess(); // updates user balance on parent
-          
-          // Clear query params from URL safely without page reload
-          const url = new URL(window.location.href);
-          url.searchParams.delete('status');
-          url.searchParams.delete('session_id');
-          window.history.replaceState({}, '', url.pathname + url.search);
-        } else {
-          // Poll for completed state since webhook can have transient latency
-          let verified = false;
-          for (let i = 0; i < 5; i++) {
-            await new Promise(r => setTimeout(r, 2000));
-            const retryRes = await apiFetch(`/api/v1/wallet/stripe/verify-session?session_id=${sessionId}`);
-            if (retryRes.ok) {
-              const retryData = await retryRes.json();
-              if (retryData.status === "completed") {
-                trackDepositCompleted('stripe', retryData.credited_amount);
-                setVerificationSuccess(true);
-                setSuccessMessage(tw('deposit_credited', { amount: `$${(retryData.credited_amount / 100).toFixed(2)}` }));
-                setShowConfetti(true);
-                telegramHaptic('success');
-                onSuccess();
-                verified = true;
-                
-                const url = new URL(window.location.href);
-                url.searchParams.delete('status');
-                url.searchParams.delete('session_id');
-                window.history.replaceState({}, '', url.pathname + url.search);
-                break;
-              }
-            }
-          }
-          if (!verified) {
-            setErrorMessage(tw('pending_transaction'));
-          }
-        }
-      } else {
-        setErrorMessage(tw('verification_failed'));
+      let outcome = await checkStripeSession(sessionId);
+      for (let i = 0; i < 5 && outcome === 'pending'; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        outcome = await checkStripeSession(sessionId);
       }
+      if (outcome === 'pending') setErrorMessage(twRef.current('pending_transaction'));
+      else if (outcome === 'unknown' || outcome === 'error') setErrorMessage(twRef.current('verification_failed'));
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(tw('verification_failed'));
+      setErrorMessage(twRef.current('verification_failed'));
     } finally {
       setProcessing(false);
     }
-  }, [onSuccess, tw]);
+  }, [checkStripeSession]);
+
+  // Watch a card payment that is in flight: right away (covers resuming), every
+  // few seconds while the app is visible, and the moment the player returns.
+  useEffect(() => {
+    if (!pendingStripe || verificationSuccess) return;
+    let stopped = false;
+    let timer: number | undefined;
+    const check = async () => {
+      if (stopped) return;
+      const outcome = await runStripeCheck(pendingStripe);
+      if (stopped || outcome === 'completed' || outcome === 'unknown') return;
+      if (Date.now() - pendingStripe.startedAt >= STRIPE_POLL_WINDOW_MS) {
+        stopped = true;
+        window.clearInterval(timer);
+        setErrorMessage(twRef.current('pending_transaction'));
+      }
+    };
+    const onReturn = () => {
+      if (document.visibilityState === 'hidden') return;
+      logTelemetryEvent('deposit_checkout_returned', { session_id: pendingStripe.sessionId });
+      void check();
+    };
+    void check();
+    timer = window.setInterval(() => { if (document.visibilityState !== 'hidden') void check(); }, STRIPE_POLL_INTERVAL_MS);
+    document.addEventListener('visibilitychange', onReturn);
+    window.addEventListener('focus', onReturn);
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onReturn);
+      window.removeEventListener('focus', onReturn);
+    };
+  }, [pendingStripe, verificationSuccess, runStripeCheck]);
+
+  const handleCheckPayment = async () => {
+    if (!pendingStripe || checkingPayment) return;
+    telegramHaptic('light');
+    setCheckingPayment(true);
+    setErrorMessage("");
+    try {
+      const outcome = await runStripeCheck(pendingStripe);
+      if (outcome === 'pending' || outcome === 'error') setErrorMessage(tw('pending_transaction'));
+    } finally {
+      setCheckingPayment(false);
+    }
+  };
 
   // Check URL parameters for Stripe checkout redirections on mount
   useEffect(() => {
@@ -593,8 +724,14 @@ function DepositModalContent({
         body: JSON.stringify({ amount: amt, redirect_path: currentPath })
       });
       if (!res.ok) {
-        const _errData = await res.json().catch(() => ({}));
-        throw new Error(tw('deposit_not_confirmed'));
+        logTelemetryEvent('deposit_card_failed', { stage: 'create_session', status: res.status });
+        // A server-side failure (e.g. card payments not configured) will repeat,
+        // so stop leading the next opening this session with the card tab.
+        if (res.status >= 500) markCardUnavailable();
+        throw new DepositFeedbackError(
+          res.status === 429 ? tw('card_rate_limited')
+            : res.status === 400 || res.status === 422 ? tw('minimum_card', { amount: '$1.00' })
+            : tw('card_unavailable'));
       }
       const data = await res.json();
       funnelStateRef.current = 'submitted';
@@ -603,7 +740,14 @@ function DepositModalContent({
         amount_usd: amt,
         session_id: data.session_id,
       });
-      
+
+      // Watch this payment before leaving the app, so it is picked up when the
+      // player comes back from the checkout page.
+      const pending = { sessionId: data.session_id as string, startedAt: Date.now() };
+      stripeFinishedRef.current = false;
+      writePendingStripe(pending);
+      setPendingStripe(pending);
+
       // Redirect using Telegram WebApp openLink if available
       if (typeof window !== 'undefined' && window.Telegram?.WebApp?.openLink) {
         window.Telegram.WebApp.openLink(data.checkout_url);
@@ -612,7 +756,10 @@ function DepositModalContent({
       }
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(tw('deposit_not_confirmed'));
+      if (!(err instanceof DepositFeedbackError)) {
+        logTelemetryEvent('deposit_card_failed', { stage: 'network' });
+      }
+      setErrorMessage(err instanceof DepositFeedbackError ? err.message : tw('card_unavailable'));
       telegramHaptic('error');
     } finally {
       setProcessing(false);
@@ -918,6 +1065,10 @@ function DepositModalContent({
               processing={processing}
               onCardTopUp={handleCardTopUp}
               onPresetSelect={(amount) => logTelemetryEvent('deposit_preset_selected', { method: 'stripe', amount_usd: amount })}
+              awaitingPayment={Boolean(pendingStripe)}
+              checkingPayment={checkingPayment}
+              onCheckPayment={handleCheckPayment}
+              onUseCrypto={() => selectTab('crypto')}
             />
           )}
 

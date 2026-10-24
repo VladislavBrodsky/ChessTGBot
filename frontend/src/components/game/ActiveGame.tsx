@@ -19,6 +19,8 @@ import { useGameSocket } from '@/hooks/useGameSocket';
 import { useAudioSynth } from '@/hooks/useAudioSynth';
 import { useAudio } from '@/hooks/useAudio';
 import { useNavbarHide } from '@/context/NavbarContext';
+import { useUser } from '@/context/UserContext';
+import { DepositDialog } from '@/components/Wallet/WalletDialogs';
 import { apiFetch } from '@/lib/api';
 import { requestBotRevengeGame } from '@/lib/botRevenge';
 import { getSocket } from '@/lib/socket';
@@ -54,6 +56,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const { play: playAudio } = useAudio();
   // @ts-ignore
   const { fen, makeMove, isConnected, error, gameState, wagerConsent, acceptWager } = useGameSocket(gameId);
+  const { walletBalance, syncBalance, loadingBalance, balanceError } = useUser();
 
   const [copied, setCopied] = useState(false);
   const [actionTrayFootprint, setActionTrayFootprint] = useState<number | null>(null);
@@ -100,15 +103,18 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
       timer = setTimeout(() => {
         setShowCrashOverlay(true);
       }, 3000);
-    } else if (!gameState) {
+    } else if (!gameState && !wagerConsent) {
       timer = setTimeout(() => {
         setShowCrashOverlay(true);
       }, 8000);
     } else {
+      // With a stake invitation pending the server deliberately sends no game
+      // state until the player consents. Reading the terms (or topping up) is
+      // not a lost connection.
       setShowCrashOverlay(false);
     }
     return () => clearTimeout(timer);
-  }, [isConnected, gameState]);
+  }, [isConnected, gameState, wagerConsent]);
 
   const [userId, setUserId] = useState<number | null>(null);
   const [userStats, setUserStats] = useState<any>(null);
@@ -733,19 +739,68 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     if (payload.is_first_game === true) logTelemetryEvent('first_game_completed', payload);
   }, [isGameOver, completedOutcome, gameId, completedWager, isBotGame]);
 
-  const wagerConsentModal = <Modal isOpen={Boolean(wagerConsent)} onClose={() => router.push(`/${locale}/game`)} title={tg('friend_join_stake_title')} maxWidth="sm">
-    {wagerConsent && <div className="space-y-4">
-      <Card variant="solid" className="space-y-2 p-4">
-        <p className="text-sm text-brand-muted">{tg('stake')}: <strong className="text-brand-primary">{formatUsd(wagerConsent.wager)} USDT</strong></p>
-        <p className="text-sm text-brand-muted">{tg('time_control')}: <strong className="text-brand-primary">{wagerConsent.time_control / 60} min</strong></p>
-        <p className="text-sm text-brand-muted">{tg('win_up_to')}: <strong className="text-brand-primary">{formatUsd(winnerCents(wagerConsent.wager))} USDT</strong></p>
-      </Card>
-      <p className="text-sm text-brand-muted">{tg('friend_join_stake_notice')}</p>
-      {error && <p role="alert" className="text-sm text-brand-danger">{error}</p>}
-      <Button variant="primary" className="w-full" onClick={() => { telegramHaptic('selection'); acceptWager(); }}>{tg('friend_join_stake_action', { amount: formatUsd(wagerConsent.wager) })}</Button>
-      <Button variant="secondary" className="w-full" onClick={() => router.push(`/${locale}/game`)}>{tg('to_lobby')}</Button>
-    </div>}
-  </Modal>;
+  // Joining a staked game needs the stake in the balance. Decide that before the
+  // invitee taps Join, so a friend's challenge meets a Top up path rather than a
+  // rejection that disappears after three seconds. When the balance is unknown
+  // the server's own "insufficient funds" answer is the signal.
+  const [showJoinTopUp, setShowJoinTopUp] = useState(false);
+  const [serverSaidInsufficient, setServerSaidInsufficient] = useState(false);
+  const joinTopUpShownRef = useRef(false);
+  useEffect(() => {
+    if (!wagerConsent) {
+      setServerSaidInsufficient(false);
+      joinTopUpShownRef.current = false;
+    } else if (error && /insufficient funds/i.test(error)) {
+      setServerSaidInsufficient(true);
+    }
+  }, [wagerConsent, error]);
+  const joinWager = wagerConsent?.wager ?? 0;
+  const joinBalanceKnown = !loadingBalance && !balanceError;
+  const joinShortfall = joinBalanceKnown ? Math.max(0, joinWager - walletBalance) : 0;
+  const joinNeedsTopUp = Boolean(wagerConsent) && (joinBalanceKnown ? joinShortfall > 0 : serverSaidInsufficient);
+  // The server disagreed with what we hold: re-read the real balance.
+  useEffect(() => {
+    if (serverSaidInsufficient) void Promise.resolve(syncBalance()).catch(() => {});
+  }, [serverSaidInsufficient, syncBalance]);
+  useEffect(() => {
+    if (!joinNeedsTopUp || joinTopUpShownRef.current) return;
+    joinTopUpShownRef.current = true;
+    logTelemetryEvent('invite_topup_shown', { wager_cents: joinWager, shortfall_cents: joinShortfall });
+  }, [joinNeedsTopUp, joinWager, joinShortfall]);
+  const openJoinTopUp = () => {
+    telegramHaptic('selection');
+    logTelemetryEvent('invite_topup_tapped', { wager_cents: joinWager, shortfall_cents: joinShortfall });
+    setShowJoinTopUp(true);
+  };
+
+  const wagerConsentModal = <>
+    <Modal isOpen={Boolean(wagerConsent) && !showJoinTopUp} onClose={() => router.push(`/${locale}/game`)} title={tg('friend_join_stake_title')} maxWidth="sm">
+      {wagerConsent && <div className="space-y-4">
+        <Card variant="solid" className="space-y-2 p-4">
+          <p className="text-sm text-brand-muted">{tg('stake')}: <strong className="text-brand-primary">{formatUsd(wagerConsent.wager)} USDT</strong></p>
+          <p className="text-sm text-brand-muted">{tg('time_control')}: <strong className="text-brand-primary">{wagerConsent.time_control / 60} min</strong></p>
+          <p className="text-sm text-brand-muted">{tg('win_up_to')}: <strong className="text-brand-primary">{formatUsd(winnerCents(wagerConsent.wager))} USDT</strong></p>
+        </Card>
+        <p className="text-sm text-brand-muted">{tg('friend_join_stake_notice')}</p>
+        {error && !joinNeedsTopUp && <p role="alert" className="text-sm text-brand-danger">{error}</p>}
+        {joinNeedsTopUp ? <>
+          <p role="status" className="text-sm font-semibold text-brand-primary">{tg('friend_join_topup_hint', { amount: formatUsd(joinShortfall || joinWager) })}</p>
+          <Button variant="primary" className="w-full" onClick={openJoinTopUp}>{tg('friend_join_topup_action', { amount: formatUsd(joinShortfall || joinWager) })}</Button>
+        </> : (
+          <Button variant="primary" className="w-full" onClick={() => { telegramHaptic('selection'); acceptWager(); }}>{tg('friend_join_stake_action', { amount: formatUsd(wagerConsent.wager) })}</Button>
+        )}
+        <Button variant="secondary" className="w-full" onClick={() => router.push(`/${locale}/game`)}>{tg('to_lobby')}</Button>
+      </div>}
+    </Modal>
+    {showJoinTopUp && wagerConsent && (
+      <DepositDialog
+        chosenWager={joinWager}
+        walletBalance={joinBalanceKnown ? walletBalance : 0}
+        onClose={() => setShowJoinTopUp(false)}
+        onSuccess={() => { void Promise.resolve(syncBalance()).catch(() => {}); }}
+      />
+    )}
+  </>;
 
   if (!gameState) {
     return (
