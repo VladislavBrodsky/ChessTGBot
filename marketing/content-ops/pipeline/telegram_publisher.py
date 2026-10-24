@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
-from . import brand, queue
+from . import brand, gate, queue
 
 API = "https://api.telegram.org"
 
@@ -111,14 +111,10 @@ def publish(post: dict, dry_run: bool | None = None) -> dict:
 
 def publish_post_by_id(post_id: str, dry_run: bool | None = None) -> dict:
     post = queue.load(post_id)
-    if post.get("status") != "approved":
-        raise ValueError("Only approved Telegram posts may be dispatched")
-    if not (post.get("qa") or {}).get("passed"):
-        raise ValueError("Telegram post lacks a passing QA record")
     now = queue.utcnow()
-    scheduled = post.get("scheduled_at", "")
-    if post.get("date") != now.date().isoformat() or not scheduled or not queue.iso(now - timedelta(hours=3)) <= scheduled <= queue.iso(now):
-        raise ValueError("Telegram post is outside today's due window")
+    blocked = gate.blockers(post, now)
+    if blocked:
+        raise ValueError("Telegram post is not cleared for dispatch (only approved posts may be): " + "; ".join(blocked))
     if len(queue.all_entries("telegram", "published", day=post["date"])) >= len(queue.CONFIG["telegram"]["slots_utc"]):
         raise ValueError("Telegram daily post cap reached")
     last_sent = max(((e.get("published") or {}).get("at", "") for e in queue.all_entries("telegram", "published")), default="")
@@ -196,14 +192,7 @@ def publish_due(now=None, dry_run: bool | None = None, limit: int = 1, day: str 
         return []
     report = []
     for post in queue.all_entries("telegram", "approved", day=day):
-        if not (post.get("qa") or {}).get("passed"):
-            continue
-        sched = post.get("scheduled_at")
-        if not sched or sched < queue.iso(now - timedelta(hours=3)):
-            continue
-        if sched and sched > queue.iso(now):
-            continue
-        if not sched and post.get("date") and post["date"] > queue.iso(now)[:10]:
+        if gate.blockers(post, now):
             continue
         if len(report) >= limit:
             break

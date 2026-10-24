@@ -4,7 +4,7 @@ This is the runbook for the content engine in `pipeline/`, the exact-position bo
 older one-article-a-day sections of [WORKFLOW.md](WORKFLOW.md) for channel production and the blog; the research and review
 rules there still apply.
 
-**Status (2026-10-22):** the pipeline plans, briefs, gates, renders and can publish approved items when the channel runner has its credentials. The repository's current mode is **review**: a human checks each post and rendered image before approval. The current maximum daily plan is six Telegram drafts, six X drafts, and three article slots. Check queue state before preparing or rescheduling an item; prior entries may already be approved or published. The editorial desk remains a separate review workflow from social publication.
+**Status (2026-10-24):** the pipeline plans, briefs, gates, renders and can publish approved items when the channel runner has its credentials. The repository's current mode is **cmo** for Telegram and X: the CMO agent approves each draft automatically ([the CMO release review](#the-cmo-release-review)), and **nothing sends unless an approval bound to its exact copy and current canvas is on record** (see [the dispatch gate](#the-dispatch-gate)). Articles stay in human `review` mode. The current maximum daily plan is six Telegram drafts, six X drafts, and three article slots. Check queue state before preparing or rescheduling an item; prior entries may already be approved or published. The editorial desk remains a separate review workflow from social publication.
 
 ## 1. Who does what
 
@@ -31,8 +31,10 @@ python3 marketing/content-ops/daily.py briefs                  # attach briefs (
 # writer fills each slot (an agent, a human, or `daily.py write` with ANTHROPIC_API_KEY):
 python3 marketing/content-ops/daily.py submit <id> <draft.json>    # QA gates + image render
 python3 marketing/content-ops/daily.py status
-# a person reads each draft and its PNG (queue/<date>/<id>.png), then:
-python3 marketing/content-ops/daily.py approve <id>            # refuses if the gates did not pass
+python3 marketing/content-ops/daily.py doctor                  # daemon freshness + what blocks each draft (--fix: archive legacy, re-render)
+python3 marketing/content-ops/daily.py review --days 2         # state/review/<date>.html: every draft with its image, copy and verdict
+# a person reads each draft and its image on that sheet, then approves by id (several at once is fine):
+python3 marketing/content-ops/daily.py approve <id> [<id> ...] [--by NAME]   # refuses unless the gates pass on the current canvas
 python3 marketing/content-ops/daily.py stage                   # approved articles -> website/src/content/articles
 python3 marketing/content-ops/daily.py publish --dry-run       # what would be sent (posts and puzzle reveals)
 python3 marketing/content-ops/daily.py publish                 # live, only with credentials
@@ -41,6 +43,24 @@ python3 marketing/content-ops/daily.py publish                 # live, only with
 Run `publish` every 10-15 minutes (cron, launchd or a scheduler); it only sends approved items whose `scheduled_at` has
 passed, at most five per run, at most once each (`publishing` is claimed before the network call, so a crash can never
 double-post). Puzzle reveals are threaded replies sent `reveal.after_hours` after the puzzle.
+
+### The dispatch gate
+
+Every publisher (autopilot, `daily.py publish`, `publish-x`, `PublisherAgent`, `telegram_publisher`) asks `pipeline/gate.py` before anything leaves the machine. `approved` in a file is not enough. An entry is cleared only when **all** of these hold:
+
+| Check | Why it exists |
+|---|---|
+| An accountable approver recorded it (`approval.by` is `agent:cmo` or `human:<name>` in `cmo` mode, `human` only in `review` mode) and the approval's content digest still matches the copy, buttons, creative spec and reveal | The old daemon marked its own output `approved` with no record; any edit after approval now voids it |
+| It is dated today (UTC), inside its slot's 3-hour window | Old approvals never catch up; reschedule on purpose |
+| Its image was drawn by the right engine (`board` for exact positions, `studio` for everything else) on the **current canvas version** | A template or Studio change makes every earlier image stale, so improved canvases cannot be skipped by an old render |
+| The approver approved that same canvas version | Approvals name the pixels that were reviewed |
+| It passes today's QA rules | Rules added after approval apply to it; e.g. unsupported "sub-50ms" claims |
+
+`pipeline/renderer.py::canvas_version()` hashes both renderers, their templates, the Studio model/render code, fonts and art. `daily.py doctor` shows each draft's verdict and the reason; the autopilot logs one "Held back" line per change instead of one per tick. Archived or demoted work lives in `queue/_archive/` (specs only; images re-render) and is never globbed by the queue.
+
+### The CMO release review
+
+In `cmo` mode (`pipeline/config.json` → `mode`), the autopilot runs `CmoAgent.release_day()` every tick before it picks what to send (`daily.py cmo-review [--dry-run]` runs it by hand). For each of today's and tomorrow's drafts in the current plan it re-renders a stale canvas, then either approves it (`approval.by = agent:cmo`, plus a `cmo_review` record with the score and notes) or leaves it a draft with the reasons. The CMO approves only when the gate's own checks pass **and** the slot meets the CMO golden rules (`review_slot_alignment`: hook length and punctuation, docked links, 1:1 X creative) **and** it is not recycled: no hook that ran in the last 7 days, no date-badged hook, no near-identical copy. A refused draft stays a draft; a slot left empty is better than a repeat, so write fresh content for it (`daily.py briefs` + `submit`) and the next tick reviews it. Any edit or canvas change voids the approval and the next review decides again. A person can still approve or reject with `daily.py approve|reject`; their decision stands under the same gate. Set a channel back to `review` to require a person.
 
 ### The slot plan (UTC)
 
@@ -80,6 +100,18 @@ For the daily editorial package, `node marketing/content-ops/export-creative.mjs
    gates have never let a bad one through. In `auto`, anything that passes QA publishes.
 5. Confirm with the product owner (not verified by this repo): the geo rules for wager messaging, and Telegram's rules for
    crypto/gambling content in any paid placement. The first Match Rules post (Wednesday S5) waits for that answer.
+
+### Running the autopilot (launchd)
+
+`com.web3chess.autopilot.plist` runs `autopilot.py --daemon --live` with `KeepAlive`. Live mode drafts the missing slots for today and tomorrow (review mode: drafts only) and sends **only gate-cleared** entries. A long-running process keeps the code it imported at boot, so the daemon records `engine_fingerprint()` (Python sources + `pipeline/config.json`) in `state/autopilot_state.json`, checks it every tick, and exits when the checkout changes; launchd then starts it on the new code. `daily.py doctor` reports whether the running daemon matches the checkout. Do not rely on a restart you did not see.
+
+```bash
+launchctl bootout   gui/$(id -u)/com.web3chess.autopilot                    # stop (also stops all unattended posting)
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.web3chess.autopilot.plist   # start
+python3 marketing/content-ops/daily.py doctor                               # confirm: loaded, running, code matches
+```
+
+The reply sniper and the legacy five-post CMO routine are off. Do not start them from the plist.
 
 The normal CI workflow runs content engine unit tests on every PR and push to `main`. The GitHub workflow `.github/workflows/content-ops.yml` re-runs tests and queue QA gates on demand. It does **not**
 publish: live posting needs durable queue state (at-most-once), which should live on one trusted runner until the team

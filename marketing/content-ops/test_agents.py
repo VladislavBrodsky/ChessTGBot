@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
+from pipeline import queue
 from agents import (
     CmoAgent,
     ScraperAgent,
@@ -102,7 +103,8 @@ class TestAgents(unittest.TestCase):
         self.assertEqual(result["status"], "success")
         self.assertTrue(result["qa_summary"]["telegram_passed"])
         self.assertTrue(result["qa_summary"]["article_passed"])
-        self.assertEqual(result["telegram_post"]["status"], "approved")
+        # review mode: the pipeline drafts, a person approves
+        self.assertEqual(result["telegram_post"]["status"], "approved" if queue.CONFIG["mode"]["telegram"] == "auto" else "draft")
 
     def test_x_single_post_and_qa(self):
         post = self.orchestrator.copywriter.draft_x_single_post(

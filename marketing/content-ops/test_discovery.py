@@ -70,7 +70,7 @@ class DiscoveryTests(unittest.TestCase):
             minutes = [int(t[:2]) * 60 + int(t[3:]) for t in times]
             self.assertEqual([b - a for a, b in zip(minutes, minutes[1:])], [180] * 5)
             self.assertTrue(all(len(rotation) == 6 for rotation in cfg[channel]['rotation'].values()))
-            self.assertEqual(cfg['mode'][channel], 'review')
+            self.assertIn(cfg['mode'][channel], ('review', 'cmo'))  # never 'auto': an approval record is always required
 
     def test_x_batch_fills_planned_slots_without_rewriting_reviewed_post(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(queue, 'QUEUE', Path(directory)):

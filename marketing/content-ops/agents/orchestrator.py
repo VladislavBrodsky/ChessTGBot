@@ -21,6 +21,13 @@ from .publisher import PublisherAgent
 from pipeline import queue, brand, renderer
 
 
+def _settle(entry: Dict[str, Any], channel: str) -> Dict[str, Any]:
+    """Review mode leaves a QA-passed post as a draft for a person; only auto mode lets the pipeline mark it approved."""
+    if queue.CONFIG["mode"][channel] == "auto":
+        return queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+    return queue.set_status(entry, "draft")
+
+
 def _render_and_gate(post: Dict[str, Any]) -> bool:
     """Render a creative and make the render result part of the publish gate.
 
@@ -133,7 +140,7 @@ class ContentEngineOrchestrator:
             if k in {"hook", "text", "cta", "creative", "chess", "sources", "format", "reveal", "category"}
         })
         entry["qa"] = {**qa_result, "checked_at": queue.iso(queue.utcnow())}
-        queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+        _settle(entry, "telegram")
         queue.save(entry)
 
         # 5. Draft and stage the paired high-converting Blog article for web3chess.online
@@ -466,9 +473,9 @@ class ContentEngineOrchestrator:
             entry = queue.load(slot_id) if queue.path_for(slot_id).exists() else post
             entry.update({k: v for k, v in post.items() if k in {"hook", "text", "cta", "creative", "chess", "sources", "format", "reveal", "category"}})
             entry["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
-            queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+            _settle(entry, "telegram")
             queue.save(entry)
-            tg_results.append({"id": slot_id, "hook": post["hook"], "status": "approved"})
+            tg_results.append({"id": slot_id, "hook": post["hook"], "status": entry["status"]})
 
         # -------------------------------------------------------------
         # 2. THE 5 BLOG ARTICLES FOR AUMERA.TOP
@@ -1748,7 +1755,7 @@ class ContentEngineOrchestrator:
             raise RuntimeError(f"X Thread QA failed: {qa_res['issues']}")
 
         thread["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
-        thread["status"] = "approved"
+        _settle(thread, "x")
         queue.save(thread)
 
         return {

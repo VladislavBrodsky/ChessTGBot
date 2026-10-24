@@ -1,11 +1,11 @@
 {
   "version": 3,
   "mode": {
-    "telegram": "review",
+    "telegram": "cmo",
     "site": "review",
-    "x": "review"
+    "x": "cmo"
   },
-  "note": "Six reviewable posts per channel per day, spaced three hours during active UTC windows. Publication requires approved queue entries and a trusted runner.",
+  "note": "Six posts per channel per day, spaced three hours during active UTC windows. In cmo mode the CMO agent approves each draft (agents/cmo.py release_review) and the dispatch gate re-checks it; articles stay in human review. Publication requires approved queue entries and a trusted runner.",
   "telegram": {
     "channel_env": "W3_TG_CHANNEL",
     "token_env": "W3_TG_BOT_TOKEN",

@@ -14,6 +14,7 @@ Modes:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -27,9 +28,10 @@ from typing import Any, Dict, List, Optional
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
+from agents.cmo import CmoAgent
 from agents.orchestrator import ContentEngineOrchestrator
 from agents.publisher import PublisherAgent
-from pipeline import analytics, cleanup, queue, renderer, reply_sniper, site_publisher, telegram_publisher
+from pipeline import analytics, cleanup, gate, hygiene, queue, renderer, reply_sniper, site_publisher, telegram_publisher
 
 LOG_DIR = HERE / "state"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -110,6 +112,31 @@ def _has_valid_image(entry: Dict[str, Any]) -> bool:
         return False
     p = Path(img_path)
     return bool(p.exists() or (queue.ROOT / p).exists() or (queue.HERE / p).exists())
+
+
+def _cleared_today(kinds: set, day: str, now: datetime, force: bool, blocked: Dict[str, List[str]]) -> List[Dict[str, Any]]:
+    """Today's approved entries of `kinds` that the dispatch gate clears, earliest slot first.
+
+    Entries the gate rejects for a real reason land in `blocked`; an entry that is merely early is just not returned."""
+    cleared = []
+    for entry in queue.all_entries(day=day):
+        if entry.get("kind") not in kinds or entry.get("status") != "approved":
+            continue
+        reasons = gate.blockers(entry, now, due=False)
+        if reasons:
+            blocked[entry["id"]] = reasons
+        elif force or entry["scheduled_at"] <= queue.iso(now):
+            cleared.append(entry)
+    return sorted(cleared, key=lambda e: e.get("scheduled_at") or e["id"])
+
+
+def _report_blocked(state: Dict[str, Any], blocked: Dict[str, List[str]]) -> None:
+    """Say why approved entries were held back, once per change rather than once per tick."""
+    digest = hashlib.sha256(json.dumps(blocked, sort_keys=True).encode()).hexdigest()[:12] if blocked else None
+    if digest and state.get("blocked_digest") != digest:
+        for entry_id, reasons in blocked.items():
+            logger.warning(f"Held back {entry_id}: {'; '.join(reasons)}")
+    state["blocked_digest"] = digest
 
 
 def _published_today(kind: str, day: str) -> int:
@@ -209,7 +236,6 @@ def run_tick(
     now = queue.utcnow()
     now_iso = queue.iso(now)
     today_utc = now.date().isoformat()
-    earliest_due = queue.iso(now - timedelta(hours=3))
     should_replenish = (not dry_run) if auto_replenish is None else auto_replenish
     state = load_state()
     state["ticks"] = state.get("ticks", 0) + 1
@@ -229,6 +255,8 @@ def run_tick(
         "sniper": None,
         "audit": None,
         "cmo_routine": None,
+        "blocked": {},
+        "cmo_review": [],
     }
 
     # 1. Stage any approved blog articles to website
@@ -238,6 +266,17 @@ def run_tick(
             results["articles_staged"] = len(staged)
         except Exception as e:
             logger.warning(f"Blog staging error: {e}")
+
+    # 1b. CMO release review: in cmo mode the CMO agent approves (or refuses) each draft before the gate looks at it
+    if "cmo" in {queue.CONFIG["mode"]["telegram"], queue.CONFIG["mode"]["x"]}:
+        try:
+            decisions = CmoAgent().release_day(now, dry_run=dry_run)
+            results["cmo_review"] = decisions
+            for decision in decisions:
+                if decision["decision"] in ("approved", "refused"):
+                    logger.info(f"CMO {decision['decision']} {decision['id']}" + (f": {'; '.join(decision['reasons'])}" if decision["reasons"] else ""))
+        except Exception as e:
+            logger.error(f"CMO release review error: {e}", exc_info=True)
 
     # 2. Check X publication queue (and auto-replenish if empty)
     if should_replenish:
@@ -259,23 +298,10 @@ def run_tick(
 
     publisher = PublisherAgent()
 
-    due_x_entries = []
-    for entry in queue.all_entries():
-        if entry.get("kind") in ("x_post", "x_thread") and entry.get("status") == "approved" and (entry.get("qa") or {}).get("passed"):
-            if entry.get("date") != today_utc:
-                continue
-            sched = entry.get("scheduled_at")
-            if not sched or sched < earliest_due:
-                continue
-            if sched and sched > now_iso and not force_next:
-                continue
-            if entry.get("kind") == "x_post" and entry.get("creative"):
-                if not _has_valid_image(entry):
-                    continue
-            due_x_entries.append(entry)
+    blocked: Dict[str, List[str]] = {}
+    due_x_entries = _cleared_today({"x_post", "x_thread"}, today_utc, now, force_next, blocked)
 
     if due_x_entries:
-        due_x_entries.sort(key=lambda e: e.get("scheduled_at") or e["id"])
         next_entry = due_x_entries[0]
         results["next_up_x"] = {
             "id": next_entry["id"],
@@ -289,6 +315,7 @@ def run_tick(
             dispatch_res = publisher.dispatch_x_posts(
                 post_id=next_entry["id"],
                 dry_run=dry_run,
+                due_only=not force_next,
             )
             results["x_dispatched"] = dispatch_res.get("entries", [])
             if not dry_run and dispatch_res.get("entries"):
@@ -316,22 +343,9 @@ def run_tick(
                     f"(min {min_tg_spacing_minutes}m required)."
                 )
 
-        due_tg_entries = []
-        for entry in queue.all_entries():
-            if entry.get("kind") == "telegram" and entry.get("status") == "approved" and (entry.get("qa") or {}).get("passed"):
-                if entry.get("date") != today_utc:
-                    continue
-                sched = entry.get("scheduled_at")
-                if not sched or sched < earliest_due:
-                    continue
-                if sched and sched > now_iso and not force_next_tg:
-                    continue
-                if entry.get("creative") and not _has_valid_image(entry):
-                    continue
-                due_tg_entries.append(entry)
+        due_tg_entries = _cleared_today({"telegram"}, today_utc, now, force_next_tg, blocked)
 
         if due_tg_entries:
-            due_tg_entries.sort(key=lambda e: e.get("scheduled_at") or e["id"])
             next_tg = due_tg_entries[0]
             results["next_up_tg"] = {
                 "id": next_tg["id"],
@@ -437,6 +451,8 @@ def run_tick(
     except Exception as e:
         logger.warning(f"Media cleanup error: {e}")
 
+    results["blocked"] = blocked
+    _report_blocked(state, blocked)
     save_state(state)
     return results
 
@@ -468,7 +484,18 @@ def daemon_loop(
     signal.signal(signal.SIGINT, _sig_handler)
     signal.signal(signal.SIGTERM, _sig_handler)
 
+    # A daemon only runs the code it imported at boot. This one once outlived five days of commits and kept sending
+    # the old queue on old canvases, so it records what it booted on and exits when the checkout moves on; launchd
+    # (KeepAlive) starts it again on the new code.
+    boot_fingerprint = hygiene.engine_fingerprint()
+    state = load_state()
+    state["daemon"] = {"pid": os.getpid(), "started_at": queue.iso(queue.utcnow()), "fingerprint": boot_fingerprint}
+    save_state(state)
+
     while running:
+        if hygiene.engine_fingerprint() != boot_fingerprint:
+            logger.warning("Engine code or config changed on disk; exiting so the daemon restarts on the new code.")
+            break
         try:
             res = run_tick(
                 dry_run=dry_run,

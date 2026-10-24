@@ -1,6 +1,7 @@
 """Tests for autonomous marketing autopilot and scheduler."""
 from __future__ import annotations
 
+import tempfile
 import unittest
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -11,6 +12,14 @@ from pipeline import queue
 
 
 class TestAutopilot(unittest.TestCase):
+
+    def setUp(self):
+        # Ticks write cadence state; keep the suite away from the live daemon's autopilot_state.json.
+        state_dir = tempfile.TemporaryDirectory()
+        patcher = patch.object(autopilot, "STATE_FILE", Path(state_dir.name) / "autopilot_state.json")
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.addCleanup(state_dir.cleanup)
 
     def test_load_and_save_state(self):
         state = autopilot.load_state()
@@ -56,22 +65,17 @@ class TestAutopilot(unittest.TestCase):
         self.assertEqual(len(res["tg_dispatched"]), 0)
 
     def test_auto_replenish_generates_non_duplicate_x_batch(self):
-        import shutil
         from datetime import date
         test_dt = datetime(2099, 2, 1, 12, 0, 0, tzinfo=timezone.utc)
-        test_dir = queue.QUEUE / "2099-02-01"
-        try:
-            with patch.object(autopilot, "ensure_x_queue_replenished", wraps=autopilot.ensure_x_queue_replenished):
-                created = autopilot.ensure_x_queue_replenished(test_dt, render_images=False)
-                # If other approved posts exist in real queue, created may be 0; test direct orchestrator batch too
-                orch = autopilot.ContentEngineOrchestrator(plan_date=date(2099, 2, 1))
-                batch = orch.generate_x_daily_batch(target_date=date(2099, 2, 1), render_images=False)
-                self.assertEqual(batch["posts_created"], 6)
-                hooks = [queue.load(p["id"])["hook"] for p in batch["posts"]]
-                self.assertEqual(len(set(hooks)), 6)
-        finally:
-            if test_dir.exists():
-                shutil.rmtree(test_dir, ignore_errors=True)
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, "QUEUE", Path(directory)):
+            created = autopilot.ensure_x_queue_replenished(test_dt, render_images=False)
+            self.assertEqual(created, 12)  # today and the one-day lookahead, six slots each
+            orch = autopilot.ContentEngineOrchestrator(plan_date=date(2099, 2, 1))
+            batch = orch.generate_x_daily_batch(target_date=date(2099, 2, 1), render_images=False)
+            self.assertEqual(batch["posts_created"], 6)
+            hooks = [queue.load(p["id"])["hook"] for p in batch["posts"]]
+            self.assertEqual(len(set(hooks)), 6)
+            self.assertEqual({e["status"] for e in queue.all_entries()}, {"draft"})  # review mode never self-approves
 
     def test_reply_sniper_intent_classification(self):
         from pipeline import reply_sniper

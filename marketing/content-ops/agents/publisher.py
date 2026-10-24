@@ -11,7 +11,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from pipeline import queue, site_publisher, telegram_publisher
+from pipeline import gate, queue, site_publisher, telegram_publisher
 
 logger = logging.getLogger(__name__)
 
@@ -91,22 +91,10 @@ class PublisherAgent:
         for entry in queue.all_entries(day=day):
             if entry.get("kind") not in ("x_post", "x_thread"):
                 continue
-            if not (entry.get("qa") or {}).get("passed"):
+            if post_id and entry.get("id") != post_id:
                 continue
-            if not entry.get("scheduled_at") or entry["scheduled_at"] < earliest_due:
+            if gate.blockers(entry, queue.utcnow(), due=due_only):
                 continue
-            if post_id:
-                if entry.get("id") != post_id:
-                    continue
-                if entry.get("status") != "approved":
-                    continue
-                if due_only and entry.get("scheduled_at") and entry["scheduled_at"] > now_iso:
-                    continue
-            else:
-                if entry.get("status") != "approved":
-                    continue
-                if due_only and entry.get("scheduled_at") and entry["scheduled_at"] > now_iso:
-                    continue
             entries.append(entry)
             if limit and len(entries) >= limit:
                 break

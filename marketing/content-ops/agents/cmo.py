@@ -6,12 +6,16 @@ and exercises executive authority over campaign gates.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-from pipeline import brand, queue
+from pipeline import brand, gate, hygiene, qa, queue, renderer
+
+REPEAT_DAYS = 7  # the weekly rotation: a hook that ran this week is not a fresh post
+DATE_BADGE = re.compile(r"\s*\([A-Z][a-z]{2} \d{1,2}\)\s*$")  # how the pools disguise a recycled hook
 
 @dataclass
 class StrategicDirective:
@@ -158,6 +162,73 @@ class CmoAgent:
             "viral_score": min(score, 100),
             "strategic_notes": notes,
         }
+
+    def recent_posts(self, entry: Dict[str, Any], now: datetime) -> List[Dict[str, Any]]:
+        """Posts this channel has sent or committed to in the last REPEAT_DAYS, excluding the entry itself."""
+        since = (now - timedelta(days=REPEAT_DAYS)).date().isoformat()
+        kinds = {"telegram"} if entry.get("kind") == "telegram" else {"x_post", "x_thread"}
+        return [e for e in queue.all_entries()
+                if e.get("kind") in kinds and e["id"] != entry["id"] and since <= e.get("date", "") <= entry.get("date", "")
+                and e.get("status") in {"approved", "publishing", "published"}]
+
+    def review_for_release(self, entry: Dict[str, Any], now: datetime) -> Dict[str, Any]:
+        """The CMO's release decision for one post: the strategic golden rules plus the editorial rule the pools break,
+        that nothing recycled goes out as fresh content. Compliance, canvas and QA are the gate's job, not repeated here."""
+        alignment = self.review_slot_alignment(entry)
+        issues = [] if alignment["approved_by_cmo"] else list(alignment["strategic_notes"])
+        hook = (entry.get("hook") or "").strip()
+        if DATE_BADGE.search(hook):
+            issues.append("hook is a recycled one disguised with a date badge")
+        base = DATE_BADGE.sub("", hook).lower()
+        text = qa.words(qa.plain(entry.get("text", "")))
+        for other in self.recent_posts(entry, now):
+            if base and DATE_BADGE.sub("", other.get("hook") or "").strip().lower() == base:
+                issues.append(f"hook already ran in {other['id']} within {REPEAT_DAYS} days")
+                break
+            a, b = qa.shingles(text, 3), qa.shingles(qa.words(qa.plain(other.get("text", ""))), 3)
+            if a and b and len(a & b) / len(a | b) > 0.45:
+                issues.append(f"copy is near-identical to {other['id']}")
+                break
+        return {"approved": not issues, "issues": issues, "viral_score": alignment["viral_score"]}
+
+    def release_review(self, entry: Dict[str, Any], now: datetime, dry_run: bool = False) -> Dict[str, Any]:
+        """Approve a draft on the CMO's authority, or leave it a draft with the reasons. Returns {id, decision, reasons}.
+
+        The approval is bound to the exact copy and canvas, so any later edit or template change voids it and the next
+        review decides again. A draft already reviewed and refused in its current form is not re-argued every tick."""
+        if entry.get("status") not in {"draft", "approved"} or hygiene.review_state(entry, now)[0] in {"legacy", "late", "cleared"}:
+            return {"id": entry["id"], "decision": "skipped", "reasons": []}
+        if gate.canvas_blockers(entry) and not dry_run:
+            renderer.render(entry)  # the template moved on since this was drawn; approve the pixels that would ship
+        key = {"content": gate.content_hash(entry), "canvas": (entry.get("render") or {}).get("canvas")}
+        previous = entry.get("cmo_review") or {}
+        if previous.get("approved") is False and {k: previous.get(k) for k in key} == key:
+            return {"id": entry["id"], "decision": "held", "reasons": previous.get("issues", [])}
+        reasons = gate.content_blockers(entry)
+        verdict = self.review_for_release(entry, now) if not reasons else {"approved": False, "issues": reasons, "viral_score": None}
+        if dry_run:
+            return {"id": entry["id"], "decision": "would approve" if verdict["approved"] else "would refuse", "reasons": verdict["issues"]}
+        entry["cmo_review"] = {**key, "approved": verdict["approved"], "issues": verdict["issues"],
+                               "viral_score": verdict["viral_score"], "at": queue.iso(now)}
+        if verdict["approved"]:
+            entry["approval"] = gate.approval(entry, "agent:cmo")
+            queue.set_status(entry, "approved", approved_by="agent:cmo")
+        else:
+            entry.pop("approval", None)
+            queue.set_status(entry, "draft")
+        return {"id": entry["id"], "decision": "approved" if verdict["approved"] else "refused", "reasons": verdict["issues"]}
+
+    def release_day(self, now: datetime, days: int = 2, dry_run: bool = False) -> List[Dict[str, Any]]:
+        """Run the release review over today's and the next days' drafts, earliest slot first."""
+        out = []
+        for offset in range(days):
+            day = (now + timedelta(days=offset)).date().isoformat()
+            for entry in queue.all_entries(day=day):
+                if entry.get("kind") in hygiene.KINDS and entry.get("status") in {"draft", "approved"}:
+                    decision = self.release_review(entry, now, dry_run)
+                    if decision["decision"] != "skipped":
+                        out.append(decision)
+        return out
 
     def generate_executive_report(self, planned_entries: List[Dict[str, Any]]) -> str:
         """Generates markdown summary of the marketing pipeline state."""
