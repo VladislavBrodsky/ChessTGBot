@@ -4,12 +4,17 @@ import { useTranslations } from 'next-intl';
 import React from 'react';
 import { SiVisa } from 'react-icons/si';
 import { FaStripe } from 'react-icons/fa';
+import { Button } from '@/components/ui/Button';
+
+// One-tap amounts for a first top-up; the input below stays free-form.
+export const CARD_PRESET_AMOUNTS = [5, 10, 25] as const;
 
 export interface CardDepositSectionProps {
   depositAmount: string;
   setDepositAmount: (val: string) => void;
   processing: boolean;
   onCardTopUp: () => void;
+  onPresetSelect?: (amount: number) => void;
 }
 
 export function CardDepositSection({
@@ -17,6 +22,7 @@ export function CardDepositSection({
   setDepositAmount,
   processing,
   onCardTopUp,
+  onPresetSelect,
 }: CardDepositSectionProps) {
   const tw = useTranslations('Wallet');
   const parsedAmt = parseFloat(depositAmount);
@@ -42,6 +48,27 @@ export function CardDepositSection({
           <circle cx="16.5" cy="7.5" r="7.5" fill="#F79E1B" />
           <path d="M12 11.5A7.478 7.478 0 0113.882 7.5 7.478 7.478 0 0112 3.5a7.478 7.478 0 01-1.882 4A7.478 7.478 0 0112 11.5z" fill="#FF5F00" />
         </svg>
+      </div>
+
+      <div role="group" aria-label={tw('quick_amounts')} className="grid grid-cols-3 gap-2">
+        {CARD_PRESET_AMOUNTS.map((amount) => {
+          const selected = parsedAmt === amount;
+          return (
+            <Button
+              key={amount}
+              variant={selected ? 'primary' : 'secondary'}
+              size="sm"
+              disabled={processing}
+              aria-pressed={selected}
+              onClick={() => {
+                setDepositAmount(String(amount));
+                onPresetSelect?.(amount);
+              }}
+            >
+              ${amount}
+            </Button>
+          );
+        })}
       </div>
 
       {/* {tw('amount_usd')} */}

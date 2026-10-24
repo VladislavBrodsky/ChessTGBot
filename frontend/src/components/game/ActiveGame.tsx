@@ -23,6 +23,7 @@ import { apiFetch } from '@/lib/api';
 import { requestBotRevengeGame } from '@/lib/botRevenge';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic } from '@/lib/telegram';
+import { logTelemetryEvent } from '@/lib/telemetry';
 import { copyToClipboard } from '@/lib/clipboard';
 import { formatUsd, winnerCents } from '@/lib/settlement';
 import { Modal } from '@/components/ui/Modal';
@@ -701,6 +702,36 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const eloChange = change === undefined ? undefined : `${change >= 0 ? '+' : ''}${change}`;
   const netPayout = summary?.payout ?? null;
   const myNewElo = summary?.newElo;
+
+  // Activation funnel. games_played is read while the game is still live: the
+  // post-game sync bumps it, so a read at game over would never see 0. If the
+  // profile has not loaded by game over, is_first_game is null (unknown), never
+  // a guessed false that would under-count activations.
+  const gamesPlayedAtStartRef = useRef<number | null>(null);
+  const handledCompletedTelemetryRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (gamesPlayedAtStartRef.current === null && !isGameOver && typeof userStats?.games_played === 'number') {
+      gamesPlayedAtStartRef.current = userStats.games_played;
+    }
+  }, [userStats, isGameOver]);
+  // Keyed on the gameId prop: the server's game_state payload carries no id or
+  // game_id of its own.
+  const completedOutcome = summary?.outcome;
+  const completedWager = gameState?.wager_amount || 0;
+  useEffect(() => {
+    if (!isGameOver || !completedOutcome || completedOutcome === 'aborted') return;
+    if (handledCompletedTelemetryRef.current === gameId) return;
+    handledCompletedTelemetryRef.current = gameId;
+    const payload = {
+      game_id: gameId,
+      is_bot: isBotGame,
+      wager_cents: completedWager,
+      outcome: completedOutcome,
+      is_first_game: gamesPlayedAtStartRef.current === null ? null : gamesPlayedAtStartRef.current === 0,
+    };
+    logTelemetryEvent('game_completed', payload);
+    if (payload.is_first_game === true) logTelemetryEvent('first_game_completed', payload);
+  }, [isGameOver, completedOutcome, gameId, completedWager, isBotGame]);
 
   const wagerConsentModal = <Modal isOpen={Boolean(wagerConsent)} onClose={() => router.push(`/${locale}/game`)} title={tg('friend_join_stake_title')} maxWidth="sm">
     {wagerConsent && <div className="space-y-4">

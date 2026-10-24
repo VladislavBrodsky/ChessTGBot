@@ -28,6 +28,11 @@ import {
 
 class DepositFeedbackError extends Error {}
 
+type DepositTab = 'crypto' | 'direct' | 'card';
+
+// Tab indicator offsets for the three-segment control, by position.
+const TAB_INDICATOR_LEFT = ['4px', 'calc(33.333% + 1px)', 'calc(66.666% - 1px)'] as const;
+
 export interface DepositModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -58,9 +63,17 @@ function DepositModalContent({
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const ti = useTranslations('Index');
-  const { stats, loadingStats, syncStats } = useUser();
+  const { stats, loadingStats, syncStats, walletAddress: linkedWalletAddress } = useUser();
 
-  const [activeTab, setActiveTab] = useState<'crypto' | 'direct' | 'card'>('crypto');
+  // A player without a TON wallet cannot use the connected-wallet tab, and most
+  // newcomers have none, so they open on card checkout. Most call sites omit the
+  // walletAddress prop, so the account's linked wallet is the real signal. Decided
+  // once at open: TonConnect restores its session asynchronously and tabs that
+  // reorder under the player's thumb are worse than a stale default.
+  const hasWallet = Boolean(walletAddress || linkedWalletAddress || wallet);
+  const [tabOrder] = useState<DepositTab[]>(() =>
+    hasWallet ? ['crypto', 'direct', 'card'] : ['card', 'crypto', 'direct']);
+  const [activeTab, setActiveTab] = useState<DepositTab>(tabOrder[0]);
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>({ width: 400, height: 600 });
   const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false);
@@ -108,11 +121,19 @@ function DepositModalContent({
       source: chosenWager !== undefined ? 'wager_top_up' : 'wallet',
       chosen_wager: chosenWager,
       wallet_balance: walletBalance,
+      default_tab: tabOrder[0],
+      has_wallet: hasWallet,
     });
     // Opening the modal is a single lifecycle event. Subsequent prop changes
     // should not create duplicate funnel entries.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const selectTab = (tab: DepositTab) => {
+    if (tab !== activeTab) logTelemetryEvent('deposit_tab_selected', { tab, from: activeTab });
+    setActiveTab(tab);
+    setErrorMessage("");
+  };
 
   const trackDepositInitiated = (method: string, amount: number) => {
     funnelStateRef.current = 'initiated';
@@ -641,20 +662,14 @@ function DepositModalContent({
             <div className="relative flex p-1 rounded-xl bg-brand-elevated border border-brand-border shadow-inner overflow-hidden">
               <div 
                 className="absolute top-1 bottom-1 w-[calc(33.333%-3px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-all duration-300 ease-out"
-                style={{
-                  left: activeTab === 'crypto'
-                    ? '4px'
-                    : activeTab === 'direct'
-                    ? 'calc(33.333% + 1px)'
-                    : 'calc(66.666% - 1px)',
-                }}
+                style={{ left: TAB_INDICATOR_LEFT[tabOrder.indexOf(activeTab)] }}
               />
-              {(['crypto', 'direct', 'card'] as const).map((tab) => (
+              {tabOrder.map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   disabled={processing}
-                  onClick={() => { telegramHaptic('light'); setActiveTab(tab); setErrorMessage(""); }}
+                  onClick={() => { telegramHaptic('light'); selectTab(tab); }}
                   className={`ui-tap-target relative z-10 flex-1 py-2 rounded-lg text-caption font-semibold normal-case tracking-normal transition-colors duration-300 cursor-pointer ${activeTab === tab ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
                 >
                   {tab === 'crypto' ? tw('tab_crypto') : tab === 'direct' ? tw('tab_direct') : tw('tab_card')}
@@ -828,7 +843,7 @@ function DepositModalContent({
                 type="button"
                 onClick={() => {
                   telegramHaptic('light');
-                  setActiveTab('direct');
+                  selectTab('direct');
                 }}
                 className="ui-tap-target w-full flex items-center justify-between py-1 text-caption font-semibold text-brand-muted hover:text-brand-primary normal-case tracking-normal transition-colors cursor-pointer"
               >
@@ -902,6 +917,7 @@ function DepositModalContent({
               setDepositAmount={setDepositAmount}
               processing={processing}
               onCardTopUp={handleCardTopUp}
+              onPresetSelect={(amount) => logTelemetryEvent('deposit_preset_selected', { method: 'stripe', amount_usd: amount })}
             />
           )}
 

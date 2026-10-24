@@ -60,6 +60,11 @@ export default function PlayLobby() {
   const [showRakeInfo, setShowRakeInfo] = useState<boolean>(false);
   const [showAiDifficulty, setShowAiDifficulty] = useState(false);
   const [showFriendChallenge, setShowFriendChallenge] = useState(false);
+  const [friendDrawerMode, setFriendDrawerMode] = useState<'free' | 'paid'>('free');
+  // Set while a friend challenge is being topped up, so closing the deposit
+  // returns to the staked drawer instead of stranding the player in the lobby.
+  const [friendResume, setFriendResume] = useState<{ stake: number } | null>(null);
+  const friendFromBridgeRef = useRef(false);
   const [friendError, setFriendError] = useState('');
 
   // Time control
@@ -88,6 +93,17 @@ export default function PlayLobby() {
       setAutoPracticeRequested(params.get('practice') === '1');
       if (params.get('status') === 'success' && params.get('session_id')) {
         setShowDepositDrawer(true);
+      }
+      // One-shot launch from the post-practice stake bridge: open the staked
+      // friend drawer, then drop the parameter so a reload or Back does not
+      // reopen it.
+      if (params.get('friend') === 'stake') {
+        friendFromBridgeRef.current = true;
+        setFriendDrawerMode('paid');
+        setShowFriendChallenge(true);
+        params.delete('friend');
+        const query = params.toString();
+        window.history.replaceState(window.history.state, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
       }
     }
   }, []);
@@ -369,6 +385,13 @@ export default function PlayLobby() {
     getSocket().emit('enable_matchmaking_notifications', {});
   };
 
+  const closeFriendChallenge = () => {
+    setShowFriendChallenge(false);
+    setFriendDrawerMode('free');
+    setFriendResume(null);
+    friendFromBridgeRef.current = false;
+  };
+
   const playVsFriend = async (wager: number, friendTime: number) => {
     if (isCreating || submittingRef.current) return;
     telegramHaptic('selection');
@@ -386,7 +409,14 @@ export default function PlayLobby() {
       }
       const data = await res.json();
       void syncBalance().catch(() => {});
-      setShowFriendChallenge(false);
+      if (wager > 0) {
+        logTelemetryEvent('stake_challenge_created', {
+          wager_cents: wager,
+          time_control: friendTime,
+          source: friendFromBridgeRef.current ? 'bot_game_over' : 'lobby',
+        });
+      }
+      closeFriendChallenge();
       router.push(`/${locale}/game?id=${data.game_id}`);
     } catch (e: any) {
       console.error("Failed to create friend game", e);
@@ -671,17 +701,30 @@ export default function PlayLobby() {
 
         {/* Lobby Quick Deposit Drawer */}
         {showAiDifficulty && <AiDifficultyDrawer onClose={() => setShowAiDifficulty(false)} onSelect={startAiGame} isCreating={isCreating} />}
-        {showFriendChallenge && <FriendChallengeDrawer onClose={() => { if (!isCreating) setShowFriendChallenge(false); }}
+        {showFriendChallenge && <FriendChallengeDrawer onClose={() => { if (!isCreating) closeFriendChallenge(); }}
           onCreate={(stake, friendTime) => { void playVsFriend(stake, friendTime); }}
-          onTopUp={(stake) => { setDepositTarget(stake); setShowFriendChallenge(false); setShowDepositDrawer(true); }}
-          initialTime={timeControl} initialWager={chosenWager} walletBalance={walletBalance}
+          onTopUp={(stake) => {
+            logTelemetryEvent('wager_insufficient_balance', {
+              source: 'friend_challenge',
+              selected_wager_cents: stake,
+              wallet_balance_cents: walletBalance,
+              shortfall_cents: Math.max(0, stake - walletBalance),
+            });
+            setDepositTarget(stake); setFriendResume({ stake }); setShowFriendChallenge(false); setShowDepositDrawer(true);
+          }}
+          initialMode={friendDrawerMode}
+          initialTime={timeControl} initialWager={friendResume?.stake ?? chosenWager} walletBalance={walletBalance}
           loadingBalance={loadingBalance} balanceError={Boolean(balanceError)} isCreating={isCreating} error={friendError} />}
         <AnimatePresence>
           {showDepositDrawer && (
             <DepositModal
               chosenWager={depositTarget ?? chosenWager}
               walletBalance={walletBalance}
-              onClose={() => { setShowDepositDrawer(false); setDepositTarget(null); }}
+              onClose={() => {
+                setShowDepositDrawer(false);
+                setDepositTarget(null);
+                if (friendResume) { setFriendDrawerMode('paid'); setShowFriendChallenge(true); }
+              }}
               onSuccess={refreshAfterDeposit}
             />
           )}

@@ -22,11 +22,12 @@ interface Props {
   balanceError: boolean;
   isCreating: boolean;
   error?: string;
+  initialMode?: 'free' | 'paid';
 }
 
 export default function FriendChallengeDrawer(p: Props) {
   const t = useTranslations('Game');
-  const [mode, setMode] = useState<'free' | 'paid'>('free');
+  const [mode, setMode] = useState<'free' | 'paid'>(p.initialMode ?? 'free');
   const [time, setTime] = useState(p.initialTime);
   const [stakeInput, setStakeInput] = useState(((Number.isFinite(p.initialWager) && p.initialWager >= 100 ? p.initialWager : 500) / 100).toFixed(2));
   const stake = /^\d+(?:\.\d{1,2})?$/.test(stakeInput) ? Math.round(Number(stakeInput) * 100) : 0;
