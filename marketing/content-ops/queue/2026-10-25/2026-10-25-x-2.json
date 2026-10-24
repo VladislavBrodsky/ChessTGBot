@@ -1,0 +1,90 @@
+{
+  "id": "2026-10-25-x-2",
+  "kind": "x_post",
+  "date": "2026-10-25",
+  "category": "Chess Debate",
+  "hook": "Endgame technique beats opening memory under a 3-minute clock (Oct 25)",
+  "text": "Endgame technique beats opening memory under a 3-minute clock (Oct 25)\n\nOpening memory expires as soon as the position leaves your notes.\n\nEndgame patterns still help when the clock is low and the board is simplified.\n\n#Chess #SpeedChess #ChessCommunity",
+  "status": "rejected",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Hot Take",
+    "headline": "RAPID IS DEAD\n*INTUITION VS MEMORY*",
+    "subhead": "Can you calculate under 180 seconds or do you freeze?",
+    "cta_label": "Join Debate",
+    "panels": [
+      {
+        "label": "Classical",
+        "text": "Memorize opening lines",
+        "piece": "K"
+      },
+      {
+        "label": "Blitz PvP",
+        "text": "Pure real-time survival",
+        "piece": "Q"
+      }
+    ],
+    "studio": {
+      "version": 1,
+      "name": "2026-10-25-x-2",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Hot Take",
+      "title": "RAPID IS DEAD INTUITION VS MEMORY",
+      "subtitle": "Can you calculate under 180 seconds or do you freeze?",
+      "proofs": [
+        "Classical: Memorize opening lines",
+        "Blitz PvP: Pure real-time survival",
+        "Read the position"
+      ],
+      "proofIcons": [
+        "users-three",
+        "strategy",
+        "target"
+      ],
+      "cta": "Join Debate",
+      "urlLabel": "web3chess.online",
+      "note": "Web3Chess editorial",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "sculpture",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Do you study openings or endgame patterns more for blitz?\n\nSharpen your practical conversion at:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-25T09:00:00Z",
+  "qa": {
+    "passed": false,
+    "issues": [
+      "creative render failed: file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:95\n      throw new Error([...errors, ...blocked.map((url) => `Blocked request: ${url}`), ...result.warnings].join('; '));\n            ^\n\nError: Subtitle is too long for this size. Shorten it before export.\n    at"
+    ],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-24T16:49:58Z"
+  },
+  "render": {
+    "ok": false,
+    "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
+    "error": "file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:95\n      throw new Error([...errors, ...blocked.map((url) => `Blocked request: ${url}`), ...result.warnings].join('; '));\n            ^\n\nError: Subtitle is too long for this size. Shorten it before export.\n    at Object.render (file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:95:13)\n    at async file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:146:20\n\nNode.js v24.12.0"
+  }
+}

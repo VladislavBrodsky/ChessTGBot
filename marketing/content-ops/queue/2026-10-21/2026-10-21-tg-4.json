@@ -7,7 +7,7 @@
   "hook": "An active knight in the center out-evaluates a passive rook on the rim",
   "cta": "academy",
   "text": "<b>An active knight in the center out-evaluates a passive rook on the rim</b>\n\nMaterial count is deceptive in 3-minute blitz. Piece mobility wins games.\n\nKeep pieces pointing at the enemy king and control open outposts.\n\nSharpen your piece activity in our free Academy.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -35,10 +35,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-20T00:00:45Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-4.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-24T04:04:06Z",
+  "published": {
+    "message_id": 91,
+    "at": "2026-10-24T04:04:06Z"
+  },
+  "media_cleaned": true
 }

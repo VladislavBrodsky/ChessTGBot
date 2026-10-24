@@ -7,7 +7,7 @@
   "hook": "Greedy bishop pushes in the Ruy Lopez get trapped on b3 every time",
   "cta": "academy",
   "text": "<b>Greedy bishop pushes in the Ruy Lopez get trapped on b3 every time</b>\n\nIn the Spanish opening, White's light-squared bishop on b3 seems powerful.\nBlack plays a6, b5, and c4, locking the bishop in a wooden box with no escape.\n\nThe defense: White must preserve an escape route with a4 or c3 before pushing the d-pawn.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -46,10 +46,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-20T00:00:44Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-2.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-23T19:01:20Z",
+  "published": {
+    "message_id": 86,
+    "at": "2026-10-23T19:01:20Z"
+  },
+  "media_cleaned": true
 }

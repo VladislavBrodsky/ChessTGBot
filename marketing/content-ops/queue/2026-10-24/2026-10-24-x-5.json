@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "White to move. Black's rooks on d8 and f8 trap their own king (Oct 24)",
   "text": "White to move. Black's rooks on d8 and f8 trap their own king (Oct 24)\n\nThe king on e8 is flanked by two friendly rooks blocking sideways flight.\n\nFind the queen mate in 1 ♟️\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "draft",
+  "status": "approved",
   "sources": [
     {
       "kind": "own",
@@ -44,6 +44,16 @@
   "render": {
     "ok": true,
     "skipped": false,
+    "engine": "board",
+    "canvas": "9ceba1b8b490",
     "images": 1
-  }
+  },
+  "approval": {
+    "by": "human:grandmaestro",
+    "at": "2026-10-24T17:10:01Z",
+    "content": "5da24b858e663704",
+    "canvas": "9ceba1b8b490"
+  },
+  "approved_by": "human:grandmaestro",
+  "updated_at": "2026-10-24T17:10:01Z"
 }

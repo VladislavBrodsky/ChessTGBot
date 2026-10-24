@@ -5,7 +5,7 @@
   "category": "Tactics",
   "hook": "White to move. Two rooks seal every flight square",
   "text": "White to move. Two rooks seal every flight square\n\nBlack's king on h8 is trapped behind the 7th-rank barrier.\n\nSpot the 1-move finish ♟️\n\n#Chess #SpeedChess #ChessTactics",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -40,10 +40,22 @@
     "gate_summary": "Passed all deterministic X post gates",
     "checked_at": "2026-10-22T00:00:19Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-23/2026-10-23-x-1.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 1
-  }
+  },
+  "updated_at": "2026-10-23T00:00:08Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2113420165509468636",
+    "reply_id": "2113420168458027032",
+    "root_url": "https://x.com/defi_ambassador/status/2113420165509468636"
+  },
+  "published": {
+    "root_id": "2113420165509468636",
+    "root_url": "https://x.com/defi_ambassador/status/2113420165509468636",
+    "at": "2026-10-23T00:00:08Z"
+  },
+  "media_cleaned": true
 }

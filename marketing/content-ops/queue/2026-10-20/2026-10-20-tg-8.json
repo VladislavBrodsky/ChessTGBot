@@ -7,7 +7,7 @@
   "hook": "White to move. The knight on e7 locks down g8 and g6",
   "cta": "academy_app",
   "text": "<b>White to move. The knight on e7 locks down g8 and g6</b>\n\nBlack's king on h7 is boxed against the edge.\nOne rook move finishes the corridor mate.\n\n❤ Rh3#   🔥 Re4   👏 f4\nAnswer reveals in 6 hours.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -47,7 +47,11 @@
       "fen": "5r2/4Nppk/8/8/8/4R3/5PPP/6K1 w - - 0 1",
       "cta_label": "Solve More in Academy"
     },
-    "image": "marketing/content-ops/queue/2026-10-20/2026-10-20-tg-8.reveal.png"
+    "sent": {
+      "at": "2026-10-23T19:01:20Z",
+      "claimed": true,
+      "message_id": 87
+    }
   },
   "scheduled_at": "2026-10-20T21:00:00Z",
   "qa": {
@@ -56,10 +60,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-19T16:22:45Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-20/2026-10-20-tg-8.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 2
-  }
+  },
+  "updated_at": "2026-10-23T12:14:43Z",
+  "published": {
+    "message_id": 84,
+    "at": "2026-10-23T12:14:43Z"
+  },
+  "media_cleaned": true
 }
