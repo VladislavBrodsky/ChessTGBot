@@ -82,10 +82,10 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
                 if payment_status is None:
                     payment_status = stripe_get(checkout, "payment_status")
 
-                if (status == "complete" or payment_status == "paid") and payment_status != "unpaid":
+                if payment_status == "paid":
                     if dry_run:
                         logger.info("Dry-run: would credit Stripe transaction #%s.", tx.id)
-                    elif await _credit_stripe_deposit(session, tx.id, tx.user_id, session_id):
+                    elif await _credit_stripe_deposit(session, tx.id, tx.user_id, checkout):
                         summary["paid"] += 1
                     continue
                 if status == "expired":
@@ -109,9 +109,15 @@ async def reconcile_pending_stripe_sessions(db=None, *, dry_run: bool = False) -
                             logger.info("Dry-run: would expire open Stripe transaction #%s.", tx.id)
                         else:
                             try:
-                                await asyncio.to_thread(stripe.checkout.Session.expire, session_id)
+                                expired_session = await asyncio.to_thread(stripe.checkout.Session.expire, session_id)
                             except Exception as expire_err:
+                                summary["errors"] += 1
                                 logger.warning("Could not expire Stripe session %s: %s", session_id, expire_err)
+                                continue
+                            if stripe_get(expired_session, "status") != "expired":
+                                summary["errors"] += 1
+                                logger.warning("Stripe did not confirm expiration for session %s", session_id)
+                                continue
                             locked = await session.execute(
                                 select(Transaction).where(Transaction.id == tx.id).with_for_update()
                             )

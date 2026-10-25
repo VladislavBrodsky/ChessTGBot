@@ -14,6 +14,7 @@ from app.models.transaction import Transaction
 from app.models.stripe_event import StripeWebhookEvent
 from app.core.config import get_settings
 from app.api.v1.endpoints.wallet import (
+    _credit_stripe_deposit,
     stripe_create_session,
     stripe_verify_session,
     stripe_webhook,
@@ -36,42 +37,48 @@ def _user(tid: int, balance: int = 0) -> User:
     return User(telegram_id=tid, first_name=f"U{tid}", balance=balance, elo=1000)
 
 @pytest.mark.asyncio
-async def test_stripe_create_session_success(db, monkeypatch):
+async def test_stripe_create_session_is_closed_even_with_keys(db, monkeypatch):
     user = _user(12345, 100)
     db.add(user)
     await db.commit()
 
-    # Mock stripe.checkout.Session.create
-    mock_session = MagicMock()
-    mock_session.id = "cs_test_session123"
-    mock_session.url = "https://checkout.stripe.com/pay/cs_test_session123"
-    
-    with patch("stripe.checkout.Session.create", return_value=mock_session) as mock_create:
-        settings = get_settings()
-        monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
-        monkeypatch.setattr(settings, "WEBAPP_URL", "https://chesstgbot-frontend.com")
+    monkeypatch.setattr(get_settings(), "STRIPE_SECRET_KEY", "sk_test_mock")
+    with patch("stripe.checkout.Session.create") as mock_create:
+        with pytest.raises(HTTPException) as exc:
+            await stripe_create_session(
+                StripeSessionRequest(amount=10.00, redirect_path="/membership"),
+                current_user=user, db=db,
+            )
+    assert exc.value.status_code == 403
+    mock_create.assert_not_called()
+    assert not (await db.execute(select(Transaction))).scalars().all()
 
-        req = StripeSessionRequest(amount=10.00, redirect_path="/membership")
-        res = await stripe_create_session(req, current_user=user, db=db)
 
-        # Check Stripe Checkout was called with the custom success/cancel URLs containing redirect_path
-        args, kwargs = mock_create.call_args
-        assert kwargs["success_url"] == "https://chesstgbot-frontend.com/membership?status=success&session_id={CHECKOUT_SESSION_ID}"
-        assert kwargs["cancel_url"] == "https://chesstgbot-frontend.com/membership?status=cancel"
+@pytest.mark.asyncio
+@pytest.mark.parametrize("override", [
+    {"payment_status": "unpaid"},
+    {"amount_total": 1100},
+    {"currency": "eur"},
+    {"id": "cs_other"},
+    {"metadata": {"tx_id": "999", "user_id": "12345"}},
+])
+async def test_stripe_deposit_rejects_unmatched_checkout_facts(db, override):
+    user = _user(12345)
+    pending = Transaction(user_id=12345, type="deposit", amount=950, fee=50,
+                          status="pending", reference_id="cs_expected")
+    db.add_all([user, pending])
+    await db.commit()
+    checkout = {"id": "cs_expected", "mode": "payment", "payment_status": "paid",
+                "currency": "usd", "amount_total": 1000,
+                "metadata": {"tx_id": str(pending.id), "user_id": "12345"}}
+    checkout.update(override)
 
-        assert res.session_id == "cs_test_session123"
-        assert res.checkout_url == "https://checkout.stripe.com/pay/cs_test_session123"
-
-        # Verify transaction created in DB in pending state
-        tx_result = await db.execute(
-            select(Transaction).filter(Transaction.reference_id == "cs_test_session123")
-        )
-        tx = tx_result.scalars().first()
-        assert tx is not None
-        assert tx.user_id == 12345
-        assert tx.amount == 950   # credited amount: $10.00 charged minus 5% fee
-        assert tx.fee == 50       # 5% fee in cents
-        assert tx.status == "pending"
+    assert not await _credit_stripe_deposit(db, pending.id, user.telegram_id, checkout)
+    await db.refresh(user)
+    await db.refresh(pending)
+    assert user.balance == 0
+    assert pending.status == "pending"
+    assert not (await db.execute(select(Transaction).where(Transaction.type == "deposit_fee"))).scalars().all()
 
 @pytest.mark.asyncio
 async def test_stripe_verify_session(db):
@@ -116,6 +123,10 @@ async def test_stripe_webhook_success(db, monkeypatch):
         "data": {
             "object": {
                 "id": "cs_test_webhook",
+                "mode": "payment",
+                "payment_status": "paid",
+                "currency": "usd",
+                "amount_total": 1050,
                 "metadata": {
                     "tx_id": "999",
                     "user_id": "12345"
@@ -192,7 +203,9 @@ async def test_stripe_webhook_event_replay_is_a_noop(db, monkeypatch):
     event = {
         "id": "evt_replay_once",
         "type": "checkout.session.completed",
-        "data": {"object": {"id": "cs_event_replay", "metadata": {
+        "data": {"object": {"id": "cs_event_replay", "mode": "payment",
+            "payment_status": "paid", "currency": "usd", "amount_total": 1050,
+            "metadata": {
             "tx_id": str(pending_tx.id), "user_id": str(user.telegram_id),
         }}},
     }
@@ -217,6 +230,33 @@ async def test_stripe_webhook_event_replay_is_a_noop(db, monkeypatch):
     assert pending_tx.status == "completed"
     assert len(receipts) == 1
     assert len(fees) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("event_type", ["checkout.session.expired", "checkout.session.async_payment_failed"])
+async def test_stripe_checkout_failure_closes_only_its_pending_deposit(db, monkeypatch, event_type):
+    user = _user(445577)
+    pending = Transaction(user_id=user.telegram_id, type="deposit", amount=950,
+                          fee=50, status="pending", reference_id="cs_failed")
+    db.add_all([user, pending])
+    await db.commit()
+    event = {"id": f"evt_{event_type}", "type": event_type,
+             "data": {"object": {"id": "cs_failed", "metadata": {
+                 "tx_id": str(pending.id), "user_id": str(user.telegram_id),
+             }}}}
+    request = MagicMock()
+    request.body = AsyncMock(return_value=b"payload")
+    monkeypatch.setattr(get_settings(), "STRIPE_SECRET_KEY", "sk_test_mock")
+    monkeypatch.setattr(get_settings(), "STRIPE_WEBHOOK_SECRET", "whsec_mock")
+
+    with patch("stripe.Webhook.construct_event", return_value=event):
+        result = await stripe_webhook(request=request, stripe_signature="sig", db=db)
+
+    await db.refresh(pending)
+    await db.refresh(user)
+    assert result["status"] == "success"
+    assert pending.status == "failed"
+    assert user.balance == 0
 
 
 @pytest.mark.asyncio
@@ -452,9 +492,16 @@ async def test_card_refund_reverses_only_the_net_wallet_credit_once(db, monkeypa
 
 
 @pytest.mark.asyncio
-async def test_chargeback_records_only_the_wallet_value_actually_removed(db, monkeypatch):
-    user = _user(90123, 300)
+@pytest.mark.parametrize(("starting_balance", "expected_debit"), [(300, 300), (1000, 950)])
+async def test_chargeback_records_only_the_wallet_value_actually_removed(
+    db, monkeypatch, starting_balance, expected_debit,
+):
+    user = _user(90123, starting_balance)
     db.add(user)
+    db.add(Transaction(
+        id=702, user_id=90123, type="deposit", amount=950, fee=50,
+        status="completed", reference_id="cs_disputed",
+    ))
     await db.commit()
 
     event = {
@@ -466,7 +513,7 @@ async def test_chargeback_records_only_the_wallet_value_actually_removed(db, mon
     settings = get_settings()
     monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", "sk_test_mock")
     monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", "whsec_mock")
-    charge = {"metadata": {"user_id": "90123"}}
+    charge = {"amount": 1000, "metadata": {"user_id": "90123", "tx_id": "702"}}
 
     with patch("stripe.Webhook.construct_event", return_value=event), \
          patch("stripe.Charge.retrieve", return_value=charge), \
@@ -477,7 +524,7 @@ async def test_chargeback_records_only_the_wallet_value_actually_removed(db, mon
     await db.refresh(user)
     assert first["status"] == "success"
     assert second["status"] == "ignored"
-    assert user.balance == 0
+    assert user.balance == starting_balance - expected_debit
     assert user.is_active is False
     rows = await db.execute(select(Transaction).filter(Transaction.reference_id == "dispute_dp_901"))
-    assert rows.scalars().one().amount == -300
+    assert rows.scalars().one().amount == -expected_debit

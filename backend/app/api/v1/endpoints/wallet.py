@@ -1415,88 +1415,33 @@ class StripeVerifyResponse(BaseModel):
 async def stripe_create_session(
     request: StripeSessionRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
-    from app.core.config import get_settings
-    settings = get_settings()
-    
-    if not settings.STRIPE_SECRET_KEY:
-        raise HTTPException(status_code=501, detail="Stripe configuration is missing on server.")
-        
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    
-    if request.amount < 1.0:
-        raise HTTPException(status_code=400, detail="Minimum deposit amount is $1.00 USD.")
-        
-    # Calculate charged amount (the total entered by user) and subtract 5% platform fee for credit
-    charged_amount_cents = int(round(request.amount * 100))
-    credited_amount_cents = int(round(request.amount * 0.95 * 100))
-    fee_cents = charged_amount_cents - credited_amount_cents
-    
-    # Generate pending transaction in DB
-    pending_tx = Transaction(
-        user_id=current_user.telegram_id,
-        type="deposit",
-        amount=credited_amount_cents,
-        fee=fee_cents,
-        status="pending",
-        reference_id=None  # will be set to session ID shortly
+    """Do not create card-funded, withdrawable wager balances.
+
+    Preserve the route so older clients receive an explicit refusal. Existing
+    Checkout sessions remain eligible for verified settlement below.
+    """
+    raise HTTPException(status_code=403, detail="Card balance top-ups are unavailable.")
+
+
+def _stripe_session_matches_deposit(session, tx: Transaction) -> bool:
+    """Require Stripe's paid Checkout facts to match our pending ledger row."""
+    metadata = stripe_get(session, "metadata", {})
+    return (
+        tx.type == "deposit"
+        and tx.status == "pending"
+        and tx.reference_id == stripe_get(session, "id")
+        and stripe_get(session, "mode") == "payment"
+        and stripe_get(session, "payment_status") == "paid"
+        and stripe_get(session, "currency") == "usd"
+        and stripe_get(session, "amount_total") == tx.amount + tx.fee
+        and stripe_get(metadata, "tx_id") == str(tx.id)
+        and stripe_get(metadata, "user_id") == str(tx.user_id)
     )
-    db.add(pending_tx)
-    await db.flush() # get ID
-    
-    # Sanitize redirect path
-    redirect_path = request.redirect_path or "/wallet"
-    if not redirect_path.startswith("/"):
-        redirect_path = "/" + redirect_path
 
-    try:
-        # Create Stripe Checkout Session off the main event loop
-        checkout_session = await asyncio.to_thread(
-            stripe.checkout.Session.create,
-            payment_method_types=['card'],
-            line_items=[
-                {
-                    'price_data': {
-                        'currency': 'usd',
-                        'product_data': {
-                            'name': 'Web3Chess Platform Balance Top-Up',
-                            'description': f'Credited: ${(request.amount * 0.95):.2f} USD | Fee (5%): ${(request.amount * 0.05):.2f} USD',
-                        },
-                        'unit_amount': charged_amount_cents,
-                    },
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            metadata={
-                'user_id': str(current_user.telegram_id),
-                'tx_id': str(pending_tx.id)
-            },
-            payment_intent_data={
-                'metadata': {
-                    'user_id': str(current_user.telegram_id),
-                    'tx_id': str(pending_tx.id)
-                }
-            },
-            success_url=f"{settings.WEBAPP_URL}{redirect_path}?status=success&session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{settings.WEBAPP_URL}{redirect_path}?status=cancel",
-            idempotency_key=f"session_{pending_tx.id}",
-        )
-        
-        pending_tx.reference_id = checkout_session.id
-        await db.commit()
-        
-        return StripeSessionResponse(
-            session_id=checkout_session.id,
-            checkout_url=checkout_session.url
-        )
-    except Exception as e:
-        await db.rollback()
-        logger.error(f"Failed to create Stripe checkout session: {e}")
-        raise HTTPException(status_code=500, detail="Stripe session creation failed.")
 
-async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, session_id: str) -> bool:
+async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, session) -> bool:
     """
     Idempotent, row-locked credit function for Stripe deposits.
     Returns True if credited just now, False if already credited or failed.
@@ -1509,7 +1454,15 @@ async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, ses
     )
     tx = tx_result.scalars().first()
     
+    if tx and tx.status == "pending" and not _stripe_session_matches_deposit(session, tx):
+        logger.error(
+            "Stripe checkout mismatch for pending top-up tx=%s session=%s",
+            tx.id, stripe_get(session, "id"),
+        )
+        return False
+
     if tx and tx.status == "pending":
+        session_id = stripe_get(session, "id")
         user_result = await db.execute(
             select(User).filter(User.telegram_id == user_id).with_for_update()
         )
@@ -1626,7 +1579,7 @@ async def stripe_verify_session(
             try:
                 session = await asyncio.to_thread(stripe.checkout.Session.retrieve, session_id)
                 if stripe_get(session, "payment_status") == "paid":
-                    await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session_id)
+                    await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session)
                     await db.refresh(tx)
             except Exception as e:
                 logger.error(f"Error querying stripe in verify: {e}")
@@ -1864,7 +1817,7 @@ async def stripe_webhook(
     if not await _claim_stripe_event(db, event):
         return {"status": "ignored", "message": "Stripe event already processed."}
         
-    if event['type'] == 'checkout.session.completed':
+    if event['type'] in ('checkout.session.completed', 'checkout.session.async_payment_succeeded'):
         session = event['data']['object']
         
         # Handle Subscriptions
@@ -1909,7 +1862,7 @@ async def stripe_webhook(
             tx_id = int(tx_id_str)
             user_id = int(user_id_str)
             
-            credited = await _credit_stripe_deposit(db, tx_id, user_id, stripe_get(session, 'id', ''))
+            credited = await _credit_stripe_deposit(db, tx_id, user_id, session)
             
             if credited:
                 return {"status": "success", "message": "Transaction credited successfully."}
@@ -1917,14 +1870,21 @@ async def stripe_webhook(
                 await db.commit()
                 return {"status": "ignored", "message": "Transaction already completed or not found."}
                 
-    elif event['type'] == 'checkout.session.expired':
+    elif event['type'] in ('checkout.session.expired', 'checkout.session.async_payment_failed'):
         session = event['data']['object']
         metadata = stripe_get(session, 'metadata', {})
         tx_id_str = stripe_get(metadata, 'tx_id')
         user_id_str = stripe_get(metadata, 'user_id')
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
-            tx_result = await db.execute(select(Transaction).filter(Transaction.id == tx_id).with_for_update())
+            tx_result = await db.execute(
+                select(Transaction).filter(
+                    Transaction.id == tx_id,
+                    Transaction.user_id == int(user_id_str),
+                    Transaction.type == "deposit",
+                    Transaction.reference_id == stripe_get(session, 'id'),
+                ).with_for_update()
+            )
             tx = tx_result.scalars().first()
             if tx and tx.status == "pending":
                 tx.status = "failed"
@@ -1958,7 +1918,8 @@ async def stripe_webhook(
                 )
                 top_up_tx = top_up_result.scalars().first()
                 gross_charge = int(stripe_get(charge, 'amount', 0) or 0)
-                if not top_up_tx or gross_charge <= 0:
+                if (not top_up_tx or top_up_tx.status != "completed"
+                        or gross_charge != top_up_tx.amount + top_up_tx.fee):
                     logger.error("Refund references an unknown or malformed top-up: tx=%s charge=%s", tx_id, stripe_get(charge, 'id'))
                     return {"status": "ignored", "message": "Top-up not found for refund."}
 
@@ -2018,9 +1979,24 @@ async def stripe_webhook(
             # We must fetch the charge from stripe to get the metadata since dispute object might not inherit it
             try:
                 charge = await asyncio.to_thread(stripe.Charge.retrieve, charge_id)
-                user_id_str = stripe_get(stripe_get(charge, 'metadata', {}), 'user_id')
-                if user_id_str:
+                charge_metadata = stripe_get(charge, 'metadata', {})
+                user_id_str = stripe_get(charge_metadata, 'user_id')
+                tx_id_str = stripe_get(charge_metadata, 'tx_id')
+                if user_id_str and tx_id_str:
                     user_id = int(user_id_str)
+                    top_up_result = await db.execute(
+                        select(Transaction).filter(
+                            Transaction.id == int(tx_id_str),
+                            Transaction.user_id == user_id,
+                            Transaction.type == "deposit",
+                            Transaction.status == "completed",
+                        ).with_for_update()
+                    )
+                    top_up_tx = top_up_result.scalars().first()
+                    gross_charge = int(stripe_get(charge, 'amount', 0) or 0)
+                    if not top_up_tx or gross_charge != top_up_tx.amount + top_up_tx.fee:
+                        logger.error("Dispute references an unknown or malformed top-up: charge=%s", charge_id)
+                        return {"status": "ignored", "message": "Top-up not found for dispute."}
                     dispute_ref = f"dispute_{stripe_get(dispute, 'id', '')}"
                     prior_dispute = await db.execute(
                         select(Transaction.id).where(Transaction.reference_id == dispute_ref)
@@ -2038,8 +2014,12 @@ async def stripe_webhook(
                         # wallet adjustment.  We freeze the account when a user
                         # has already spent the top-up instead of inventing an
                         # untracked negative balance.
-                        dispute_amount = stripe_get(dispute, 'amount', 0)
-                        wallet_debit = min(user.balance, dispute_amount)
+                        dispute_amount = int(stripe_get(dispute, 'amount', 0) or 0)
+                        net_disputed = min(
+                            top_up_tx.amount,
+                            (dispute_amount * top_up_tx.amount + gross_charge // 2) // gross_charge,
+                        )
+                        wallet_debit = min(max(user.balance, 0), net_disputed)
                         user.balance -= wallet_debit
                         
                         penalty_tx = Transaction(

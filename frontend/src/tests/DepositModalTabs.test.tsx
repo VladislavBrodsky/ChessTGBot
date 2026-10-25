@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import type { ReactNode } from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import DepositModal from '@/components/Wallet/DepositModal';
 import { logTelemetryEvent } from '@/lib/telemetry';
 import { useTonWallet } from '@tonconnect/ui-react';
@@ -27,17 +27,17 @@ const tabLabels = () => screen.getAllByText(/^tab_/).map(el => el.textContent);
 beforeEach(() => { mockLinkedWallet = ''; (useTonWallet as jest.Mock).mockReturnValue(null); });
 afterEach(() => jest.clearAllMocks());
 
-it('opens on card checkout, listed first, for a player with no wallet', () => {
+it('opens on manual USDT transfer for a player with no wallet', () => {
   render(<DepositModal onClose={jest.fn()} onSuccess={jest.fn()} />);
-  expect(tabLabels()).toEqual(['tab_card', 'tab_crypto', 'tab_direct']);
-  expect(screen.getByRole('button', { name: '$25' })).toBeInTheDocument();
+  expect(tabLabels()).toEqual(['tab_direct', 'tab_crypto']);
+  expect(screen.queryByText('tab_card')).not.toBeInTheDocument();
   expect(screen.queryByText('connected_deposit')).not.toBeInTheDocument();
-  expect(logTelemetryEvent).toHaveBeenCalledWith('deposit_modal_open', expect.objectContaining({ default_tab: 'card', has_wallet: false }));
+  expect(logTelemetryEvent).toHaveBeenCalledWith('deposit_modal_open', expect.objectContaining({ default_tab: 'direct', has_wallet: false }));
 });
 
 it('keeps the connected-wallet tab first for a player with a linked wallet', () => {
   render(<DepositModal onClose={jest.fn()} onSuccess={jest.fn()} walletAddress="UQ-linked-wallet" />);
-  expect(tabLabels()).toEqual(['tab_crypto', 'tab_direct', 'tab_card']);
+  expect(tabLabels()).toEqual(['tab_crypto', 'tab_direct']);
   expect(screen.getByText('connected_deposit')).toBeInTheDocument();
   expect(logTelemetryEvent).toHaveBeenCalledWith('deposit_modal_open', expect.objectContaining({ default_tab: 'crypto', has_wallet: true }));
 });
@@ -45,18 +45,18 @@ it('keeps the connected-wallet tab first for a player with a linked wallet', () 
 it('uses the account wallet when the opening screen does not pass one', () => {
   mockLinkedWallet = 'UQ-account-wallet';
   render(<DepositModal onClose={jest.fn()} onSuccess={jest.fn()} />);
-  expect(tabLabels()).toEqual(['tab_crypto', 'tab_direct', 'tab_card']);
+  expect(tabLabels()).toEqual(['tab_crypto', 'tab_direct']);
   expect(logTelemetryEvent).toHaveBeenCalledWith('deposit_modal_open', expect.objectContaining({ default_tab: 'crypto', has_wallet: true }));
 });
 
 it('keeps the connected-wallet tab first when TonConnect already holds a session', () => {
   (useTonWallet as jest.Mock).mockReturnValue({ account: { address: '0:abc' } });
   render(<DepositModal onClose={jest.fn()} onSuccess={jest.fn()} />);
-  expect(tabLabels()).toEqual(['tab_crypto', 'tab_direct', 'tab_card']);
+  expect(tabLabels()).toEqual(['tab_crypto', 'tab_direct']);
 });
 
 it('logs a tab switch with where the player came from', () => {
   render(<DepositModal onClose={jest.fn()} onSuccess={jest.fn()} />);
-  screen.getByText('tab_direct').click();
-  expect(logTelemetryEvent).toHaveBeenCalledWith('deposit_tab_selected', { tab: 'direct', from: 'card' });
+  fireEvent.click(screen.getByText('tab_crypto'));
+  expect(logTelemetryEvent).toHaveBeenCalledWith('deposit_tab_selected', { tab: 'crypto', from: 'direct' });
 });

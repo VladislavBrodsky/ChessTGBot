@@ -19,19 +19,16 @@ import { useTranslations } from 'next-intl';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Drawer } from '@/components/ui/Drawer';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
 
 import {
   DepositSuccessView,
-  CardDepositSection,
   ManualDepositSection,
 } from './deposit';
 
 class DepositFeedbackError extends Error {}
 
-type DepositTab = 'crypto' | 'direct' | 'card';
-
-// Tab indicator offsets for the three-segment control, by position.
-const TAB_INDICATOR_LEFT = ['4px', 'calc(33.333% + 1px)', 'calc(66.666% - 1px)'] as const;
+type DepositTab = 'crypto' | 'direct';
 
 // Card checkout happens outside the Mini App (Telegram opens Stripe in its
 // browser), so the player returns to a modal that knows nothing about the
@@ -44,24 +41,6 @@ const STRIPE_POLL_INTERVAL_MS = 4000;
 const STRIPE_POLL_WINDOW_MS = 10 * 60 * 1000;
 
 type PendingStripe = { sessionId: string; startedAt: number };
-
-const CARD_UNAVAILABLE_KEY = 'deposit_card_unavailable';
-
-function cardMarkedUnavailable(): boolean {
-  try {
-    return typeof window !== 'undefined' && window.sessionStorage.getItem(CARD_UNAVAILABLE_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
-function markCardUnavailable() {
-  try {
-    window.sessionStorage.setItem(CARD_UNAVAILABLE_KEY, '1');
-  } catch {
-    // Best effort only.
-  }
-}
 
 function readPendingStripe(): PendingStripe | null {
   try {
@@ -121,18 +100,17 @@ function DepositModalContent({
   const { stats, loadingStats, syncStats, walletAddress: linkedWalletAddress } = useUser();
 
   // A player without a TON wallet cannot use the connected-wallet tab, and most
-  // newcomers have none, so they open on card checkout. Most call sites omit the
+  // newcomers have none, so they open on manual transfer. Most call sites omit the
   // walletAddress prop, so the account's linked wallet is the real signal. Decided
   // once at open: TonConnect restores its session asynchronously and tabs that
   // reorder under the player's thumb are worse than a stale default.
   const hasWallet = Boolean(walletAddress || linkedWalletAddress || wallet);
   const [tabOrder] = useState<DepositTab[]>(() =>
-    hasWallet || cardMarkedUnavailable() ? ['crypto', 'direct', 'card'] : ['card', 'crypto', 'direct']);
+    hasWallet ? ['crypto', 'direct'] : ['direct', 'crypto']);
   const [activeTab, setActiveTab] = useState<DepositTab>(tabOrder[0]);
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [windowDimensions, setWindowDimensions] = useState<{ width: number; height: number }>({ width: 400, height: 600 });
   const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false);
-  const cardEnabled = true; // Always enable bank card tab since we use Stripe
   
   const [depositAmount, setDepositAmount] = useState<string>(() => {
     if (chosenWager !== undefined && walletBalance !== undefined && chosenWager > walletBalance) {
@@ -164,7 +142,6 @@ function DepositModalContent({
   // A card checkout opened in the browser and not yet confirmed. Seeded from
   // storage so reopening the modal resumes watching the same payment.
   const [pendingStripe, setPendingStripe] = useState<PendingStripe | null>(() => readPendingStripe());
-  const [checkingPayment, setCheckingPayment] = useState<boolean>(false);
   const stripeFinishedRef = useRef<boolean>(false);
   const stripeCheckInFlightRef = useRef<boolean>(false);
   const [gasGrantMsg, setGasGrantMsg] = useState<string>("");
@@ -679,19 +656,6 @@ function DepositModalContent({
     };
   }, [pendingStripe, verificationSuccess, runStripeCheck]);
 
-  const handleCheckPayment = async () => {
-    if (!pendingStripe || checkingPayment) return;
-    telegramHaptic('light');
-    setCheckingPayment(true);
-    setErrorMessage("");
-    try {
-      const outcome = await runStripeCheck(pendingStripe);
-      if (outcome === 'pending' || outcome === 'error') setErrorMessage(tw('pending_transaction'));
-    } finally {
-      setCheckingPayment(false);
-    }
-  };
-
   // Check URL parameters for Stripe checkout redirections on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -703,70 +667,6 @@ function DepositModalContent({
       }
     }
   }, [verifyStripeSession]);
-
-  // Launch the Stripe Checkout redirection
-  const handleCardTopUp = async () => {
-    const amt = parseFloat(depositAmount);
-    if (isNaN(amt) || amt < 1.0) {
-      setErrorMessage(tw('minimum_card', { amount: '$1.00' }));
-      return;
-    }
-    trackDepositInitiated('stripe', amt);
-    setProcessing(true);
-    setErrorMessage("");
-    setSuccessMessage("");
-    telegramHaptic('medium');
-
-    try {
-      // Stripe returns the player in Telegram's browser, which has no Mini App
-      // session: send it to the public return page, not back to a guarded one.
-      const returnLocale = window.location.pathname.match(/^\/([a-z]{2})(?:\/|$)/)?.[1] ?? 'en';
-      const res = await apiFetch("/api/v1/wallet/stripe/create-session", {
-        method: "POST",
-        body: JSON.stringify({ amount: amt, redirect_path: `/${returnLocale}/pay/return` })
-      });
-      if (!res.ok) {
-        logTelemetryEvent('deposit_card_failed', { stage: 'create_session', status: res.status });
-        // A server-side failure (e.g. card payments not configured) will repeat,
-        // so stop leading the next opening this session with the card tab.
-        if (res.status >= 500) markCardUnavailable();
-        throw new DepositFeedbackError(
-          res.status === 429 ? tw('card_rate_limited')
-            : res.status === 400 || res.status === 422 ? tw('minimum_card', { amount: '$1.00' })
-            : tw('card_unavailable'));
-      }
-      const data = await res.json();
-      funnelStateRef.current = 'submitted';
-      logTelemetryEvent('deposit_submitted', {
-        method: 'stripe',
-        amount_usd: amt,
-        session_id: data.session_id,
-      });
-
-      // Watch this payment before leaving the app, so it is picked up when the
-      // player comes back from the checkout page.
-      const pending = { sessionId: data.session_id as string, startedAt: Date.now() };
-      stripeFinishedRef.current = false;
-      writePendingStripe(pending);
-      setPendingStripe(pending);
-
-      // Redirect using Telegram WebApp openLink if available
-      if (typeof window !== 'undefined' && window.Telegram?.WebApp?.openLink) {
-        window.Telegram.WebApp.openLink(data.checkout_url);
-      } else {
-        window.open(data.checkout_url, '_blank', 'noopener,noreferrer');
-      }
-    } catch (err: any) {
-      console.error(err);
-      if (!(err instanceof DepositFeedbackError)) {
-        logTelemetryEvent('deposit_card_failed', { stage: 'network' });
-      }
-      setErrorMessage(err instanceof DepositFeedbackError ? err.message : tw('card_unavailable'));
-      telegramHaptic('error');
-    } finally {
-      setProcessing(false);
-    }
-  };
 
   const selectedCurrencyObj = currenciesList.find(c => c.symbol === currency);
 
@@ -807,25 +707,17 @@ function DepositModalContent({
             </div>
           )}
 
-          {cardEnabled && (
-            <div className="relative flex p-1 rounded-xl bg-brand-elevated border border-brand-border shadow-inner overflow-hidden">
-              <div 
-                className="absolute top-1 bottom-1 w-[calc(33.333%-3px)] rounded-lg bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.25)] transition-all duration-300 ease-out"
-                style={{ left: TAB_INDICATOR_LEFT[tabOrder.indexOf(activeTab)] }}
-              />
-              {tabOrder.map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  disabled={processing}
-                  onClick={() => { telegramHaptic('light'); selectTab(tab); }}
-                  className={`ui-tap-target relative z-10 flex-1 py-2 rounded-lg text-caption font-semibold normal-case tracking-normal transition-colors duration-300 cursor-pointer ${activeTab === tab ? 'text-brand-void' : 'text-brand-muted hover:text-brand-primary'}`}
-                >
-                  {tab === 'crypto' ? tw('tab_crypto') : tab === 'direct' ? tw('tab_direct') : tw('tab_card')}
-                </button>
-              ))}
-            </div>
-          )}
+          <fieldset disabled={processing} className={processing ? 'opacity-50' : ''}>
+            <SegmentedControl
+              aria-label={tw('top_up')}
+              value={activeTab}
+              options={tabOrder.map(tab => ({
+                value: tab,
+                label: tab === 'crypto' ? tw('tab_crypto') : tw('tab_direct'),
+              }))}
+              onChange={selectTab}
+            />
+          </fieldset>
 
           {activeTab === 'crypto' && !hasVerifiedAccountId && (
             loadingStats ? <Skeleton variant="rectangular" width="100%" height={120} /> : (
@@ -1057,20 +949,6 @@ function DepositModalContent({
               setManualTxHash={setManualTxHash}
               onManualVerify={handleManualVerify}
               commentMemoText={tw('comment_memo')}
-            />
-          )}
-
-          {activeTab === 'card' && (
-            <CardDepositSection
-              depositAmount={depositAmount}
-              setDepositAmount={setDepositAmount}
-              processing={processing}
-              onCardTopUp={handleCardTopUp}
-              onPresetSelect={(amount) => logTelemetryEvent('deposit_preset_selected', { method: 'stripe', amount_usd: amount })}
-              awaitingPayment={Boolean(pendingStripe)}
-              checkingPayment={checkingPayment}
-              onCheckPayment={handleCheckPayment}
-              onUseCrypto={() => selectTab('crypto')}
             />
           )}
 
