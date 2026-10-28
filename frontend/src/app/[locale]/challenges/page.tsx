@@ -105,6 +105,7 @@ export default function ChallengesPage() {
 
   const { tasks, setTasks, loading, error: tasksError, refresh: refreshTasks } = useTasks();
   const [claimingId, setClaimingId] = useState<number | null>(null);
+  const [verifyingId, setVerifyingId] = useState<number | null>(null);
   const [showArchive, setShowArchive] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<TaskCategory>('all');
 
@@ -216,6 +217,7 @@ export default function ChallengesPage() {
       return;
     }
 
+    setVerifyingId(taskDefId);
     try {
       const res = await apiFetch(`/api/v1/gamification/tasks/${taskDefId}/verify`, {
         method: "POST"
@@ -230,6 +232,8 @@ export default function ChallengesPage() {
     } catch (err) {
       console.error("Verification failed", err);
       telegramAlert(t('subscription_verify_network_error'));
+    } finally {
+      setVerifyingId(null);
     }
   };
 
@@ -253,8 +257,14 @@ export default function ChallengesPage() {
       else uncompletedSocial.push(task);
     }
 
-    const sortCategory = (arr: any[], isMilestone = false) =>
+    const sortCategory = (arr: any[], isMilestone = false, isSocial = false) =>
       arr.sort((a, b) => {
+        if (isSocial) {
+          const priority = ['join_channel', 'join_chat', 'add_to_home_screen'];
+          const rankA = priority.indexOf(a.title_key);
+          const rankB = priority.indexOf(b.title_key);
+          if (rankA !== rankB) return (rankA < 0 ? priority.length : rankA) - (rankB < 0 ? priority.length : rankB);
+        }
         // Claimable first
         if (a.completed && !b.completed) return -1;
         if (!a.completed && b.completed) return 1;
@@ -279,7 +289,7 @@ export default function ChallengesPage() {
     return {
       dailyTasks: sortCategory(uncompletedDaily, false),
       milestoneTasks: sortCategory(uncompletedMilestones, true),
-      socialTasks: sortCategory(uncompletedSocial, false),
+      socialTasks: sortCategory(uncompletedSocial, false, true),
     };
   }, [tasks]);
 
@@ -299,6 +309,7 @@ export default function ChallengesPage() {
     const isReadyToClaim = task.completed && !task.claimed;
     const isDaily = isDailyTask(task);
     const isSocial = isSocialTask(task);
+    const isSubscription = task.title_key === 'join_channel' || task.title_key === 'join_chat';
     const isPlayOrWin = !isSocial && task.title_key !== 'daily_login';
 
     return (
@@ -307,7 +318,7 @@ export default function ChallengesPage() {
         variant="solid"
         className={`w-full p-3 sm:p-3.5 transition-colors ${isReadyToClaim ? 'ui-stat--accent' : ''}`}
       >
-        <div className="flex items-center justify-between gap-3 w-full">
+        <div className={`flex justify-between gap-3 w-full ${isSubscription && !isReadyToClaim ? 'flex-col' : 'items-center'}`}>
           {/* Leading Icon & Text Details */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <span className={`ui-icon-tile shrink-0 ${task.completed ? 'ui-icon-tile--success' : ''}`}>
@@ -354,8 +365,8 @@ export default function ChallengesPage() {
             </div>
           </div>
 
-          {/* Trailing Action: Always vertically centered, never wrapped into a bottom row */}
-          <div className="shrink-0 flex items-center justify-end">
+          {/* Subscription actions stay together below the task details on narrow screens. */}
+          <div className={`flex items-center justify-end ${isSubscription && !isReadyToClaim ? 'w-full gap-2' : 'shrink-0'}`}>
             {isReadyToClaim ? (
               <Button
                 variant="action"
@@ -368,19 +379,31 @@ export default function ChallengesPage() {
               </Button>
             ) : task.claimed ? (
               <Badge variant="secondary" className="shrink-0">{t('claimed_status')}</Badge>
-            ) : (task.title_key === "join_channel" || task.title_key === "join_chat") ? (
-              <Button
-                variant="secondary"
-                size="sm"
-                className="whitespace-nowrap px-3 text-caption font-semibold"
-                onClick={() => {
-                  const link = task.title_key === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
-                  const host = (window as any).Telegram?.WebApp;
-                  if (host?.openTelegramLink) host.openTelegramLink(link); else window.open(link, "_blank", "noopener,noreferrer");
-                }}
-              >
-                {tGram("join_button")}
-              </Button>
+            ) : isSubscription ? (
+              <>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1 whitespace-nowrap text-caption font-semibold"
+                  onClick={() => {
+                    const link = task.title_key === "join_channel" ? "https://t.me/chess_hub" : "https://t.me/chesshub_chat";
+                    const host = (window as any).Telegram?.WebApp;
+                    if (host?.openTelegramLink) host.openTelegramLink(link); else window.open(link, "_blank", "noopener,noreferrer");
+                  }}
+                >
+                  {tGram("join_button")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 whitespace-nowrap text-caption font-semibold"
+                  isLoading={verifyingId === task.task_id}
+                  disabled={verifyingId !== null}
+                  onClick={() => handleVerify(task.task_id, task.title_key)}
+                >
+                  {t('verify_btn')}
+                </Button>
+              </>
             ) : task.title_key === "add_to_home_screen" ? (
               <Button
                 variant="action"
@@ -542,6 +565,16 @@ export default function ChallengesPage() {
             />
           ) : (
             <div className="space-y-5 w-full">
+              {/* Community Quests Group */}
+              {showSocial && socialTasks.length > 0 && (
+                <div className="space-y-2">
+                  <SectionHeader title={t('community_title')} />
+                  <div className="space-y-2">
+                    {socialTasks.map(renderTaskCard)}
+                  </div>
+                </div>
+              )}
+
               {/* Daily Operations Group */}
               {showDaily && dailyTasks.length > 0 && (
                 <div className="space-y-2">
@@ -565,15 +598,6 @@ export default function ChallengesPage() {
                 </div>
               )}
 
-              {/* Community Quests Group */}
-              {showSocial && socialTasks.length > 0 && (
-                <div className="space-y-2">
-                  <SectionHeader title={t('community_title')} />
-                  <div className="space-y-2">
-                    {socialTasks.map(renderTaskCard)}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </section>

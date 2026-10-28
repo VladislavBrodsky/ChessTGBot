@@ -1,6 +1,6 @@
 3:"$Sreact.fragment"
 4:I[50355,[],"ClientPageRoot"]
-5:"static/chunks/app/%5Blocale%5D/page-099b087b39e2754f.js"
+5:"static/chunks/app/%5Blocale%5D/page-36d580b8aaa0ebcf.js"
 6:I[59305,["465","$5"],"default"]
 9:I[8363,[],"OutletBoundary"]
 a:"$Sreact.suspense"
@@ -11,7 +11,7 @@ f:I[8363,[],"$e"]
 d:X
 2:[["children",{"s":"__PAGE__","h":128,"d":{"r":["$","$3","c",{"children":[["$","$L4",null,{"Component":"$6","serverProvidedParams":{"searchParams":{},"params":{"locale":"pt"},"promises":["$@7","$@8"]}}],null,["$","$L9",null,{"children":["$","$a",null,{"name":"Next.MetadataOutlet","children":"$@b"}]}]]}],"p":"$@c","v":null,"s":"$d"}}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"pt","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$Lf",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","$L11",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$a",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}]]}]}],null]}],null]}],"p":"$@12","v":null,"s":"$d"}},"a":"$@13","u":"$@14","b":"vHd070IucXpAhkVJOURmS"}
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$Lf",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","$L11",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$a",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}]]}]}],null]}],null]}],"p":"$@12","v":null,"s":"$d"}},"a":"$@13","u":"$@14","b":"H3qlcU1-3I4qWpFOyANZg"}
 7:{}
 8:"$2:0:1:d:r:props:children:0:props:serverProvidedParams:params"
 b:null
