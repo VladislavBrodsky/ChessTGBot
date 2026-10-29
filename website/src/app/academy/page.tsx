@@ -21,9 +21,9 @@ const ACADEMY_FAQS = [
       "Yes. The entire 100-level Academy tactical curriculum is 100% free with zero paywalls, timers, or subscription requirements. You can solve puzzles at your own pace with instant move-validation feedback.",
   },
   {
-    question: "Can I practice unlimited games against Stockfish 16?",
+    question: "Can I practice unlimited games against the computer?",
     answer:
-      "Yes. Web3Chess integrates an authoritative Stockfish 16 engine directly into both the Telegram Mini App and desktop web client. You can practice against multiple engine difficulties with zero stakes or deposit needed.",
+      "Yes. Both the Telegram Mini App and the desktop web client include Free Coach, a computer opponent with three levels: Easy, Medium, and Hard. Practice needs zero stakes or deposit. After any game, a free review runs the Stockfish engine on your own device to check your moves.",
   },
   {
     question: "How do chess puzzles help improve blitz and speed chess?",
@@ -39,16 +39,16 @@ const ACADEMY_FAQS = [
 
 export const metadata = pageMetadata(
   "Free Chess Puzzles Online & Tactics Trainer",
-  "Solve free chess puzzles online with instant feedback. Practice 100 tactical levels, master opening traps, and play unlimited games vs Stockfish 16 for free.",
+  "Solve free chess puzzles online with instant feedback. Practice 100 tactical levels, master opening traps, and play unlimited games vs the computer for free.",
   "/academy",
   [
     "free chess puzzles online",
     "online chess tactics trainer",
-    "play chess vs stockfish online",
+    "play chess vs computer online",
     "chess puzzles free",
     "chess tactics trainer",
     "learn chess tactics",
-    "stockfish 16 chess practice",
+    "free chess practice vs computer",
     "free chess academy",
   ],
 );
@@ -82,10 +82,10 @@ export default function AcademyPage() {
             <>
               Free chess puzzles
               <br />
-              &amp; Stockfish trainer
+              &amp; computer practice
             </>
           }
-          lead="Sharpen your tactical vision. Solve 100 interactive puzzle levels, master opening traps, and play unlimited practice games vs Stockfish 16 for free."
+          lead="Sharpen your tactical vision. Solve 100 interactive puzzle levels, master opening traps, and play unlimited practice games vs Free Coach for free."
           visual={<ChessSculpture variant="academy" />}
         >
           <div className="page-hero-actions flex flex-wrap gap-3">
@@ -193,7 +193,7 @@ export default function AcademyPage() {
         <section aria-labelledby="academy-faq-heading" className="space-y-6">
           <div className="section-index">
             <span>04 / Practice questions</span>
-            <span>Puzzles, Stockfish &amp; progress</span>
+            <span>Puzzles, practice &amp; progress</span>
           </div>
           <div className="grid gap-8 lg:grid-cols-[.65fr_1fr]">
             <div className="space-y-4">
@@ -202,7 +202,7 @@ export default function AcademyPage() {
                 Frequently asked questions on chess practice
               </h2>
               <p className="text-body text-fg-muted">
-                How our 100 tactical levels, Stockfish 16 engine trainer, and mobile puzzle modes operate.
+                How our 100 tactical levels, Free Coach practice games, Stockfish post-game review, and mobile puzzle modes operate.
               </p>
             </div>
             <Card>

@@ -44,7 +44,7 @@
     },
     {
       "type": "paragraph",
-      "text": "A time control with increment differs from one without it. Choose the current app option that gives you enough room to practise a decision process. Do not assume that a named time control guarantees a particular average thinking time or win rate."
+      "text": "A time control with increment differs from one without it. Web3Chess clocks have no increment, so the time you start with is all you get. Choose the app option that gives you enough room to practise a decision process. Do not assume that a named time control guarantees a particular average thinking time or win rate."
     },
     {
       "type": "heading",
@@ -69,7 +69,7 @@
     "digital-clock-psychology-flagging-vs-increment-in-online-blitz",
     "flagging-psychology-how-to-win-with-3-seconds-left"
   ],
-  "updatedAt": "2026-10-07",
+  "updatedAt": "2026-10-29",
   "metaDescription": "Build a practical blitz routine around threats, candidate moves and clock awareness, without rigid timing rules or invented success rates.",
   "sources": [
     {

@@ -1,9 +1,9 @@
 {
   "slug": "the-future-of-chess-in-the-telegram-ecosystem",
   "title": "The Future of Chess in the Telegram Ecosystem: 2026",
-  "subtitle": "With 950M active users and Bot API 8.0, how native Mini Apps and instant Web3 rails are reshaping the global chess landscape.",
+  "subtitle": "With 950M active users and Bot API 8.0, how native Mini Apps and Web3 rails are reshaping the global chess landscape.",
   "excerpt": "With 950M active users and Bot API 8.0 fullscreen apps, Telegram is disrupting legacy chess platforms. The transformation of mobile gaming.",
-  "metaDescription": "Explore the future of chess inside Telegram in 2026. How Telegram Bot API 8.0, 950M users, and non-custodial crypto rails are disrupting legacy chess.",
+  "metaDescription": "Explore the future of chess inside Telegram in 2026. How Telegram Bot API 8.0, 950M users, and native crypto rails are disrupting legacy chess.",
   "category": "Chess News",
   "author": {
     "name": "Web3Chess Research",
@@ -12,12 +12,13 @@
     "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-29",
   "readingTime": "4 min read",
   "takeaways": [
     "Telegram 950M user base makes it the single fastest-growing mobile gaming distribution channel on earth.",
     "Bot API 8.0 fullscreen WebViews eliminate app store 30% taxes and complex installation barriers.",
-    "Native crypto wallets (TON & USDT) provide instant non-custodial pot settlement in seconds.",
-    "Web3Chess unites seamless mobile UX with grandmaster-grade Stockfish 16 backend validation."
+    "Native crypto wallets (TON & USDT) let players deposit and withdraw match winnings without leaving Telegram.",
+    "Web3Chess unites seamless mobile UX with server-side move validation and server-kept clocks."
   ],
   "content": [
     {
@@ -53,7 +54,7 @@
       "items": [
         "Scheduled Synchronous Arenas: Live daily drops where thousands of players compete for major prize pools.",
         "Global Guild Tournaments: Telegram communities battling for territorial leaderboard dominance.",
-        "Instant Non-Custodial Cashouts: Winnings credited in seconds directly to personal Telegram-linked wallets."
+        "Telegram-Confirmed Cashouts: Winnings credit a platform balance, and a withdrawal goes to your personal wallet after you confirm it in the bot chat."
       ]
     }
   ],

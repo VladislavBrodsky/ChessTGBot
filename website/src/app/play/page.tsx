@@ -38,7 +38,7 @@ const PLAY_FAQS = [
 
 export const metadata: Metadata = pageMetadata(
   "Play Chess Online: Telegram Bot & Web Arena",
-  "Launch Web3Chess in Telegram or play in your web browser. Practice free against Stockfish, explore 100 tactical levels, and learn the rules for optional USDT matches.",
+  "Launch Web3Chess in Telegram or play in your web browser. Practice free against a computer opponent, explore 100 tactical levels, and learn the rules for optional USDT matches.",
   "/play",
   [
     "telegram chess bot",
@@ -135,7 +135,7 @@ export default async function PlayPage() {
 
               <ul className="play-checks">
                 <li><Icon name="check" size={14} /><span>Expanded widescreen board layout</span></li>
-                <li><Icon name="check" size={14} /><span>Stockfish 16 engine analysis</span></li>
+                <li><Icon name="check" size={14} /><span>Stockfish post-game review</span></li>
                 <li><Icon name="check" size={14} /><span>Synchronized cloud profile state</span></li>
               </ul>
               <div className="mt-auto w-full">
@@ -185,11 +185,11 @@ export default async function PlayPage() {
           </div>
           <div className="flex items-center justify-center gap-1.5 text-fg font-medium border-y sm:border-y-0 sm:border-x border-line py-2 sm:py-0">
             <Icon name="lightning" size={16} className="text-fg-caution shrink-0" />
-            <span>Sub-Second Finality</span>
+            <span>Bot-Confirmed Withdrawals</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 text-fg font-medium py-1 sm:py-0">
             <Icon name="cpu" size={16} className="text-fg-muted shrink-0" />
-            <span>Stockfish Anti-Cheat</span>
+            <span>Server Move Validation</span>
           </div>
         </div>
 
