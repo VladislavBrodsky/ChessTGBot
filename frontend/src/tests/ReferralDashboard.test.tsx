@@ -1,6 +1,7 @@
 import { translatorFor as mockTranslatorFor } from './testUtils/messagesMock';
 import '@testing-library/jest-dom';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { shareInvitation } from '@/lib/invitations';
 import ReferralDashboard from '@/components/ReferralDashboard';
 
 jest.mock('next-intl', () => ({ useLocale: () => 'en', useTranslations: (namespace: string) => mockTranslatorFor(namespace) }));
@@ -50,4 +51,13 @@ it('omits the move hint when the server does not say how many moves qualify', ()
   mockData = { ...stats, qualifying_min_moves: undefined };
   render(<ReferralDashboard />);
   expect(screen.queryByText(/individual moves/)).not.toBeInTheDocument();
+});
+
+it('asks the friend to send a play request when sharing the personal ref_ link', () => {
+  render(<ReferralDashboard />);
+  fireEvent.click(screen.getByRole('button', { name: 'Share in Telegram' }));
+  expect(shareInvitation).toHaveBeenCalledWith(
+    'https://t.me/chess_bot?startapp=ref_abc123',
+    'Let’s play free chess — open my invitation and send me a play request',
+  );
 });

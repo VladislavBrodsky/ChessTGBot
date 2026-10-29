@@ -90,7 +90,7 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
   const shareInvite = () => {
     if (!validCode) return;
     telegramHaptic('selection');
-    shareInvitation(inviteLink, inviteText('share_text'));
+    shareInvitation(inviteLink, inviteText('share_text_personal'));
   };
 
   return (

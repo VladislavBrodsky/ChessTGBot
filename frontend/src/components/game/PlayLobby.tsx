@@ -4,13 +4,14 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell, FaChessKnight, FaShareAlt } from 'react-icons/fa';
-import { GameHistoryList } from './GameHistoryList';
+import { GameHistoryList, type RecentGame } from './GameHistoryList';
 import { PageHeader, SectionHeader } from '@/components/ui/PageHeader';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic, telegramAlert } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
+import { friendInvitationLink, shareInvitation } from '@/lib/invitations';
 import { logTelemetryEvent } from '@/lib/telemetry';
 
 import { BetSlip } from './lobby/BetSlip';
@@ -111,33 +112,20 @@ export default function PlayLobby() {
   // The shared user cache owns the initial balance request.
   const refreshAfterDeposit = useCallback(async () => { await syncBalance(); }, [syncBalance]);
 
-  const getOpponentName = (name: string) => {
-    if (isComputerOpponentName(name)) {
-      return tg('ai_coach');
-    }
-    return name;
-  };
-
-  const handleShareResult = (game: any) => {
-    const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
-    const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
-    const botUsername = stats?.bot_username || "chess_matbot";
-    const message = `${resultText} ${t('against')} ${getOpponentName(game.opponent.name)}! 📈 ${t('global_ranking')}: ${eloText} ELO.\n\n${t('join_matrix')}: https://t.me/${botUsername}?start=${stats?.referral_code || ''}`;
-
-    let success = false;
-    if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
-      const tgApp = (window as any).Telegram.WebApp;
-      try {
-        tgApp.switchInlineQuery(message, ["users", "groups", "channels"]);
-        success = true;
-        telegramHaptic('medium');
-      } catch (err) {
-        console.warn("Telegram switchInlineQuery failed", err);
-      }
-    }
-    if (!success) {
-      copyToClipboard(message).then((ok) => {
-        if (ok) telegramAlert("Share link copied to clipboard!");
+  // A finished game cannot be watched and the bot only opens ref_/go_/fi_ links as invitations,
+  // so sharing a past result sends the player's personal invitation, as the result screen does.
+  const friendInviteLink = friendInvitationLink(stats?.bot_username || "chess_matbot", stats?.referral_code);
+  const handleShareResult = (game: RecentGame) => {
+    if (!friendInviteLink) return;
+    const opponentName = game.opponent?.name;
+    const pvpWin = game.result === 'win' && !!opponentName && opponentName !== 'Free Coach' && !isComputerOpponentName(opponentName);
+    telegramHaptic('selection');
+    try {
+      shareInvitation(friendInviteLink, tg(pvpWin ? 'share_text_won' : 'share_text_played'));
+    } catch (err) {
+      console.warn("Telegram share failed", err);
+      copyToClipboard(friendInviteLink).then((ok) => {
+        if (ok) telegramAlert(tg('invite_link_copied'));
       });
     }
   };
@@ -690,7 +678,7 @@ export default function PlayLobby() {
               {stats?.recent_games && stats.recent_games.length > 0 && (
                 <section className="w-full space-y-3" aria-labelledby="lobby-history-title">
                   <SectionHeader id="lobby-history-title" title={t('recent_activity')} />
-                  <GameHistoryList games={stats.recent_games.slice(0, 3)} onShare={handleShareResult} />
+                  <GameHistoryList games={stats.recent_games.slice(0, 3)} onShare={friendInviteLink ? handleShareResult : undefined} />
                 </section>
               )}
 
