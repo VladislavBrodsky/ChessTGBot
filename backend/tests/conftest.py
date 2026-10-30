@@ -1,5 +1,6 @@
 import asyncio
 import os
+os.environ.setdefault("MASTER_WALLET_ADDRESS", "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN")
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport

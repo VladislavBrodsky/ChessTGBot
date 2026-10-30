@@ -62,13 +62,14 @@ export function ManualDepositSection({
           </div>
           <div className="w-full p-2.5 rounded-xl border border-brand-border bg-brand-void flex items-center justify-between gap-2 hover:border-brand-primary/40 transition-colors">
             <span className="font-mono text-caption text-brand-primary font-semibold truncate select-all" dir="ltr">
-              {masterWallet}
+              {masterWallet || tc('loading')}
             </span>
             <button
               type="button"
               aria-label={tw('copy_address')}
               onClick={onCopyWallet}
-              className="ui-tap-target shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-elevated border border-brand-border text-caption font-semibold text-brand-primary hover:border-emerald-500/40 hover:text-emerald-400 active:scale-95 transition-all cursor-pointer"
+              disabled={!masterWallet}
+              className="ui-tap-target shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-elevated border border-brand-border text-caption font-semibold text-brand-primary hover:border-emerald-500/40 hover:text-emerald-400 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {copiedWallet ? (
                 <>

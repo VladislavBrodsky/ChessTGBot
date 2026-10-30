@@ -218,8 +218,10 @@ class Settings(BaseSettings):
     GAS_GRANT_DAILY_GLOBAL_CAP: int = int(os.getenv("GAS_GRANT_DAILY_GLOBAL_CAP", "25"))
 
     # Web3 Wallets Configuration
-    MASTER_WALLET_ADDRESS: str = "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"  # Game deposits pool
-    COMPANY_WALLET_ADDRESS: str = "EQCvC923gG38fH309hG-h3028u382g382-u382U389-9eD33"  # Rakes & commissions collection
+    # A custody destination must be supplied explicitly by each environment.
+    # A baked-in address can silently route deposits to an obsolete wallet.
+    MASTER_WALLET_ADDRESS: str = ""
+    COMPANY_WALLET_ADDRESS: str = ""  # Optional; fees remain in custody until explicitly transferred.
     WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET") or "dev_webhook_secret"
 
     # Jetton Master Addresses
@@ -264,6 +266,13 @@ def get_settings():
     is_sqlite = settings.DATABASE_URL.startswith("sqlite")
     
     if not is_testing and not is_dev and not is_sqlite:
+        if not settings.MASTER_WALLET_ADDRESS:
+            raise ValueError("MASTER_WALLET_ADDRESS must be set in production!")
+        try:
+            from tonsdk.utils import Address
+            Address(settings.MASTER_WALLET_ADDRESS)
+        except Exception as exc:
+            raise ValueError("MASTER_WALLET_ADDRESS is invalid") from exc
         if not settings.SECRET_KEY or settings.SECRET_KEY == "":
             raise ValueError("SECRET_KEY environment variable must be set in production!")
         if not settings.WEBHOOK_SECRET or settings.WEBHOOK_SECRET == "dev_webhook_secret":

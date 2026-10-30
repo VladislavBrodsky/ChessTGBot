@@ -795,6 +795,39 @@ def _game_summary(g: GameHistory) -> dict:
     }
 
 
+class UnmemoedDepositCredit(BaseModel):
+    event_id: str
+    telegram_id: int
+    confirm: bool = False
+
+
+@router.post("/deposits/credit-unmemoed")
+async def credit_unmemoed_deposit_route(
+    payload: UnmemoedDepositCredit,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Attribute a USDT transfer that reached the master wallet without a memo.
+
+    Call with ``confirm=false`` first: it returns the on-chain amount, sender and
+    the credit/fee split without touching balances. Repeat with ``confirm=true``
+    to credit. Amount and recipient are read from TonAPI, never from the request.
+    """
+    from app.services.manual_deposit_credit import UnmemoedDepositError, credit_unmemoed_deposit
+
+    try:
+        return await credit_unmemoed_deposit(
+            db,
+            event_id=payload.event_id.strip(),
+            telegram_id=payload.telegram_id,
+            admin_id=_admin.telegram_id,
+            confirm=payload.confirm,
+        )
+    except UnmemoedDepositError as err:
+        await db.rollback()
+        raise HTTPException(status_code=err.status_code, detail=str(err))
+
+
 # ---------------------------------------------------------------------------
 # 5.  Broadcasts
 # ---------------------------------------------------------------------------

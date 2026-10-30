@@ -60,3 +60,10 @@ it('logs a tab switch with where the player came from', () => {
   fireEvent.click(screen.getByText('tab_crypto'));
   expect(logTelemetryEvent).toHaveBeenCalledWith('deposit_tab_selected', { tab: 'crypto', from: 'direct' });
 });
+
+it('shows no deposit address until the server supplies one', () => {
+  render(<DepositModal onClose={jest.fn()} onSuccess={jest.fn()} />);
+  expect(screen.getByText('loading')).toBeInTheDocument();
+  expect(screen.queryByText(/^(UQ|EQ)[\w-]{46}$/)).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'copy_address' })).toBeDisabled();
+});

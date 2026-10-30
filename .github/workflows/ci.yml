@@ -162,6 +162,7 @@ jobs:
           SECRET_KEY: ci-dummy-secret
           WEBHOOK_SECRET: ci-dummy-webhook-secret
           ADMIN_TELEGRAM_IDS: "999999"
+          MASTER_WALLET_ADDRESS: "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"
         run: python -c "import app.main; print('app imports OK')"
       # A broken migration chain (duplicate revision, multiple heads, failing
       # DDL) passes the import check and pytest but crash-loops the production
@@ -174,6 +175,7 @@ jobs:
           SECRET_KEY: ci-dummy-secret
           WEBHOOK_SECRET: ci-dummy-webhook-secret
           ADMIN_TELEGRAM_IDS: "999999"
+          MASTER_WALLET_ADDRESS: "UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN"
         run: python -m alembic upgrade head
       # Deterministic sqlite (a real engine, not the mock). REQUIRE_REAL_DB turns
       # conftest's silent MockAsyncSession fallback into a hard failure, so if the

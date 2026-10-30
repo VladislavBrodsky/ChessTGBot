@@ -3,4 +3,4 @@
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":"academy","h":64,"c":"$Q3"}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"ru","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"b":"nT3OBXQ6DDxROpXJ3fYLD","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"LhhNWbncrRYVzkyTE4HGe","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

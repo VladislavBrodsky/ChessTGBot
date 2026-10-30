@@ -13,6 +13,17 @@ class BlockchainBroadcastError(Exception):
         super().__init__(message)
         self.msg_hash = msg_hash
 
+
+def _require_matching_master_wallet(wallet, configured_address: str) -> None:
+    """Never sign a payout against another wallet's seqno or token account."""
+    try:
+        if wallet.address.to_string(False) != Address(configured_address).to_string(False):
+            raise ValueError("Payout mnemonic does not match MASTER_WALLET_ADDRESS")
+    except ValueError:
+        raise
+    except Exception as exc:
+        raise ValueError("Invalid MASTER_WALLET_ADDRESS") from exc
+
 async def execute_usdt_payout(destination_address: str, amount_cents: int) -> str:
     """
     Executes a real on-chain transfer of USDT from the master wallet to the destination_address
@@ -40,6 +51,7 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
     except Exception as e:
         logger.error(f"Failed to derive wallet from mnemonic: {e}")
         raise ValueError(f"Failed to derive wallet: {e}")
+    _require_matching_master_wallet(wallet, settings.MASTER_WALLET_ADDRESS)
 
     # Set up request headers for TonAPI
     headers = {}
@@ -155,6 +167,7 @@ async def execute_ton_transfer(destination_address: str, amount_nanoton: int, co
     except Exception as e:
         logger.error(f"Failed to derive wallet from mnemonic: {e}")
         raise ValueError(f"Failed to derive wallet: {e}")
+    _require_matching_master_wallet(wallet, settings.MASTER_WALLET_ADDRESS)
 
     headers = {}
     if settings.TON_API_KEY:
