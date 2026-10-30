@@ -34,6 +34,7 @@ DEFAULT_SYSTEM = "core_api"
 _LOGGER_SYSTEM_PREFIXES = [
     ("app.client", "game_client"),
     ("app.services.deposit_crawler", "treasury"),
+    ("app.services.manual_deposit_credit", "treasury"),
     ("app.services.withdrawal_crawler", "treasury"),
     ("app.services.withdrawal_reconciliation", "treasury"),
     ("app.services.stripe_reconciliation", "treasury"),

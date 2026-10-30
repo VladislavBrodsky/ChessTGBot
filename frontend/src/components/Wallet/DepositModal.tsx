@@ -135,7 +135,10 @@ function DepositModalContent({
   const [copiedWallet, setCopiedWallet] = useState<boolean>(false);
   const [copiedMemo, setCopiedMemo] = useState<boolean>(false);
   const [memoConfirmed, setMemoConfirmed] = useState<boolean>(false);
-  const [masterWallet, setMasterWallet] = useState<string>("UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN");
+  // No baked-in fallback: a stale default once pointed players at a wallet we
+  // no longer control. Until the server supplies the address, nothing is shown
+  // or sent.
+  const [masterWallet, setMasterWallet] = useState<string>("");
   const [manualTxHash, setManualTxHash] = useState<string>("");
 
   const funnelStateRef = useRef<'opened' | 'initiated' | 'submitted' | 'completed'>('opened');
@@ -280,6 +283,11 @@ function DepositModalContent({
 
     if (!wallet) {
       setErrorMessage(tw('connect_title'));
+      return;
+    }
+
+    if (!masterWallet) {
+      setErrorMessage(tw('account_unavailable'));
       return;
     }
 

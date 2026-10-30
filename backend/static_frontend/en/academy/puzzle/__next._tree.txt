@@ -1,7 +1,7 @@
-:HL["/_next/static/css/aafac4eb021778e3.css","style"]
 :HL["/_next/static/css/4373ddba3d9abc4d.css","style"]
+:HL["/_next/static/css/aafac4eb021778e3.css","style"]
 4:[["children",{"s":"__PAGE__","h":160}]]
 3:[["children",{"s":"puzzle","h":96,"c":"$Q4"}]]
 2:[["children",{"s":"academy","h":64,"c":"$Q3"}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"en","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"b":"H3qlcU1-3I4qWpFOyANZg","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"mc-kh19AMtbihHi9GBdqP","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
