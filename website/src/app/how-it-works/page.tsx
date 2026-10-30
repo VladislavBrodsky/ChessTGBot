@@ -136,7 +136,7 @@ export default function HowItWorksPage() {
               <p>Matchmaking considers your rating, time control, and stake. You can close the Mini App while you wait; the bot notifies you in chat the second an opponent is paired.</p>
             </DetailCard>
             <DetailCard span="wide" tone="accent" icon="shield-check" badge="Step 04" status="95% winner payout" title="Make every move count" meta="Instant pot credit · Bot confirmed withdrawal">
-              <p>Play on the board while the backend engine validates legal moves and tracks the clock. Decided matches immediately settle 95% of the pot to your balance. Withdraw with one tap in bot chat.</p>
+              <p>Play on the board while the backend engine validates legal moves and tracks the clock. Decided matches immediately settle 95% of the pot to your balance. Confirm each withdrawal with one tap in bot chat.</p>
             </DetailCard>
           </DetailGrid>
           {/* The same steps as real Mini App screens with sample data. */}

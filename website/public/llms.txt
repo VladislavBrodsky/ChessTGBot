@@ -1,22 +1,22 @@
 # Web3Chess (https://web3chess.online)
 
-> The premier skill-based chess arena and Telegram chess bot. Play chess online inside Telegram or web browser, solve free tactical puzzles, train against Stockfish 16 AI, and challenge opponents in optional USDT crypto matches with instant on-chain settlements.
+> The premier skill-based chess arena and Telegram chess bot. Play chess online inside Telegram or web browser, solve free tactical puzzles, practice against Free Coach (a computer opponent), and challenge opponents in optional USDT crypto matches settled to a platform balance.
 
 ## Core Features & Offerings
 
-- **Telegram Chess Bot & Mini App**: Play chess directly inside Telegram with zero downloads or registration friction. Instant matchmaking across 120+ countries.
-- **Real-Money USDT Chess Matches**: Real-stakes PvP chess. Both players stake equal USDT (1, 5, 10, 25, 50, 100, 250 USDT). Winner takes 95% of the pot with automated escrow.
+- **Telegram Chess Bot & Mini App**: Play chess directly inside Telegram with zero downloads or registration friction. Rating-based matchmaking across 120+ countries.
+- **Real-Money USDT Chess Matches**: Real-stakes PvP chess. Both players stake equal USDT (1, 5, 10, 25, 50, 100, 250 USDT). Winner takes 95% of the pot with automated escrow. Clocks are a flat 1 to 60 minutes per side with no increment.
 - **100% Free Chess Academy & Tactics**: 100 tactical levels, interactive board vision puzzles, opening traps, and endgame training.
-- **Stockfish 16 Engine Practice**: Unlimited free games against the Stockfish 16 chess engine with server-side validation and lag-compensated FIDE clocks.
-- **Instant Non-Custodial Withdrawals**: Settle match winnings in seconds on GRAM rails with HMAC nonce bot confirmation.
-- **Fair Play & Anti-Cheat Engine**: Real-time Stockfish correlation analysis, tamper-proof clocks, and anti-smurf matchmaking.
+- **Free Coach Practice**: Unlimited free games against Free Coach, a computer opponent with three levels (Easy, Medium, and Hard) that runs on the Web3Chess server. Every move gets server-side move validation. The free post-game review runs Stockfish 10 (stockfish.js) on your own device.
+- **Telegram-Confirmed Withdrawals**: Match winnings credit a platform balance held by Web3Chess (custodial). A withdrawal to your own wallet is sent only after you tap Confirm, an HMAC-signed button, in your private bot chat; larger withdrawals also wait for a manual review.
+- **Fair Play & Anti-Cheat Rules**: Server-side move validation, server-kept clocks, and anti-collusion wager pairing that never matches two accounts on the same IP address, a referrer with their own referral, or recent opponents. Engine use is banned; there is no automated engine detection.
 
 ## Primary Pages & URLs
 
 - [Play Chess Online / Telegram Bot](https://web3chess.online/play): Launch the Telegram chess bot or play in desktop web browser.
 - [How to Play Chess in Telegram](https://web3chess.online/how-it-works): Step-by-step guide to starting games, inviting friends via Telegram chat, and match rules.
 - [Play Chess for Money / USDT Stakes](https://web3chess.online/wagers): Transparent mathematical breakdown of 95% winner pot, rake rules, and bankroll management.
-- [Free Chess Puzzles & Tactics Academy](https://web3chess.online/academy): Solve 100 interactive tactical levels and practice against Stockfish AI.
+- [Free Chess Puzzles & Tactics Academy](https://web3chess.online/academy): Solve 100 interactive tactical levels and practice against the Free Coach computer opponent.
 - [Fair Play & Anti-Cheat Rules](https://web3chess.online/fair-play): Server-side move validation, tamper-proof clocks, and anti-engine policies.
 - [Chess Rules for Beginners](https://web3chess.online/rules): Step-by-step beginner guide to piece movements, castling, en passant, checkmate, stalemate, and chess clocks.
 - [Chess Strategy & Tactics Guides](https://web3chess.online/blog): In-depth guides on Arabian mate, smothered mate, Blackburne-Shilling gambit, blitz time management, and Zwischenzug tactics.
@@ -32,7 +32,7 @@
 - earn crypto playing chess
 - free chess puzzles online
 - online chess tactics trainer
-- play chess vs stockfish online
+- play chess vs computer online
 - usdt chess wager
 - web3 chess
 - chess rules for beginners
