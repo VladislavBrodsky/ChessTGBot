@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import time
 import httpx
@@ -15,6 +16,16 @@ logger = logging.getLogger(__name__)
 
 # W5 requests carry an expiry; a stale signed message cannot be replayed later.
 W5_VALIDITY_SECONDS = 120
+
+# A wallet accepts exactly one message per seqno. Every on-chain send in this
+# process (withdrawals, owner/admin approvals, gas grants) fetches the seqno,
+# signs, broadcasts and waits for the seqno to advance under this lock, so
+# two concurrent payouts can never sign the same seqno and silently drop one.
+# The backend runs as a single replica; process_payouts_backlog is a manual
+# script and must not run while the service is processing payouts.
+_SEND_LOCK = asyncio.Lock()
+SEQNO_ADVANCE_TIMEOUT_SECONDS = 60
+SEQNO_POLL_SECONDS = 3
 
 
 class BlockchainBroadcastError(Exception):
@@ -114,6 +125,42 @@ async def _fetch_seqno(address: str, headers: dict) -> int:
         raise ValueError(f"Blockchain connection failure (failed to fetch seqno): {seq_err}")
 
 
+async def _wait_for_seqno_advance(address: str, headers: dict, used_seqno: int) -> None:
+    """Hold the send lock until the chain accepts our message (bounded)."""
+    deadline = time.monotonic() + SEQNO_ADVANCE_TIMEOUT_SECONDS
+    while time.monotonic() < deadline:
+        await asyncio.sleep(SEQNO_POLL_SECONDS)
+        try:
+            if await _fetch_seqno(address, headers) > used_seqno:
+                return
+        except ValueError:
+            pass
+    logger.warning("Master wallet seqno did not advance past %s within %ss", used_seqno, SEQNO_ADVANCE_TIMEOUT_SECONDS)
+
+
+async def _sign_and_broadcast(wallet: "MasterWallet", headers: dict, to_addr: str, amount: int,
+                              payload: Optional[Cell], what: str) -> str:
+    """Fetch seqno, sign, broadcast and wait for inclusion, one send at a time."""
+    settings = get_settings()
+    async with _SEND_LOCK:
+        seqno = await _fetch_seqno(settings.MASTER_WALLET_ADDRESS, headers)
+        try:
+            boc_b64, msg_hash = _serialize(wallet.build(to_addr, amount, seqno, payload))
+        except Exception as sign_err:
+            logger.error(f"Failed to sign {what}: {sign_err}")
+            raise ValueError(f"Failed to sign {what}: {sign_err}")
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                res_send = await client.post("https://tonapi.io/v2/blockchain/message", headers=headers, json={"boc": boc_b64})
+                if res_send.status_code != 200:
+                    raise ValueError(f"TonAPI returned status {res_send.status_code}: {res_send.text}")
+        except Exception as send_err:
+            logger.error(f"Failed to broadcast {what}: {send_err}")
+            raise BlockchainBroadcastError(f"Blockchain broadcast failure: {send_err}", msg_hash)
+        await _wait_for_seqno_advance(settings.MASTER_WALLET_ADDRESS, headers, seqno)
+        return msg_hash
+
+
 def _serialize(message: Cell) -> tuple[str, str]:
     return base64.b64encode(message.to_boc(False)).decode("utf-8"), message.bytes_hash().hex()
 
@@ -136,9 +183,6 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
 
-    # 3. Query the seqno of the master wallet from TonAPI
-    seqno = await _fetch_seqno(settings.MASTER_WALLET_ADDRESS, headers)
-
     # 4. Fetch the master wallet's Jetton Wallet address for USDT
     try:
         url_jw = f"https://tonapi.io/v2/accounts/{settings.MASTER_WALLET_ADDRESS}/jettons/{settings.USDT_MASTER}"
@@ -147,7 +191,10 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
             if res_jw.status_code != 200:
                 raise ValueError(f"Failed to fetch Jetton Wallet address: {res_jw.text}")
             jw_data = res_jw.json()
-            master_jetton_wallet = jw_data["wallet_address"]["address"]
+            # TonAPI returns the raw form, which tonsdk treats as
+            # non-bounceable; a contract destination must be bounceable so a
+            # failed transfer returns its attached TON.
+            master_jetton_wallet = Address(jw_data["wallet_address"]["address"]).to_string(True, True, True)
     except Exception as jw_err:
         logger.error(f"Failed to fetch Jetton Wallet address: {jw_err}")
         raise ValueError(f"Blockchain connection failure (failed to fetch Jetton Wallet address): {jw_err}")
@@ -171,27 +218,8 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
         logger.error(f"Failed to build transfer body: {build_err}")
         raise ValueError(f"Invalid transfer parameters: {build_err}")
 
-    # 6. Create external message
-    try:
-        boc_b64, msg_hash = _serialize(wallet.build(master_jetton_wallet, 50000000, seqno, body))  # 0.05 TON
-    except Exception as sign_err:
-        logger.error(f"Failed to sign message: {sign_err}")
-        raise ValueError(f"Failed to sign message: {sign_err}")
-
-    # 7. Broadcast message to TonAPI
-    try:
-        url_send = "https://tonapi.io/v2/blockchain/message"
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            res_send = await client.post(
-                url_send,
-                headers=headers,
-                json={"boc": boc_b64}
-            )
-            if res_send.status_code != 200:
-                raise ValueError(f"TonAPI returned status {res_send.status_code}: {res_send.text}")
-    except Exception as send_err:
-        logger.error(f"Failed to broadcast transaction: {send_err}")
-        raise BlockchainBroadcastError(f"Blockchain broadcast failure: {send_err}", msg_hash)
+    # 6-7. Sign and broadcast (serialized per wallet seqno)
+    msg_hash = await _sign_and_broadcast(wallet, headers, master_jetton_wallet, 50000000, body, "USDT payout")  # 0.05 TON
 
     logger.info(f"USDT payout transaction successfully broadcasted. Message Hash: {msg_hash}")
     return msg_hash
@@ -215,26 +243,10 @@ async def execute_ton_transfer(destination_address: str, amount_nanoton: int, co
     if settings.TON_API_KEY:
         headers["Authorization"] = f"Bearer {settings.TON_API_KEY}"
 
-    seqno = await _fetch_seqno(settings.MASTER_WALLET_ADDRESS, headers)
-
-    try:
-        boc_b64, msg_hash = _serialize(wallet.build(
-            Address(destination_address).to_string(True, True, False),
-            amount_nanoton, seqno, _comment_cell(comment),
-        ))
-    except Exception as sign_err:
-        logger.error(f"Failed to sign TON transfer: {sign_err}")
-        raise ValueError(f"Failed to sign TON transfer: {sign_err}")
-
-    try:
-        url_send = "https://tonapi.io/v2/blockchain/message"
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            res_send = await client.post(url_send, headers=headers, json={"boc": boc_b64})
-            if res_send.status_code != 200:
-                raise ValueError(f"TonAPI returned status {res_send.status_code}: {res_send.text}")
-    except Exception as send_err:
-        logger.error(f"Failed to broadcast TON transfer: {send_err}")
-        raise BlockchainBroadcastError(f"Blockchain broadcast failure: {send_err}", msg_hash)
+    msg_hash = await _sign_and_broadcast(
+        wallet, headers, Address(destination_address).to_string(True, True, False),
+        amount_nanoton, _comment_cell(comment), "TON transfer",
+    )
 
     logger.info(f"TON transfer broadcasted ({amount_nanoton} nanoTON to {destination_address}). Message Hash: {msg_hash}")
     return msg_hash

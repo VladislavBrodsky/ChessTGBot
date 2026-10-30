@@ -36,15 +36,9 @@ from app.core.logger import exception_summary
 
 logger = logging.getLogger(__name__)
 
-# Transaction types that move value into or out of user balances. Mirrors
-# ledger_audit.BALANCE_TYPES plus the platform-revenue types (fees/rake), which
-# stay in custody rather than being owed back to users.
-USER_BALANCE_TYPES = [
-    "deposit", "withdrawal", "game_wager", "game_win",
-    "refund", "game_refund", "subscription",
-    "referral_commission", "subscription_commission", "referral_commission_leakage",
-    "deposit_reversal", "ledger_adjustment", "chargeback",
-]
+# User-balance rows are defined once, in ledger_audit.balance_affecting(), so
+# the aggregate check here and the per-user audit can never disagree.
+from app.services.ledger_audit import BALANCE_TYPES as USER_BALANCE_TYPES  # noqa: E402,F401
 PLATFORM_REVENUE_TYPES = ["deposit_fee", "game_rake"]
 
 
@@ -73,7 +67,11 @@ class SolvencyService:
         # Aggregate internal reconciliation: the sum of every completed
         # balance-affecting transaction must equal the sum of user balances.
         # (This is the aggregate form of ledger_audit's per-user check.)
-        ledger_user_sum = sum(by_type.get(t, 0) for t in USER_BALANCE_TYPES)
+        from app.services.ledger_audit import balance_affecting
+        user_sum_res = await db.execute(
+            select(func.coalesce(func.sum(Transaction.amount), 0)).where(balance_affecting())
+        )
+        ledger_user_sum = int(user_sum_res.scalar() or 0)
         internal_reconciled = ledger_user_sum == total_liabilities
 
         # Platform revenue retained in custody (fees + rake), stored as negative

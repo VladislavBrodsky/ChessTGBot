@@ -191,6 +191,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
                                 "recipient": {"address": convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)},
                                 "amount": 10000000,  # 10.0 USDT
                                 "comment": f"ref_{telegram_id}",
+                                "recipients_wallet": "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83",
                                 "jetton": {
                                     "address": settings.USDT_MASTER,
                                     "symbol": "USDT",
@@ -211,6 +212,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
                                 "recipient": {"address": convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)},
                                 "amount": 10000,  # 0.01 USDT
                                 "comment": f"ref_{telegram_id}",
+                                "recipients_wallet": "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83",
                                 "jetton": {
                                     "address": settings.USDT_MASTER,
                                     "symbol": "USDT",
@@ -231,6 +233,7 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
                                 "recipient": {"address": convert_ton_address_to_hex(settings.MASTER_WALLET_ADDRESS)},
                                 "amount": 10000000,  # 10.0 USDT
                                 "comment": f"ref_{telegram_id}",
+                                "recipients_wallet": "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83",
                                 "jetton": {
                                     "address": settings.USDT_MASTER,
                                     "symbol": "USDT",
