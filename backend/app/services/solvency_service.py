@@ -111,6 +111,12 @@ class SolvencyService:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 res = await client.get(url, headers=headers)
+                if res.status_code == 404:
+                    # The master's USDT jetton wallet does not exist yet: it is
+                    # created by the first USDT that arrives, so the balance is
+                    # genuinely zero. Reporting "unknown" here hid a fully
+                    # unfunded custody wallet from the insolvency alert.
+                    return 0, None
                 if res.status_code != 200:
                     return None, f"TonAPI returned {res.status_code}"
                 data = res.json()

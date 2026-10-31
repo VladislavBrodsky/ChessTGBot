@@ -291,10 +291,10 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
         assert set(admin_calls.keys()) == {1016749901, 716720099}
         for admin_id, msg in admin_calls.items():
-            assert "New USDT deposit" in msg
-            assert "User: ID 999111222" in msg
-            assert "Amount: $10.00" in msg
-            assert "Transaction ID: msg_usdt_hash" in msg
+            assert "Новое пополнение в USDT" in msg
+            assert 'tg://user?id=999111222">ID 999111222</a>' in msg
+            assert "<b>$10.00</b>" in msg
+            assert "Transaction ID:" in msg and "msg_usdt_hash" in msg
             
         mock_tg.reset_mock()
 
@@ -338,10 +338,10 @@ async def test_web3_deposit_endpoints(client, db_session, monkeypatch):
         admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
         assert set(admin_calls.keys()) == {1016749901, 716720099}
         for admin_id, msg in admin_calls.items():
-            assert "New USDT deposit" in msg
-            assert "User: ID 999111222" in msg
-            assert "Amount: $0.01" in msg
-            assert "Transaction ID: msg_low_usdt_hash" in msg
+            assert "Новое пополнение в USDT" in msg
+            assert 'tg://user?id=999111222">ID 999111222</a>' in msg
+            assert "<b>$0.01</b>" in msg
+            assert "Transaction ID:" in msg and "msg_low_usdt_hash" in msg
             
         mock_tg.reset_mock()
 

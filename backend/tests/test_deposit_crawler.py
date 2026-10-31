@@ -160,9 +160,9 @@ async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch, reque
     admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
     assert set(admin_calls.keys()) == {1016749901, 716720099}
     for admin_id, msg in admin_calls.items():
-        assert "New USDT deposit" in msg
-        assert "User: ID 1016749901" in msg
-        assert "Amount: $1.05" in msg
-        assert "Transaction ID: 3b9e9d5c3f2167e95a508da322f2c90f1260e6616066c7691a7dbbfd93f5c" in msg
+        assert "Новое пополнение в USDT" in msg
+        assert 'tg://user?id=1016749901">ID 1016749901</a>' in msg
+        assert "<b>$1.05</b>" in msg
+        assert "Transaction ID:" in msg and "3b9e9d5c3f2167e95a508da322f2c90f1260e6616066c7691a7dbbfd93f5c" in msg
 
     patch.stopall()

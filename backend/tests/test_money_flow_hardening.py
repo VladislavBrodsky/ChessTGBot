@@ -358,3 +358,14 @@ async def test_matchmaking_refund_loses_a_race_that_lands_after_it_reads(db_sess
     assert (await db_session.execute(select(User.balance).where(User.telegram_id == tid))).scalar_one() == 0
     row = (await db_session.execute(select(Transaction).where(Transaction.id == hold_id))).scalar_one()
     assert (row.status, row.reference_id) == ("completed", "game-2")
+
+
+@pytest.mark.asyncio
+async def test_unfunded_custody_wallet_reports_zero_usdt_not_unknown(monkeypatch):
+    """TonAPI 404s the jetton balance until the first USDT arrives."""
+    from app.services.solvency_service import SolvencyService
+    monkeypatch.setattr("httpx.AsyncClient", lambda **kw: _Tonapi({"/jettons/": (404, {"error": "not found"})}))
+    assert await SolvencyService.get_onchain_usdt_cents() == (0, None)
+    monkeypatch.setattr("httpx.AsyncClient", lambda **kw: _Tonapi({"/jettons/": (500, {})}))
+    cents, err = await SolvencyService.get_onchain_usdt_cents()
+    assert cents is None and "500" in err
