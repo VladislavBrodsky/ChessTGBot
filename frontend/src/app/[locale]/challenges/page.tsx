@@ -421,7 +421,7 @@ export default function ChallengesPage() {
                 onClick={() => {
                   if (!stats?.referral_code || !/^[A-Za-z0-9_-]{1,60}$/.test(stats.referral_code)) return;
                   const inviteLink = mainMiniAppLink(stats.bot_username || 'chess_matbot', `ref_${stats.referral_code}`);
-                  shareInvitation(inviteLink, inviteText('share_text'));
+                  shareInvitation(inviteLink, inviteText('share_text_personal'));
                 }}
               >
                 {t('invite_friend')}
