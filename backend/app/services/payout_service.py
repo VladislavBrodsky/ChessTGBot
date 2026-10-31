@@ -28,6 +28,22 @@ SEQNO_ADVANCE_TIMEOUT_SECONDS = 60
 SEQNO_POLL_SECONDS = 3
 
 
+class InsufficientCustodyFunds(ValueError):
+    """Raised before signing when the master wallet cannot cover a send.
+
+    A ValueError, so every caller treats it as a safe pre-broadcast failure:
+    a direct withdrawal is refunded, a bot-confirmed one stays reserved for a
+    retry, an admin-approved one stays in review. Nothing reaches the chain,
+    so no gas is burned on a transfer that would bounce.
+    """
+
+
+# Attached to each USDT payout for the jetton transfer, plus headroom for the
+# wallet's own fee; anything below this cannot complete a send.
+JETTON_TRANSFER_TON = 50_000_000
+TON_FEE_RESERVE = 20_000_000
+
+
 class BlockchainBroadcastError(Exception):
     def __init__(self, message: str, msg_hash: str):
         super().__init__(message)
@@ -97,6 +113,23 @@ def _load_master_wallet(settings) -> MasterWallet:
     return resolve_master_wallet(mnemonic_words, settings.MASTER_WALLET_ADDRESS)
 
 
+async def _fetch_ton_balance(address: str, headers: dict) -> int:
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            res = await client.get(f"https://tonapi.io/v2/accounts/{address}", headers=headers)
+        if res.status_code != 200:
+            raise ValueError(f"TonAPI returned status {res.status_code}")
+        return int(res.json().get("balance", 0))
+    except Exception as err:
+        raise ValueError(f"Blockchain connection failure (failed to fetch TON balance): {err}")
+
+
+def _custody_short(what: str, need: str, have: str) -> InsufficientCustodyFunds:
+    # First line is the alert fingerprint (payout_service maps to TREASURY).
+    logger.error(f"Custody wallet cannot cover {what}: needs {need}, holds {have}. Top up the master wallet.")
+    return InsufficientCustodyFunds(f"Master wallet cannot cover {what} (needs {need}, holds {have})")
+
+
 async def _fetch_seqno(address: str, headers: dict) -> int:
     """Current seqno, or 0 for a wallet that has never sent (its first
     message then carries the state init that deploys it). The seqno get
@@ -143,6 +176,9 @@ async def _sign_and_broadcast(wallet: "MasterWallet", headers: dict, to_addr: st
     """Fetch seqno, sign, broadcast and wait for inclusion, one send at a time."""
     settings = get_settings()
     async with _SEND_LOCK:
+        ton_balance = await _fetch_ton_balance(settings.MASTER_WALLET_ADDRESS, headers)
+        if ton_balance < amount + TON_FEE_RESERVE:
+            raise _custody_short(what, f"{(amount + TON_FEE_RESERVE) / 1e9:.3f} TON", f"{ton_balance / 1e9:.3f} TON")
         seqno = await _fetch_seqno(settings.MASTER_WALLET_ADDRESS, headers)
         try:
             boc_b64, msg_hash = _serialize(wallet.build(to_addr, amount, seqno, payload))
@@ -188,13 +224,24 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
         url_jw = f"https://tonapi.io/v2/accounts/{settings.MASTER_WALLET_ADDRESS}/jettons/{settings.USDT_MASTER}"
         async with httpx.AsyncClient(timeout=10.0) as client:
             res_jw = await client.get(url_jw, headers=headers)
-            if res_jw.status_code != 200:
+            if res_jw.status_code == 404:
+                # No USDT jetton wallet yet: the master has never held USDT.
+                jw_data = None
+            elif res_jw.status_code != 200:
                 raise ValueError(f"Failed to fetch Jetton Wallet address: {res_jw.text}")
-            jw_data = res_jw.json()
+            else:
+                jw_data = res_jw.json()
+            if jw_data is None:
+                raise _custody_short("USDT payout", f"{amount_cents / 100:.2f} USDT", "0.00 USDT")
+            held_units = int(jw_data.get("balance", 0))
+            if held_units < amount_cents * 10000:
+                raise _custody_short("USDT payout", f"{amount_cents / 100:.2f} USDT", f"{held_units / 1e6:.2f} USDT")
             # TonAPI returns the raw form, which tonsdk treats as
             # non-bounceable; a contract destination must be bounceable so a
             # failed transfer returns its attached TON.
             master_jetton_wallet = Address(jw_data["wallet_address"]["address"]).to_string(True, True, True)
+    except InsufficientCustodyFunds:
+        raise
     except Exception as jw_err:
         logger.error(f"Failed to fetch Jetton Wallet address: {jw_err}")
         raise ValueError(f"Blockchain connection failure (failed to fetch Jetton Wallet address): {jw_err}")
@@ -219,7 +266,7 @@ async def execute_usdt_payout(destination_address: str, amount_cents: int) -> st
         raise ValueError(f"Invalid transfer parameters: {build_err}")
 
     # 6-7. Sign and broadcast (serialized per wallet seqno)
-    msg_hash = await _sign_and_broadcast(wallet, headers, master_jetton_wallet, 50000000, body, "USDT payout")  # 0.05 TON
+    msg_hash = await _sign_and_broadcast(wallet, headers, master_jetton_wallet, JETTON_TRANSFER_TON, body, "USDT payout")
 
     logger.info(f"USDT payout transaction successfully broadcasted. Message Hash: {msg_hash}")
     return msg_hash

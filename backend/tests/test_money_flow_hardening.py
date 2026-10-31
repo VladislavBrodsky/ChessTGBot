@@ -308,7 +308,11 @@ async def test_concurrent_payouts_never_sign_the_same_seqno(monkeypatch):
             chain["seqno"] += 1  # the chain accepts the message
             return Response(200, json={})
 
+    async def ton_balance(address, headers):
+        return 10**10
+
     monkeypatch.setattr(payout_service, "_fetch_seqno", fetch_seqno)
+    monkeypatch.setattr(payout_service, "_fetch_ton_balance", ton_balance)
     monkeypatch.setattr(payout_service.httpx, "AsyncClient", lambda **kw: Client())
     monkeypatch.setattr(payout_service, "SEQNO_POLL_SECONDS", 0)
     wallet = SimpleNamespace(build=build)
@@ -369,3 +373,54 @@ async def test_unfunded_custody_wallet_reports_zero_usdt_not_unknown(monkeypatch
     monkeypatch.setattr("httpx.AsyncClient", lambda **kw: _Tonapi({"/jettons/": (500, {})}))
     cents, err = await SolvencyService.get_onchain_usdt_cents()
     assert cents is None and "500" in err
+
+
+
+# --- custody pre-flight -----------------------------------------------------
+
+class _Recorder(_Tonapi):
+    posts = []
+
+    async def post(self, url, headers=None, json=None):
+        _Recorder.posts.append(url)
+        return Response(200, json={})
+
+
+def _payout_env(monkeypatch, routes):
+    from app.services import payout_service
+    _Recorder.posts = []
+    monkeypatch.setattr(payout_service, "_load_master_wallet",
+                        lambda s: SimpleNamespace(address=None, build=lambda *a: None))
+    monkeypatch.setattr(payout_service.httpx, "AsyncClient", lambda **kw: _Recorder(routes))
+    return payout_service
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("jetton_route", [
+    (200, {"balance": "4999999", "wallet_address": {"address": MASTER_JW}}),  # 4.99 USDT
+    (404, {"error": "no jetton wallet"}),  # never held USDT
+])
+async def test_usdt_payout_refused_before_broadcast_when_custody_is_short(monkeypatch, jetton_route):
+    ps = _payout_env(monkeypatch, {"/jettons/": jetton_route})
+    with pytest.raises(ps.InsufficientCustodyFunds, match="USDT payout"):
+        await ps.execute_usdt_payout(USER_WALLET, 500)  # $5.00
+    assert _Recorder.posts == []
+
+
+@pytest.mark.asyncio
+async def test_payout_refused_before_broadcast_without_gas(monkeypatch):
+    ps = _payout_env(monkeypatch, {
+        "/jettons/": (200, {"balance": "100000000", "wallet_address": {"address": MASTER_JW}}),
+        "/accounts/": (200, {"balance": 60_000_000, "status": "active"}),  # 0.06 TON < 0.05 + reserve
+    })
+    with pytest.raises(ps.InsufficientCustodyFunds, match="TON"):
+        await ps.execute_usdt_payout(USER_WALLET, 500)
+    assert _Recorder.posts == []
+
+
+def test_custody_shortfall_is_a_safe_pre_broadcast_error():
+    """Callers refund / keep reserved / keep in review on ValueError, and only
+    treat BlockchainBroadcastError as possibly-sent."""
+    from app.services.payout_service import InsufficientCustodyFunds, BlockchainBroadcastError
+    assert issubclass(InsufficientCustodyFunds, ValueError)
+    assert not issubclass(InsufficientCustodyFunds, BlockchainBroadcastError)
