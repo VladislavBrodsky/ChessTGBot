@@ -168,6 +168,25 @@ async def get_master_usdt_jetton_wallet_hex() -> Optional[str]:
         return None
 
 
+async def is_master_usdt_receipt(jetton_transfer: dict) -> bool:
+    """True only if the tokens landed in the master's real USDT jetton wallet.
+
+    TonAPI labels a JettonTransfer with the master the sending jetton wallet
+    claims; a fake jetton wallet can claim USDT's master. The receiving jetton
+    wallet is derived by the real USDT master for our owner address, so
+    matching it proves genuine USDT. Unknown (lookup failed) means "not yet":
+    callers retry rather than credit.
+    """
+    expected = await get_master_usdt_jetton_wallet_hex()
+    received = jetton_transfer.get("recipients_wallet") or ""
+    if not expected or not received:
+        return False
+    try:
+        return convert_ton_address_to_hex(received) == expected
+    except Exception:
+        return False
+
+
 _prices_cache = {
     "prices": None,
     "last_fetched": 0.0
@@ -882,6 +901,22 @@ async def receive_ton_deposit_webhook(
         except (ValueError, IndexError):
             raise HTTPException(status_code=400, detail="Malformed Telegram ID in transaction comment")
 
+        # Key the credit on the trace id (the sender's root transaction), the
+        # same reference /deposit/verify and the deposit crawler use. Keying on
+        # the master's own receiving transaction would never collide with
+        # theirs, so the same deposit could be credited twice.
+        trace_id = None
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                ev = await client.get(f"https://tonapi.io/v2/events/{tx_hash}", headers=headers)
+                if ev.status_code == 200:
+                    trace_id = ev.json().get("event_id")
+        except Exception as ev_err:
+            logger.warning(f"Webhook: could not resolve trace for {tx_hash}: {ev_err}")
+        if not trace_id:
+            raise HTTPException(status_code=503, detail="Deposit trace not resolvable yet; the deposit crawler will credit it.")
+        tx_hash = trace_id
+
     else:
         # 3. Developer simulated deposit webhook
         from app.core.database import engine
@@ -1199,6 +1234,12 @@ async def verify_deposit(
             detail="Transaction trace not found. Please wait a few seconds and try again."
         )
 
+    if event_data.get("in_progress"):
+        raise HTTPException(
+            status_code=409,
+            detail="Your transfer is still being confirmed on-chain. Please try again in a few seconds."
+        )
+
     # 3. Resolve the true on-chain transaction/event hash
     tx_hash = event_data.get("event_id") or message_hash
 
@@ -1260,6 +1301,9 @@ async def verify_deposit(
             is_matching_ref = (clean_comment == expected_ref) or clean_comment.startswith(f"{expected_ref}_")
             if recipient_raw == master_raw and is_matching_ref:
                 if _is_usdt_master(jetton_master):
+                    if not await is_master_usdt_receipt(jetton_transfer):
+                        logger.warning("Deposit verify: USDT-labelled transfer did not reach the master's USDT jetton wallet")
+                        continue
                     # Verified USDT transfer — credit at face value (6 decimals,
                     # 1 USDT = 100 cents). No price feed needed.
                     token_amount = amount_raw / (10 ** 6)

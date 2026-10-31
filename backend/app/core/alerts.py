@@ -35,6 +35,7 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.client", "game_client"),
     ("app.services.deposit_crawler", "treasury"),
     ("app.services.manual_deposit_credit", "treasury"),
+    ("app.services.treasury_service", "treasury"),
     ("app.services.withdrawal_crawler", "treasury"),
     ("app.services.withdrawal_reconciliation", "treasury"),
     ("app.services.stripe_reconciliation", "treasury"),
@@ -358,6 +359,58 @@ class TelegramAlertHandler(logging.Handler):
             print(f"[Alerts] Exception in TelegramAlertHandler emit: {e}")
 
 
+_DIVIDER = "━━━━━━━━━━━━━━━━"
+_DEPOSIT_STYLE = {
+    # deposit_type -> (emoji, hashtag)
+    "USDT": ("💰", "#usdt"),
+    "Stripe": ("🎯", "#stripe"),
+}
+
+
+def _user_link(username: str | None, telegram_id: int) -> str:
+    """Tappable mention; usernames are user-controlled, so always escaped."""
+    import html as html_mod
+    label = f"@{html_mod.escape(username)}" if username else f"ID {telegram_id}"
+    return f'<a href="tg://user?id={int(telegram_id)}">{label}</a>'
+
+
+def _tx_line(tx_id: str | None) -> str:
+    """On-chain ids (64 hex) open in Tonviewer; anything else is copyable code."""
+    import html as html_mod
+    import re
+    tx = str(tx_id or "").strip()
+    if not tx:
+        return "—"
+    if re.fullmatch(r"[0-9a-fA-F]{64}", tx):
+        return f'<a href="https://tonviewer.com/transaction/{tx}">{tx[:8]}…{tx[-6:]}</a> 🔗'
+    return f"<code>{html_mod.escape(tx)}</code>"
+
+
+def format_money_alert(header: str, emoji: str, username: str | None, telegram_id: int,
+                       amount: float, tx_id: str | None, hashtags: str) -> str:
+    return (
+        f"{emoji} <b>{header}</b>\n"
+        f"{_DIVIDER}\n"
+        f"👤 <b>Юзер:</b> {_user_link(username, telegram_id)}\n"
+        f"💵 <b>Amount:</b> <b>${amount:,.2f}</b>\n"
+        f"🕒 <b>Дата и время:</b> {format_alert_time()}\n"
+        f"🧾 <b>Transaction ID:</b> {_tx_line(tx_id)}\n"
+        f"{_DIVIDER}\n"
+        f"{hashtags}"
+    )
+
+
+async def _send_to_admins(text: str, what: str) -> None:
+    from app.services.telegram_bot import TelegramService
+    for admin_id in settings.admin_telegram_ids:
+        if admin_id > 0:
+            try:
+                await TelegramService.send_notification(admin_id, text)
+            except Exception as e:
+                # Print directly to stdout/stderr to avoid circular logging loops
+                print(f"[Alerts] Failed to send {what} alert to admin {admin_id}: {e}")
+
+
 async def send_deposit_alert(
     deposit_type: str,
     username: str | None,
@@ -365,31 +418,13 @@ async def send_deposit_alert(
     amount: float,
     tx_id: str
 ):
-    """
-    Sends a telegram alert to all admins for a new deposit.
-    """
-    from app.services.telegram_bot import TelegramService
-    import html as html_mod
-    
-    safe_username = html_mod.escape(username) if username else None
-    user_display = f"@{safe_username}" if safe_username else f"ID {telegram_id}"
-    date_time_str = format_alert_time()
-    
-    alert_text = (
-        f"New {deposit_type} deposit\n"
-        f"User: {user_display}\n"
-        f"Amount: ${amount:.2f}\n"
-        f"Date and time: {date_time_str}\n"
-        f"Transaction ID: {tx_id}"
+    """Admin alert for a new top-up (USDT on TON, or a legacy Stripe card top-up)."""
+    emoji, tag = _DEPOSIT_STYLE.get(deposit_type, ("💰", ""))
+    text = format_money_alert(
+        f"Новое пополнение в {deposit_type}", emoji, username, telegram_id, amount, tx_id,
+        f"#пополнение {tag}".strip(),
     )
-    
-    for admin_id in settings.admin_telegram_ids:
-        if admin_id > 0:
-            try:
-                await TelegramService.send_notification(admin_id, alert_text)
-            except Exception as e:
-                # Print directly to stdout/stderr to avoid circular logging loops
-                print(f"[Alerts] Failed to send deposit alert to admin {admin_id}: {e}")
+    await _send_to_admins(text, "deposit")
 
 
 async def send_premium_subscription_alert(
@@ -399,29 +434,11 @@ async def send_premium_subscription_alert(
     amount: float,
     tx_id: str
 ):
-    """
-    Sends a telegram alert to all admins for a new Premium subscription.
-    """
-    from app.services.telegram_bot import TelegramService
-    import html as html_mod
-    
-    duration = "1 year" if billing_period == "annual" else "1 month"
-    safe_username = html_mod.escape(username) if username else None
-    user_display = f"@{safe_username}" if safe_username else f"ID {telegram_id}"
-    date_time_str = format_alert_time()
-    
-    alert_text = (
-        f"New Premium subscription ({duration})\n"
-        f"User: {user_display}\n"
-        f"Amount: ${amount:.2f}\n"
-        f"Date and time: {date_time_str}\n"
-        f"Transaction ID: {tx_id}"
+    """Admin alert for a new Premium subscription."""
+    annual = billing_period == "annual"
+    duration = "1 year" if annual else "1 month"
+    text = format_money_alert(
+        f"Новая подписка Premium ({duration})", "⭐️", username, telegram_id, amount, tx_id,
+        "#premium #yearly" if annual else "#premium #monthly",
     )
-    
-    for admin_id in settings.admin_telegram_ids:
-        if admin_id > 0:
-            try:
-                await TelegramService.send_notification(admin_id, alert_text)
-            except Exception as e:
-                # Print directly to stdout/stderr to avoid circular logging loops
-                print(f"[Alerts] Failed to send subscription alert to admin {admin_id}: {e}")
+    await _send_to_admins(text, "subscription")

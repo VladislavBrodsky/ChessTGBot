@@ -12,6 +12,54 @@ from app.services.telegram_bot import TelegramService
 
 logger = logging.getLogger(__name__)
 
+# USDT has 6 decimals; ledger amounts are cents.
+USDT_UNITS_PER_CENT = 10_000
+
+
+def _raw(address: str) -> str | None:
+    from app.api.v1.endpoints.wallet import convert_ton_address_to_hex
+    try:
+        return convert_ton_address_to_hex(address) if address else None
+    except Exception:
+        return None
+
+
+def classify_withdrawal_trace(event: dict, master_address: str, usdt_master: str, expected_units: int) -> str:
+    """Decide a payout from the USDT transfer itself, not from any action.
+
+    The trace of a payout also holds the jetton-wallet hops, the excess
+    return and the transfer_notification to the recipient; those can fail
+    (e.g. an exchange deposit contract rejecting the notification) after the
+    USDT has already moved. And a wallet sending with ignore-errors can
+    succeed while skipping the transfer. So:
+
+    - "completed": the master's USDT transfer of exactly expected_units is ok
+    - "failed":    that transfer is present and failed (tokens never left)
+    - "unresolved": anything else; a person must look before money moves
+    """
+    master_raw = _raw(master_address)
+    usdt_raw = _raw(usdt_master)
+    statuses = []
+    for action in event.get("actions", []):
+        if action.get("type") != "JettonTransfer":
+            continue
+        jt = action.get("JettonTransfer") or {}
+        if _raw((jt.get("sender") or {}).get("address", "")) != master_raw:
+            continue
+        if _raw((jt.get("jetton") or {}).get("address", "")) != usdt_raw:
+            continue
+        try:
+            if int(jt.get("amount", -1)) != expected_units:
+                continue
+        except (TypeError, ValueError):
+            continue
+        statuses.append(action.get("status"))
+    if "ok" in statuses:
+        return "completed"
+    if statuses and all(st == "failed" for st in statuses):
+        return "failed"
+    return "unresolved"
+
 
 async def flag_unconfirmed_broadcast(tx: Transaction, reason: str) -> None:
     """Escalate an uncertain on-chain payout; never refund it automatically.
@@ -106,29 +154,20 @@ async def start_withdrawal_crawler():
                         logger.info(f"Withdrawal transaction #{tx.id} is still in_progress on-chain. Skipping.")
                         continue
                         
-                    actions = event_data.get("actions", [])
-                    has_actions = len(actions) > 0
-                    
-                    # Check if any action has status != 'ok' (i.e. failed)
-                    failed_action = None
-                    for action in actions:
-                        if action.get("status") != "ok":
-                            failed_action = action
-                            break
-                            
-                    if failed_action:
-                        # Transaction failed! Process refund
-                        logger.warning(f"Withdrawal transaction #{tx.id} FAILED on-chain in action: {failed_action}")
-                        await process_withdrawal_failure(tx.id, "On-chain action execution failed")
-                    elif has_actions:
-                        # Transaction succeeded! Mark as completed
+                    expected_units = (abs(tx.amount) - (tx.fee or 0)) * USDT_UNITS_PER_CENT
+                    verdict = classify_withdrawal_trace(
+                        event_data, settings.MASTER_WALLET_ADDRESS, settings.USDT_MASTER, expected_units
+                    )
+                    if verdict == "completed":
                         logger.info(f"Withdrawal transaction #{tx.id} successfully completed on-chain.")
                         await process_withdrawal_success(tx.id)
+                    elif verdict == "failed":
+                        logger.warning(f"Withdrawal transaction #{tx.id}: USDT transfer failed on-chain; refunding.")
+                        await process_withdrawal_failure(tx.id, "On-chain USDT transfer failed")
                     else:
-                        # No actions found, but event is not in_progress. Check if it's failed/empty
-                        logger.warning(f"Withdrawal transaction #{tx.id} has no actions on-chain but not in-progress.")
-                        if age_seconds > 900:
-                            await flag_unconfirmed_broadcast(tx, "No on-chain actions after 15 minutes")
+                        await flag_unconfirmed_broadcast(
+                            tx, "Trace has no settled USDT transfer of the expected amount from the master wallet"
+                        )
                 else:
                     # Transaction not found on-chain
                     if age_seconds > 900:

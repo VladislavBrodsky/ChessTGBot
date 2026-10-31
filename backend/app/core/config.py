@@ -221,7 +221,9 @@ class Settings(BaseSettings):
     # A custody destination must be supplied explicitly by each environment.
     # A baked-in address can silently route deposits to an obsolete wallet.
     MASTER_WALLET_ADDRESS: str = ""
-    COMPANY_WALLET_ADDRESS: str = ""  # Optional; fees remain in custody until explicitly transferred.
+    COMPANY_WALLET_ADDRESS: str = ""  # Profit sweeps' only destination; must differ from MASTER_WALLET_ADDRESS.
+    # Kept in custody above everything owed before profit may be swept out.
+    PROFIT_SWEEP_RESERVE_CENTS: int = int(os.getenv("PROFIT_SWEEP_RESERVE_CENTS", "1000"))
     WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET") or "dev_webhook_secret"
 
     # Jetton Master Addresses

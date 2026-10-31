@@ -1,8 +1,8 @@
-:HL["/_next/static/css/aafac4eb021778e3.css","style"]
+:HL["/_next/static/css/030d70d70f663856.css","style"]
 :HL["/_next/static/css/4373ddba3d9abc4d.css","style"]
 5:[["children",{"s":"__PAGE__","h":160}]]
 4:[["children",{"s":{"n":"lessonId","t":"d","k":"tactics-101","s":[]},"h":96,"c":"$Q5"}]]
 3:[["children",{"s":"lesson","h":96,"c":"$Q4"}]]
 2:[["children",{"s":"academy","h":64,"c":"$Q3"}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"ar","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"b":"LhhNWbncrRYVzkyTE4HGe","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"O1oYgOxSy0b4MUKSjfJbS","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
