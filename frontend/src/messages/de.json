@@ -1461,5 +1461,24 @@
     "invite_cooldown": "Warte eine Minute, bevor du eine weitere Anfrage sendest",
     "self_invitation": "Teile deinen Link mit einem Freund, um gemeinsam zu spielen",
     "unavailable": "Verbindung fehlgeschlagen — prüfe deine Verbindung und versuche es erneut"
+  },
+  "BalanceOpportunity": {
+    "shortfall": "Für diese Partie fehlen {amount} USDT",
+    "topup": "Aufladen",
+    "invite": "Freunde einladen und Prämien erhalten",
+    "practice": "Kostenlos gegen KI üben",
+    "separate": "GRAM-Prämien sind vom USDT-Einsatzguthaben getrennt",
+    "failed": "Etwas ist schiefgelaufen — bitte erneut versuchen",
+    "copy_failed": "Kopieren fehlgeschlagen — erneut versuchen",
+    "share_opened": "Telegram geöffnet — du entscheidest, ob du sendest",
+    "share_failed": "Teilen nicht möglich — Link kopieren",
+    "joined": "Freunde beigetreten",
+    "pending": "Aktivität ausstehend",
+    "qualified": "3 gültige Partien beendet",
+    "usdt_credited": "USDT-Boni gutgeschrieben",
+    "gram_credited": "GRAM-Prämien gutgeschrieben",
+    "bonus": "{amount} USDT je qualifiziertem Freund; Tageslimit: {cap} Boni",
+    "terms": "Dein Freund muss über deinen Link beitreten und 3 Partien mit Einsatz gegen Menschen mit jeweils mindestens {moves} einzelnen Zügen beenden; für 1 GRAM ist auch eine abgeschlossene USDT-Einzahlung nötig",
+    "delayed": "Qualifikation und Gutschriften werden getrennt angezeigt; verzögerte Boni erst nach Gutschrift"
   }
 }

@@ -51,3 +51,15 @@ it('omits the move hint when the server does not say how many moves qualify', ()
   render(<ReferralDashboard />);
   expect(screen.queryByText(/individual moves/)).not.toBeInTheDocument();
 });
+
+it('keeps qualified activity distinct from credited money and shows server reward terms', () => {
+  mockData = { ...stats, reward_terms: { referrer_bonus_cents: 20, daily_bonus_cap: 7 },
+    milestone_progress: { joined: 3, pending_activity: 1, qualified: 2, usdt_credited: 1, gram_credited: 0 } };
+  render(<ReferralDashboard />);
+  expect(screen.getByText('Earn 0.20 USDT per qualified friend; daily cap: 7 bonuses')).toBeVisible();
+  const qualified = screen.getByText('3 qualifying matches completed').parentElement!;
+  expect(within(qualified).getByText('2')).toBeVisible();
+  const credited = screen.getByText('USDT bonuses credited').parentElement!;
+  expect(within(credited).getByText('1')).toBeVisible();
+  expect(screen.getByText('GRAM rewards are separate from your USDT wager balance')).toBeVisible();
+});

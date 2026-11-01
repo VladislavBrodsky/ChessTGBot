@@ -1461,5 +1461,24 @@
     "invite_cooldown": "Please wait a minute before sending another request",
     "self_invitation": "Share your link with a friend to play together",
     "unavailable": "We could not connect — check your connection and try again"
+  },
+  "BalanceOpportunity": {
+    "shortfall": "Add {amount} USDT for this match",
+    "topup": "Top up",
+    "invite": "Invite friends & earn rewards",
+    "practice": "Practise free against AI",
+    "separate": "GRAM rewards are separate from your USDT wager balance",
+    "failed": "Something went wrong — please try again",
+    "copy_failed": "Copy failed — please try again",
+    "share_opened": "Telegram share opened — sending is up to you",
+    "share_failed": "Unable to open sharing — copy the link instead",
+    "joined": "Friends joined",
+    "pending": "Activity pending",
+    "qualified": "3 qualifying matches completed",
+    "usdt_credited": "USDT bonuses credited",
+    "gram_credited": "GRAM rewards credited",
+    "bonus": "Earn {amount} USDT per qualified friend; daily cap: {cap} bonuses",
+    "terms": "Your friend must join through your link and complete 3 qualifying paid human matches with at least {moves} individual moves each; a completed USDT deposit is also required for 1 GRAM",
+    "delayed": "Qualification and credited rewards are shown separately; delayed bonuses appear only after credit"
   }
 }

@@ -439,22 +439,11 @@ class GamificationService:
         # qualify; only games with enough moves count.
         from app.core.config import get_settings
         from app.models.game_history import GameHistory
-        from sqlalchemy import or_
+        from app.services.referral_qualification import qualifying_referral_games
         settings = get_settings()
         qualifying_res = await db.execute(
             select(func.count(GameHistory.id)).where(
-                or_(
-                    GameHistory.white_player_id == new_user.telegram_id,
-                    GameHistory.black_player_id == new_user.telegram_id,
-                ),
-                GameHistory.total_moves >= settings.REFERRAL_MILESTONE_MIN_MOVES,
-                GameHistory.game_type == "online",
-                GameHistory.bid_amount > 0,
-                GameHistory.white_player_id > 0,
-                GameHistory.black_player_id > 0,
-                GameHistory.white_player_id != GameHistory.black_player_id,
-                GameHistory.result_type.in_(["checkmate", "resignation", "timeout", "draw", "stalemate", "insufficient_material", "threefold_repetition", "fifty_move", "agreed_draw"]),
-                GameHistory.ended_at >= referral.created_at,
+                *qualifying_referral_games(new_user.telegram_id, referral.created_at, settings.REFERRAL_MILESTONE_MIN_MOVES),
             )
         )
         qualifying_games = int(qualifying_res.scalar() or 0)
@@ -530,6 +519,9 @@ class GamificationService:
             reference_id=bonus_ref_id
         )
         db.add(tx_referrer)
+        from app.models.telemetry import TelemetryLog
+        db.add(TelemetryLog(user_id=referrer.telegram_id, event_type="reward_credited",
+            event_data={"asset": "USDT", "amount_cents": referrer_bonus, "source_kind": "referral", "source_key": bonus_ref_id}))
 
         # 6. Award XP and balance to the referred user
         new_user_xp = 50 if new_user.is_premium_active else 20

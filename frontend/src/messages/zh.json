@@ -1461,5 +1461,24 @@
     "invite_cooldown": "请等一分钟再发送请求",
     "self_invitation": "向好友分享你的链接即可一起对弈",
     "unavailable": "无法连接 — 请检查网络后重试"
+  },
+  "BalanceOpportunity": {
+    "shortfall": "本局还需 {amount} USDT",
+    "topup": "充值",
+    "invite": "邀请好友赢取奖励",
+    "practice": "免费与 AI 练习",
+    "separate": "GRAM 奖励与 USDT 对局余额分开计算",
+    "failed": "操作失败，请重试",
+    "copy_failed": "复制失败，请重试",
+    "share_opened": "已打开 Telegram，是否发送由你决定",
+    "share_failed": "无法分享，请复制链接",
+    "joined": "已加入好友",
+    "pending": "待完成活动",
+    "qualified": "已完成 3 局合格对局",
+    "usdt_credited": "已入账 USDT 奖金",
+    "gram_credited": "已入账 GRAM 奖励",
+    "bonus": "每位合格好友奖励 {amount} USDT；每日上限 {cap} 次",
+    "terms": "好友须通过你的链接加入，并完成 3 局与真人的有押金对局，每局至少 {moves} 个单方走子；获得 1 GRAM 还须完成 USDT 充值",
+    "delayed": "达标与入账分别显示；延迟奖金仅在入账后显示"
   }
 }

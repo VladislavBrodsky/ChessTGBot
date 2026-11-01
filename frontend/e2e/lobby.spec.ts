@@ -137,8 +137,7 @@ test('phone: friend setup confirms the exact wager and clock before creating an 
   await page.getByRole('button', { name: /Play with a Friend/ }).click();
   const drawer = page.getByRole('dialog', { name: 'Set up a friend game' });
   await expect(drawer).toBeVisible();
-  await expect(drawer.getByRole('button', { name: 'Create free game' })).toBeEnabled();
-  await drawer.getByRole('tab', { name: 'Stake game' }).click();
+  await expect(drawer.getByRole('button', { name: 'Create free game' })).toHaveCount(0);
   await expect(drawer.getByText('Winner receives $9.50 USDT')).toBeVisible();
   await drawer.getByRole('radio', { name: '30m' }).click();
   await expect(drawer.getByText('$5.00 USDT each · 30 min per player')).toBeVisible();
@@ -150,4 +149,38 @@ test('phone: friend setup confirms the exact wager and clock before creating an 
   const created = new URL((await request).url());
   expect(created.searchParams.get('wager')).toBe('500');
   expect(created.searchParams.get('time_control')).toBe('1800');
+});
+
+
+test('zero balance offers referrals, preserves settings, and never auto-starts a funded match', async ({ page }) => {
+  await prepare(page, { searching: 0, games_24h: 0 }, 0);
+  let balance = 0;
+  await page.route('**/api/v1/wallet/balance', route => route.fulfill({ json: { balance } }));
+  await page.route('**/api/v1/users/referrals/stats', route => route.fulfill({ json: {
+    total_referrals: 2, active_referrals: 0, activated_referrals: 0, total_earnings_usdt: 0, earnings_chart: [],
+    qualifying_min_moves: 10, gram_rewards_nano: '0', gram_rewarded_referrals: 0,
+    reward_terms: { required_games: 3, referrer_bonus_cents: 10, gram_reward_nano: '1000000000', gram_requires_deposit: true, daily_bonus_cap: 20 },
+    milestone_progress: { joined: 2, pending_activity: 1, qualified: 1, usdt_credited: 0, gram_credited: 0 },
+  } }));
+  await openLobby(page);
+  await page.getByRole('button', { name: 'Invite friends & earn rewards' }).click();
+  const drawer = page.getByRole('dialog', { name: 'Invite friends & earn rewards' });
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByText(/Earn 0.10 USDT per qualified friend/)).toBeVisible();
+  await expect(drawer.getByText(/a completed USDT deposit is also required for 1 GRAM/)).toBeVisible();
+  await expect(drawer.getByText('USDT bonuses credited')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: `/private/tmp/referral-flow-${test.info().project.name}.png` });
+  await drawer.getByRole('button', { name: /Invite via QR Code/ }).click();
+  const qr = page.getByRole('dialog', { name: 'Referral invitation QR code' });
+  await expect(qr).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(qr).toHaveCount(0);
+  await expect(drawer).toBeVisible();
+  balance = 500;
+  await page.keyboard.press('Escape');
+  await expect(drawer).toHaveCount(0);
+  await expect(page.locator('.lobby-cta')).not.toHaveAttribute('data-state', 'topup');
+  await expect(page.locator('.lobby-payout__value').first()).toContainText('$5.00');
+  await expect(page.getByRole('timer')).toHaveCount(0);
 });

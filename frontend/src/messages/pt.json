@@ -1461,5 +1461,24 @@
     "invite_cooldown": "Espere um minuto antes de enviar outro pedido",
     "self_invitation": "Compartilhe seu link com um amigo para jogarem juntos",
     "unavailable": "Não foi possível conectar — verifique sua conexão e tente novamente"
+  },
+  "BalanceOpportunity": {
+    "shortfall": "Adicione {amount} USDT para esta partida",
+    "topup": "Depositar",
+    "invite": "Convide amigos e ganhe recompensas",
+    "practice": "Treine grátis contra a IA",
+    "separate": "Recompensas GRAM são separadas do saldo USDT para apostas",
+    "failed": "Algo deu errado — tente novamente",
+    "copy_failed": "Falha ao copiar — tente novamente",
+    "share_opened": "Telegram aberto — você decide se envia",
+    "share_failed": "Não foi possível compartilhar — copie o link",
+    "joined": "Amigos cadastrados",
+    "pending": "Atividade pendente",
+    "qualified": "3 partidas válidas concluídas",
+    "usdt_credited": "Bônus USDT creditados",
+    "gram_credited": "Recompensas GRAM creditadas",
+    "bonus": "Ganhe {amount} USDT por amigo qualificado; limite diário: {cap} bônus",
+    "terms": "Seu amigo deve entrar pelo seu link e concluir 3 partidas com aposta contra pessoas, com pelo menos {moves} movimentos individuais cada; para 1 GRAM também é necessário um depósito USDT concluído",
+    "delayed": "Qualificação e créditos são separados; bônus adiados aparecem após o crédito"
   }
 }

@@ -1461,5 +1461,24 @@
     "invite_cooldown": "Attendez une minute avant d’envoyer une autre demande",
     "self_invitation": "Partagez votre lien avec un ami pour jouer ensemble",
     "unavailable": "Connexion impossible — vérifiez votre connexion puis réessayez"
+  },
+  "BalanceOpportunity": {
+    "shortfall": "Ajoutez {amount} USDT pour cette partie",
+    "topup": "Recharger",
+    "invite": "Invitez des amis et gagnez des récompenses",
+    "practice": "Entraînement gratuit contre l’IA",
+    "separate": "Les récompenses GRAM sont distinctes du solde USDT des mises",
+    "failed": "Une erreur est survenue — réessayez",
+    "copy_failed": "Échec de la copie — réessayez",
+    "share_opened": "Partage Telegram ouvert — à vous d’envoyer",
+    "share_failed": "Partage indisponible — copiez le lien",
+    "joined": "Amis inscrits",
+    "pending": "Activité en attente",
+    "qualified": "3 parties admissibles terminées",
+    "usdt_credited": "Bonus USDT crédités",
+    "gram_credited": "Récompenses GRAM créditées",
+    "bonus": "Gagnez {amount} USDT par ami admissible ; plafond quotidien : {cap} bonus",
+    "terms": "Votre ami doit rejoindre via votre lien et terminer 3 parties avec mise contre des humains, avec au moins {moves} coups individuels chacune ; un dépôt USDT effectué est aussi requis pour 1 GRAM",
+    "delayed": "Activité et crédits sont distincts ; les bonus différés apparaissent après crédit"
   }
 }

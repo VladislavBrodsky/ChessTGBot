@@ -1461,5 +1461,24 @@
     "invite_cooldown": "次のリクエストまで1分お待ちください",
     "self_invitation": "友達にリンクを送ると一緒に対局できます",
     "unavailable": "接続できませんでした — 通信状況を確認して再試行してください"
+  },
+  "BalanceOpportunity": {
+    "shortfall": "この対局にはあと {amount} USDT 必要です",
+    "topup": "入金",
+    "invite": "友達を招待して報酬を獲得",
+    "practice": "AI と無料練習",
+    "separate": "GRAM 報酬は対局用 USDT 残高とは別です",
+    "failed": "エラーが発生しました — 再試行してください",
+    "copy_failed": "コピー失敗 — 再試行してください",
+    "share_opened": "Telegram を開きました — 送信はご自身で確定してください",
+    "share_failed": "共有できません — リンクをコピーしてください",
+    "joined": "参加した友達",
+    "pending": "活動待ち",
+    "qualified": "対象対局を3局完了",
+    "usdt_credited": "USDT ボーナス入金済み",
+    "gram_credited": "GRAM 報酬付与済み",
+    "bonus": "対象の友達1人につき {amount} USDT、1日上限 {cap} 件",
+    "terms": "友達は招待リンクから参加し、各局 {moves} 手以上の人間同士の賭け対局を3局完了する必要があります。1 GRAM には USDT 入金完了も必要です",
+    "delayed": "条件達成と付与は別表示です。遅延ボーナスは付与後に表示されます"
   }
 }
