@@ -170,7 +170,7 @@ test('zero balance offers referrals, preserves settings, and never auto-starts a
   await expect(drawer.getByText(/a completed USDT deposit is also required for 1 GRAM/)).toBeVisible();
   await expect(drawer.getByText('USDT bonuses credited')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: `/private/tmp/referral-flow-${test.info().project.name}.png` });
+  await page.screenshot({ path: test.info().outputPath('referral-flow.png') });
   await drawer.getByRole('button', { name: /Invite via QR Code/ }).click();
   const qr = page.getByRole('dialog', { name: 'Referral invitation QR code' });
   await expect(qr).toBeVisible();
