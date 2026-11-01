@@ -26,7 +26,15 @@ def _published_corpus(kind: str) -> list[str]:
     out = []
     for e in queue.all_entries(kind):
         if e.get("status") in {"approved", "published", "publishing"}:
-            out.append(qa.plain(e["text"]) if kind == "telegram" else " ".join(str(b.get("text", "")) for b in e["article"]["content"]))
+            if kind in {"telegram", "x_post"}:
+                text = qa.plain(e.get("text", ""))
+            elif kind == "x_thread":
+                text = " ".join(str(tweet.get("text", "")) for tweet in e.get("tweets", []))
+            else:
+                article = e.get("article") or {}
+                text = " ".join(str(block.get("text", "")) for block in article.get("content", []))
+            if text.strip():
+                out.append(text)
     return out
 
 def cmd_plan(args):

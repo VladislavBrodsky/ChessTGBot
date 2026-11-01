@@ -75,7 +75,7 @@ For the daily editorial package, `node marketing/content-ops/export-creative.mjs
 1. Create the bot (or reuse `@chess_matbot`) and add it as an **administrator** of the channel with "Post messages".
 2. Provide secrets as environment variables on the machine that runs `publish` (never in the repo):
    `W3_TG_BOT_TOKEN`, `W3_TG_CHANNEL` (`@channelusername` or the numeric id). Optional drafting: `ANTHROPIC_API_KEY`, `W3_WRITER_MODEL`.
-3. Install the image engine once: `cd frontend && npm install && npx playwright install chromium` (Node 20+).
+3. Install the image engine once with the locked toolchain: `cd frontend && npm ci --include=optional && npx playwright install chromium` (Node 20, matching CI). If Chromium is managed separately, set `W3_CHROMIUM_EXECUTABLE_PATH` for the trusted runner; the renderer reports a direct setup hint when its binary is missing.
 4. Review the first week's items by hand in `review` mode. Consider `auto` only after the team has read ~50 items and the
    gates have never let a bad one through. In `auto`, anything that passes QA publishes.
 5. Confirm with the product owner (not verified by this repo): the geo rules for wager messaging, and Telegram's rules for
