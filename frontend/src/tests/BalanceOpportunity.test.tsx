@@ -15,9 +15,9 @@ beforeEach(() => { mockWallet = { walletBalance: 0, loadingBalance: false, balan
 it.each([[0,100,'1.00'],[99,100,'0.01'],[100,500,'4.00']])('shows selected-stake shortfall at balance %i', (balance,stake,amount) => {
  mockWallet.walletBalance=balance;
  const topup=jest.fn(); render(<BalanceOpportunity stake={stake} source="test" onTopUp={topup} />);
- expect(screen.getByText(`Add ${amount} USDT for this match`)).toBeVisible();
+ expect(screen.getByText(`${amount} USDT needed`)).toBeVisible();
  fireEvent.click(screen.getByText('Top up')); expect(topup).toHaveBeenCalledTimes(1);
- fireEvent.click(screen.getByText('Invite friends & earn rewards')); expect(screen.getByText('Referral dashboard')).toBeVisible();
+ fireEvent.click(screen.getByRole('button', { name: 'Invite friends & earn rewards' })); expect(screen.getByText('Referral dashboard')).toBeVisible();
 });
 it.each([{walletBalance:100}, {loadingBalance:true}, {balanceError:true}])('does not offer based on sufficient or unavailable balance %o', changes => {
  Object.assign(mockWallet, changes); render(<BalanceOpportunity stake={100} source="test" onTopUp={jest.fn()} />);
@@ -26,5 +26,5 @@ it.each([{walletBalance:100}, {loadingBalance:true}, {balanceError:true}])('does
 it('offers free AI practice without treating GRAM as wager funds', () => {
  render(<BalanceOpportunity stake={100} source="test" onTopUp={jest.fn()} />);
  expect(screen.getByText('GRAM rewards are separate from your USDT wager balance')).toBeVisible();
- fireEvent.click(screen.getByText('Practise free against AI')); expect(screen.getByText('AI practice')).toBeVisible();
+ fireEvent.click(screen.getByText('Free Coach')); expect(screen.getByText('AI practice')).toBeVisible();
 });

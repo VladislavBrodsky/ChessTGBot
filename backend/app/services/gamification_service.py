@@ -287,6 +287,7 @@ class GamificationService:
 
     @staticmethod
     async def process_referral(db: AsyncSession, new_user: User, referral_code: str):
+        from app.core.config import get_settings
         if not referral_code:
             return False
 
@@ -314,7 +315,7 @@ class GamificationService:
             # Check if this referral already exists to prevent duplicate rewards
             referral_exists_result = await db.execute(
                 select(Referral).where(
-                    and_(Referral.referrer_id == referrer.id, Referral.referred_user_id == new_user.id)
+                    Referral.referred_user_id == new_user.id
                 )
             )
             if referral_exists_result.scalars().first():
@@ -357,18 +358,16 @@ class GamificationService:
                 import html as html_mod
                 username_display = f" (@{html_mod.escape(new_user.username)})" if new_user.username else ""
                 full_name = html_mod.escape(f"{new_user.first_name} {new_user.last_name or ''}".strip())
+                min_moves = get_settings().REFERRAL_MILESTONE_MIN_MOVES
                 msg = (
-                    f"🎉 <b>New Recruit Joined!</b>\n\n"
-                    f"👤 <b>{full_name}</b>{username_display} just joined via your referral link!\n\n"
-                    f"⚔️ <b>Challenge them to a match right now!</b> Open the app, tap "
-                    f"<b>Play → Invite a Friend</b> and send them your game link — playing a "
-                    f"human match also completes your daily PvP task for bonus XP.\n\n"
-                    f"🎁 <b>Your Pending Signup Bonus:</b>\n"
-                    f"💰 <b>+${referrer_bonus_preview / 100:.2f} USDT</b>\n"
-                    f"🏅 <b>+{referrer_xp_preview} XP</b>\n\n"
-                    f"⏳ <b>Unlocks when they complete 3 chess games</b> — playing against you counts!\n\n"
-                    f"⚡ From game 1, you're already earning <b>up to 2% commission</b> on all their wagers!\n\n"
-                    f"<i>The more players you recruit, the bigger your passive network payout! ♟️💸</i>"
+                    f"♟️ <b>A friend joined through your invitation</b>\n\n"
+                    f"<b>{full_name}</b>{username_display} joined through your referral link.\n\n"
+                    f"<b>Pending invitation bonus:</b> ${referrer_bonus_preview / 100:.2f} USDT + {referrer_xp_preview} XP\n"
+                    f"Your friend must complete <b>3 qualifying paid human matches</b>, each with at least {min_moves} individual moves, to qualify.\n"
+                    f"Free Coach games, aborted games and shorter games do not qualify.\n\n"
+                    f"A completed USDT deposit by your friend is also required for your separate <b>1 GRAM</b> reward. "
+                    f"GRAM does not fund USDT wagers. USDT bonuses above the rolling 24-hour cap are deferred "
+                    f"and checked again on your friend's next completed match or deposit."
                 )
                 await TelegramService.send_notification(referrer.telegram_id, msg)
             except Exception as e:
@@ -379,20 +378,17 @@ class GamificationService:
             try:
                 from app.services.telegram_bot import TelegramService
                 referrer_display = f"@{html_mod.escape(referrer.username)}" if referrer.username else html_mod.escape(referrer.first_name or "")
+                min_moves = get_settings().REFERRAL_MILESTONE_MIN_MOVES
                 new_user_bonus_preview = 10 if new_user.is_premium_active else 5
                 new_user_xp_preview = 50 if new_user.is_premium_active else 20
                 new_user_msg = (
-                    f"♟️ <b>Welcome to the Chess Arena!</b>\n\n"
-                    f"You joined via {referrer_display}'s invitation. 🤝\n\n"
-                    f"⚔️ <b>Best first move: challenge {referrer_display} to a match!</b> "
-                    f"Open the app and tap <b>Play → Play Online</b> for a free ranked game, or ask "
-                    f"them for a friend-game link. Your first human match earns bonus XP from the "
-                    f"daily PvP task.\n\n"
-                    f"🎁 <b>Your Signup Bonus (Pending):</b>\n"
-                    f"💰 <b>+${new_user_bonus_preview / 100:.2f} USDT</b>\n"
-                    f"🏅 <b>+{new_user_xp_preview} XP</b>\n\n"
-                    f"⏳ <b>Play 3 games to unlock your reward</b> — games against {referrer_display} count!\n\n"
-                    f"<i>Open the arena, play your first moves and claim your bonus! ⚡</i>"
+                    f"♟️ <b>Welcome to Web3Chess</b>\n\n"
+                    f"You joined through {referrer_display}'s invitation.\n\n"
+                    f"<b>Pending signup bonus:</b> ${new_user_bonus_preview / 100:.2f} USDT + {new_user_xp_preview} XP\n"
+                    f"Complete <b>3 qualifying paid human matches</b>, each with at least {min_moves} individual moves, to qualify.\n"
+                    f"Free Coach games, aborted games and shorter games do not qualify.\n\n"
+                    f"Use Free Coach, or review the stake before joining a human match. "
+                    f"USDT bonuses are credited after qualification, subject to your inviter's rolling 24-hour bonus cap."
                 )
                 await TelegramService.send_notification(new_user.telegram_id, new_user_msg)
             except Exception as e:
@@ -472,6 +468,8 @@ class GamificationService:
                     Transaction.user_id == referrer.telegram_id,
                     Transaction.type == "referral_commission",
                     Transaction.reference_id.like("ref_signup_bonus_%"),
+                    ~Transaction.reference_id.like("ref_signup_bonus_recruit_%"),
+                    Transaction.status == "completed",
                     Transaction.created_at >= since,
                 )
             )

@@ -101,7 +101,7 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
     if (!validCode) return;
     telegramHaptic('selection');
     try {
-      if (shareInvitation(inviteLink, inviteText('share_text')) === false) throw new Error('Share blocked');
+      if (shareInvitation(inviteLink, inviteText('referral_share_text')) === false) throw new Error('Share blocked');
       setFeedback(offer('share_opened'));
       logTelemetryEvent('referral_share_opened', { source: 'referral_dashboard' });
     } catch { setFeedback(offer('share_failed')); }
@@ -183,12 +183,30 @@ export default function ReferralDashboard({ referralCode, botUsername }: Referra
         </button>
       </Card> : <ErrorState title={t('your_link')} message={ti('load_failed')} onRetry={() => syncStats()} retryLabel={ti('retry')} />}
 
-      {referralStats?.milestone_progress && <Card variant="solid" className="p-4">
-        {referralStats?.milestone_progress && <dl className="space-y-2">
-          {(['joined', 'pending', 'qualified', 'usdt_credited', 'gram_credited'] as const).map((key, i) => <div key={key} className="flex justify-between gap-3">
-            <dt className="t-caption">{offer(key)}</dt><dd className="t-numeric">{[referralStats.milestone_progress!.joined, referralStats.milestone_progress!.pending_activity, referralStats.milestone_progress!.qualified, referralStats.milestone_progress!.usdt_credited, referralStats.milestone_progress!.gram_credited][i]}</dd>
+      {referralStats?.milestone_progress && <Card variant="solid" className="space-y-4 p-4" role="region" aria-label={offer('progress_title')}>
+        <h3 className="t-title-3">{offer('progress_title')}</h3>
+        <dl className="grid grid-cols-3 gap-2">
+          {([
+            ['stage_joined', 'joined', referralStats.milestone_progress.joined],
+            ['stage_pending', 'pending', referralStats.milestone_progress.pending_activity],
+            ['stage_qualified', 'qualified', referralStats.milestone_progress.qualified],
+          ] as const).map(([label, accessible, count]) => <div key={label} className="min-w-0 space-y-1 rounded-control bg-brand-elevated p-3">
+            <dt className="t-caption text-brand-muted break-words" aria-label={offer(accessible)}>{offer(label)}</dt>
+            <dd className="t-numeric-lg">{count.toLocaleString(locale)}</dd>
           </div>)}
-        </dl>}
+        </dl>
+        <div className="space-y-2 border-t border-brand-border pt-3">
+          <p className="t-caption text-brand-muted">{offer('issued_title')}</p>
+          <dl className="grid grid-cols-2 gap-3">
+            {([
+              ['usdt_credited', referralStats.milestone_progress.usdt_credited],
+              ['gram_credited', referralStats.milestone_progress.gram_credited],
+            ] as const).map(([label, count]) => <div key={label} className="min-w-0 space-y-1">
+              <dt className="t-caption text-brand-muted">{offer(label)}</dt>
+              <dd className="t-numeric-lg">{count.toLocaleString(locale)}</dd>
+            </div>)}
+          </dl>
+        </div>
       </Card>}
       {!referralStats && (error || !isLoading) ? (
         <ErrorState title={ti('load_failed')} message={ti('load_failed')} onRetry={() => mutate()} retryLabel={ti('retry')} />

@@ -532,7 +532,7 @@
   "Game": {
     "review_title": "Analyse de partie",
     "ai_select_difficulty": "Choisir le niveau de Free Coach",
-    "ai_difficulty_help": "Jouez gratuitement contre un adversaire informatique. Choisissez la difficulté.",
+    "ai_difficulty_help": "Choisissez le niveau de Free Coach",
     "ai_easy": "Facile",
     "ai_medium": "Moyen",
     "ai_hard": "Difficile",
@@ -594,7 +594,7 @@
     "friend_insufficient_balance": "Solde USDT insuffisant pour cette mise",
     "friend_create_staked": "Créer et miser {amount}",
     "friend_create_free": "Créer une partie gratuite",
-    "friend_tile_subtitle": "Gratuit ou avec mise · choisissez la pendule",
+    "friend_tile_subtitle": "Mise USDT · choisissez la pendule",
     "friend_join_stake_title": "Confirmez votre mise",
     "friend_join_stake_notice": "Rejoindre réserve votre mise. Vous pouvez la perdre ; une nulle rembourse les deux joueurs. Le gagnant reçoit 95 % du pot",
     "friend_join_stake_action": "Rejoindre et miser {amount}",
@@ -1460,13 +1460,14 @@
     "player_busy": "L’un de vous joue déjà — terminez cette partie puis réessayez",
     "invite_cooldown": "Attendez une minute avant d’envoyer une autre demande",
     "self_invitation": "Partagez votre lien avec un ami pour jouer ensemble",
-    "unavailable": "Connexion impossible — vérifiez votre connexion puis réessayez"
+    "unavailable": "Connexion impossible — vérifiez votre connexion puis réessayez",
+    "referral_share_text": "Rejoins-moi sur Web3Chess via cette invitation. Commence avec Free Coach ; les parties contre des humains nécessitent une mise USDT."
   },
   "BalanceOpportunity": {
     "shortfall": "Ajoutez {amount} USDT pour cette partie",
     "topup": "Recharger",
     "invite": "Invitez des amis et gagnez des récompenses",
-    "practice": "Entraînement gratuit contre l’IA",
+    "practice": "Free Coach",
     "separate": "Les récompenses GRAM sont distinctes du solde USDT des mises",
     "failed": "Une erreur est survenue — réessayez",
     "copy_failed": "Échec de la copie — réessayez",
@@ -1479,6 +1480,14 @@
     "gram_credited": "Récompenses GRAM créditées",
     "bonus": "Gagnez {amount} USDT par ami admissible ; plafond quotidien : {cap} bonus",
     "terms": "Votre ami doit rejoindre via votre lien et terminer 3 parties avec mise contre des humains, avec au moins {moves} coups individuels chacune ; un dépôt USDT effectué est aussi requis pour 1 GRAM",
-    "delayed": "Activité et crédits sont distincts ; les bonus différés apparaissent après crédit"
+    "delayed": "Activité et crédits sont distincts ; les bonus différés apparaissent après crédit",
+    "balance_title": "Solde de la partie",
+    "needed": "Il manque {amount} USDT",
+    "invite_short": "Inviter des amis",
+    "progress_title": "Suivi des invitations",
+    "stage_joined": "Inscrits",
+    "stage_pending": "En attente",
+    "stage_qualified": "Qualifiés",
+    "issued_title": "Nombre de crédits effectués"
   }
 }

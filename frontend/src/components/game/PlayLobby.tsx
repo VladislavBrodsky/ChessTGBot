@@ -73,7 +73,6 @@ export default function PlayLobby() {
 
   // Quick Top-up states
   const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
-  const [showBalanceOffer, setShowBalanceOffer] = useState(false);
   const [depositTarget, setDepositTarget] = useState<number | null>(null);
 
   const submittingRef = useRef<boolean>(false);
@@ -366,7 +365,7 @@ export default function PlayLobby() {
         custom_wager: isCustomWager,
       });
       logTelemetryEvent('balance_opportunity_topup', { source: 'play_lobby', stake_cents: wagerInCents });
-      setShowBalanceOffer(true); setShowDepositDrawer(true);
+      setShowDepositDrawer(true);
     }
   };
 
@@ -658,9 +657,9 @@ export default function PlayLobby() {
               />
 
               {/* Keep the wager action and its risk disclosure together before secondary events. */}
-              {(showBalanceOffer || (!loadingBalance && !balanceError && chosenWager > walletBalance)) && <BalanceOpportunity
+              <BalanceOpportunity
                 stake={chosenWager} source="play_lobby" showTopUp={false} timeControl={timeControl}
-                onTopUp={() => setShowDepositDrawer(true)} />}
+                onTopUp={() => setShowDepositDrawer(true)} />
               <ArenaBanner />
 
               <EngagementQuest onPlayMatch={handleLauncherClick} />

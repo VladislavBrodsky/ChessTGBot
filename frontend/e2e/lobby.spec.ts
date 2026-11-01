@@ -178,9 +178,36 @@ test('zero balance offers referrals, preserves settings, and never auto-starts a
   await expect(qr).toHaveCount(0);
   await expect(drawer).toBeVisible();
   balance = 500;
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect(page.locator('.lobby-cta')).not.toHaveAttribute('data-state', 'topup');
+  await expect(drawer).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(drawer).toHaveCount(0);
   await expect(page.locator('.lobby-cta')).not.toHaveAttribute('data-state', 'topup');
   await expect(page.locator('.lobby-payout__value').first()).toContainText('$5.00');
   await expect(page.getByRole('timer')).toHaveCount(0);
+});
+
+
+test('balance recovery actions fit 320px dark, light and Arabic layouts', async ({ page }) => {
+  await prepare(page, { searching: 0, games_24h: 0 }, 0);
+  for (const [locale, theme] of [['en', 'dark'], ['en', 'light'], ['ar', 'dark']]) {
+    await page.setViewportSize({ width: 320, height: 740 });
+    await page.addInitScript(value => localStorage.setItem('theme', value), theme);
+    await page.goto(`/${locale}/game`);
+    const recovery = page.getByRole('region', { name: locale === 'en' ? 'Match balance' : 'رصيد المباراة' });
+    await expect(recovery).toBeVisible();
+    const links = page.locator('[data-app-navbar] ul').getByRole('link');
+    await expect(links).toHaveCount(5);
+    const destinations = await links.evaluateAll(nodes => nodes.map(node => new URL((node as HTMLAnchorElement).href).pathname.split('/').pop()));
+    expect(destinations).toEqual(['home', 'academy', 'game', 'wallet', 'profile']);
+    await expect(recovery.getByRole('button', { name: 'Free Coach', exact: true })).toBeVisible();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    for (const button of await recovery.getByRole('button').all()) {
+      const box = await button.boundingBox();
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+    }
+    await page.screenshot({ path: test.info().outputPath(`balance-${locale}-${theme}.png`) });
+  }
 });

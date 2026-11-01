@@ -212,6 +212,6 @@ export default function QuickMatchModal({ isOpen, onClose, initialWagerCents = 5
       </Card>}
       {!connected && <p role="status" className="text-caption text-brand-muted">{t('connection_error')}</p>}
     </Drawer>
-    {isOpen && showDeposit && <DepositDialog onClose={() => setShowDeposit(false)} onSuccess={() => { void syncBalance(); }} />}
+    {isOpen && showDeposit && <DepositDialog chosenWager={wagerCents} walletBalance={walletBalance} onClose={() => setShowDeposit(false)} onSuccess={() => { void syncBalance(); }} />}
   </>;
 }

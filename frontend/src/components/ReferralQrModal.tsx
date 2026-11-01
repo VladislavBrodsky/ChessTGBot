@@ -48,7 +48,7 @@ export function ReferralQrModal({
     if (!inviteLink) return;
     telegramHaptic('selection');
     try {
-      if (shareInvitation(inviteLink, inviteText('share_text')) === false) throw new Error('Share blocked');
+      if (shareInvitation(inviteLink, inviteText('referral_share_text')) === false) throw new Error('Share blocked');
       setFeedback(offer('share_opened'));
       logTelemetryEvent('referral_share_opened', { source: 'referral_qr' });
     } catch { setFeedback(offer('share_failed')); }

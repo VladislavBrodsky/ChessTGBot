@@ -532,7 +532,7 @@
   "Game": {
     "review_title": "Match review",
     "ai_select_difficulty": "Choose Free Coach difficulty",
-    "ai_difficulty_help": "Play free against a computer opponent. Choose a difficulty.",
+    "ai_difficulty_help": "Choose a Free Coach level",
     "ai_easy": "Easy",
     "ai_medium": "Medium",
     "ai_hard": "Hard",
@@ -595,7 +595,7 @@
     "friend_insufficient_balance": "Not enough USDT for this stake",
     "friend_create_staked": "Create and stake {amount}",
     "friend_create_free": "Create free game",
-    "friend_tile_subtitle": "Free or stake · choose your clock",
+    "friend_tile_subtitle": "USDT stake · choose your clock",
     "friend_join_stake_title": "Confirm your stake",
     "friend_join_stake_notice": "Joining reserves your stake. You can lose it; a draw refunds both players. The winner receives 95% of the pot",
     "friend_join_stake_action": "Join and stake {amount}",
@@ -1460,13 +1460,14 @@
     "player_busy": "One of you is already playing — finish that game and try again",
     "invite_cooldown": "Please wait a minute before sending another request",
     "self_invitation": "Share your link with a friend to play together",
-    "unavailable": "We could not connect — check your connection and try again"
+    "unavailable": "We could not connect — check your connection and try again",
+    "referral_share_text": "Join me on Web3Chess through this invitation. Start with Free Coach; human matches use USDT stakes."
   },
   "BalanceOpportunity": {
     "shortfall": "Add {amount} USDT for this match",
     "topup": "Top up",
     "invite": "Invite friends & earn rewards",
-    "practice": "Practise free against AI",
+    "practice": "Free Coach",
     "separate": "GRAM rewards are separate from your USDT wager balance",
     "failed": "Something went wrong — please try again",
     "copy_failed": "Copy failed — please try again",
@@ -1479,6 +1480,14 @@
     "gram_credited": "GRAM rewards credited",
     "bonus": "Earn {amount} USDT per qualified friend; daily cap: {cap} bonuses",
     "terms": "Your friend must join through your link and complete 3 qualifying paid human matches with at least {moves} individual moves each; a completed USDT deposit is also required for 1 GRAM",
-    "delayed": "Qualification and credited rewards are shown separately; delayed bonuses appear only after credit"
+    "delayed": "Qualification and credited rewards are shown separately; delayed bonuses appear only after credit",
+    "balance_title": "Match balance",
+    "needed": "{amount} USDT needed",
+    "invite_short": "Invite friends",
+    "progress_title": "Referral progress",
+    "stage_joined": "Joined",
+    "stage_pending": "Pending",
+    "stage_qualified": "Qualified",
+    "issued_title": "Number of credits issued"
   }
 }

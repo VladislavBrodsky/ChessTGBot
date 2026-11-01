@@ -532,7 +532,7 @@
   "Game": {
     "review_title": "Partieanalyse",
     "ai_select_difficulty": "Schwierigkeit für Free Coach wählen",
-    "ai_difficulty_help": "Spiele kostenlos gegen einen Computergegner. Wähle einen Schwierigkeitsgrad.",
+    "ai_difficulty_help": "Free Coach: Schwierigkeitsgrad wählen",
     "ai_easy": "Leicht",
     "ai_medium": "Mittel",
     "ai_hard": "Schwer",
@@ -594,7 +594,7 @@
     "friend_insufficient_balance": "Nicht genug USDT für diesen Einsatz",
     "friend_create_staked": "Erstellen und {amount} einsetzen",
     "friend_create_free": "Kostenloses Spiel erstellen",
-    "friend_tile_subtitle": "Kostenlos oder mit Einsatz · Zeit wählen",
+    "friend_tile_subtitle": "USDT-Einsatz · Zeit wählen",
     "friend_join_stake_title": "Einsatz bestätigen",
     "friend_join_stake_notice": "Beim Beitritt wird dein Einsatz reserviert. Du kannst ihn verlieren; bei Remis werden beide Einsätze erstattet. Der Gewinner erhält 95 % des Pots",
     "friend_join_stake_action": "Beitreten und {amount} einsetzen",
@@ -1460,13 +1460,14 @@
     "player_busy": "Einer von euch spielt bereits — beendet die Partie und versucht es erneut",
     "invite_cooldown": "Warte eine Minute, bevor du eine weitere Anfrage sendest",
     "self_invitation": "Teile deinen Link mit einem Freund, um gemeinsam zu spielen",
-    "unavailable": "Verbindung fehlgeschlagen — prüfe deine Verbindung und versuche es erneut"
+    "unavailable": "Verbindung fehlgeschlagen — prüfe deine Verbindung und versuche es erneut",
+    "referral_share_text": "Komm über diese Einladung zu Web3Chess. Starte mit Free Coach; Partien gegen Menschen erfordern USDT-Einsätze."
   },
   "BalanceOpportunity": {
     "shortfall": "Für diese Partie fehlen {amount} USDT",
     "topup": "Aufladen",
     "invite": "Freunde einladen und Prämien erhalten",
-    "practice": "Kostenlos gegen KI üben",
+    "practice": "Free Coach",
     "separate": "GRAM-Prämien sind vom USDT-Einsatzguthaben getrennt",
     "failed": "Etwas ist schiefgelaufen — bitte erneut versuchen",
     "copy_failed": "Kopieren fehlgeschlagen — erneut versuchen",
@@ -1479,6 +1480,14 @@
     "gram_credited": "GRAM-Prämien gutgeschrieben",
     "bonus": "{amount} USDT je qualifiziertem Freund; Tageslimit: {cap} Boni",
     "terms": "Dein Freund muss über deinen Link beitreten und 3 Partien mit Einsatz gegen Menschen mit jeweils mindestens {moves} einzelnen Zügen beenden; für 1 GRAM ist auch eine abgeschlossene USDT-Einzahlung nötig",
-    "delayed": "Qualifikation und Gutschriften werden getrennt angezeigt; verzögerte Boni erst nach Gutschrift"
+    "delayed": "Qualifikation und Gutschriften werden getrennt angezeigt; verzögerte Boni erst nach Gutschrift",
+    "balance_title": "Partieguthaben",
+    "needed": "Noch {amount} USDT nötig",
+    "invite_short": "Freunde einladen",
+    "progress_title": "Einladungsfortschritt",
+    "stage_joined": "Beigetreten",
+    "stage_pending": "Ausstehend",
+    "stage_qualified": "Qualifiziert",
+    "issued_title": "Anzahl der Gutschriften"
   }
 }

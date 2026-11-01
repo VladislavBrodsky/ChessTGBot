@@ -20,7 +20,7 @@ jest.mock('@/hooks/useAudio', () => ({ useAudio: () => ({ play: mockPlay }) }));
 jest.mock('@/lib/socket', () => ({ getSocket: () => mockSocket }));
 jest.mock('@/lib/telegram', () => ({ telegramHaptic: jest.fn() }));
 jest.mock('@/components/ui/Drawer', () => ({ Drawer: ({ isOpen, title, children, footer, onClose }: any) => isOpen ? <div role="dialog"><h2>{title}</h2><button onClick={onClose}>Close</button>{children}{footer}</div> : null }));
-jest.mock('@/components/Wallet/WalletDialogs', () => ({ DepositDialog: ({ onSuccess, onClose }: any) => <div role="dialog" aria-label="Deposit"><button onClick={onSuccess}>Verify deposit</button><button onClick={onClose}>Close deposit</button></div> }));
+jest.mock('@/components/Wallet/WalletDialogs', () => ({ DepositDialog: ({ onSuccess, onClose, chosenWager, walletBalance }: any) => <div role="dialog" aria-label="Deposit"><span>Target {chosenWager}, balance {walletBalance}</span><button onClick={onSuccess}>Verify deposit</button><button onClick={onClose}>Close deposit</button></div> }));
 const event = (name: string, data?: unknown) => act(() => mockListeners.get(name)?.(data));
 const start = () => fireEvent.click(screen.getByRole('button', { name: 'Start matchmaking' }));
 beforeEach(() => {
@@ -60,6 +60,7 @@ it('handles server errors without navigating to a guessed game', () => {
 });
 it('opens a separate deposit sheet and never starts on deposit verification', async () => {
  mockUser.walletBalance = 280; render(<QuickMatchModal isOpen onClose={jest.fn()} />); fireEvent.click(screen.getByRole('button', { name: 'Top Up' }));
+ expect(screen.getByText('Target 500, balance 280')).toBeVisible();
  expect(screen.getAllByRole('dialog')).toHaveLength(1); expect(screen.getByRole('dialog', { name: 'Deposit' })).toBeVisible();
  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Verify deposit' })));
  fireEvent.click(screen.getByRole('button', { name: 'Close deposit' })); expect(screen.getByRole('heading', { name: 'Quick Match' })).toBeVisible();
