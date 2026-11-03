@@ -9,9 +9,9 @@ import { SettlementExample } from "./SettlementExample";
 import { SETTLEMENT } from "@/lib/config";
 
 const stakes = [
-  { stake: "$5", pace: "Blitz 3+2", payout: "$9.50", featured: false },
-  { stake: "$25", pace: "Rapid 10+0", payout: "$47.50", featured: true },
-  { stake: "$100", pace: "Classic 30+0", payout: "$190", featured: false },
+  { stake: "$5", pace: "3 min Blitz", payout: "$9.50", featured: false },
+  { stake: "$25", pace: "10 min Rapid", payout: "$47.50", featured: true },
+  { stake: "$100", pace: "30 min Classical", payout: "$190", featured: false },
 ];
 const referrals = [
   { tier: "1", label: "Tier 1 Direct", share: "1.0%" },

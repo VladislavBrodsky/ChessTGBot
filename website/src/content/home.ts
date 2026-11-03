@@ -69,7 +69,7 @@ export const home = {
     },
     {
       q: "How does Web3Chess approach fair play?",
-      a: "Web3Chess validates all legal moves deterministically on the server, maintains tamper-proof clocks, and actively monitors gameplay with statistical engine-correlation heuristics. Outside engine assistance is strictly prohibited in real matches. Check the Fair Play page for full integrity guidelines.",
+      a: "Web3Chess validates every move on the server, keeps both clocks there, and never auto-pairs wager matches between accounts on the same IP address, referral-linked accounts, or recent opponents. Outside engine assistance is strictly prohibited in real matches, and a reported game can be reviewed move by move. Check the Fair Play page for full integrity guidelines.",
     },
     {
       q: "What are the age and legal requirements to play?",

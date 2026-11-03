@@ -16,32 +16,32 @@ const FAIR_PLAY_FAQS = [
   {
     question: "How does Web3Chess validate legal chess moves?",
     answer:
-      "All moves are executed and verified on authoritative backend servers running Stockfish 16. Client WebViews only render display boards—no client code can modify pieces, execute illegal moves, or manipulate clock state.",
+      "Every move is sent to the backend, which checks it against the current position with a chess rules library before applying it. Client WebViews only render display boards—no client code can modify pieces, execute illegal moves, or manipulate clock state.",
   },
   {
-    question: "How are chess bots and external engines detected?",
+    question: "How does Web3Chess handle chess bots and external engines?",
     answer:
-      "Our integrity engine continuously analyzes move-time telemetry, accuracy percentiles across complex positions, engine correlation curves, and microsecond lag anomalies. Accounts exhibiting inhuman accuracy or anomalous timing distributions face immediate review and forfeiture.",
+      "Engines, bots, and outside help are banned in real matches. There is no automated engine detection today: server validation proves a move is legal, not that it was unaided. Wager matchmaking never pairs two accounts on the same IP address, a referrer with their own referral, or your last five wager opponents. If you suspect an opponent, report the game so it can be reviewed.",
   },
   {
     question: "What happens if a player disconnects during a match?",
     answer:
-      "Our lag-compensated FIDE clock keeps authoritative server time. If a player disconnects, their clock continues ticking down. If they reconnect before time expires, the match resumes seamlessly. If their clock reaches 0:00, they forfeit on time.",
+      "The server keeps both clocks, with no lag compensation and no pause for a dropped connection. If a player disconnects, their clock continues ticking down. If they reconnect before time expires, the match resumes from the current position. If their clock reaches 0:00, the game ends on time: a loss, or a draw if the opponent has too little material to checkmate.",
   },
   {
     question: "How do I report suspected cheating or unfair play?",
     answer:
-      "Note the match ID and contact platform support directly via the Telegram bot. Every move ply is permanently logged with timestamps and engine evaluation deltas, enabling thorough multi-engine auditing.",
+      "Note the match ID and contact platform support directly via the Telegram bot. The server stores the full move list and result of every finished game, so a reported game can be reviewed move by move.",
   },
 ] as const;
 
 export const metadata = pageMetadata(
-  "Fair Play & Anti-Cheat Engine: Stockfish 16 Validation",
-  "Learn how Web3Chess protects matches with server-side Stockfish 16 validation, tamper-proof clocks, anti-cheat engine correlation, and automated pot escrow.",
+  "Fair Play & Anti-Cheat Rules: Server Move Validation",
+  "Learn how Web3Chess protects matches with server-side move validation, tamper-proof clocks, anti-collusion wager pairing, and clear rules against engine use.",
   "/fair-play",
   [
-    "chess anti cheat engine",
-    "stockfish 16 cheat detection",
+    "online chess anti cheating rules",
+    "how online chess validates legal moves",
     "fair play chess rules",
     "skill based chess",
     "tamper proof chess clocks",
@@ -77,10 +77,10 @@ export default function FairPlayPage() {
             <>
               Fair play &amp;
               <br />
-              anti-cheat engine
+              anti-cheat rules
             </>
           }
-          lead="Great chess needs clear rules, tamper-proof clocks, and honest opponents. Every move is validated server-side by Stockfish 16 with zero client manipulation."
+          lead="Great chess needs clear rules, tamper-proof clocks, and honest opponents. The server validates every move and keeps both clocks, so no client can force an illegal position."
           visual={<ChessSculpture variant="fairPlay" />}
         >
           <ButtonLink href="#fair-play-rules" variant="secondary">
@@ -98,17 +98,17 @@ export default function FairPlayPage() {
           </h2>
 
           <DetailGrid>
-            <DetailCard span="wide" tone="accent" icon="cpu" badge="Authoritative Backend" status="Stockfish 16 verification" title="The server keeps the board" meta="Deterministic server validation · Anti-tamper state">
+            <DetailCard span="wide" tone="accent" icon="cpu" badge="Authoritative Backend" status="Server move validation" title="The server keeps the board" meta="Deterministic server validation · Anti-tamper state">
               <p>The backend validates every move against the position and maintains the authoritative game state. Your device renders the board; it cannot force an illegal position or modify the game clock.</p>
             </DetailCard>
-            <DetailCard icon="clock" badge="Clock Integrity" status="Monotonic sync" title="The clock is part of the game" meta="Authoritative timers">
+            <DetailCard icon="clock" badge="Clock Integrity" status="Server timestamps" title="The clock is part of the game" meta="Authoritative timers">
               <p>Play strictly within your selected time control. Server-side timestamps prevent client-side clock tampering, and disconnecting does not artificially pause your match clock.</p>
             </DetailCard>
             <DetailCard icon="users-three" badge="Skill Match" status="Fair ELO pairing" title="Rating-based matchmaking" meta="Dynamic ELO bracket pool">
               <p>Matchmaking pools players by dynamic rating brackets, selected time control, and stake tier so you are paired against opponents of comparable strength.</p>
             </DetailCard>
-            <DetailCard span="wide" tone="accent" icon="shield-check" badge="Zero Engine Tolerance" status="Neural & timing analysis" title="Your moves must be your own" meta="Real-time heuristic auditing · Protected prize pools">
-              <p>Chess engines, bots, and outside assistance are prohibited in real matches. Heuristic models inspect move entropy, decision timing distributions, and engine correlation to maintain competitive purity.</p>
+            <DetailCard span="wide" tone="accent" icon="shield-check" badge="Zero Engine Tolerance" status="Banned in real matches" title="Your moves must be your own" meta="Rule enforcement · Anti-collusion pairing">
+              <p>Chess engines, bots, and outside assistance are prohibited in real matches. Server validation proves a move is legal, not that it was unaided, so report any game you suspect and it can be reviewed from the stored move list.</p>
             </DetailCard>
           </DetailGrid>
         </section>
@@ -122,14 +122,14 @@ export default function FairPlayPage() {
             </h2>
             <div className="statement-cta-copy">
               <p className="section-lead">
-                Deterministic server validation prevents illegal moves, while multi-layer
-                statistical models continuously analyze move timing distributions and engine correlation.
-                Every cash prize pool is actively monitored to ensure true competitive integrity.
+                Deterministic server validation prevents illegal moves, while wager matchmaking
+                refuses to pair accounts on the same IP address, referral-linked accounts, and recent
+                opponents. Engine assistance is banned in every real match, with or without a stake.
               </p>
               <p className="text-body">
                 If you ever notice suspicious play or wish to request an in-depth review, note
-                the match identifier and contact support via the Telegram bot chat. Our integrity team
-                audits flagged games using deep multi-engine heuristics.
+                the match identifier and contact support via the Telegram bot chat. Flagged games are
+                reviewed from the move list the server stored for that match.
               </p>
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function FairPlayPage() {
         <section aria-labelledby="fair-play-faq-heading" className="space-y-6">
           <div className="section-index">
             <span>02 / Integrity FAQs</span>
-            <span>Anti-cheat, Stockfish &amp; telemetries</span>
+            <span>Anti-cheat, clocks &amp; disputes</span>
           </div>
           <div className="grid gap-8 lg:grid-cols-[.65fr_1fr]">
             <div className="space-y-4">
@@ -146,7 +146,7 @@ export default function FairPlayPage() {
                 Frequently asked questions on fair play
               </h2>
               <p className="text-body text-fg-muted">
-                How server-side move engines, anti-engine heuristic audits, and tamper-proof clocks protect players.
+                How server-side move validation, anti-collusion pairing, and tamper-proof clocks protect players.
               </p>
             </div>
             <Card>

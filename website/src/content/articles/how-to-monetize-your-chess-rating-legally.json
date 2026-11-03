@@ -2,7 +2,7 @@
   "slug": "how-to-monetize-your-chess-rating-legally",
   "title": "How to Monetize Your Chess Rating Online Legally",
   "subtitle": "From coaching and content creation to skill-based wager duels, a transparent breakdown of real earning paths for chess players.",
-  "excerpt": "A transparent guide to monetizing chess skills: coaching, prize pools, creator content, and skill-based non-custodial wager arenas.",
+  "excerpt": "A transparent guide to monetizing chess skills: coaching, prize pools, creator content, and skill-based crypto wager arenas.",
   "metaDescription": "Discover legal ways to monetize your chess skills and rating online. Learn about coaching, competitive wager duels, tournaments, and bankroll security.",
   "category": "Product",
   "author": {
@@ -12,10 +12,11 @@
     "kind": "Person"
   },
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-29",
   "readingTime": "4 min read",
   "takeaways": [
     "Chess is legally recognized globally as a game of 100% skill, distinct from chance-based gambling.",
-    "Non-custodial smart escrows allow players to challenge rivals for equal stakes with zero house edge.",
+    "Locked match stakes allow players to challenge rivals for equal amounts with zero house edge.",
     "Disciplined bankroll management is mandatory: never risk more than 2-5% of funds per match.",
     "Pairing daily tactical training with structured stake tiers creates a sustainable competitive loop."
   ],
@@ -38,7 +39,7 @@
     },
     {
       "type": "paragraph",
-      "text": "In Web3Chess, players stake equal amounts of USDT (e.g., $5 vs $5). An automated smart escrow holds both stakes. The victor receives 95% of the pot upon checkmate, while 3% covers platform infrastructure and 2% feeds the player affiliate pool."
+      "text": "In Web3Chess, players stake equal amounts of USDT (e.g., $5 vs $5). The platform locks both stakes until the game ends. The victor receives 95% of the pot upon checkmate, while 3% covers platform infrastructure and 2% feeds the player affiliate pool."
     },
     {
       "type": "quote",

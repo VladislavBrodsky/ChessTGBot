@@ -42,7 +42,7 @@ import { jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
   "Play Chess Online in Telegram & Win Real Crypto",
-  "Play chess inside Telegram with Web3Chess. Practice free against Stockfish, explore 100 tactical levels, and learn the rules for optional USDT chess matches.",
+  "Play chess inside Telegram with Web3Chess. Practice free against Free Coach, a computer opponent, explore 100 tactical levels, and learn the rules for optional USDT chess matches.",
   "",
   [
     "telegram chess bot",
@@ -53,7 +53,7 @@ export const metadata = pageMetadata(
     "earn crypto playing chess",
     "free chess puzzles online",
     "online chess tactics trainer",
-    "play chess vs stockfish online",
+    "play chess vs computer online",
     "usdt chess wager",
     "web3 chess",
   ],
@@ -63,7 +63,7 @@ export const metadata = pageMetadata(
 export const revalidate = 60;
 
 const FEATURE_STRIP = [
-  { amount: "Free Coach", text: "Practice against Stockfish", dot: "bg-win-fill", tone: "text-fg-win" },
+  { amount: "Free Coach", text: "Practice against the computer", dot: "bg-win-fill", tone: "text-fg-win" },
   { amount: "3 games", text: "Earn one free Mystery Box", dot: "bg-caution-soft", tone: "text-fg-caution" },
   { amount: "In-app rewards", text: "XP, XP boost, or profile border", dot: "bg-premium-soft", tone: "text-fg-premium" },
   { amount: "100 levels", text: "Learn chess tactics in the Academy", dot: "bg-fg-muted", tone: "text-fg-muted" },
@@ -103,13 +103,13 @@ const ACADEMY_TRACKS = [
 
 // Winner credit and net gain come from the shared settlement split, so the ladder can never drift from it.
 const STAKE_LADDER = [
-  { tier: "Micro Duel", pace: "Bullet 1+0", stake: 1, tag: "1-Min Duel" },
-  { tier: "Blitz Favorite", pace: "Blitz 3+2", stake: 5, tag: "Most Popular" },
-  { tier: "Arena Contender", pace: "Blitz 5+0", stake: 10, tag: "Active Pool" },
-  { tier: "High Roller", pace: "Rapid 10+0", stake: 25, tag: "Trending" },
-  { tier: "Championship Pot", pace: "Blitz 3+2", stake: 50, tag: "+90% Net ROI" },
-  { tier: "Grandmaster Table", pace: "Rapid 15+10", stake: 100, tag: "VIP Table" },
-  { tier: "Whales Arena", pace: "Blitz 5+3", stake: 250, tag: "Whales Club" },
+  { tier: "Micro Duel", pace: "1 min Bullet", stake: 1, tag: "1-Min Duel" },
+  { tier: "Blitz Favorite", pace: "3 min Blitz", stake: 5, tag: "Most Popular" },
+  { tier: "Arena Contender", pace: "5 min Blitz", stake: 10, tag: "Active Pool" },
+  { tier: "High Roller", pace: "10 min Rapid", stake: 25, tag: "Trending" },
+  { tier: "Championship Pot", pace: "3 min Blitz", stake: 50, tag: "+90% Net ROI" },
+  { tier: "Grandmaster Table", pace: "15 min Rapid", stake: 100, tag: "VIP Table" },
+  { tier: "Whales Arena", pace: "5 min Blitz", stake: 250, tag: "Whales Club" },
 ];
 
 const TRENDING_GUIDES = [
@@ -203,7 +203,7 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="hero-lead max-w-[42ch] text-fg-muted">
-                Play chess inside Telegram. Practice free against Stockfish, work through 100 Academy levels, and earn one Mystery Box after three qualifying games. Optional USDT matches pay 95% of the combined pot to the winner’s app balance.
+                Play chess inside Telegram. Practice free against the Free Coach computer opponent, work through 100 Academy levels, and earn one Mystery Box after three qualifying games. Optional USDT matches pay 95% of the combined pot to the winner’s app balance.
               </p>
             </div>
             <div className="hero-details space-y-4">
@@ -388,7 +388,7 @@ export default function HomePage() {
                 Free chess puzzles online &amp; Free Coach practice
               </h2>
               <p className="max-w-[42ch] section-lead text-fg-muted">
-                Master opening principles. Spot game-ending forks and pins. Calculate endgame conversions. Train against the Stockfish engine anytime without risking crypto.
+                Master opening principles. Spot game-ending forks and pins. Calculate endgame conversions. Train against Free Coach, our computer opponent, anytime without risking crypto.
               </p>
               <ButtonLink href="/academy" variant="secondary">
                 Enter the Academy
@@ -400,7 +400,7 @@ export default function HomePage() {
                 <Badge tone="accent" icon="graduation-cap">
                   100 Tactical Levels
                 </Badge>
-                <MetaLine items={[<span key="free" className="font-semibold text-fg-win">100% Free</span>, "Stockfish 16 Engine"]} />
+                <MetaLine items={[<span key="free" className="font-semibold text-fg-win">100% Free</span>, "3 Free Coach Levels"]} />
               </div>
               <ul className="academy-preview-list">
                 {ACADEMY_TRACKS.map((track) => (

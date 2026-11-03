@@ -98,7 +98,7 @@ export function AcademyRoadmap() {
       <div className="roadmap-stepper">
         <div className="roadmap-stepper-head">
           <strong>100-Level Tactical Academy Pipeline</strong>
-          <MetaLine items="4 Sequential Mastery Milestones · Stockfish 17 Engine" />
+          <MetaLine items="4 Sequential Mastery Milestones · Free Coach Practice" />
         </div>
         <div className="roadmap-steps" role="group" aria-label="Academy milestones">
           {ROADMAP_TRACKS.map((track) => (
@@ -169,7 +169,7 @@ export function AcademyRoadmap() {
         <dl>
           <div><dt>Total Levels</dt><dd>100 Levels</dd></div>
           <div><dt>Puzzles &amp; Drills</dt><dd>275+ Tactical Drills</dd></div>
-          <div><dt>Neural Engine</dt><dd>Stockfish 17 (800–2800)</dd></div>
+          <div><dt>Practice Opponent</dt><dd>Free Coach · 3 Levels</dd></div>
           <div><dt>Entry Cost</dt><dd>100% Free Practice</dd></div>
         </dl>
         <a href={telegramLink(WEBSITE_CAMPAIGNS.academy)} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "", "md")}>

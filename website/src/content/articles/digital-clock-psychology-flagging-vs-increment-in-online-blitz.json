@@ -12,12 +12,13 @@
     "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-29",
   "readingTime": "5 min read",
   "takeaways": [
     "In 3-minute blitz without increment, clock time is a physical piece on the board.",
     "Pre-moving during a scramble carries severe risks if the opponent possesses intermediate checks.",
     "Maintaining a 15-second time advantage forces the defender to commit tactical blunders.",
-    "Server latency compensation ensures Web3Chess matches are decided by calculation, not packet delay."
+    "Web3Chess clocks run on the server with no lag compensation, so a stable connection matters as much as calculation."
   ],
   "content": [
     {
@@ -54,11 +55,11 @@
     },
     {
       "type": "heading",
-      "text": "Sub-50ms Latency and Fair Speed Play"
+      "text": "Server Clocks and Fair Speed Play"
     },
     {
       "type": "paragraph",
-      "text": "Lag has historically ruined speed chess on mobile devices. The Web3Chess Telegram Mini App features authoritative clock synchronization with WebSocket ping compensation, ensuring that player moves register with zero local execution delay and fair time accounting across all devices."
+      "text": "Lag has historically ruined speed chess on mobile devices. In the Web3Chess Telegram Mini App the server keeps both clocks, so time is counted the same way on every device. There is no lag compensation, only a half-second buffer before a flag, and a disconnected player’s clock keeps running, so play on a stable connection."
     },
     {
       "type": "list",

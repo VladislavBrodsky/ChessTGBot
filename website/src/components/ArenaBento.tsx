@@ -36,7 +36,7 @@ export function ArenaBento() {
           <div className="arena-panel-heading">
             <span className="flex items-center gap-2 font-semibold text-fg">
               <i className="size-2 rounded-full bg-win-fill" aria-hidden="true" />
-              Example Blitz Match 3+2
+              Example 3 min Blitz match
             </span>
             <MetaLine items="Illustrative $25 stakes" />
           </div>
