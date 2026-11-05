@@ -12,6 +12,7 @@ import { apiFetch, getFullPhotoUrl } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
 import { telegramHaptic, telegramAlert } from '@/lib/telegram';
 import { copyToClipboard } from '@/lib/clipboard';
+import { friendInvitationLink, shareInvitation } from '@/lib/invitations';
 import { logTelemetryEvent } from '@/lib/telemetry';
 
 import { BetSlip } from './lobby/BetSlip';
@@ -30,12 +31,12 @@ import { Button } from '@/components/ui/Button';
 import { DepositDialog as DepositModal } from '@/components/Wallet/WalletDialogs';
 import { useUser } from '@/context/UserContext';
 import { useAudio } from '@/hooks/useAudio';
-import { isComputerOpponentName } from '@/lib/opponentIdentity';
 
 export default function PlayLobby() {
   const t = useTranslations('Index');
   const tg = useTranslations('Game');
   const tw = useTranslations('Wallet');
+  const ti = useTranslations('Invitations');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -112,33 +113,19 @@ export default function PlayLobby() {
   // The shared user cache owns the initial balance request.
   const refreshAfterDeposit = useCallback(async () => { await syncBalance(); }, [syncBalance]);
 
-  const getOpponentName = (name: string) => {
-    if (isComputerOpponentName(name)) {
-      return tg('ai_coach');
-    }
-    return name;
-  };
-
-  const handleShareResult = (game: any) => {
-    const resultText = game.result === 'win' ? t('secured_victory') : game.result === 'loss' ? t('fought_battle') : t('reached_stalemate');
-    const eloText = game.elo_change > 0 ? `+${game.elo_change}` : `${game.elo_change}`;
-    const botUsername = stats?.bot_username || "chess_matbot";
-    const message = `${resultText} ${t('against')} ${getOpponentName(game.opponent.name)}! 📈 ${t('global_ranking')}: ${eloText} ELO.\n\n${t('join_matrix')}: https://t.me/${botUsername}?start=${stats?.referral_code || ''}`;
-
-    let success = false;
-    if (typeof window !== 'undefined' && (window as any).Telegram?.WebApp) {
-      const tgApp = (window as any).Telegram.WebApp;
-      try {
-        tgApp.switchInlineQuery(message, ["users", "groups", "channels"]);
-        success = true;
-        telegramHaptic('medium');
-      } catch (err) {
-        console.warn("Telegram switchInlineQuery failed", err);
-      }
-    }
-    if (!success) {
-      copyToClipboard(message).then((ok) => {
-        if (ok) telegramAlert("Share link copied to clipboard!");
+  // A finished game cannot be watched and the bot only opens ref_/go_/fi_ links as invitations,
+  // so sharing a past result sends the player's personal invitation, as the result screen does.
+  // A ref_ link opens Free Coach practice for the friend (it is not a play request), so it gets the referral copy.
+  const friendInviteLink = friendInvitationLink(stats?.bot_username || "chess_matbot", stats?.referral_code);
+  const handleShareResult = () => {
+    if (!friendInviteLink) return;
+    telegramHaptic('selection');
+    try {
+      if (shareInvitation(friendInviteLink, ti('referral_share_text')) === false) throw new Error('Share blocked');
+    } catch (err) {
+      console.warn("Telegram share failed", err);
+      copyToClipboard(friendInviteLink).then((ok) => {
+        if (ok) telegramAlert(tg('invite_link_copied'));
       });
     }
   };
@@ -695,7 +682,7 @@ export default function PlayLobby() {
               {stats?.recent_games && stats.recent_games.length > 0 && (
                 <section className="w-full space-y-3" aria-labelledby="lobby-history-title">
                   <SectionHeader id="lobby-history-title" title={t('recent_activity')} />
-                  <GameHistoryList games={stats.recent_games.slice(0, 3)} onShare={handleShareResult} />
+                  <GameHistoryList games={stats.recent_games.slice(0, 3)} onShare={friendInviteLink ? handleShareResult : undefined} />
                 </section>
               )}
 
