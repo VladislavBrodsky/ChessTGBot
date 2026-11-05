@@ -36,7 +36,7 @@ async function prepare(page: Page) {
 }
 
 for (const [locale, width] of [['en', 320], ['ar', 390], ['en', 1280]] as const) {
-  test(`free friend challenge works without a balance at ${width}px ${locale}`, async ({ page }) => {
+  test(`human friend challenge requires a confirmed balance at ${width}px ${locale}`, async ({ page }) => {
     await prepare(page);
     await page.setViewportSize({ width, height: 900 });
     // Community launches authenticate on Home before navigating to Play.
@@ -48,12 +48,8 @@ for (const [locale, width] of [['en', 320], ['ar', 390], ['en', 1280]] as const)
     await button.click();
     const drawer = page.getByRole('dialog');
     await expect(drawer).toBeVisible();
-    const request = page.waitForRequest(request => request.url().includes('/game/create'));
-    await drawer.getByRole('button', { name: locale === 'ar' ? 'إنشاء مباراة مجانية' : 'Create free game' }).click();
-    const url = new URL((await request).url());
-    expect(url.searchParams.get('type')).toBe('online');
-    expect(url.searchParams.get('wager')).toBe('0');
-    await expect(page).toHaveURL(new RegExp(`/${locale}/game\\?id=e2e-ai-game`), { timeout: 30000 });
+    await expect(drawer.getByRole('button', { name: /Create and stake|إنشاء/ }).last()).toBeDisabled();
+    await expect(drawer.getByText(locale === 'ar' ? 'إنشاء مباراة مجانية' : 'Create free game')).toHaveCount(0);
   });
 }
 

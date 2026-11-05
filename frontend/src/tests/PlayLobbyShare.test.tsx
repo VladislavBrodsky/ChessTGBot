@@ -32,6 +32,7 @@ jest.mock('@/components/EngagementQuest', () => () => null);
 jest.mock('@/components/game/AiDifficultyDrawer', () => () => null);
 jest.mock('@/components/game/RakeInfoDrawer', () => () => null);
 jest.mock('@/components/game/FriendChallengeDrawer', () => () => null);
+jest.mock('@/components/game/BalanceOpportunity', () => ({ BalanceOpportunity: () => null }));
 jest.mock('@/components/Wallet/WalletDialogs', () => ({ DepositDialog: () => null }));
 
 const recentGames = [
@@ -40,12 +41,11 @@ const recentGames = [
   { game_id: 'g3', result: 'draw', elo_change: 0, opponent: { name: 'Eve', elo: 1100 } },
 ];
 const invite = 'https://t.me/chess_bot?startapp=ref_abc123';
-const wonText = 'I just won a chess match on Web3Chess ♟️ Think you can beat me? Open my invitation and send me a free play request.';
-const playedText = 'I just played a chess match on Web3Chess ♟️ Play me next: open my invitation and send me a free play request.';
+const referralText = 'Join me on Web3Chess through this invitation. Start with Free Coach; human matches use USDT stakes.';
 
-function renderLobby(referralCode: string | undefined, games = recentGames) {
+function renderLobby(referralCode: string | undefined) {
   (useUser as jest.Mock).mockReturnValue({
-    stats: { referral_code: referralCode, bot_username: 'chess_bot', recent_games: games },
+    stats: { referral_code: referralCode, bot_username: 'chess_bot', recent_games: recentGames },
     walletBalance: 1250, syncBalance: jest.fn(), loadingBalance: false, balanceError: false,
   });
   return render(<PlayLobby />);
@@ -59,21 +59,16 @@ beforeEach(() => {
 it('shares the personal startapp=ref_ invitation from a recent game, never a bare start= code', () => {
   renderLobby('abc123');
   fireEvent.click(screen.getByRole('button', { name: 'Share Result: Bob' }));
-  expect(shareInvitation).toHaveBeenCalledWith(invite, wonText);
+  expect(shareInvitation).toHaveBeenCalledWith(invite, referralText);
 });
 
-it('only claims a win over a person; Free Coach wins and draws share the neutral text', () => {
+it('uses the referral copy for every result, since a ref_ link opens Free Coach practice, not a play request', () => {
   renderLobby('abc123');
   fireEvent.click(screen.getByRole('button', { name: 'Share Result: Free Coach' }));
   fireEvent.click(screen.getByRole('button', { name: 'Share Result: Eve' }));
-  expect(shareInvitation).toHaveBeenNthCalledWith(1, invite, playedText);
-  expect(shareInvitation).toHaveBeenNthCalledWith(2, invite, playedText);
-});
-
-it('treats a legacy computer name as Free Coach too', () => {
-  renderLobby('abc123', [{ game_id: 'g4', result: 'win', elo_change: 0, opponent: { name: 'A.I. Coach', elo: 1000 } }]);
-  fireEvent.click(screen.getByRole('button', { name: /^Share Result:/ }));
-  expect(shareInvitation).toHaveBeenCalledWith(invite, playedText);
+  expect(shareInvitation).toHaveBeenNthCalledWith(1, invite, referralText);
+  expect(shareInvitation).toHaveBeenNthCalledWith(2, invite, referralText);
+  expect((shareInvitation as jest.Mock).mock.calls.every(([, text]) => !/play request|accept my request/.test(text))).toBe(true);
 });
 
 it('copies the invitation with a localized notice when the share sheet cannot open', async () => {
@@ -81,6 +76,15 @@ it('copies the invitation with a localized notice when the share sheet cannot op
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   renderLobby('abc123');
   fireEvent.click(screen.getByRole('button', { name: 'Share Result: Bob' }));
+  expect(copyToClipboard).toHaveBeenCalledWith(invite);
+  await waitFor(() => expect(telegramAlert).toHaveBeenCalledWith('Invite link copied'));
+});
+
+it('also copies the invitation when the browser blocks the share popup', async () => {
+  (shareInvitation as jest.Mock).mockReturnValueOnce(false);
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
+  renderLobby('abc123');
+  fireEvent.click(screen.getByRole('button', { name: 'Share Result: Eve' }));
   expect(copyToClipboard).toHaveBeenCalledWith(invite);
   await waitFor(() => expect(telegramAlert).toHaveBeenCalledWith('Invite link copied'));
 });

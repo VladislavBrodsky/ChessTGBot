@@ -41,7 +41,16 @@ export async function createStudioRenderer() {
       .replace('from "@/icons/generated"', 'from "/icons.js"')
       .replace('from "./model"', 'from "/model.js"')],
   ]);
-  const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  const chromiumPath = process.env.W3_CHROMIUM_EXECUTABLE_PATH;
+  const launchOptions = { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] };
+  if (chromiumPath) launchOptions.executablePath = chromiumPath;
+  let browser;
+  try {
+    browser = await chromium.launch(launchOptions);
+  } catch (error) {
+    const detail = String(error?.message || error);
+    throw new Error(`Creatives renderer could not launch Chromium. Run "cd frontend && npx playwright install chromium" using the locked dependencies, or set W3_CHROMIUM_EXECUTABLE_PATH to a compatible Chromium/Chrome executable. Original error: ${detail}`, { cause: error });
+  }
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const page = await context.newPage();
   const blocked = [];

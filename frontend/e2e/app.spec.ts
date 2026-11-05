@@ -134,7 +134,7 @@ test.describe('browser safety net', () => {
     await page.goto('/en/game', { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: /Play Free Coach/i }).click();
     await expect(page.getByRole('dialog', { name: 'Choose Free Coach difficulty' })).toBeVisible();
-    await expect(page.getByText('Play free against a computer opponent. Choose a difficulty.')).toBeVisible();
+    await expect(page.getByText('Choose a Free Coach level')).toBeVisible();
     await page.getByRole('button', { name: 'Easy 800 Elo' }).click();
     await expect(page.getByRole('button', { name: 'Start practice game' })).toBeVisible();
   });
