@@ -51,6 +51,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Browsers go straight to HTTPS on repeat visits instead of taking the
+        // http -> https redirect first. No includeSubDomains: other subdomains
+        // are not under this service's control.
+        source: "/:path*",
+        headers: [{ key: "Strict-Transport-Security", value: "max-age=31536000" }],
+      },
+      {
         source: "/((?!_next|favicon.ico).*)",
         headers: [
           {

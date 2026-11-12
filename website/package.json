@@ -8,6 +8,7 @@
     "build": "npm run content:check && npm run ui:check && next build --webpack && npm run ui:check -- --compiled",
     "content:check": "node scripts/check-content.mjs",
     "seo:check": "node scripts/check-seo.mjs",
+    "seo:indexnow": "node scripts/indexnow.mjs",
     "start": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",

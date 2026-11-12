@@ -777,7 +777,8 @@
     "friend_share_staked": "チェスで対戦しよう — 掛け金 {amount} USDT",
     "friend_rematch_free": "無料で再戦",
     "friend_invite_failed": "招待を作成できませんでした。もう一度お試しください",
-    "your_time": "あなたの持ち時間"
+    "your_time": "あなたの持ち時間",
+    "rematch_stake_required": "他のプレイヤーとの再戦にはステークが必要です。ロビーからステーク付きのチャレンジを始めるか、Free Coach で無料で練習しましょう。"
   },
   "Wallet": {
     "wager_stake": "参加金額",
@@ -1453,7 +1454,10 @@
     "invite_cooldown": "次のリクエストまで1分お待ちください",
     "self_invitation": "友達にリンクを送ると一緒に対局できます",
     "unavailable": "接続できませんでした — 通信状況を確認して再試行してください",
-    "referral_share_text": "この招待から Web3Chess に参加しよう。Free Coach から始められます。人間同士の対局には USDT の賭け金が必要です。"
+    "referral_share_text": "この招待から Web3Chess に参加しよう。Free Coach から始められます。人間同士の対局には USDT の賭け金が必要です。",
+    "stake_required": "他のプレイヤーとの対局には $1.00 以上のステークが必要です。ステーク付きのチャレンジを送るか、Free Coach で無料で練習しましょう。",
+    "decline_help": "友達との無料対局は終了しました。このリクエストを辞退し、友達にステーク付きのチャレンジを送るか、Free Coach で無料で練習しましょう。",
+    "cancel_help": "友達との無料対局は終了しました。このリクエストを取り消し、友達にステーク付きのチャレンジを頼むか、Free Coach で無料で練習しましょう。"
   },
   "BalanceOpportunity": {
     "shortfall": "この対局にはあと {amount} USDT 必要です",

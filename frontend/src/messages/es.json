@@ -777,7 +777,8 @@
     "friend_share_staked": "Juega al ajedrez conmigo — apuesta de {amount} USDT",
     "friend_rematch_free": "Revancha gratis",
     "friend_invite_failed": "No se pudo crear la invitación. Inténtalo de nuevo",
-    "your_time": "Tu tiempo"
+    "your_time": "Tu tiempo",
+    "rematch_stake_required": "Las revanchas contra otros jugadores requieren una apuesta. Crea un desafío con apuesta desde el lobby o practica gratis con Free Coach."
   },
   "Wallet": {
     "wager_stake": "Apuesta",
@@ -1453,7 +1454,10 @@
     "invite_cooldown": "Espera un minuto antes de enviar otra solicitud",
     "self_invitation": "Comparte tu enlace con un amigo para jugar juntos",
     "unavailable": "No pudimos conectar — revisa tu conexión e inténtalo de nuevo",
-    "referral_share_text": "Únete a mí en Web3Chess con esta invitación. Empieza con Free Coach; las partidas entre personas requieren apuestas USDT."
+    "referral_share_text": "Únete a mí en Web3Chess con esta invitación. Empieza con Free Coach; las partidas entre personas requieren apuestas USDT.",
+    "stake_required": "Las partidas contra otros jugadores requieren una apuesta mínima de $1.00. Envía un desafío con apuesta o practica gratis con Free Coach.",
+    "decline_help": "Las partidas gratis con amigos han terminado. Rechaza esta solicitud y envía a tu amigo un desafío con apuesta, o practica gratis con Free Coach.",
+    "cancel_help": "Las partidas gratis con amigos han terminado. Cancela esta solicitud y pide a tu amigo un desafío con apuesta, o practica gratis con Free Coach."
   },
   "BalanceOpportunity": {
     "shortfall": "Añade {amount} USDT para esta partida",

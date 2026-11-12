@@ -1,4 +1,4 @@
-"""Returning-player links, recovery, consent and free challenge invariants."""
+"""Returning-player links, recovery, consent, and the rule that friend requests never start a free human game."""
 from datetime import timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
@@ -68,7 +68,7 @@ async def test_public_referral_is_attributed_without_becoming_an_inbox_request(d
     assert await db_session.get(PlayerLaunchIntent, guest.telegram_id) is None
 
 
-async def test_request_consent_idempotent_free_game_and_no_money(db_session, people):
+async def test_request_is_idempotent_and_accepting_it_never_starts_a_free_game(db_session, people):
     host, guest, other = people
     first = await invites.request_game(db_session, guest, 'ref_friendhost')
     again = await invites.request_game(db_session, guest, 'ref_friendhost')
@@ -80,13 +80,15 @@ async def test_request_consent_idempotent_free_game_and_no_money(db_session, peo
     with pytest.raises(HTTPException) as error:
         await invites.preview(db_session, other, 'fi_' + first['id'])
     assert error.value.status_code == 404
-    accepted = await invites.respond(db_session, host, first['id'], 'accept')
-    replay = await invites.respond(db_session, host, first['id'], 'accept')
-    assert accepted['status'] == 'ready' and accepted['game_id'] == replay['game_id']
-    state = await GameService().session_manager.get_game(accepted['game_id'])
-    assert (state.white_player_id, state.black_player_id) == (host.telegram_id, guest.telegram_id)
-    assert state.bid_amount == 0 and state.time_control_seconds == 600 and state.first_move_grace_seconds == 180
-    assert (await invites.inbox(db_session, guest))['invitations'][0]['game_id'] == accepted['game_id']
+    # Every human game is wagered, so the host can no longer accept a (free) request.
+    for _ in range(2):
+        with pytest.raises(HTTPException) as error:
+            await invites.respond(db_session, host, first['id'], 'accept')
+        assert error.value.status_code == 410 and error.value.detail['code'] == 'stake_required'
+    assert not [key for key in SessionManager._memory_store if key.startswith('game:')]
+    row = await db_session.get(FriendInvite, first['id'])
+    assert row.status == 'pending'  # still declinable/cancellable
+    assert (await invites.respond(db_session, host, first['id'], 'decline'))['status'] == 'declined'
     from app.models.transaction import Transaction
     assert (await db_session.execute(select(Transaction))).scalars().all() == []
     assert host.balance == guest.balance == 0
@@ -110,7 +112,7 @@ async def test_expired_self_and_busy_requests(db_session, people):
     await GameService().session_manager.save_game('busyhuman', busy)
     with pytest.raises(HTTPException) as error:
         await invites.respond(db_session, host, view['id'], 'accept')
-    assert error.value.detail['code'] == 'player_busy'
+    assert error.value.detail['code'] == 'stake_required'
     row = await db_session.get(FriendInvite, view['id'])
     row.expires_at = invites.utcnow() - timedelta(seconds=1); await db_session.commit()
     assert (await invites.respond(db_session, host, view['id'], 'accept'))['status'] == 'expired'
@@ -151,7 +153,10 @@ async def test_exact_reported_legacy_game_parameter_and_lost_launch_recovery(db_
     assert error.value.detail['code'] == 'expired_invitation'
 
 
-async def test_sql_failure_after_game_creation_recovers_same_game(db_session, people):
+async def test_a_game_already_created_before_a_restart_is_still_reopened(db_session, people):
+    # Both seats were filled before the accept's SQL commit (and before human games
+    # required a stake). That game already exists, so the inbox reopens it rather
+    # than stranding two players; no new free game is ever created here.
     host, guest, _ = people
     view = await invites.request_game(db_session, guest, 'ref_friendhost')
     row = await db_session.get(FriendInvite, view['id'])

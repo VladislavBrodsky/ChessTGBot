@@ -41,6 +41,12 @@ SCORE_LOSS = 0
 PRIZE_XP = [200, 100, 50]
 PARTICIPATION_XP = 10
 
+# Arena games are free human-vs-human games, and every human game must now be
+# wagered (free play is the AI coach only). While False: no new arena is scheduled,
+# announced or paired, joins are refused, and an arena already live when this
+# shipped just runs out its clock and settles its prizes.
+ARENA_ENABLED = False
+
 NOTIFY_BEFORE_MINUTES = 15
 SETTLE_GRACE_SECONDS = 240  # let in-flight games finish before prizes
 LOOP_INTERVAL_SECONDS = 4
@@ -496,7 +502,7 @@ async def _tick_owned(service: ArenaService) -> None:
                     active.status = "settling"
                     await db.commit()
                     logger.info(f"Arena {active.id} window closed; settling in-flight games")
-                else:
+                elif ARENA_ENABLED:
                     await service.pair_waiting_players()
             elif now >= active.ends_at + timedelta(seconds=SETTLE_GRACE_SECONDS):
                 awarded = await service.award_prizes(db, active.id)
@@ -510,6 +516,8 @@ async def _tick_owned(service: ArenaService) -> None:
             return
 
         # 2. No active arena: manage the next scheduled window
+        if not ARENA_ENABLED:
+            return
         starts_at, ends_at = ArenaService.window_for(now)
         arena = await service.get_or_create_arena(db, starts_at, ends_at)
 

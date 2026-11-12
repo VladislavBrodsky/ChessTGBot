@@ -27,7 +27,6 @@ jest.mock('@/components/game/lobby/BetSlip', () => ({ BetSlip: () => null }));
 jest.mock('@/components/game/lobby/LobbyHero', () => ({ LobbyHero: () => null }));
 jest.mock('@/components/game/lobby/DailyGoal', () => ({ DailyGoal: () => null }));
 jest.mock('@/components/game/lobby/RecentResults', () => ({ RecentResults: () => null }));
-jest.mock('@/components/game/ArenaBanner', () => () => null);
 jest.mock('@/components/EngagementQuest', () => () => null);
 jest.mock('@/components/game/AiDifficultyDrawer', () => () => null);
 jest.mock('@/components/game/RakeInfoDrawer', () => () => null);

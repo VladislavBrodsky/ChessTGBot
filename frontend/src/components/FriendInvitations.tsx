@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext';
 import { InvitationContext, useInvitations, type Invitation } from '@/context/InvitationContext';
 import { apiFetch } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
-import { isCampaignParameter, readLaunchParameter, shareInvitation } from '@/lib/invitations';
+import { isCampaignParameter, readLaunchParameter } from '@/lib/invitations';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { MetaLine } from '@/components/ui/MetaLine';
@@ -170,7 +170,7 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'unavailable'); }
     finally { setLoading(false); }
   };
-  const errorKey = ['invalid_invitation', 'expired_invitation', 'invitation_full', 'player_busy', 'invite_cooldown', 'self_invitation'].includes(error) ? error : 'unavailable';
+  const errorKey = ['invalid_invitation', 'expired_invitation', 'invitation_full', 'player_busy', 'invite_cooldown', 'self_invitation', 'stake_required'].includes(error) ? error : 'unavailable';
   const status = selected?.status;
   const title = selected?.self ? t('own_link') : selected?.kind === 'friend' ? t('invited', { name: selected.opponent.name })
     : selected?.kind === 'game' ? t('join_title') : status === 'ready' ? t('ready')
@@ -186,19 +186,19 @@ export function InvitationProvider({ children }: { children: ReactNode }) {
       <div className="space-y-4">
         {selected && <>
           <div className="flex min-w-0 items-center gap-3"><Avatar name={selected.opponent.name} size="lg" /><div className="min-w-0"><p className="break-words font-semibold text-brand-primary">{selected.opponent.name}</p>{selected.opponent.elo != null && <p className="text-sm text-brand-muted">{t('rating', { rating: selected.opponent.elo })}</p>}</div></div>
-          <Card variant="solid" className="space-y-1 p-3"><MetaLine className="font-semibold text-brand-primary"><span>{selected.free ? t('free_game') : t('paid_game', { amount: ((selected.wager || 0) / 100).toFixed(2) })}</span><span>{t('minutes', { minutes: Math.round(selected.time_control / 60) })}</span></MetaLine><p className="text-sm text-brand-muted">{selected.free ? t('no_wallet') : t('paid_notice')}</p></Card>
-          <p className="text-sm leading-relaxed text-brand-muted" role="status">{selected.self ? t('own_help') : selected.kind === 'friend' ? t('request_help') : selected.kind === 'game' ? t('join_help') : status === 'ready' ? t('ready_help') : status === 'pending' ? t(selected.role === 'host' ? 'accept_help' : 'waiting_help') : t('closed_help')}</p>
+          <Card variant="solid" className="space-y-1 p-3"><MetaLine className="font-semibold text-brand-primary"><span>{selected.free ? t('free_game') : t('paid_game', { amount: ((selected.wager || 0) / 100).toFixed(2) })}</span><span>{t('minutes', { minutes: Math.round(selected.time_control / 60) })}</span></MetaLine><p className="text-sm text-brand-muted">{selected.free ? t('stake_required') : t('paid_notice')}</p></Card>
+          <p className="text-sm leading-relaxed text-brand-muted" role="status">{selected.self ? t('own_help') : selected.kind === 'friend' ? t('request_help') : selected.kind === 'game' ? t('join_help') : status === 'ready' ? t('ready_help') : status === 'pending' ? t(selected.role === 'host' ? 'decline_help' : 'cancel_help') : t('closed_help')}</p>
         </>}
         {inboxUnavailable && selected && !error && <ErrorState title={t('error_title')} message={t('unavailable')} onRetry={() => window.dispatchEvent(new Event('focus'))} retryLabel={t('retry')} />}
         {error && <ErrorState title={t('error_title')} message={t(errorKey)} onRetry={!selected ? () => { handled.current.delete(key(parameter)); void resolve(parameter); } : undefined} retryLabel={t('retry')} />}
         {loading && !selected && <p role="status" className="text-sm text-brand-muted">{t('loading')}</p>}
         {selected?.kind === 'friend' && !selected.self && <Button variant="primary" className="w-full" isLoading={loading} onClick={() => void act('request')}>{t('send_request')}</Button>}
-        {selected?.kind === 'game' && selected.game_id && <Button variant="primary" className="w-full" onClick={() => navigate(selected.game_id!)}>{t(selected.free ? 'join_game' : 'review_game', { amount: ((selected.wager || 0) / 100).toFixed(2) })}</Button>}
+        {selected?.kind === 'game' && selected.game_id && !selected.free && <Button variant="primary" className="w-full" onClick={() => navigate(selected.game_id!)}>{t('review_game', { amount: ((selected.wager || 0) / 100).toFixed(2) })}</Button>}
         {selected?.kind === 'request' && status === 'pending' && <div className="space-y-2">
-          {selected.role === 'host' ? <><Button variant="primary" className="w-full" isLoading={loading} onClick={() => void act('accept')}>{t('accept')}</Button><Button variant="secondary" className="w-full" disabled={loading} onClick={() => void act('decline')}>{t('decline')}</Button></> : <>
-            <Button variant="primary" className="w-full" disabled={loading} onClick={() => selected.url && shareInvitation(selected.url, t('share_text'))}>{t('notify_friend')}</Button>
-            <Button variant="secondary" className="w-full" isLoading={loading} onClick={() => void act('cancel')}>{t('cancel')}</Button>
-          </>}
+          {/* Friend requests only ever started free games; every human game is now staked, so they can only be closed. */}
+          {selected.role === 'host'
+            ? <Button variant="secondary" className="w-full" isLoading={loading} onClick={() => void act('decline')}>{t('decline')}</Button>
+            : <Button variant="secondary" className="w-full" isLoading={loading} onClick={() => void act('cancel')}>{t('cancel')}</Button>}
         </div>}
         {status === 'ready' && selected?.game_id && <Button variant="primary" className="w-full" onClick={() => navigate(selected.game_id!)}>{t('open_game')}</Button>}
         {(!selected || selected.self || (status && !['ready', 'pending'].includes(status))) && !loading && <Button variant="secondary" className="w-full" onClick={close}>{t('close')}</Button>}

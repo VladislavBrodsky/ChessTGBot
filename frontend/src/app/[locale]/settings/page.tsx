@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { FiBell, FiChevronDown, FiChevronRight, FiCreditCard, FiHelpCircle, FiMoon, FiRefreshCw, FiSettings, FiShield, FiSliders, FiVolume2, FiZap } from 'react-icons/fi';
+import { FiChevronDown, FiChevronRight, FiCreditCard, FiHelpCircle, FiMoon, FiRefreshCw, FiSettings, FiShield, FiSliders, FiVolume2, FiZap } from 'react-icons/fi';
 import { FaGem } from 'react-icons/fa';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -52,7 +52,7 @@ export default function SettingsPage() {
   const { reducedMotion, setReducedMotion } = useReducedMotionPreference();
   const { soundEnabled, setSoundEnabled } = useSoundPreference();
   const toast = useToast();
-  const { walletAddress, stats, syncStats, syncBalance, loadingStats, loadingBalance, gramLeaderboardVisible } = useUser();
+  const { walletAddress, stats, syncStats, syncBalance, loadingBalance, gramLeaderboardVisible } = useUser();
   const [isSavingGram, setIsSavingGram] = useState(false);
   const [gramVisible, setGramVisible] = useState(false);
   useEffect(() => { if (typeof gramLeaderboardVisible === "boolean") setGramVisible(gramLeaderboardVisible); }, [gramLeaderboardVisible]);
@@ -68,31 +68,6 @@ export default function SettingsPage() {
   };
   const [showHelp, setShowHelp] = useState(false);
   const [isResyncing, setIsResyncing] = useState(false);
-  const [arenaAlerts, setArenaAlerts] = useState(true);
-  const [isSavingAlerts, setIsSavingAlerts] = useState(false);
-
-  useEffect(() => {
-    if (typeof stats?.arena_notifications === 'boolean') setArenaAlerts(stats.arena_notifications);
-  }, [stats?.arena_notifications]);
-
-  const handleArenaAlertsToggle = async (next: boolean) => {
-    if (isSavingAlerts) return;
-    const previous = arenaAlerts;
-    setArenaAlerts(next);
-    setIsSavingAlerts(true);
-    try {
-      const response = await apiFetch('/api/v1/gamification/arena-notifications', {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ enabled: next }),
-      });
-      if (!response.ok) throw new Error('Preference update failed');
-      // Revalidate independently: a refresh failure must not undo a saved preference.
-      void syncStats().catch(() => {});
-    } catch {
-      setArenaAlerts(previous);
-      toast.error(t('alerts_error'));
-    } finally { setIsSavingAlerts(false); }
-  };
-
   const handleResync = async () => {
     if (isResyncing) return;
     setIsResyncing(true);
@@ -124,9 +99,6 @@ export default function SettingsPage() {
                 checked={reducedMotion} onChange={setReducedMotion} />
               <SettingToggle icon={<FiVolume2 />} label={t('audio_protocol')} description={t('sound_description')}
                 checked={soundEnabled} onChange={setSoundEnabled} />
-              <SettingToggle icon={<FiBell />} label={t('arena_alerts')} description={isSavingAlerts ? t('saving') : t('arena_description')}
-                checked={arenaAlerts} onChange={handleArenaAlertsToggle} busy={isSavingAlerts}
-                disabled={isSavingAlerts || (!stats && loadingStats)} />
             </div>
           </Card>
         </section>

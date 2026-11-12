@@ -777,7 +777,8 @@
     "friend_share_staked": "和我下国际象棋 — 赌注 {amount} USDT",
     "friend_rematch_free": "免费再战",
     "friend_invite_failed": "无法创建邀请，请重试",
-    "your_time": "你的时间"
+    "your_time": "你的时间",
+    "rematch_stake_required": "与其他玩家的复赛需要赌注。请在大厅发起带赌注的挑战，或与 Free Coach 免费练习。"
   },
   "Wallet": {
     "wager_stake": "对局金额",
@@ -1453,7 +1454,10 @@
     "invite_cooldown": "请等一分钟再发送请求",
     "self_invitation": "向好友分享你的链接即可一起对弈",
     "unavailable": "无法连接 — 请检查网络后重试",
-    "referral_share_text": "通过此邀请加入 Web3Chess。先体验 Free Coach；真人对局需要 USDT 赌注。"
+    "referral_share_text": "通过此邀请加入 Web3Chess。先体验 Free Coach；真人对局需要 USDT 赌注。",
+    "stake_required": "与其他玩家对局需要至少 $1.00 的赌注。发送带赌注的挑战，或与 Free Coach 免费练习。",
+    "decline_help": "与好友的免费对局已结束。请拒绝此请求，然后向好友发送带赌注的挑战，或与 Free Coach 免费练习。",
+    "cancel_help": "与好友的免费对局已结束。请取消此请求，然后请好友发起带赌注的挑战，或与 Free Coach 免费练习。"
   },
   "BalanceOpportunity": {
     "shortfall": "本局还需 {amount} USDT",

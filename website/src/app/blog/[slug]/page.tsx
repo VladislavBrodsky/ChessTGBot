@@ -17,7 +17,7 @@ import { Footer } from "@/components/Footer";
 import { MobileCta } from "@/components/MobileCta";
 import { SITE } from "@/lib/config";
 import { Icon } from "@/icons";
-import { jsonLd } from "@/lib/seo";
+import { fitTitle, jsonLd } from "@/lib/seo";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ArticleToc } from "@/components/ArticleToc";
@@ -95,6 +95,8 @@ export async function generateMetadata({
   }
 
   const url = `${SITE.url}/blog/${post.slug}`;
+  // Single slug words ("can", "you", "if") are not keywords; listing them only
+  // reads as stuffing to engines that still look at meta keywords.
   const keywords = [
     post.title,
     post.category,
@@ -102,11 +104,10 @@ export async function generateMetadata({
     "speed chess",
     "chess strategy",
     "play chess online",
-    ...post.slug.split("-"),
   ];
 
   return {
-    title: post.title,
+    title: fitTitle(post.title),
     description: post.metaDescription ?? post.excerpt,
     keywords,
     authors: [{ name: post.author.name }],

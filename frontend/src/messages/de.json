@@ -777,7 +777,8 @@
     "friend_share_staked": "Spiele mit mir Schach — Einsatz {amount} USDT",
     "friend_rematch_free": "Kostenlose Revanche",
     "friend_invite_failed": "Einladung konnte nicht erstellt werden. Versuche es erneut",
-    "your_time": "Deine Zeit"
+    "your_time": "Deine Zeit",
+    "rematch_stake_required": "Revanchen gegen andere Spieler erfordern einen Einsatz. Starte in der Lobby eine Herausforderung mit Einsatz oder trainiere kostenlos mit Free Coach."
   },
   "Wallet": {
     "wager_stake": "Einsatz",
@@ -1453,7 +1454,10 @@
     "invite_cooldown": "Warte eine Minute, bevor du eine weitere Anfrage sendest",
     "self_invitation": "Teile deinen Link mit einem Freund, um gemeinsam zu spielen",
     "unavailable": "Verbindung fehlgeschlagen — prüfe deine Verbindung und versuche es erneut",
-    "referral_share_text": "Komm über diese Einladung zu Web3Chess. Starte mit Free Coach; Partien gegen Menschen erfordern USDT-Einsätze."
+    "referral_share_text": "Komm über diese Einladung zu Web3Chess. Starte mit Free Coach; Partien gegen Menschen erfordern USDT-Einsätze.",
+    "stake_required": "Partien gegen andere Spieler erfordern einen Einsatz von mindestens 1,00 $. Sende eine Herausforderung mit Einsatz oder trainiere kostenlos mit Free Coach.",
+    "decline_help": "Kostenlose Partien mit Freunden gibt es nicht mehr. Lehne diese Anfrage ab und sende deinem Freund eine Herausforderung mit Einsatz oder trainiere kostenlos mit Free Coach.",
+    "cancel_help": "Kostenlose Partien mit Freunden gibt es nicht mehr. Brich diese Anfrage ab und bitte deinen Freund um eine Herausforderung mit Einsatz oder trainiere kostenlos mit Free Coach."
   },
   "BalanceOpportunity": {
     "shortfall": "Für diese Partie fehlen {amount} USDT",

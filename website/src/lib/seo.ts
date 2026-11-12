@@ -1,6 +1,19 @@
 import type { Metadata } from "next";
 import { SITE } from "./config";
 
+/** Google truncates titles at roughly 600px, about 60 characters. */
+export const MAX_TITLE_LENGTH = 60;
+
+/**
+ * Title for a child route. The root layout appends " · Web3Chess"; drop that
+ * suffix when the result would be cut off in search results, or when the title
+ * already names the brand (otherwise it would say Web3Chess twice).
+ */
+export function fitTitle(title: string): Metadata["title"] {
+  if (title.includes(SITE.name)) return { absolute: title };
+  return `${title} · ${SITE.name}`.length > MAX_TITLE_LENGTH ? { absolute: title } : title;
+}
+
 export function pageMetadata(
   title: string,
   description: string,
@@ -19,7 +32,7 @@ export function pageMetadata(
     title:
       path === "" || path === "/"
         ? { absolute: cleanTitle }
-        : title,
+        : fitTitle(title),
     description,
     keywords: keywords ?? [
       "telegram chess bot",

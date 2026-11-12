@@ -777,7 +777,8 @@
     "friend_share_staked": "Play chess with me — stake {amount} USDT",
     "friend_rematch_free": "Free rematch",
     "friend_invite_failed": "Could not create an invitation. Please try again",
-    "your_time": "Your time"
+    "your_time": "Your time",
+    "rematch_stake_required": "Rematches against other players need a stake. Start a staked challenge from the lobby, or practise free with Free Coach."
   },
   "Wallet": {
     "wager_stake": "Wager stake",
@@ -1453,7 +1454,10 @@
     "invite_cooldown": "Please wait a minute before sending another request",
     "self_invitation": "Share your link with a friend to play together",
     "unavailable": "We could not connect — check your connection and try again",
-    "referral_share_text": "Join me on Web3Chess through this invitation. Start with Free Coach; human matches use USDT stakes."
+    "referral_share_text": "Join me on Web3Chess through this invitation. Start with Free Coach; human matches use USDT stakes.",
+    "stake_required": "Games against other players need a stake of at least $1.00. Send a staked challenge, or practise free with Free Coach.",
+    "decline_help": "Free friend games have ended. Decline this request, then send your friend a staked challenge or practise free with Free Coach.",
+    "cancel_help": "Free friend games have ended. Cancel this request, then ask your friend for a staked challenge or practise free with Free Coach."
   },
   "BalanceOpportunity": {
     "shortfall": "Add {amount} USDT for this match",
