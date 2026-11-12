@@ -51,6 +51,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
   const router = useRouter();
   const locale = useLocale();
   const tg = useTranslations('Game');
+  const ti = useTranslations('Invitations');
 
   const { playTickSound } = useAudioSynth();
   const { play: playAudio } = useAudio();
@@ -669,7 +670,8 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
 
   // Once both players are in, there is nothing left to join and no spectator view (the server
   // refuses non-players), and the page URL opens outside Telegram. The in-game and result
-  // shares send the player's personal invitation instead, so a friend can ask for the next game.
+  // shares send the player's personal referral invitation instead. A ref_ link opens Free Coach practice for
+  // the friend, not a play request, so it carries the referral copy rather than a result-specific message.
   const friendInviteLink = friendInvitationLink(botUsername, userStats?.referral_code);
   const shareFriendInvite = (shareText: string) => {
     if (!friendInviteLink) return;
@@ -1018,7 +1020,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
             rematchStatus={rematchStatus}
             onShowRematchChoice={isBotGame ? startBotGameRevenge : () => setShowRematchChoice(true)}
             onShareGame={friendInviteLink
-              ? () => shareFriendInvite(tg(outcome === 'win' && !isBotGame ? 'share_text_won' : 'share_text_played'))
+              ? () => shareFriendInvite(ti('referral_share_text'))
               : undefined}
             newElo={myNewElo}
             copied={copied}
