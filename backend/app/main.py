@@ -324,6 +324,8 @@ async def lifespan(app: FastAPI):
     from app.services.telemetry_maintenance import start_telemetry_maintenance_loop
 
     from app.services.player_tracking import start_player_tracking_loop
+    # Post-hoc engine screening of finished wagered games (holds flagged players' withdrawals)
+    from app.services.fair_play import start_fair_play_screening
     from app.services.background_owner import run_owned_services
     start_background_task(run_owned_services([
         start_subscription_checker,
@@ -342,6 +344,7 @@ async def lifespan(app: FastAPI):
         start_withdrawal_confirmation_sweeper,
         start_telemetry_maintenance_loop,
         start_player_tracking_loop,
+        start_fair_play_screening,
     ]))
 
     # ── Level Backfill (runs once on every deploy, idempotent) ──────────────

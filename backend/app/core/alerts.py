@@ -52,6 +52,7 @@ _LOGGER_SYSTEM_PREFIXES = [
     ("app.services.referral_commission_service", "treasury"),
     ("app.core.security", "security"),
     ("app.services.sybil_guard", "security"),
+    ("app.services.fair_play", "security"),
     ("app.api.v1.endpoints.game", "realtime"),
     ("app.services.game_service", "realtime"),
     ("app.services.matchmaker", "realtime"),

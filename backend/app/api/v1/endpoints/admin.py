@@ -547,6 +547,74 @@ async def sweep_treasury_profit(
 # with a conditional update and commits it as processing_payout before it can
 # execute the irreversible on-chain payout.
 
+class FairPlayResolveRequest(BaseModel):
+    action: str  # "clear" (release future withdrawals) or "uphold" (keep holding them)
+
+
+@router.get("/fair-play/reviews")
+async def list_fair_play_reviews(
+    status: Optional[str] = Query(None, description="open | upheld | cleared; default open + upheld"),
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Players flagged by post-hoc engine screening, with each flagged game's numbers."""
+    from app.models.fair_play import FairPlayAnalysis, FairPlayReview
+    from app.services.fair_play import OPEN_STATUSES
+    statuses = (status,) if status else OPEN_STATUSES
+    reviews = (await db.execute(select(FairPlayReview).where(FairPlayReview.status.in_(statuses))
+                                .order_by(FairPlayReview.opened_at.desc()))).scalars().all()
+    out = []
+    for review in reviews:
+        user = (await db.execute(select(User).where(User.telegram_id == review.player_id))).scalar_one_or_none()
+        games = (await db.execute(select(FairPlayAnalysis).where(
+            FairPlayAnalysis.player_id == review.player_id, FairPlayAnalysis.flagged.is_(True))
+            .order_by(FairPlayAnalysis.analyzed_at.desc()).limit(20))).scalars().all()
+        out.append({
+            "player_id": review.player_id,
+            "name": (user.username or user.first_name) if user else None,
+            "balance_cents": user.balance if user else None,
+            "status": review.status,
+            "flagged_games": review.flagged_games,
+            "opened_at": review.opened_at.isoformat() if review.opened_at else None,
+            "resolved_at": review.resolved_at.isoformat() if review.resolved_at else None,
+            "games": [{
+                "game_id": g.game_id,
+                "engine_matches": g.engine_matches,
+                "moves_analyzed": g.moves_analyzed,
+                "match_rate": round(g.engine_matches / g.moves_analyzed, 3) if g.moves_analyzed else None,
+                "avg_centipawn_loss": g.avg_centipawn_loss,
+                "engine_depth": g.engine_depth,
+                "analyzed_at": g.analyzed_at.isoformat() if g.analyzed_at else None,
+            } for g in games],
+        })
+    return {"reviews": out, "count": len(out)}
+
+
+@router.post("/fair-play/reviews/{player_id}/resolve")
+async def resolve_fair_play_review(
+    player_id: int,
+    payload: FairPlayResolveRequest,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Clear a review (withdrawals flow normally again) or uphold it (keep holding them).
+
+    Withdrawals already held stay in /withdrawals/pending for an explicit approve or reject.
+    """
+    from app.models.fair_play import FairPlayReview
+    if payload.action not in ("clear", "uphold"):
+        raise HTTPException(status_code=400, detail="action must be 'clear' or 'uphold'")
+    review = await db.get(FairPlayReview, player_id, with_for_update=True)
+    if review is None:
+        raise HTTPException(status_code=404, detail="No fair-play review for this player")
+    review.status = "cleared" if payload.action == "clear" else "upheld"
+    review.resolved_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    review.resolved_by = _admin.telegram_id
+    await db.commit()
+    logger.info(f"Fair-play review for player {player_id} set to {review.status} by admin {_admin.telegram_id}")
+    return {"player_id": player_id, "status": review.status}
+
+
 @router.get("/withdrawals/pending")
 async def list_pending_withdrawals(
     db: AsyncSession = Depends(get_db),
