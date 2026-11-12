@@ -15,7 +15,7 @@
 | Phase | Theme | Status | Open / Total |
 | --- | --- | --- | --- |
 | 0 | Land in-flight work, clean the queue | 🟡 In progress | 3 / 6 |
-| 1 | Real-money trust & safety | 🟡 In progress | 6 / 12 |
+| 1 | Real-money trust & safety | 🟡 In progress | 5 / 12 |
 | 2 | Activation & measurement | 🟡 In progress | 5 / 7 |
 | 3 | Growth experiments (90-day plan) | ⚪ Not started | 8 / 8 |
 | 4 | Scale & engineering health | 🟡 In progress | 8 / 10 |
@@ -40,7 +40,7 @@ Goal: a player's stake is safe, games are fair, and an outage is detected in min
 
 **Game rules & fairness**
 - [x] **P0** Enforce "every human game is wagered" — 2026-11-12 (`c9aa862c5c`, pilot tests `3f0a8b12a4`). REST create needs $1+, friend requests can't be accepted, rematches need a stake, leftover free games can't be joined, free daily Arena switched off (`ARENA_ENABLED = False`). Live in production.
-- [ ] **P0** Post-hoc engine-cheat screening on wagered games (engine move-match %, centipawn-loss profile) feeding an admin review queue that holds large withdrawals. No detection code exists on `main` yet.
+- [x] **P0** Post-hoc engine-cheat screening on wagered games — 2026-11-12 ([PR #100](https://github.com/VladislavBrodsky/ChessTGBot/pull/100), `959f0bfca4`). Stockfish depth 12; flag = 20+ judged moves, ≥90% top-move match, ≤10 cp avg loss. A flagged player's withdrawals are held in `pending_review` + SECURITY alert; admins clear/uphold via `/admin/fair-play/reviews`. Live in production. Follow-up: tune thresholds once real flag data exists.
 - [x] **P1** Make website/app anti-cheat claims match what ships — PR #93, 2026-11-12.
 
 **Money custody**
