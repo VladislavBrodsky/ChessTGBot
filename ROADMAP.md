@@ -15,7 +15,7 @@
 | Phase | Theme | Status | Open / Total |
 | --- | --- | --- | --- |
 | 0 | Land in-flight work, clean the queue | 🟡 In progress | 3 / 6 |
-| 1 | Real-money trust & safety | 🟡 In progress | 5 / 12 |
+| 1 | Real-money trust & safety | 🟡 In progress | 4 / 12 |
 | 2 | Activation & measurement | 🟡 In progress | 5 / 7 |
 | 3 | Growth experiments (90-day plan) | ⚪ Not started | 8 / 8 |
 | 4 | Scale & engineering health | 🟡 In progress | 8 / 10 |
@@ -51,7 +51,7 @@ Goal: a player's stake is safe, games are fair, and an outage is detected in min
 - [ ] **P0** Payout hot wallet holds a small float only; `PAYOUT_MNEMONIC` no longer controls the bulk of funds (owner decision; no code change for the first step).
 
 **Detection & recovery**
-- [ ] **P0** External uptime probe on `https://api.web3chess.online/api/v1/arena/status` and `https://app.web3chess.online` with Telegram alert to the owner.
+- [x] **P0** External uptime probe with Telegram alert to the owner — 2026-11-12 (`.github/workflows/uptime.yml`, `scripts/uptime_probe.py`). Every 5 min from GitHub Actions: API `/health` (DB + Redis), Socket.IO websocket upgrade, Mini App, website; 3 attempts before DOWN; alerts once on down and once on recovery. **Owner step:** add repo secrets `TELEGRAM_BOT_TOKEN` and `ALERT_CHAT_ID` — until then a failed run only emails the owner via GitHub.
 - [ ] **P0** Staging environment on Railway (backend + frontend + Postgres) and a habit of deploying risky backend/migration changes there first.
 - [ ] **P1** Health-check-gated deploys and a documented one-command rollback.
 - [ ] **P1** Collapse repeated tracebacks before logging so Railway's per-replica rate limit doesn't drop logs during an error storm.
