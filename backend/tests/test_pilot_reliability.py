@@ -355,11 +355,22 @@ async def test_two_workers_staked_friend_moves_and_reconnect(workers):
             from app.models.player_tracking import PlayerAcquisition
             acquired = await db.get(PlayerAcquisition, uids[1])
             assert acquired.campaign == 'friend_challenge' and acquired.inviter_id == uids[0]
-            rows = (await db.execute(select(Transaction).where(Transaction.reference_id == f"rematch_wager_{game['game_id']}"))).scalars().all()
-            assert sorted(row.user_id for row in rows) == sorted(uids) and all(row.amount == -200 for row in rows)
-            assert not (await db.execute(select(Transaction).where(Transaction.type == 'game_free_pvp'))).scalars().all()
-            balances = (await db.execute(select(User.balance).where(User.telegram_id.in_(uids)))).scalars().all()
-            assert all(balance >= 0 for balance in balances) and sum(balances) < 2000
+            rows = (await db.execute(select(Transaction).where(Transaction.user_id.in_(uids)))).scalars().all()
+            ledger = sorted((row.reference_id, row.user_id, row.type, row.amount, row.fee) for row in rows)
+            # Each player staked $1 (creator on create, guest on join). White resigned, so
+            # black won the $2 pot less 5% (3% rake + 2% referral pool), recorded as
+            # game_win +190 (fee 10) and a game_rake -6 ledger entry. The doubled $2
+            # rematch was charged exactly once per player despite the duplicate accept.
+            assert ledger == sorted([
+                (game['game_id'], uids[0], 'game_wager', -100, 0),
+                (game['game_id'], uids[1], 'game_wager', -100, 0),
+                (game['game_id'], uids[black], 'game_win', 190, 10),
+                (game['game_id'], uids[black], 'game_rake', -6, 0),
+                (f"rematch_wager_{game['game_id']}", uids[0], 'game_wager', -200, 0),
+                (f"rematch_wager_{game['game_id']}", uids[1], 'game_wager', -200, 0),
+            ])
+            balances = dict((await db.execute(select(User.telegram_id, User.balance).where(User.telegram_id.in_(uids)))).all())
+            assert balances == {uids[white]: 1000 - 100 - 200, uids[black]: 1000 - 100 + 190 - 200}
     finally:
         for client in sockets:
             if client.connected:
@@ -423,6 +434,15 @@ async def test_pilot_players_across_two_workers(workers, tmp_path):
         await player_tracking.flush_activity(redis_client)
         async with factory() as db:
             assert (await player_tracking.gameplay_counts(db))['dau'] == player_count
+            # Every player funded exactly one $1 stake and every game holds both stakes.
+            from app.models.transaction import Transaction
+            stakes = (await db.execute(select(Transaction.user_id, Transaction.amount, Transaction.reference_id).where(Transaction.type == 'game_wager'))).all()
+            assert sorted(uid for uid, _, _ in stakes) == uids and all(amount == -100 for _, amount, _ in stakes)
+            per_game = {}
+            for uid, _, game_id in stakes:
+                per_game.setdefault(game_id, set()).add(uid)
+            assert len(per_game) == player_count // 2 and all(len(players) == 2 for players in per_game.values())
+            assert not (await db.execute(select(User.telegram_id).where(User.telegram_id.in_(uids), User.balance != 0))).all()
         report = {'connected_players': player_count, 'api_workers': 2, 'human_games': player_count // 2,
                   'accepted_moves': len(latencies), 'unexpected_errors': len(errors),
                   'round_trip_p50_ms': round(statistics.median(latencies), 2),
