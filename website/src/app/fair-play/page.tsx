@@ -105,7 +105,7 @@ export default function FairPlayPage() {
               <p>Play strictly within your selected time control. Server-side timestamps prevent client-side clock tampering, and disconnecting does not artificially pause your match clock.</p>
             </DetailCard>
             <DetailCard icon="users-three" badge="Skill Match" status="Fair ELO pairing" title="Rating-based matchmaking" meta="Dynamic ELO bracket pool">
-              <p>Matchmaking pools players by dynamic rating brackets, selected time control, and stake tier so you are paired against opponents of comparable strength.</p>
+              <p>Matchmaking pools players by dynamic rating brackets, selected time control, and exact stake amount so you are paired against opponents of comparable strength.</p>
             </DetailCard>
             <DetailCard span="wide" tone="accent" icon="shield-check" badge="Zero Engine Tolerance" status="Neural & timing analysis" title="Your moves must be your own" meta="Real-time heuristic auditing · Protected prize pools">
               <p>Chess engines, bots, and outside assistance are prohibited in real matches. Heuristic models inspect move entropy, decision timing distributions, and engine correlation to maintain competitive purity.</p>

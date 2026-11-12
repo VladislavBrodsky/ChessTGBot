@@ -82,7 +82,7 @@ const FAIR_PILLARS = [
     icon: "users-three" as const,
     tag: "Rated opponents",
     title: "Fair ELO matchmaking",
-    body: "Choose a time control and available wager tier before entering an online match. Check the match terms before committing a stake.",
+    body: "Choose a time control and a stake before entering an online match. Check the match terms before committing a stake.",
     metric: "Time controls · Stakes · Results",
   },
   {

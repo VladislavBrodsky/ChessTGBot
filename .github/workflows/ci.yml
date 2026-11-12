@@ -114,6 +114,8 @@ jobs:
       - run: npm run build
       - name: Standalone request regression tests
         run: node --test scripts/requests.spec-node.mjs
+      - name: Stake copy matches the app lobby and backend
+        run: node --test scripts/stakes.spec-node.mjs
       - run: npm run seo:check
       - run: npm run typecheck
       - run: npm run lint

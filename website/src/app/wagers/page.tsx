@@ -13,6 +13,9 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { SettlementBreakdown } from "@/components/SettlementBreakdown";
 import { pageMetadata, jsonLd, breadcrumbData, faqData } from "@/lib/seo";
+import { LARGEST_LOBBY_PRESET, MATCH_RULES } from "@/lib/config";
+
+const STAKE_RANGE = `${MATCH_RULES.minStakeUsdt} to ${LARGEST_LOBBY_PRESET.toLocaleString("en-US")} USDT`;
 
 const WAGERS_FAQS = [
   {
@@ -23,7 +26,7 @@ const WAGERS_FAQS = [
   {
     question: "How do USDT match stakes and 95% pot payouts work?",
     answer:
-      "Both players commit equal USDT stakes from their app balances before play. In decided matches, 95% of the combined pot is credited to the winner's app balance (+90% net gain on the winner's stake).",
+      `Both players commit equal USDT stakes from their app balances before play. The lobby offers presets from ${STAKE_RANGE} or a custom amount, and a friend challenge takes any stake from ${MATCH_RULES.minStakeUsdt} USDT, up to your balance. In decided matches, 95% of the combined pot is credited to the winner's app balance (+90% net gain on the winner's stake).`,
   },
   {
     question: "What happens if a match ends in a draw or stalemate?",
@@ -116,7 +119,7 @@ export default function WagersPage() {
                 Do the math before the match
               </h2>
               <p className="mt-3 max-w-[56ch] section-lead text-fg-muted">
-                Select any stake tier to model the combined prize pool. In decided matches, 95% of the total pot is credited directly to the winner’s balance, yielding a +90% net gain on your stake.
+                Pick one of the lobby&rsquo;s stake presets, from {STAKE_RANGE}, to model the combined prize pool. In decided matches, 95% of the total pot is credited directly to the winner’s balance, yielding a +90% net gain on your stake.
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2 text-caption text-fg-muted">
