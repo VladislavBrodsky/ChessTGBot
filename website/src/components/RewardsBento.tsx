@@ -6,7 +6,7 @@ import { FeatureCardIntro } from "@/components/ui/FeatureCardIntro";
 import { Icon } from "@/icons";
 import { IconCloud } from "./magicui/icon-cloud";
 import { SettlementExample } from "./SettlementExample";
-import { SETTLEMENT } from "@/lib/config";
+import { LARGEST_LOBBY_PRESET, MATCH_RULES, SETTLEMENT } from "@/lib/config";
 
 const stakes = [
   { stake: "$5", pace: "3 min Blitz", payout: "$9.50", featured: false },
@@ -18,6 +18,10 @@ const referrals = [
   { tier: "2", label: "Tier 2 Friends", share: "0.4%" },
   { tier: "3–6", label: "Tiers 3–6", share: "0.6%" },
 ];
+
+// The ladder spans the app lobby's presets; a custom stake can go higher, so TOP_PRESET is never a cap.
+const MIN_STAKE = `$${MATCH_RULES.minStakeUsdt}`;
+const TOP_PRESET = `$${LARGEST_LOBBY_PRESET.toLocaleString("en-US")}`;
 
 export function RewardsBento() {
   return (
@@ -36,14 +40,14 @@ export function RewardsBento() {
         </div>
       </Card>
       <Card className="reward-panel" role="article" aria-labelledby="stakes-card-title">
-        <FeatureCardIntro id="stakes-card-title" label="Stake Ladder" status="From $1" icon="lightning" title="Play Any Stake Level" body="$1 micro-duels up to $500 high-roller classics. Winner receives 95% in their app balance." href="/wagers" action="View tiers" />
+        <FeatureCardIntro id="stakes-card-title" label="Stake Ladder" status={`From ${MIN_STAKE}`} icon="lightning" title="Play Any Stake Level" body={`Lobby presets from ${MIN_STAKE} micro-duels to ${TOP_PRESET} classics, or set your own stake. Winner receives 95% in their app balance.`} href="/wagers" action="View stakes" />
         <div className="reward-demo">
-          <div className="demo-heading"><span>Stake Ladder</span><span>$1–$500</span></div>
+          <div className="demo-heading"><span>Stake Ladder</span><span>{MIN_STAKE}–{TOP_PRESET} presets</span></div>
           <ul className="stake-preview-list">{stakes.map((row) => <li key={row.stake} data-featured={row.featured || undefined}>
             <div><strong>{row.stake}</strong><span>{row.pace}</span></div>
             <div className="stake-preview-value">{row.featured && <span className="preview-highlight">Example</span>}<strong>→ {row.payout}</strong></div>
           </li>)}</ul>
-          <div className="stake-preview-rail"><span>$1 Micro</span><span className="stake-preview-track" aria-hidden="true"><i /></span><span>$500 Whale</span></div>
+          <div className="stake-preview-rail"><span>{MIN_STAKE} Micro</span><span className="stake-preview-track" aria-hidden="true"><i /></span><span>{TOP_PRESET} Whale</span></div>
         </div>
       </Card>
       <Card className="reward-panel" role="article" aria-labelledby="referrals-card-title">

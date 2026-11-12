@@ -3,12 +3,13 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { useState } from "react";
-import { SETTLEMENT, WAGER_TIERS, winnerReceives } from "@/lib/config";
+import { LARGEST_LOBBY_PRESET, LOBBY_STAKE_PRESETS, MATCH_RULES, SETTLEMENT, winnerReceives } from "@/lib/config";
 import { SegmentedControl } from "./ui/SegmentedControl";
 import { UsdtIcon } from "./UsdtIcon";
 import { Icon } from "@/icons";
 
-const fmt = (n: number) => `${n.toFixed(2)} USDT`;
+const amount = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = (n: number) => `${amount(n)} USDT`;
 
 export function WagerDemo() {
   const [stake, setStake] = useState<number>(5);
@@ -37,23 +38,30 @@ export function WagerDemo() {
             Simulate match stakes &amp; returns
           </h3>
           <p className="text-body-sm text-fg-muted">
-            Select an equal stake tier to model the combined pot, settlement split, and instant net gain
+            Pick one of the app lobby&rsquo;s stake presets to model the combined pot, settlement split, and net gain
           </p>
         </div>
 
-        {/* Stake Tier Selector */}
-        <SegmentedControl
-          label="Example stake amount"
-          options={WAGER_TIERS}
-          value={stake}
-          onChange={setStake}
-          renderLabel={(tier) => (
-            <span className="flex items-center gap-1">
-              <UsdtIcon className="size-3.5 text-fg inline-block" />
-              <span>{tier}</span>
-            </span>
-          )}
-        />
+        {/* Stake selector: the app lobby's presets */}
+        <div className="space-y-2">
+          <SegmentedControl
+            label="Lobby stake preset in USDT"
+            options={LOBBY_STAKE_PRESETS}
+            value={stake}
+            onChange={setStake}
+            columns={3}
+            renderLabel={(preset) => (
+              <span className="flex items-center gap-1">
+                {/* Inherits the pill's text colour so it stays visible on the pressed (inverse) pill. */}
+                <UsdtIcon className="size-3.5 inline-block" />
+                <span>{preset.toLocaleString("en-US")}</span>
+              </span>
+            )}
+          />
+          <p className="text-caption text-fg-muted">
+            Lobby presets run from {MATCH_RULES.minStakeUsdt} to {LARGEST_LOBBY_PRESET.toLocaleString("en-US")} USDT. You can also enter a custom stake from {MATCH_RULES.minStakeUsdt} USDT, up to your balance.
+          </p>
+        </div>
 
         {/* Breakdown DL */}
         <dl className="wager-ledger grid gap-2.5 border-t border-line pt-4 text-body-sm tabular-nums [&_dd]:shrink-0 [&_dd]:whitespace-nowrap">
@@ -90,7 +98,7 @@ export function WagerDemo() {
               className="wager-result poster mt-1 text-fg font-bold flex items-baseline gap-2"
               aria-live="polite"
             >
-              <span>{payout.toFixed(2)}</span>
+              <span>{amount(payout)}</span>
               <span className="wager-result-unit font-sans font-semibold">USDT</span>
             </dd>
           </div>

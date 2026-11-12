@@ -864,7 +864,7 @@ Use `website/src/components/ui/Badge.tsx` for static metadata. `Badge` has neutr
 
 **Wager tier selector (demo):**
 
-- A segmented row of pills: Free · 1 · 5 · 10 · 25 USDT, with example tiers mirroring the app's config.
+- A segmented grid of pills, three per row: 1 · 5 · 10 · 25 · 50 · 100 · 250 · 500 · 1,000 USDT, mirroring the app lobby's stake presets (`LOBBY_STAKE_PRESETS` in `website/src/lib/config.ts`). A note says the app also takes a custom amount from 1 USDT, so the presets never read as a maximum.
 - Below it: "Winner receives" computed as `2 × stake − commission`, with the commission read from config. A `text-caption` risk note sits directly under it (§10.4).
 - On the marketing site this is a **non-transactional demo**. It never takes input that implies a real bet.
 

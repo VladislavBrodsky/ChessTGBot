@@ -108,4 +108,15 @@ export const MATCH_RULES = {
   firstMoveSeconds: 30,
   offlineFirstMoveMinutes: 3,
 } as const;
-export const WAGER_TIERS = [1, 5, 10, 25] as const;
+
+/**
+ * Stake range, verified 2026-11-11. The owner chose to advertise the full range the app allows.
+ * Lobby presets (USDT): frontend/src/components/game/lobby/BetSlip.tsx STAKES_CENTS. The lobby also
+ * takes a custom amount, and a friend challenge takes any typed amount. The backend enforces only the
+ * 1 USDT minimum (MIN_HUMAN_STAKE_CENTS in backend/app/services/game_rules.py, used by game create,
+ * matchmaking, rematch and friend invites) and the player's balance; there is no fixed maximum, so
+ * never state one. Every game against a person carries a stake; only Free Coach games are free.
+ * scripts/stakes.spec-node.mjs fails CI if these presets, the app's or llms.txt drift apart.
+ */
+export const LOBBY_STAKE_PRESETS = [1, 5, 10, 25, 50, 100, 250, 500, 1000] as const;
+export const LARGEST_LOBBY_PRESET = LOBBY_STAKE_PRESETS[LOBBY_STAKE_PRESETS.length - 1];
