@@ -2,8 +2,10 @@ import { GA_MEASUREMENT_ID, telegramLink, type WebsiteLaunchParameter } from "./
 
 /**
  * Google Analytics (GA4) & Data Collection Utilities.
- * Implements Google Consent Mode v2, SPA route tracking, Core Web Vitals RUM,
- * and high-intent conversion funnel telemetry for Web3Chess.
+ * gtag.js loads first-party through the Google tag gateway (src/app/a3k);
+ * consent defaults live in src/app/layout.tsx. Page views and outbound
+ * clicks come from GA4 enhanced measurement. This module adds Core Web Vitals
+ * and the funnel events (play_in_telegram, share, puzzles, FAQ, scroll).
  */
 
 declare global {
@@ -35,17 +37,6 @@ export function trackEvent(
 }
 
 /**
- * Tracks SPA page view transitions across Next.js App Router navigations.
- */
-export function trackPageView(url: string, title?: string): void {
-  gtag("event", "page_view", {
-    page_path: url,
-    page_location: typeof window !== "undefined" ? window.location.href : url,
-    page_title: title || (typeof document !== "undefined" ? document.title : ""),
-  });
-}
-
-/**
  * Tracks a website click toward Telegram. This is a handoff attempt, not a
  * confirmed Telegram arrival, registered player, game, or revenue event.
  */
@@ -63,18 +54,6 @@ export function trackPlayClick(location: string, startapp: WebsiteLaunchParamete
       typeof window !== "undefined" && window.innerWidth < 1024
         ? "mobile"
         : "desktop",
-  });
-}
-
-/**
- * Outbound link tracking (Telegram channels, Tonviewer explorer, GitHub, X).
- */
-export function trackOutboundClick(url: string, label: string): void {
-  trackEvent("click", {
-    event_category: "outbound",
-    event_label: label,
-    link_url: url,
-    outbound: true,
   });
 }
 
@@ -138,22 +117,26 @@ export function trackScrollDepth(depthPercent: number, pagePath: string): void {
 }
 
 /**
- * Core Web Vitals telemetry (CLS, LCP, INP, FCP, TTFB).
+ * Core Web Vitals field data (LCP, INP, CLS, FCP, TTFB) in the GA4 shape
+ * recommended by Google's web-vitals guide. `value` carries the delta so
+ * summing it per page gives the final value; CLS is scaled by 1000 because
+ * GA4 event values are integers.
  */
 export function trackWebVitals(metric: {
   id: string;
   name: string;
   value: number;
+  delta: number;
   rating?: string;
-  delta?: number;
 }): void {
+  const scale = metric.name === "CLS" ? 1000 : 1;
   trackEvent("web_vitals", {
-    event_category: "Web Vitals",
-    event_action: metric.name,
-    event_value: Math.round(metric.value),
-    event_label: metric.id,
+    metric_name: metric.name,
+    metric_id: metric.id,
+    metric_value: Math.round(metric.value * scale),
+    metric_delta: Math.round(metric.delta * scale),
     metric_rating: metric.rating || "unknown",
-    metric_delta: metric.delta ? Math.round(metric.delta) : undefined,
+    value: Math.round(metric.delta * scale),
     non_interaction: true,
   });
 }

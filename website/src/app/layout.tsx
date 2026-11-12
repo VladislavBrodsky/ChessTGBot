@@ -1,9 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { SITE } from "@/lib/config";
+import { GA_GATEWAY_PATH, GEO_COOKIE, SITE } from "@/lib/config";
 import Script from "next/script";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import "./globals.css";
+
+// EEA member states, EEA EFTA states, the UK and Switzerland.
+const CONSENT_REQUIRED_REGIONS = [
+  "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR",
+  "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK",
+  "SI", "ES", "SE", "IS", "LI", "NO", "GB", "CH",
+];
 
 const onest = localFont({
   src: "../../public/fonts/onest-variable.woff2",
@@ -107,38 +114,44 @@ export default function RootLayout({
     >
       <body>
         <Script
-          id="gtag-base"
-          strategy="lazyOnload"
-          src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaMeasurementId}`}
-        />
-        <Script
           id="gtag-init"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
 
-              // Google Consent Mode v2 (EEA compliance & privacy standards)
+              // Consent Mode v2. The site runs no ads, so advertising signals
+              // stay denied everywhere. Analytics cookies are denied by default
+              // where prior consent is required (EEA, UK, Switzerland); GA then
+              // sends cookieless pings only. The country comes from the
+              // ${GEO_COOKIE} cookie set by src/proxy.ts, not gtag's region
+              // parameter: that needs www.google.com/ccm/geo, which blockers
+              // drop, and gtag then denies analytics for everyone.
+              var cc = (document.cookie.match(/(?:^|; )${GEO_COOKIE}=([A-Z]{2})/) || [])[1];
+              var consentRequired = ${JSON.stringify(CONSENT_REQUIRED_REGIONS)};
               gtag('consent', 'default', {
-                'ad_storage': 'granted',
-                'ad_user_data': 'granted',
-                'ad_personalization': 'granted',
-                'analytics_storage': 'granted',
-                'wait_for_update': 500
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                analytics_storage:
+                  cc && consentRequired.indexOf(cc) !== -1 ? 'denied' : 'granted'
               });
+              gtag('set', 'ads_data_redaction', true);
 
               gtag('js', new Date());
-
-              // GA4 initialization
-              gtag('config', '${SITE.gaMeasurementId}', {
-                page_path: window.location.pathname,
-                anonymize_ip: true,
-                cookie_flags: 'SameSite=None;Secure',
-                transport_type: 'beacon'
-              });
+              // Page views, including App Router navigations, come from GA4
+              // enhanced measurement (browser history events).
+              gtag('config', '${SITE.gaMeasurementId}');
             `,
           }}
+        />
+        {/* Served first-party through the Google tag gateway (src/app/a3k) so
+            tracker blockers that match Google's domains don't drop it. */}
+        <Script
+          id="gtag-base"
+          strategy="afterInteractive"
+          src={`${GA_GATEWAY_PATH}?id=${SITE.gaMeasurementId}`}
         />
         <GoogleAnalytics />
         <a

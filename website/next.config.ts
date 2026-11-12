@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Strict-Transport-Security", value: "max-age=31536000" }],
       },
       {
-        source: "/((?!_next|favicon.ico).*)",
+        source: "/((?!_next|favicon.ico|a3k).*)",
         headers: [
           {
             key: "Cache-Control",

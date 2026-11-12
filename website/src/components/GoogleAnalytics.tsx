@@ -1,40 +1,14 @@
 "use client";
 
-import { useEffect, useRef, Suspense } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useReportWebVitals } from "next/web-vitals";
 import {
   GA_MEASUREMENT_ID,
-  trackPageView,
-  trackOutboundClick,
   trackScrollDepth,
   trackWebVitals,
   trackEvent,
 } from "@/lib/analytics";
-
-/**
- * Route tracker for Next.js App Router client-side SPA navigation.
- * Fires a page_view event on every URL transition.
- */
-function AnalyticsRouteTracker() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
-    // Avoid double firing on the initial full page load since gtag config fires it
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    const search = searchParams?.toString();
-    const url = search ? `${pathname}?${search}` : pathname;
-    trackPageView(url, document.title);
-  }, [pathname, searchParams]);
-
-  return null;
-}
 
 /**
  * Core Web Vitals (CWV) reporter streaming RUM metrics directly to GA4.
@@ -44,11 +18,9 @@ function AnalyticsWebVitals() {
     trackWebVitals({
       id: metric.id,
       name: metric.name,
-      value: Math.round(
-        metric.name === "CLS" ? metric.value * 1000 : metric.value,
-      ),
-      rating: metric.rating,
+      value: metric.value,
       delta: metric.delta,
+      rating: metric.rating,
     });
   });
 
@@ -57,9 +29,12 @@ function AnalyticsWebVitals() {
 
 /**
  * Global listener capturing:
- * 1. Outbound link clicks (t.me, tonviewer, github, x)
- * 2. Declarative data-analytics-label attribute clicks
- * 3. 25%, 50%, 75%, 90% scroll depth milestones
+ * 1. Declarative data-analytics-label / data-track-cta clicks
+ * 2. 25%, 50%, 75%, 90%, 100% scroll depth milestones
+ *
+ * Page views (including client-side navigations) and outbound link clicks
+ * come from GA4 enhanced measurement; tracking them here too would double
+ * count them.
  */
 function AnalyticsGlobalListener() {
   const pathname = usePathname();
@@ -108,7 +83,7 @@ function AnalyticsGlobalListener() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [pathname]);
 
-  // Click delegation for outbound and declarative tracking
+  // Click delegation for declarative tracking
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
@@ -130,37 +105,6 @@ function AnalyticsGlobalListener() {
           element_tag: customEl.tagName.toLowerCase(),
         });
       }
-
-      // Outbound link tracking
-      const anchor = target.closest<HTMLAnchorElement>("a[href]");
-      if (!anchor) return;
-
-      const href = anchor.href;
-      if (!href || !href.startsWith("http")) return;
-
-      try {
-        const url = new URL(href);
-        const isExternal =
-          url.hostname !== window.location.hostname &&
-          !url.hostname.endsWith("web3chess.online");
-
-        if (isExternal) {
-          let label = "External Link";
-          if (url.hostname === "t.me" || url.hostname.endsWith(".t.me")) {
-            label = "Telegram Outbound";
-          } else if (url.hostname.includes("tonviewer")) {
-            label = "Tonviewer Explorer";
-          } else if (url.hostname.includes("github.com")) {
-            label = "GitHub Repository";
-          } else if (url.hostname.includes("x.com") || url.hostname.includes("twitter.com")) {
-            label = "X / Twitter";
-          }
-
-          trackOutboundClick(href, label);
-        }
-      } catch {
-        // Ignore invalid URLs
-      }
     };
 
     document.addEventListener("click", handleClick, { capture: true });
@@ -178,12 +122,7 @@ export function GoogleAnalytics() {
 
   return (
     <>
-      {/* SPA route transition tracking wrapped in Suspense boundary */}
-      <Suspense fallback={null}>
-        <AnalyticsRouteTracker />
-      </Suspense>
-
-      {/* Global telemetry listeners: Outbound links, CTA attributes, Scroll depth */}
+      {/* Global telemetry listeners: CTA attributes, scroll depth */}
       <AnalyticsGlobalListener />
 
       {/* Core Web Vitals telemetry */}

@@ -79,6 +79,19 @@ export function winnerReceives(stake: number): number {
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-JXR1D3D5E3";
 
+/**
+ * First-party path for Google tag gateway for advertisers. gtag.js and its
+ * measurement hits go through web3chess.online/<path> (src/app/a3k) instead
+ * of googletagmanager.com / google-analytics.com, which Brave Shields,
+ * uBlock, AdGuard and Safari's tracker blocking drop. A neutral name keeps it
+ * out of generic "/analytics/" filter rules. Keep it in sync with the
+ * src/app/a3k route folder and the matcher in src/proxy.ts.
+ */
+export const GA_GATEWAY_PATH = "/a3k";
+
+/** Visitor ISO country, set by src/proxy.ts and read by the consent default. */
+export const GEO_COOKIE = "w3c_cc";
+
 export const SITE = {
   name: "Web3Chess",
   /** Set NEXT_PUBLIC_SITE_URL once the final domain is decided. */
