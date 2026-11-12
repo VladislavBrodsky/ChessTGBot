@@ -17,7 +17,7 @@ async def arena_status(
     """Current/next daily arena: schedule, live standings, and my participation."""
     from app.models.arena import Arena
     from app.services.arena_service import (
-        ArenaService, PRIZE_XP, PARTICIPATION_XP, _utcnow
+        ArenaService, PRIZE_XP, PARTICIPATION_XP, _utcnow, ARENA_ENABLED
     )
 
     service = ArenaService()
@@ -64,6 +64,8 @@ async def arena_status(
                 standings.append(row)
 
     return {
+        # False while the free arena is closed (every human game must be wagered).
+        "enabled": ARENA_ENABLED,
         "status": status,  # scheduled | live | settling | finished
         "starts_at": starts_at.isoformat() + "Z",
         "ends_at": ends_at.isoformat() + "Z",

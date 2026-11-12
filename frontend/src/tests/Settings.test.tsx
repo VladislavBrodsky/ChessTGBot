@@ -72,20 +72,9 @@ describe('Settings navigation and preferences', () => {
     expect(mockSetReducedMotion).toHaveBeenCalledWith(true);
   });
 
-  it('prevents overlapping alert saves and restores the previous preference on a failure', async () => {
-    let finish: (value: { ok: boolean }) => void = () => {};
-    mockApi.mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+  it('does not offer alerts for the closed free arena', () => {
     render(<SettingsPage />);
-    const control = screen.getByRole('switch', { name: 'Arena alerts' });
-    fireEvent.click(control);
-    expect(control).toHaveAttribute('aria-checked', 'false');
-    expect(control).toBeDisabled();
-    fireEvent.click(control);
-    expect(mockApi).toHaveBeenCalledTimes(1);
-    await act(async () => finish({ ok: false }));
-    expect(control).toHaveAttribute('aria-checked', 'true');
-    expect(control).toBeEnabled();
-    expect(mockToast.error).toHaveBeenCalledWith(messages.Settings.alerts_error);
+    expect(screen.queryByRole('switch', { name: 'Arena alerts' })).toBeNull();
   });
 
   it('keeps account tools collapsed and reports an unavailable refresh as a failure', async () => {

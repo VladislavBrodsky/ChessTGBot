@@ -785,7 +785,8 @@
     "friend_share_staked": "Joue aux échecs avec moi — mise de {amount} USDT",
     "friend_rematch_free": "Revanche gratuite",
     "friend_invite_failed": "Impossible de créer une invitation. Réessaie",
-    "your_time": "Votre temps"
+    "your_time": "Votre temps",
+    "rematch_stake_required": "Une revanche contre un autre joueur exige une mise. Lancez un défi avec mise depuis le lobby, ou entraînez-vous gratuitement avec Free Coach."
   },
   "Wallet": {
     "wager_stake": "Mise",
@@ -1461,7 +1462,10 @@
     "invite_cooldown": "Attendez une minute avant d’envoyer une autre demande",
     "self_invitation": "Partagez votre lien avec un ami pour jouer ensemble",
     "unavailable": "Connexion impossible — vérifiez votre connexion puis réessayez",
-    "referral_share_text": "Rejoins-moi sur Web3Chess via cette invitation. Commence avec Free Coach ; les parties contre des humains nécessitent une mise USDT."
+    "referral_share_text": "Rejoins-moi sur Web3Chess via cette invitation. Commence avec Free Coach ; les parties contre des humains nécessitent une mise USDT.",
+    "stake_required": "Les parties contre d'autres joueurs exigent une mise d'au moins 1,00 $. Envoyez un défi avec mise, ou entraînez-vous gratuitement avec Free Coach.",
+    "decline_help": "Les parties gratuites entre amis sont terminées. Refusez cette demande, puis envoyez à votre ami un défi avec mise, ou entraînez-vous gratuitement avec Free Coach.",
+    "cancel_help": "Les parties gratuites entre amis sont terminées. Annulez cette demande, puis demandez à votre ami un défi avec mise, ou entraînez-vous gratuitement avec Free Coach."
   },
   "BalanceOpportunity": {
     "shortfall": "Ajoutez {amount} USDT pour cette partie",

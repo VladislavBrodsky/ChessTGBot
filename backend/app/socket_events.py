@@ -641,8 +641,13 @@ async def establish_arena_game(user_id: int, user_sid: str, opponent_id: int, op
     # Arena play requires both players present: a dead socket here means the
     # player dropped between join and pairing — evict them instead of creating
     # a game that can only abort (and would re-pair them in a loop).
-    from app.services.arena_service import ArenaService
+    from app.services.arena_service import ArenaService, ARENA_ENABLED
     arena_service = ArenaService()
+    if not ARENA_ENABLED:
+        # Arena games are free human games; never create one while the arena is closed.
+        for pid in (user_id, opponent_id):
+            arena_service.leave(pid)
+        return None
     dropped = [
         (pid, psid) for pid, psid in ((user_id, user_sid), (opponent_id, opponent_sid))
         if not await _sid_connected(psid)
@@ -705,6 +710,10 @@ async def join_arena(sid, data):
         user_id = session.get('user_id')
         if not user_id:
             await sio.emit('arena_error', {'message': 'Unauthorized connection'}, room=sid)
+            return
+        from app.services.arena_service import ARENA_ENABLED
+        if not ARENA_ENABLED:
+            await sio.emit('arena_error', {'message': 'The free arena is closed. Games against other players need a stake.'}, room=sid)
             return
         arena_service = ArenaService()
         current_arena_id = await arena_service.current_id()
@@ -1356,8 +1365,12 @@ async def offer_rematch(sid, data):
                 return
             opponent_id = state.black_player_id if state.white_player_id == user_id else state.white_player_id
             if opponent_id and opponent_id != -1:
-                current_wager = getattr(state, "bid_amount", 0)
+                current_wager = getattr(state, "bid_amount", 0) or 0
                 new_wager = current_wager * 2 if double_stakes else current_wager
+                from app.services.game_rules import is_valid_human_stake, HUMAN_STAKE_REQUIRED_MESSAGE, HUMAN_STAKE_REQUIRED_CODE
+                if not is_valid_human_stake(new_wager):
+                    await sio.emit('error', {'message': HUMAN_STAKE_REQUIRED_MESSAGE, 'code': HUMAN_STAKE_REQUIRED_CODE}, room=sid)
+                    return
                 
                 # Store pending rematch details in Redis
                 import json
@@ -1412,7 +1425,9 @@ async def accept_rematch(sid, data):
                     await sio.emit('error', {'message': 'Invalid rematch offer.'}, room=sid)
                     return
                 wager = int(pending.get('wager', 0))
-                if wager < 0 or (state.bid_amount == 0 and wager != 0):
+                from app.services.game_rules import is_valid_human_stake, HUMAN_STAKE_REQUIRED_MESSAGE, HUMAN_STAKE_REQUIRED_CODE
+                if not is_valid_human_stake(wager) or not is_valid_human_stake(getattr(state, 'bid_amount', 0)):
+                    await sio.emit('error', {'message': HUMAN_STAKE_REQUIRED_MESSAGE, 'code': HUMAN_STAKE_REQUIRED_CODE}, room=sid)
                     return
                 
                 from app.core.database import AsyncSessionLocal

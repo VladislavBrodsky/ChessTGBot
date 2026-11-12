@@ -20,7 +20,6 @@ import { DailyGoal } from './lobby/DailyGoal';
 import { RecentResults } from './lobby/RecentResults';
 import { useLobbyStats } from '@/hooks/useLobbyStats';
 import { formatUsd, winnerCents } from '@/lib/settlement';
-import ArenaBanner from './ArenaBanner';
 import EngagementQuest from '@/components/EngagementQuest';
 import RakeInfoDrawer from './RakeInfoDrawer';
 import AiDifficultyDrawer from './AiDifficultyDrawer';
@@ -660,7 +659,6 @@ export default function PlayLobby() {
               <BalanceOpportunity
                 stake={chosenWager} source="play_lobby" showTopUp={false} timeControl={timeControl}
                 onTopUp={() => setShowDepositDrawer(true)} />
-              <ArenaBanner />
 
               <EngagementQuest onPlayMatch={handleLauncherClick} />
 

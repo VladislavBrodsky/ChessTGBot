@@ -21,14 +21,15 @@ class CreateGameResponse(BaseModel):
 ALLOWED_GAME_TYPES = {"online", "computer"}
 MIN_TIME_CONTROL_SECONDS = 60
 MAX_TIME_CONTROL_SECONDS = 3600
-MIN_WAGER_CENTS = 100
+from app.services.game_rules import MIN_HUMAN_STAKE_CENTS as MIN_WAGER_CENTS, HUMAN_STAKE_REQUIRED_MESSAGE
 
 
 def normalise_create_request(game_type: str, time_control: int, wager: int) -> tuple[bool, int, int]:
     """Validate a create-game request and return (is_bot_game, time_control, stake_cents).
 
     A bot game never carries a stake: the stored value is forced to 0, so no later path (abort refund, settlement)
-    can ever pay out money that was never debited. Friend games may be free; positive stakes must be at least $1.00, and every game
+    can ever pay out money that was never debited. Every game against a person is wagered: the stake must be at least $1.00
+    (free play is the AI coach only), and every game
     needs a bounded clock so a rigged huge time control cannot defeat timeout-based forfeits.
     """
     if game_type not in ALLOWED_GAME_TYPES:
@@ -38,8 +39,8 @@ def normalise_create_request(game_type: str, time_control: int, wager: int) -> t
     is_bot_game = game_type == "computer"
     if is_bot_game:
         return True, time_control, 0
-    if wager < 0 or 0 < wager < MIN_WAGER_CENTS:
-        raise HTTPException(status_code=400, detail="Minimum wager is $1.00 (100 cents).")
+    if wager < MIN_WAGER_CENTS:
+        raise HTTPException(status_code=400, detail=HUMAN_STAKE_REQUIRED_MESSAGE)
     return False, time_control, wager
 
 
@@ -61,8 +62,8 @@ async def create_game(
     launch = None if is_bot_game else await create_launch(db, destination="game", game_id=game_id,
                                  campaign="friend_challenge", inviter_id=current_user.telegram_id)
 
-    # Verify and deduct balance if wager > 0 and type is online
-    if not is_bot_game and wager > 0:
+    # Every human game is staked (normalise_create_request enforces it): debit the creator now.
+    if not is_bot_game:
         from sqlalchemy import text
         from app.models.transaction import Transaction
 
@@ -93,8 +94,6 @@ async def create_game(
         state.white_username = current_user.first_name
         state.white_elo = current_user.elo
         state.invite_token = launch.token if launch else None
-        if not is_bot_game and wager == 0:
-            state.first_move_grace_seconds = 180.0
         from app.services.engagement_campaign import ensure_enrolled
         await ensure_enrolled(db, current_user)
         await service.session_manager.save_game(game_id, state)

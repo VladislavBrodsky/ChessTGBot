@@ -294,7 +294,12 @@ class GameService:
                 state.white_elo = elo
                 changed = True
             elif not state.black_player_id and state.white_player_id != user_id:
-                # If wager game, charge the opponent (black player) on join
+                # Human games are always staked. A zero-stake open seat can only be a
+                # game created before that rule shipped; refuse it rather than start free PvP.
+                from app.services.game_rules import is_valid_human_stake, HUMAN_STAKE_REQUIRED_MESSAGE
+                if not is_valid_human_stake(state.bid_amount):
+                    raise ValueError(HUMAN_STAKE_REQUIRED_MESSAGE)
+                # Charge the opponent (black player) on join
                 if state.bid_amount > 0:
                     if not accept_wager:
                         raise ValueError("Wager consent required")
