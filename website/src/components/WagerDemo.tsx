@@ -52,7 +52,8 @@ export function WagerDemo() {
             columns={3}
             renderLabel={(preset) => (
               <span className="flex items-center gap-1">
-                <UsdtIcon className="size-3.5 text-fg inline-block" />
+                {/* Inherits the pill's text colour so it stays visible on the pressed (inverse) pill. */}
+                <UsdtIcon className="size-3.5 inline-block" />
                 <span>{preset.toLocaleString("en-US")}</span>
               </span>
             )}
