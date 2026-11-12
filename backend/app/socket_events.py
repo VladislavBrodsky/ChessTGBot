@@ -104,7 +104,7 @@ from app.models.transaction import Transaction  # noqa: E402
 from app.models.user import User  # noqa: E402
 from app.models.gamification import Referral  # noqa: E402
 
-from sqlalchemy import select, and_  # noqa: E402
+from sqlalchemy import select, and_, update  # noqa: E402
 
 
 async def _play_coach_turn(game_id: str) -> None:
@@ -166,34 +166,44 @@ async def _clear_pending_draw(service: GameService, game_id: str) -> None:
 
 
 async def refund_pending_matchmaking_wager(db, user_id: int):
-    # Fetch user just to make sure they exist
-    user = await user_crud.get_user_by_telegram_id(db, user_id)
-    if user:
-        result = await db.execute(
-            select(Transaction).where(
-                and_(
-                    Transaction.user_id == user_id,
-                    Transaction.type == "game_wager",
-                    Transaction.status == "pending",
-                    Transaction.reference_id == "matchmaking"
-                )
+    """Return a queued stake that never became a game.
+
+    Races establish_match, which converts the same hold into a game stake.
+    Both take the user row lock first (same order, so no deadlock) and then
+    change the hold only while it is still pending; whichever runs second
+    sees zero rows and does nothing. Without this the player could get the
+    stake back and still play for a pot the platform would then fund.
+    """
+    user = await user_crud.get_user_by_telegram_id(db, user_id, for_update=True)
+    if not user:
+        return False
+    result = await db.execute(
+        select(Transaction.id, Transaction.amount).where(
+            and_(
+                Transaction.user_id == user_id,
+                Transaction.type == "game_wager",
+                Transaction.status == "pending",
+                Transaction.reference_id == "matchmaking"
             )
         )
-        txs = result.scalars().all()
-        if txs:
-            for tx in txs:
-                refund_amount = abs(tx.amount)
-                # Atomically credit refund if refund_amount > 0
-                if refund_amount > 0:
-                    await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
-                tx.status = "failed"
-                tx.reference_id = "matchmaking_refunded"
-                db.add(tx)
-                logger.info(f"[TRANSACTION] user_id={user_id} | type=game_refund | amount={refund_amount} cents (${refund_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking_refunded | status=completed")
-                print(f"Refunded matchmaking wager of {refund_amount} to User {user_id}")
-            await db.commit()
-            return True
-    return False
+    )
+    holds = result.all()
+    refunded_any = False
+    for tx_id, amount in holds:
+        claimed = await db.execute(
+            update(Transaction)
+            .where(Transaction.id == tx_id, Transaction.status == "pending")
+            .values(status="failed", reference_id="matchmaking_refunded")
+        )
+        if claimed.rowcount != 1:
+            continue  # already converted into a game (or refunded) by someone else
+        refund_amount = abs(amount)
+        if refund_amount > 0:
+            await user_crud.atomic_credit(db, user_id, refund_amount, commit=False)
+        refunded_any = True
+        logger.info(f"[TRANSACTION] user_id={user_id} | type=game_refund | amount={refund_amount} cents (${refund_amount/100:.2f}) | fee=0 cents ($0.00) | reference_id=matchmaking_refunded | status=completed")
+    await db.commit()
+    return refunded_any
 
 @sio.event
 @ws_correlation('connect')
@@ -490,14 +500,26 @@ async def establish_match(user_id: int, user_sid: str, opponent_id: int, opponen
                 await sio.emit('matchmaking_error', {'message': 'Matchmaking transaction reconciliation failed.'}, room=user_sid)
                 return
             
-            # Update status to completed
-            tx_w.status = "completed"
-            tx_w.reference_id = game_id
-            tx_b.status = "completed"
-            tx_b.reference_id = game_id
-            
-            db.add(tx_w)
-            db.add(tx_b)
+            # Convert both holds into game stakes only if they are still
+            # pending; a concurrent refund that won the race leaves 0 rows.
+            converted = 0
+            for hold in (tx_w, tx_b):
+                res = await db.execute(
+                    update(Transaction)
+                    .where(Transaction.id == hold.id, Transaction.status == "pending")
+                    .values(status="completed", reference_id=game_id)
+                    .execution_options(synchronize_session=False)
+                )
+                converted += res.rowcount
+            if converted != 2:
+                await db.rollback()
+                async with AsyncSessionLocal() as refund_db:
+                    await refund_pending_matchmaking_wager(refund_db, user_id)
+                async with AsyncSessionLocal() as refund_db:
+                    await refund_pending_matchmaking_wager(refund_db, opponent_id)
+                await MatchmakerService().remove_match_pair(bid_amount, user_id, opponent_id, time_control=time_control)
+                await sio.emit('matchmaking_error', {'message': 'Matchmaking transaction reconciliation failed.'}, room=user_sid)
+                return
         
         # Cache player usernames and ELOs
         state.white_username = white.first_name if white else f"User_{state.white_player_id}"

@@ -1,6 +1,9 @@
 import json, sys, tempfile, unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import daily
 from pipeline import brand, chesscheck, idea_bank, qa, queue, renderer, site_publisher, telegram_publisher, writer
 
 class IdeaBank(unittest.TestCase):
@@ -228,6 +231,42 @@ class Claims(unittest.TestCase):
         self.assertEqual(qa.evidence_claims(post), [])
 
 class Queue(unittest.TestCase):
+    def test_published_duplicate_corpus_supports_posts_threads_and_articles(self):
+        entries = [
+            {"kind": "telegram", "status": "published", "text": "<b>Telegram lesson</b>"},
+            {"kind": "x_post", "status": "published", "text": "X lesson"},
+            {"kind": "x_thread", "status": "published", "tweets": [{"text": "Thread one"}, {"text": "Thread two"}]},
+            {"kind": "article", "status": "published", "article": {"content": [{"text": "Article lesson"}]}},
+        ]
+        with patch.object(queue, "all_entries", side_effect=lambda kind=None, **_: [e for e in entries if kind is None or e["kind"] == kind]):
+            self.assertEqual(daily._published_corpus("telegram"), ["Telegram lesson"])
+            self.assertEqual(daily._published_corpus("x_post"), ["X lesson"])
+            self.assertEqual(daily._published_corpus("x_thread"), ["Thread one Thread two"])
+            self.assertEqual(daily._published_corpus("article"), ["Article lesson"])
+
+    def test_overlapping_render_calls_use_unique_temporary_files(self):
+        spec_paths, output_paths = [], []
+
+        def fake_run(command, **_kwargs):
+            spec_path, output_path = Path(command[2]), Path(command[3])
+            self.assertTrue(spec_path.exists())
+            self.assertTrue(output_path.exists())
+            spec_paths.append(spec_path)
+            output_paths.append(output_path)
+            return SimpleNamespace(returncode=1, stderr="expected test failure", stdout="")
+
+        entry = {"id": "2099-05-01-x-1", "date": "2099-05-01"}
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(queue, "QUEUE", Path(directory)), \
+                patch.object(renderer.subprocess, "run", side_effect=fake_run):
+            renderer._render_spec(entry, {"template": "tip"}, "", 1)
+            renderer._render_spec(entry, {"template": "tip"}, "", 1)
+
+        self.assertEqual(len(spec_paths), 2)
+        self.assertNotEqual(spec_paths[0], spec_paths[1])
+        self.assertNotEqual(output_paths[0], output_paths[1])
+        self.assertTrue(all(not path.exists() for path in spec_paths + output_paths))
+
     def test_render_specs_are_not_queue_entries(self):
         day = queue.QUEUE / "2099-01-01"
         day.mkdir(parents=True, exist_ok=True)

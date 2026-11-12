@@ -37,6 +37,8 @@ jobs:
       SECRET_KEY: ci-pilot-only
       WEBHOOK_SECRET: ci-pilot-only
       ADMIN_TELEGRAM_IDS: '999999'
+      # Production-mode config now requires an explicit custody address (CI placeholder).
+      MASTER_WALLET_ADDRESS: UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

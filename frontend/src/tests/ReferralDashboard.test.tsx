@@ -1,6 +1,6 @@
 import { translatorFor as mockTranslatorFor } from './testUtils/messagesMock';
 import '@testing-library/jest-dom';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import ReferralDashboard from '@/components/ReferralDashboard';
 
 jest.mock('next-intl', () => ({ useLocale: () => 'en', useTranslations: (namespace: string) => mockTranslatorFor(namespace) }));
@@ -50,4 +50,25 @@ it('omits the move hint when the server does not say how many moves qualify', ()
   mockData = { ...stats, qualifying_min_moves: undefined };
   render(<ReferralDashboard />);
   expect(screen.queryByText(/individual moves/)).not.toBeInTheDocument();
+});
+
+it('keeps qualified activity distinct from credited money and shows server reward terms', () => {
+  mockData = { ...stats, reward_terms: { referrer_bonus_cents: 20, daily_bonus_cap: 7 },
+    milestone_progress: { joined: 3, pending_activity: 1, qualified: 2, usdt_credited: 1, gram_credited: 0 } };
+  render(<ReferralDashboard />);
+  expect(screen.getByText('Earn 0.20 USDT per qualified friend; daily cap: 7 bonuses')).toBeVisible();
+  const qualified = screen.getByRole('term', { name: '3 qualifying matches completed' }).parentElement!;
+  expect(within(qualified).getByText('2')).toBeVisible();
+  const credited = screen.getByText('USDT bonuses credited').parentElement!;
+  expect(within(credited).getByText('1')).toBeVisible();
+  expect(screen.getByText('GRAM rewards are separate from your USDT wager balance')).toBeVisible();
+});
+
+
+it('shares referral-specific copy without promising a free human game', () => {
+  render(<ReferralDashboard />);
+  fireEvent.click(screen.getByRole('button', { name: 'Share in Telegram' }));
+  const share = jest.requireMock('@/lib/invitations').shareInvitation;
+  expect(share).toHaveBeenLastCalledWith(expect.stringContaining('startapp=ref_'), expect.stringContaining('Start with Free Coach'));
+  expect(share.mock.calls.at(-1)[1]).not.toMatch(/accept my request|free chess/);
 });

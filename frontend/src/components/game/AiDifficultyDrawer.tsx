@@ -11,9 +11,11 @@ interface AiDifficultyDrawerProps {
   onClose: () => void;
   onSelect: (difficulty: string) => void;
   isCreating: boolean;
+  error?: string;
+  layer?: 100 | 110;
 }
 
-export default function AiDifficultyDrawer({ onClose, onSelect, isCreating }: AiDifficultyDrawerProps) {
+export default function AiDifficultyDrawer({ onClose, onSelect, isCreating, error, layer = 100 }: AiDifficultyDrawerProps) {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("medium");
   const t = useTranslations("Game");
 
@@ -47,10 +49,12 @@ export default function AiDifficultyDrawer({ onClose, onSelect, isCreating }: Ai
   return (
     <Drawer
       isOpen={true}
+      layer={layer}
       onClose={onClose}
       title={t("ai_select_difficulty")}
       description={t("ai_difficulty_help")}
     >
+      {error && <p role="alert" className="t-caption text-brand-danger">{error}</p>}
       <div className="space-y-3 mb-2">
         {options.map((opt) => {
           const isSelected = selectedDifficulty === opt.id;

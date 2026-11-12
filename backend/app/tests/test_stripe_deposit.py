@@ -180,10 +180,10 @@ async def test_stripe_webhook_success(db, monkeypatch):
         assert set(admin_calls.keys()) == {1016749901, 716720099}
         
         for admin_id, msg in admin_calls.items():
-            assert "New Stripe deposit" in msg
-            assert "User: ID 12345" in msg
-            assert "Amount: $10.50" in msg
-            assert "Transaction ID: cs_test_webhook" in msg
+            assert "Новое пополнение в Stripe" in msg
+            assert 'tg://user?id=12345">ID 12345</a>' in msg
+            assert "<b>$10.50</b>" in msg
+            assert "Transaction ID:" in msg and "cs_test_webhook" in msg
 
 
 @pytest.mark.asyncio
@@ -345,10 +345,10 @@ async def test_paid_subscription_invoice_activates_once_and_stays_out_of_wallet_
     admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
     assert set(admin_calls.keys()) == {1016749901, 716720099}
     for admin_id, msg in admin_calls.items():
-        assert "New Premium subscription (1 month)" in msg
-        assert "User: ID 56789" in msg
-        assert "Amount: $9.99" in msg
-        assert "Transaction ID: in_567" in msg
+        assert "Новая подписка Premium (1 month)" in msg
+        assert 'tg://user?id=56789">ID 56789</a>' in msg
+        assert "<b>$9.99</b>" in msg
+        assert "Transaction ID:" in msg and "in_567" in msg
 
 
 @pytest.mark.asyncio

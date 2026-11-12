@@ -196,6 +196,8 @@ export default function HomePage() {
                 <span className="block whitespace-normal sm:whitespace-nowrap">
                   Play chess
                 </span>
+                {/* Keeps "chess Win" two words for crawlers that read text without CSS. */}
+                {" "}
                 <span className="block whitespace-normal sm:whitespace-nowrap">
                   <span className="hero-emphasis inline-block">
                     Win real crypto

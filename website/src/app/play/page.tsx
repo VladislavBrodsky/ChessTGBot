@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PlayButton } from "@/components/PlayButton";
+import { Footer } from "@/components/Footer";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { Logo } from "@/components/Logo";
 import { buttonClass } from "@/components/ui/button-styles";
@@ -38,7 +39,7 @@ const PLAY_FAQS = [
 
 export const metadata: Metadata = pageMetadata(
   "Play Chess Online: Telegram Bot & Web Arena",
-  "Launch Web3Chess in Telegram or play in your web browser. Practice free against a computer opponent, explore 100 tactical levels, and learn the rules for optional USDT matches.",
+  "Open the Web3Chess chess bot in Telegram or play in your browser. Practice free with Free Coach, solve 100 tactics levels, and learn the USDT match rules.",
   "/play",
   [
     "telegram chess bot",
@@ -55,6 +56,7 @@ export const metadata: Metadata = pageMetadata(
 export default async function PlayPage() {
   const svg = await qrSvg(telegramLink(WEBSITE_CAMPAIGNS.play));
   return (
+    <>
     <div className="shell-wide">
       <script
         type="application/ld+json"
@@ -228,5 +230,8 @@ export default async function PlayPage() {
         </p>
       </main>
     </div>
+    {/* Site-wide links: without them /play was a dead end for crawlers (3 internal links). */}
+    <Footer />
+    </>
   );
 }

@@ -493,6 +493,51 @@ async def get_solvency(
     return report
 
 
+class ProfitSweepRequest(BaseModel):
+    amount_usd: Optional[float] = None  # None sweeps everything available
+    confirm: bool = False
+
+
+def _treasury_usd(position: dict) -> dict:
+    out = dict(position)
+    for key, value in position.items():
+        if key.endswith("_cents") and isinstance(value, int):
+            out[key[:-6] + "_usd"] = _cents_to_dollars(value)
+    return out
+
+
+@router.get("/treasury")
+async def get_treasury(
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Platform profit position: custody USDT minus everything still owed."""
+    from app.services.treasury_service import get_profit_position
+    return _treasury_usd(await get_profit_position(db))
+
+
+@router.post("/treasury/sweep")
+async def sweep_treasury_profit(
+    payload: ProfitSweepRequest,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Send platform profit to COMPANY_WALLET_ADDRESS.
+
+    confirm=false (default) previews the amount and moves nothing. The amount
+    is re-checked against the live position at confirm time.
+    """
+    from app.services.payout_service import InsufficientCustodyFunds
+    from app.services.treasury_service import SweepRefused, sweep_profit
+
+    amount_cents = None if payload.amount_usd is None else int(round(payload.amount_usd * 100))
+    try:
+        result = await sweep_profit(db, admin_id=_admin.telegram_id, amount_cents=amount_cents, confirm=payload.confirm)
+    except (SweepRefused, InsufficientCustodyFunds) as err:
+        raise HTTPException(status_code=409, detail=str(err))
+    return _treasury_usd(result)
+
+
 # ---------------------------------------------------------------------------
 # 3c.  Withdrawal review (velocity control)
 # ---------------------------------------------------------------------------
@@ -793,6 +838,39 @@ def _game_summary(g: GameHistory) -> dict:
         "created_at": g.created_at.isoformat() if g.created_at else None,
         "ended_at": g.ended_at.isoformat() if g.ended_at else None,
     }
+
+
+class UnmemoedDepositCredit(BaseModel):
+    event_id: str
+    telegram_id: int
+    confirm: bool = False
+
+
+@router.post("/deposits/credit-unmemoed")
+async def credit_unmemoed_deposit_route(
+    payload: UnmemoedDepositCredit,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_admin_user),
+):
+    """Attribute a USDT transfer that reached the master wallet without a memo.
+
+    Call with ``confirm=false`` first: it returns the on-chain amount, sender and
+    the credit/fee split without touching balances. Repeat with ``confirm=true``
+    to credit. Amount and recipient are read from TonAPI, never from the request.
+    """
+    from app.services.manual_deposit_credit import UnmemoedDepositError, credit_unmemoed_deposit
+
+    try:
+        return await credit_unmemoed_deposit(
+            db,
+            event_id=payload.event_id.strip(),
+            telegram_id=payload.telegram_id,
+            admin_id=_admin.telegram_id,
+            confirm=payload.confirm,
+        )
+    except UnmemoedDepositError as err:
+        await db.rollback()
+        raise HTTPException(status_code=err.status_code, detail=str(err))
 
 
 # ---------------------------------------------------------------------------

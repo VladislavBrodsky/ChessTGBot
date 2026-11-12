@@ -6,10 +6,48 @@ from app.core.config import get_settings
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
 from app.models.transaction import Transaction
-from app.api.v1.endpoints.wallet import convert_ton_address_to_hex, _is_usdt_master, _split_web3_top_up
+from app.api.v1.endpoints.wallet import convert_ton_address_to_hex, _is_usdt_master, _split_web3_top_up, is_master_usdt_receipt
 from app.core.logger import exception_summary
 
 logger = logging.getLogger(__name__)
+
+# Each pass re-reads this much history so a burst of wallet activity, a restart
+# or a TonAPI outage cannot push an uncredited deposit out of view; already
+# credited events are skipped by their reference id.
+LOOKBACK_SECONDS = 48 * 3600
+PAGE_SIZE = 100
+MAX_PAGES = 10
+
+
+async def fetch_recent_events(client, base_url: str, headers: dict):
+    """Page back through the master wallet's events to LOOKBACK_SECONDS.
+
+    Returns (status, events): status is 200 when at least one page was read
+    (a later page failing still yields the events already fetched), else the
+    first page's HTTP status.
+    """
+    import time
+    cutoff = time.time() - LOOKBACK_SECONDS
+    events, before_lt, first_status = [], None, None
+    for _ in range(MAX_PAGES):
+        params = {"limit": PAGE_SIZE}
+        if before_lt:
+            params["before_lt"] = before_lt
+        res = await client.get(base_url, headers=headers, params=params)
+        if first_status is None:
+            first_status = res.status_code
+        if res.status_code != 200:
+            break
+        data = res.json()
+        page = data.get("events", [])
+        events.extend(page)
+        before_lt = data.get("next_from")
+        if not page or not before_lt or min(e.get("timestamp", 0) for e in page) < cutoff:
+            break
+    else:
+        logger.warning("DepositCrawler: lookback hit %s pages; older events not re-checked this pass", MAX_PAGES)
+    return (200 if events or first_status == 200 else first_status), events
+
 
 async def start_deposit_crawler():
     """
@@ -30,13 +68,13 @@ async def start_deposit_crawler():
         logger.warning("DepositCrawler: MASTER_WALLET_ADDRESS not configured. Background crawler idle.")
         return
 
-    url = f"https://tonapi.io/v2/accounts/{master_wallet}/events?limit=25"
+    base_url = f"https://tonapi.io/v2/accounts/{master_wallet}/events"
 
     while True:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 try:
-                    res = await client.get(url, headers=headers)
+                    status, events = await fetch_recent_events(client, base_url, headers)
                 except Exception as api_err:
                     logger.warning(
                         "DepositCrawler: TonAPI request failed; retrying in 90s (%s)",
@@ -45,9 +83,7 @@ async def start_deposit_crawler():
                     await asyncio.sleep(90)
                     continue
 
-                if res.status_code == 200:
-                    events_data = res.json()
-                    events = events_data.get("events", [])
+                if status == 200:
 
                     if events:
                         # USDT-only settlement: no price feed needed — USDT is 1:1.
@@ -55,6 +91,10 @@ async def start_deposit_crawler():
                         for event in events:
                             event_id = event.get("event_id")
                             if not event_id:
+                                continue
+                            # Credit only settled traces; an in-progress one is
+                            # picked up again on a later pass.
+                            if event.get("in_progress"):
                                 continue
                                 
                             # Check if we already processed this event_id in DB
@@ -128,6 +168,9 @@ async def start_deposit_crawler():
                                     clean_comment = comment.strip()
                                     if recipient_raw == master_raw and clean_comment.startswith("ref_"):
                                         if _is_usdt_master(jetton_master):
+                                            if not await is_master_usdt_receipt(jetton_transfer):
+                                                logger.warning("DepositCrawler: USDT-labelled transfer in %s did not reach the master's USDT jetton wallet", event_id)
+                                                continue
                                             try:
                                                 ref_part = clean_comment[4:].split("_")[0].strip()
                                                 telegram_id = int(ref_part)
@@ -256,12 +299,12 @@ async def start_deposit_crawler():
                                             logger.warning(f"Failed to send admin deposit alert: {e}")
                                             
                                         logger.info(f"DepositCrawler: Successfully processed synced deposit for user {telegram_id}.")
-                elif res.status_code == 429:
+                elif status == 429:
                     logger.warning("DepositCrawler: TonAPI rate limited (429). Backing off for 120s.")
                     await asyncio.sleep(120)
                     continue
                 else:
-                    logger.warning(f"DepositCrawler: TonAPI returned status {res.status_code}")
+                    logger.warning(f"DepositCrawler: TonAPI returned status {status}")
         except Exception as loop_err:
             logger.error(f"Error in background deposit crawler loop: {loop_err}", exc_info=True)
             

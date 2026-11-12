@@ -1,4 +1,4 @@
-import { friendInvitationLink, isCampaignParameter, mainMiniAppLink, readLaunchParameter } from '@/lib/invitations';
+import { friendInvitationLink, isCampaignParameter, mainMiniAppLink, readLaunchParameter, shareInvitation } from '@/lib/invitations';
 
 test('normalizes the reported @bot URL and uses the configured Main Mini App', () => {
   expect(mainMiniAppLink('@chess_matbot', '4e044c66')).toBe('https://t.me/chess_matbot?startapp=4e044c66');
@@ -34,4 +34,24 @@ test('recognises content campaign links without treating invitations as campaign
   expect(isCampaignParameter('ref_friend')).toBe(false);
   expect(isCampaignParameter('go_secret')).toBe(false);
   expect(isCampaignParameter('arena')).toBe(false);
+});
+
+
+test('browser sharing detaches its opener and preserves the referral URL and branded copy', () => {
+  const popup = { opener: window, location: { href: '' } };
+  const open = jest.spyOn(window, 'open').mockReturnValue(popup as unknown as Window);
+  const url = mainMiniAppLink('chess_matbot', 'ref_audit');
+  expect(shareInvitation(url, 'Start with Free Coach; human matches use USDT stakes')).toBe(true);
+  expect(popup.opener).toBeNull();
+  const destination = new URL(popup.location.href);
+  expect(destination.origin + destination.pathname).toBe('https://t.me/share/url');
+  expect(destination.searchParams.get('url')).toBe(url);
+  expect(destination.searchParams.get('text')).toContain('Free Coach');
+  open.mockRestore();
+});
+
+test('blocked sharing reports failure instead of claiming an invitation was sent', () => {
+  const open = jest.spyOn(window, 'open').mockReturnValue(null);
+  expect(shareInvitation('https://t.me/chess_matbot?startapp=ref_audit', 'Free Coach')).toBe(false);
+  open.mockRestore();
 });

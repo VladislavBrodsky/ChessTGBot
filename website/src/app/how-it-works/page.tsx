@@ -17,7 +17,7 @@ import { AppScreens } from "@/components/AppScreens";
 
 export const metadata = pageMetadata(
   "How to Play Chess in Telegram: Match Guide",
-  "Complete guide on how to play chess in Telegram with Web3Chess. Learn how to launch the bot, challenge friends, choose time controls, and play for optional USDT crypto prizes.",
+  "How to play chess in Telegram with Web3Chess: open the bot, challenge a friend in chat, pick a time control, and check the rules for optional USDT matches.",
   "/how-it-works",
   [
     "how to play chess in telegram",

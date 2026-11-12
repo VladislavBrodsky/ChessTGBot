@@ -15,8 +15,8 @@ import { clearStoredWebAuth } from '@/lib/sessionAuth';
 
 const NAV_ITEMS = [
   { icon: FiHome, href: '/home', key: 'nav_home' },
-  { icon: FaChessKnight, href: '/game', key: 'nav_play' },
   { icon: FiBookOpen, href: '/academy', key: 'nav_learn' },
+  { icon: FaChessKnight, href: '/game', key: 'nav_play' },
   { icon: FiCreditCard, href: '/wallet', key: 'nav_wallet' },
   { icon: FiUser, href: '/profile', key: 'nav_profile' },
 ];

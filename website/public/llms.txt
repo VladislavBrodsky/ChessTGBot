@@ -1,45 +1,37 @@
-# Web3Chess (https://web3chess.online)
+# Web3Chess
 
-> The premier skill-based chess arena and Telegram chess bot. Play chess online inside Telegram or web browser, solve free tactical puzzles, practice against Free Coach (a computer opponent), and challenge opponents in optional USDT crypto matches settled to a platform balance.
+> Web3Chess is a chess game that runs inside Telegram as a Mini App (bot: @chess_matbot) and in a web browser. Players can practise free against Free Coach, a computer opponent, work through 100 Academy tactics levels, and play other people in optional USDT matches with equal stakes. Wager matches are 18+ where available, and players can lose their stake.
 
-## Core Features & Offerings
+Facts on this page match the public website as of 2026-11-11. The pages linked below are the source of truth when they differ.
 
-- **Telegram Chess Bot & Mini App**: Play chess directly inside Telegram with zero downloads or registration friction. Rating-based matchmaking across 120+ countries.
-- **Real-Money USDT Chess Matches**: Real-stakes PvP chess. Both players stake equal USDT (1, 5, 10, 25, 50, 100, 250 USDT). Winner takes 95% of the pot with automated escrow. Clocks are a flat 1 to 60 minutes per side with no increment.
-- **100% Free Chess Academy & Tactics**: 100 tactical levels, interactive board vision puzzles, opening traps, and endgame training.
-- **Free Coach Practice**: Unlimited free games against Free Coach, a computer opponent with three levels (Easy, Medium, and Hard) that runs on the Web3Chess server. Every move gets server-side move validation. The free post-game review runs Stockfish 10 (stockfish.js) on your own device.
-- **Telegram-Confirmed Withdrawals**: Match winnings credit a platform balance held by Web3Chess (custodial). A withdrawal to your own wallet is sent only after you tap Confirm, an HMAC-signed button, in your private bot chat; larger withdrawals also wait for a manual review.
-- **Fair Play & Anti-Cheat Rules**: Server-side move validation, server-kept clocks, and anti-collusion wager pairing that never matches two accounts on the same IP address, a referrer with their own referral, or recent opponents. Engine use is banned; there is no automated engine detection.
+## How to play
 
-## Primary Pages & URLs
+- Telegram: open https://t.me/chess_matbot/Web3Chess. The Mini App signs players in with their Telegram profile; there is no separate download or password.
+- Browser: https://app.web3chess.online, with sign-in through Telegram to keep rating and match history.
+- Free: Free Coach games and the 100 Academy tactics levels cost nothing.
 
-- [Play Chess Online / Telegram Bot](https://web3chess.online/play): Launch the Telegram chess bot or play in desktop web browser.
-- [How to Play Chess in Telegram](https://web3chess.online/how-it-works): Step-by-step guide to starting games, inviting friends via Telegram chat, and match rules.
-- [Play Chess for Money / USDT Stakes](https://web3chess.online/wagers): Transparent mathematical breakdown of 95% winner pot, rake rules, and bankroll management.
-- [Free Chess Puzzles & Tactics Academy](https://web3chess.online/academy): Solve 100 interactive tactical levels and practice against the Free Coach computer opponent.
-- [Fair Play & Anti-Cheat Rules](https://web3chess.online/fair-play): Server-side move validation, tamper-proof clocks, and anti-engine policies.
-- [Chess Rules for Beginners](https://web3chess.online/rules): Step-by-step beginner guide to piece movements, castling, en passant, checkmate, stalemate, and chess clocks.
-- [Chess Strategy & Tactics Guides](https://web3chess.online/blog): In-depth guides on Arabian mate, smothered mate, Blackburne-Shilling gambit, blitz time management, and Zwischenzug tactics.
+## USDT matches (optional, 18+)
 
-## Primary Keywords & Topics
+- Both players stake the same amount. Stake tiers: 1, 5, 10 or 25 USDT.
+- Decided match: the winner receives 95% of the combined pot in their app balance. 3% is the platform fee and 2% goes to the referral pool.
+- Draws (stalemate, threefold repetition, 50-move rule, agreement) return both stakes in full.
+- Clocks: 1, 3, 5, 10, 15, 30 or 60 minutes per side, no increment. A flagged clock loses, unless the opponent has too little material to checkmate (a bare king, or king and knight or bishop): that is a draw under FIDE Article 6.9 and both stakes are returned. If a player does not make a first move within 30 seconds, the match is aborted and both stakes are refunded.
+- Deposits: USDT sent to the address shown in the app's Wallet tab, with the player's reference comment.
+- Withdrawals: requested in the app and confirmed by the player in the Telegram bot chat. Timing depends on processing and network confirmation. Web3Chess holds app balances until withdrawal.
+- Rules for real-money play differ by country. Players must check local eligibility.
 
-- telegram chess bot
-- play chess in telegram
-- telegram chess mini app
-- play chess for crypto
-- play chess for money online
-- crypto chess game
-- earn crypto playing chess
-- free chess puzzles online
-- online chess tactics trainer
-- play chess vs computer online
-- usdt chess wager
-- web3 chess
-- chess rules for beginners
-- how to play chess step by step
-- how does checkmate work
-- how does a chess clock work
-- how to castle in chess
-- en passant explained simply
-- what is a draw in chess
-- how does stalemate work in chess
+## Main pages
+
+- [Play chess in Telegram or the browser](https://web3chess.online/play): launch options and FAQ.
+- [How to play chess in Telegram](https://web3chess.online/how-it-works): starting a game, inviting a friend from a chat, time controls.
+- [Play chess for money with USDT stakes](https://web3chess.online/wagers): stake tiers, pot split, draws, deposits and withdrawals.
+- [Free chess puzzles and tactics trainer](https://web3chess.online/academy): 100 tactics levels and Free Coach practice.
+- [Fair play and anti-cheat](https://web3chess.online/fair-play): move validation on the server, clocks and fair-play rules.
+- [Chess rules for beginners](https://web3chess.online/rules): how pieces move, castling, en passant, check, checkmate, stalemate and chess clocks.
+- [Chess articles](https://web3chess.online/blog): openings, tactics, endgames and blitz time management. Full list in the [RSS feed](https://web3chess.online/feed.xml).
+- [Terms of Service](https://web3chess.online/terms) and [Privacy Policy](https://web3chess.online/privacy).
+
+## Community
+
+- Telegram channel: https://t.me/chess_hub
+- Telegram chat: https://t.me/chesshub_chat

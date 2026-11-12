@@ -1,3 +1,4 @@
+import { BalanceOpportunity } from './BalanceOpportunity';
 import { Badge } from '@/components/ui/Badge';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -63,7 +64,7 @@ export default function PlayLobby() {
   const [friendDrawerMode, setFriendDrawerMode] = useState<'free' | 'paid'>('free');
   // Set while a friend challenge is being topped up, so closing the deposit
   // returns to the staked drawer instead of stranding the player in the lobby.
-  const [friendResume, setFriendResume] = useState<{ stake: number } | null>(null);
+  const [friendResume, setFriendResume] = useState<{ stake: number; time: number } | null>(null);
   const friendFromBridgeRef = useRef(false);
   const [friendError, setFriendError] = useState('');
 
@@ -363,6 +364,7 @@ export default function PlayLobby() {
         time_control: timeControl,
         custom_wager: isCustomWager,
       });
+      logTelemetryEvent('balance_opportunity_topup', { source: 'play_lobby', stake_cents: wagerInCents });
       setShowDepositDrawer(true);
     }
   };
@@ -655,6 +657,9 @@ export default function PlayLobby() {
               />
 
               {/* Keep the wager action and its risk disclosure together before secondary events. */}
+              <BalanceOpportunity
+                stake={chosenWager} source="play_lobby" showTopUp={false} timeControl={timeControl}
+                onTopUp={() => setShowDepositDrawer(true)} />
               <ArenaBanner />
 
               <EngagementQuest onPlayMatch={handleLauncherClick} />
@@ -703,17 +708,17 @@ export default function PlayLobby() {
         {showAiDifficulty && <AiDifficultyDrawer onClose={() => setShowAiDifficulty(false)} onSelect={startAiGame} isCreating={isCreating} />}
         {showFriendChallenge && <FriendChallengeDrawer onClose={() => { if (!isCreating) closeFriendChallenge(); }}
           onCreate={(stake, friendTime) => { void playVsFriend(stake, friendTime); }}
-          onTopUp={(stake) => {
+          onTopUp={(stake, friendTime) => {
             logTelemetryEvent('wager_insufficient_balance', {
               source: 'friend_challenge',
               selected_wager_cents: stake,
               wallet_balance_cents: walletBalance,
               shortfall_cents: Math.max(0, stake - walletBalance),
             });
-            setDepositTarget(stake); setFriendResume({ stake }); setShowFriendChallenge(false); setShowDepositDrawer(true);
+            setDepositTarget(stake); setFriendResume({ stake, time: friendTime }); setShowFriendChallenge(false); setShowDepositDrawer(true);
           }}
           initialMode={friendDrawerMode}
-          initialTime={timeControl} initialWager={friendResume?.stake ?? chosenWager} walletBalance={walletBalance}
+          initialTime={friendResume?.time ?? timeControl} initialWager={friendResume?.stake ?? chosenWager} walletBalance={walletBalance}
           loadingBalance={loadingBalance} balanceError={Boolean(balanceError)} isCreating={isCreating} error={friendError} />}
         <AnimatePresence>
           {showDepositDrawer && (

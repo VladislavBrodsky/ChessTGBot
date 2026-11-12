@@ -26,6 +26,11 @@ export function isCampaignParameter(parameter: string): boolean {
 
 export function shareInvitation(url: string, text: string) {
   const share = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-  if (window.Telegram?.WebApp?.openTelegramLink) window.Telegram.WebApp.openTelegramLink(share);
-  else window.open(share, '_blank', 'noopener,noreferrer');
+  if (window.Telegram?.WebApp?.openTelegramLink) { window.Telegram.WebApp.openTelegramLink(share); return true; }
+  // Open without noopener first to distinguish blocked popups, then detach the opener.
+  const popup = window.open('about:blank', '_blank');
+  if (!popup) return false;
+  popup.opener = null;
+  popup.location.href = share;
+  return true;
 }

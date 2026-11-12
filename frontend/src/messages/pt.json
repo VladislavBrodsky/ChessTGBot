@@ -532,7 +532,7 @@
   "Game": {
     "review_title": "Análise da partida",
     "ai_select_difficulty": "Escolha a dificuldade do Free Coach",
-    "ai_difficulty_help": "Jogue grátis contra um adversário computadorizado. Escolha a dificuldade.",
+    "ai_difficulty_help": "Escolha o nível do Free Coach",
     "ai_easy": "Fácil",
     "ai_medium": "Médio",
     "ai_hard": "Difícil",
@@ -594,7 +594,7 @@
     "friend_insufficient_balance": "USDT insuficiente para esta aposta",
     "friend_create_staked": "Criar e apostar {amount}",
     "friend_create_free": "Criar partida grátis",
-    "friend_tile_subtitle": "Grátis ou com aposta · escolha o tempo",
+    "friend_tile_subtitle": "Aposta USDT · escolha o tempo",
     "friend_join_stake_title": "Confirme sua aposta",
     "friend_join_stake_notice": "Ao entrar, sua aposta é reservada. Você pode perdê-la; empate devolve ambas as apostas. O vencedor recebe 95% do pote",
     "friend_join_stake_action": "Entrar e apostar {amount}",
@@ -1460,6 +1460,34 @@
     "player_busy": "Um de vocês já está jogando — terminem essa partida e tentem novamente",
     "invite_cooldown": "Espere um minuto antes de enviar outro pedido",
     "self_invitation": "Compartilhe seu link com um amigo para jogarem juntos",
-    "unavailable": "Não foi possível conectar — verifique sua conexão e tente novamente"
+    "unavailable": "Não foi possível conectar — verifique sua conexão e tente novamente",
+    "referral_share_text": "Entre comigo no Web3Chess por este convite. Comece com Free Coach; partidas entre pessoas usam apostas USDT."
+  },
+  "BalanceOpportunity": {
+    "shortfall": "Adicione {amount} USDT para esta partida",
+    "topup": "Depositar",
+    "invite": "Convide amigos e ganhe recompensas",
+    "practice": "Free Coach",
+    "separate": "Recompensas GRAM são separadas do saldo USDT para apostas",
+    "failed": "Algo deu errado — tente novamente",
+    "copy_failed": "Falha ao copiar — tente novamente",
+    "share_opened": "Telegram aberto — você decide se envia",
+    "share_failed": "Não foi possível compartilhar — copie o link",
+    "joined": "Amigos cadastrados",
+    "pending": "Atividade pendente",
+    "qualified": "3 partidas válidas concluídas",
+    "usdt_credited": "Bônus USDT creditados",
+    "gram_credited": "Recompensas GRAM creditadas",
+    "bonus": "Ganhe {amount} USDT por amigo qualificado; limite diário: {cap} bônus",
+    "terms": "Seu amigo deve entrar pelo seu link e concluir 3 partidas com aposta contra pessoas, com pelo menos {moves} movimentos individuais cada; para 1 GRAM também é necessário um depósito USDT concluído",
+    "delayed": "Qualificação e créditos são separados; bônus adiados aparecem após o crédito",
+    "balance_title": "Saldo da partida",
+    "needed": "Faltam {amount} USDT",
+    "invite_short": "Convidar amigos",
+    "progress_title": "Progresso dos convites",
+    "stage_joined": "Entraram",
+    "stage_pending": "Pendentes",
+    "stage_qualified": "Qualificados",
+    "issued_title": "Número de créditos emitidos"
   }
 }
