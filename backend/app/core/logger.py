@@ -42,12 +42,90 @@ class JSONFormatter(logging.Formatter):
             log_record["exception"] = self.formatException(record.exc_info)
         return json.dumps(log_record)
 
+REPEAT_WINDOW_SECONDS = 60.0
+REPEAT_MAX_KEYS = 1000
+
+
+class RepeatCollapsingHandler(logging.StreamHandler):
+    """Stdout handler that collapses repeated warnings/errors.
+
+    Railway rate-limits log lines per replica, so an error storm (the same
+    failure with a full traceback hundreds of times a minute) used to push out
+    every other line, including the first, most useful traceback. The first
+    WARNING+ record of each kind is written in full; identical ones (same
+    logger, call site, level, exception type and normalized first line) within
+    REPEAT_WINDOW_SECONDS are only counted. When the window closes, one summary
+    line reports how many were suppressed. INFO records always pass through,
+    and so drive the summaries promptly. Telegram alerts are a separate handler
+    with their own rate limit and are unaffected.
+    """
+
+    def __init__(self, stream=None, window: float = REPEAT_WINDOW_SECONDS, clock=time.monotonic):
+        super().__init__(stream)
+        self.window = window
+        self.clock = clock
+        self._seen: dict[tuple, list] = {}  # key -> [window_start, suppressed, sample record]
+
+    @staticmethod
+    def _key(record: logging.LogRecord) -> tuple:
+        try:
+            from app.core.alerts import normalize_message
+            text = normalize_message(record.getMessage())
+        except Exception:
+            text = str(record.msg)[:120]
+        exc_type = record.exc_info[0].__name__ if record.exc_info and record.exc_info[0] else ""
+        return (record.name, record.pathname, record.lineno, record.levelno, exc_type, text)
+
+    def _summary(self, sample: logging.LogRecord, suppressed: int, seconds: float) -> logging.LogRecord:
+        first_line = sample.getMessage().split("\n", 1)[0][:200]
+        return logging.LogRecord(
+            sample.name, sample.levelno, sample.pathname, sample.lineno,
+            f"Previous message repeated {suppressed} more times in {seconds:.0f}s (suppressed): {first_line}",
+            None, None)
+
+    def _flush_expired(self, now: float, force: bool = False) -> None:
+        for key, (start, suppressed, sample) in list(self._seen.items()):
+            if force or now - start >= self.window:
+                del self._seen[key]
+                if suppressed:
+                    super().emit(self._summary(sample, suppressed, now - start))
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            now = self.clock()
+            self.acquire()
+            try:
+                self._flush_expired(now)
+                if record.levelno < logging.WARNING:
+                    super().emit(record)
+                    return
+                key = self._key(record)
+                entry = self._seen.get(key)
+                if entry is not None:
+                    entry[1] += 1
+                    return
+                if len(self._seen) >= REPEAT_MAX_KEYS:
+                    self._seen.pop(next(iter(self._seen)))
+                self._seen[key] = [now, 0, record]
+            finally:
+                self.release()
+            super().emit(record)
+        except Exception:
+            self.handleError(record)
+
+    def close(self) -> None:
+        try:
+            self._flush_expired(self.clock(), force=True)
+        finally:
+            super().close()
+
+
 def setup_logging():
     # Railway assigns severity from the stream for non-JSON output.  Send the
     # JSON stream to stdout and let its explicit `level` field carry severity.
     # This also gives Uvicorn startup messages the correct INFO severity once
     # their loggers are routed through this handler below.
-    handler = logging.StreamHandler(sys.stdout)
+    handler = RepeatCollapsingHandler(sys.stdout)
     handler.setFormatter(JSONFormatter())
     
     handlers = [handler]
