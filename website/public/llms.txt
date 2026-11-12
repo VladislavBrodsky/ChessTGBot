@@ -15,7 +15,7 @@ Facts on this page match the public website as of 2026-11-11. The pages linked b
 - Both players stake the same amount, from 1 USDT. Lobby presets: 1, 5, 10, 25, 50, 100, 250, 500 or 1,000 USDT, or enter a custom amount. A friend challenge takes any amount from 1 USDT.
 - Decided match: the winner receives 95% of the combined pot in their app balance. 3% is the platform fee and 2% goes to the referral pool.
 - Draws (stalemate, threefold repetition, 50-move rule, agreement) return both stakes in full.
-- Clocks: 1, 3, 5, 10, 15, 30 or 60 minutes per side, no increment. A flagged clock loses. If a player does not make a first move within 30 seconds, the match is aborted and both stakes are refunded.
+- Clocks: 1, 3, 5, 10, 15, 30 or 60 minutes per side, no increment. A flagged clock loses, unless the opponent has too little material to checkmate (a bare king, or king and knight or bishop): that is a draw under FIDE Article 6.9 and both stakes are returned. If a player does not make a first move within 30 seconds, the match is aborted and both stakes are refunded.
 - Deposits: USDT sent to the address shown in the app's Wallet tab, with the player's reference comment.
 - Withdrawals: requested in the app and confirmed by the player in the Telegram bot chat. Timing depends on processing and network confirmation. Web3Chess holds app balances until withdrawal.
 - Rules for real-money play differ by country. Players must check local eligibility.

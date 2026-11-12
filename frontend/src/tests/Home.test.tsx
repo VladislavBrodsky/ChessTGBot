@@ -83,7 +83,6 @@ jest.mock('@/components/LayoutWrapper', () => ({ children }: any) => <div>{child
 // resolves outside act() after synchronous tests finish rendering.
 jest.mock('@/components/DailyCheckinModal', () => () => null);
 jest.mock('@/components/FirstRunCoordinator', () => () => null);
-jest.mock('@/components/game/ArenaBanner', () => () => null);
 jest.mock('@/components/EngagementQuest', () => () => null);
 // Overlay behavior is covered by its own tests; this suite checks the dashboard.
 jest.mock('@/components/ui/Drawer', () => ({ Drawer: ({ isOpen, children }: any) => isOpen ? <div role="dialog">{children}</div> : null }));

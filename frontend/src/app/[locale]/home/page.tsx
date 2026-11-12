@@ -8,7 +8,6 @@ import { useTranslations, useLocale } from 'next-intl';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { getFullPhotoUrl } from '@/lib/api';
 import Leaderboard from '@/components/Leaderboard';
-import ArenaBanner from '@/components/game/ArenaBanner';
 import { useClaimableTasks } from '@/hooks/useClaimableTasks';
 import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/Button';
@@ -110,7 +109,6 @@ export default function Home() {
           <InvitationInboxCard />
           <EngagementQuest />
           <GramVaultPreview />
-          <div className="w-full"><ArenaBanner /></div>
           <div className="ui-quick-grid">
             <QuickTile href={`/${locale}/academy`} icon={<FaGraduationCap size={20} />} tone="info" label={t('academy')} />
             <QuickTile href={`/${locale}/marketplace`} icon={<FiShoppingBag size={20} />} tone="gold" label={t('nav_marketplace')} />

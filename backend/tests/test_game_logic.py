@@ -49,6 +49,14 @@ async def test_game_engine_moves():
     # Invalid move
     assert not engine.make_move("e2e5") # e2e5 is not legal for white on first move
 
+async def _seat_players(service, game_id, white_id, black_id):
+    """Seat two players directly. These tests exercise clocks and results, not joining:
+    joining an open seat of a zero-stake human game is refused (human games are wagered)."""
+    state = await service.session_manager.get_game(game_id)
+    state.white_player_id, state.black_player_id = white_id, black_id
+    await service.session_manager.save_game(game_id, state)
+
+
 @pytest.mark.asyncio
 async def test_game_service_clock():
     service = GameService()
@@ -58,8 +66,7 @@ async def test_game_service_clock():
     await service.create_game(game_id, is_bot_game=False, time_control_seconds=10)
     
     # Assign players
-    await service.join_game(game_id, 1111) # White
-    await service.join_game(game_id, 2222) # Black
+    await _seat_players(service, game_id, 1111, 2222)
     
     # Initial move (e2e4)
     state1 = await service.make_move(game_id, "e2e4")
@@ -88,8 +95,7 @@ async def test_game_service_timeout():
     await service.create_game(game_id, is_bot_game=False, time_control_seconds=1)
     
     # Join players
-    await service.join_game(game_id, 1111) # White
-    await service.join_game(game_id, 2222) # Black
+    await _seat_players(service, game_id, 1111, 2222)
     
     # Make a move, white clock starts ticking for black's turn
     state1 = await service.make_move(game_id, "e2e4")
@@ -113,8 +119,7 @@ async def test_game_service_resignation():
     game_id = "test_resign_game"
     
     await service.create_game(game_id, is_bot_game=False, time_control_seconds=600)
-    await service.join_game(game_id, 1111) # White
-    await service.join_game(game_id, 2222) # Black
+    await _seat_players(service, game_id, 1111, 2222)
     
     # White resigns (originally 1111, but colors are randomized upon join)
     state = await service.resign_game(game_id, 1111)
@@ -132,8 +137,7 @@ async def test_game_service_draw():
     game_id = "test_draw_game"
     
     await service.create_game(game_id, is_bot_game=False, time_control_seconds=600)
-    await service.join_game(game_id, 1111) # White
-    await service.join_game(game_id, 2222) # Black
+    await _seat_players(service, game_id, 1111, 2222)
     
     # Mutual agreement draw
     state = await service.settle_draw(game_id)

@@ -99,7 +99,8 @@ export const SITE = {
  * First move: backend/app/services/game_service.py monitor_first_move_abort (30s per side, then the
  * match is aborted and refunded); players matched while the app was closed get
  * OFFLINE_FIRST_MOVE_GRACE_SECONDS in backend/app/socket_events.py.
- * In game_service.py a draw refunds both stakes and a flagged clock always loses.
+ * In game_service.py a draw refunds both stakes. A flagged clock loses unless the opponent cannot
+ * checkmate (bare king, K+N, K+B): flag_fall_result then scores a draw (FIDE 6.9) and refunds both stakes.
  */
 export const MATCH_RULES = {
   clockMinutes: [1, 3, 5, 10, 15, 30, 60],
