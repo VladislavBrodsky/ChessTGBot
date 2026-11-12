@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     "earn crypto playing chess",
     "free chess puzzles online",
     "online chess tactics trainer",
-    "play chess vs stockfish online",
+    "play chess vs computer online",
     "web3 chess",
     "usdt chess wager",
     "skill based chess",

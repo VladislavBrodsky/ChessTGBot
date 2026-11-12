@@ -23,7 +23,7 @@ export const wagersContent = {
       stake: "5 USDT",
       pot: "10.00 USDT",
       winnerTakes: "9.50 USDT",
-      desc: "The standard battleground. Serious competitors playing sharp 3+2 lines where tactical vision earns clean payouts.",
+      desc: "The standard battleground. Serious competitors playing sharp 3-minute blitz lines where tactical vision earns clean payouts.",
       recommendedFor: "Intermediate Competitors",
       badge: "Core Arena",
     },
@@ -58,7 +58,7 @@ export const wagersContent = {
       {
         percent: `${SETTLEMENT.platformFeePercent}%`,
         title: "Platform Maintenance",
-        body: "3% funds high-performance backend cluster hosting, low-latency WebSocket infrastructure, and Stockfish server analysis.",
+        body: "3% funds backend hosting, the realtime WebSocket infrastructure, and server-side move validation.",
       },
       {
         percent: `${SETTLEMENT.referralFeePercent}%`,
@@ -76,7 +76,7 @@ export const wagersContent = {
     {
       icon: "shield-check",
       title: "Manual Security Thresholds",
-      body: "Small withdrawals execute with rapid automated verification. High-volume transfers pass through secondary security checks to prevent unauthorized account drain.",
+      body: "Standard withdrawals are sent after you tap Confirm in your bot chat. Larger transfers also pass a manual review to prevent unauthorized account drain.",
     },
     {
       icon: "check-circle",

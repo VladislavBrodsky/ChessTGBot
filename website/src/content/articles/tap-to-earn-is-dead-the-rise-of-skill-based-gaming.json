@@ -3,7 +3,7 @@
   "title": "Tap-to-Earn Is Dead: Why Skill-Based Web3 Chess Wins",
   "subtitle": "Why speculative clicker tokenomics collapsed and why 1,500-year-old competitive chess is redefining Telegram Web3 gaming.",
   "excerpt": "Why clicker tokens collapsed, why players demand genuine skill, and how Telegram chess tournaments created real sustainable rewards.",
-  "metaDescription": "Why Telegram tap-to-earn clicker games failed and how skill-based competitive chess with instant USDT pot settlements is leading Web3 gaming in 2026.",
+  "metaDescription": "Why Telegram tap-to-earn clicker games failed and how skill-based competitive chess with transparent USDT pot settlements is leading Web3 gaming in 2026.",
   "category": "Chess News",
   "author": {
     "name": "Web3Chess Research",
@@ -12,12 +12,13 @@
     "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-29",
   "readingTime": "4 min read",
   "takeaways": [
     "Hyper-inflationary tap-to-earn clickers collapsed because they lacked genuine gameplay utility.",
     "Chess has a 1,500-year history of global competitive demand that requires zero artificial incentives.",
-    "Non-custodial smart escrow replaces speculative token farming with real peer-to-peer payouts.",
-    "Telegram Bot API 8.0 enables fullscreen client gameplay with instant on-chain finality."
+    "Locked match stakes replace speculative token farming with real peer-to-peer payouts.",
+    "Telegram Bot API 8.0 enables fullscreen client gameplay inside the chat app."
   ],
   "content": [
     {
@@ -52,8 +53,8 @@
       "type": "list",
       "items": [
         "Zero Installation Friction: Tap Play in any chat to open the board in under two seconds.",
-        "Native Crypto Rails: Settle match winnings non-custodially via Telegram-native wallets.",
-        "Global Peer Matchmaking: Challenge rivals across 120+ nations with millisecond FIDE clock sync."
+        "Native Crypto Rails: Withdraw match winnings to Telegram-native wallets after confirming in the bot.",
+        "Global Peer Matchmaking: Challenge rivals across 120+ nations on server-kept clocks."
       ]
     }
   ],

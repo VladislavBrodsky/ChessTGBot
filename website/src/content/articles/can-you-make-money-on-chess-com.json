@@ -3,7 +3,7 @@
   "title": "Can You Make Money on Chess.com? Real Truth & Options",
   "subtitle": "Why cash prizes on legacy platforms remain locked behind grandmaster titles, and how peer-to-peer arenas level the playing field.",
   "excerpt": "Explore whether everyday players can earn cash on Chess.com, why prize arenas require titled status, and how skill-based platforms reward skill.",
-  "metaDescription": "Can you make money playing chess online? Compare Chess.com titled prize pools with non-custodial skill-based wager arenas for everyday players.",
+  "metaDescription": "Can you make money playing chess online? Compare Chess.com titled prize pools with skill-based crypto wager arenas for everyday players.",
   "category": "Chess Culture",
   "author": {
     "name": "Viktor Vance",
@@ -12,12 +12,13 @@
     "kind": "Person"
   },
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-29",
   "readingTime": "4 min read",
   "takeaways": [
     "Legacy platforms like Chess.com restrict direct cash prize tournaments almost exclusively to FIDE-titled players.",
     "Titled Tuesday prize pools are realistically inaccessible to competitive amateurs rated between 1500 and 2200.",
     "Skill-based peer-to-peer matchmaking lets players wager equal stakes regardless of official FIDE title status.",
-    "Automated smart escrow ensures transparent 95% pot payouts directly upon checkmate without withdrawal gatekeeping."
+    "Locked match stakes settle a transparent 95% of the pot to the winner’s platform balance at checkmate; withdrawals are confirmed in Telegram."
   ],
   "content": [
     {
@@ -50,7 +51,7 @@
     },
     {
       "type": "paragraph",
-      "text": "In Web3 chess ecosystems, players challenge opponents within their exact rating bracket for equal USDT stakes (e.g., 1, 5, 10, or 25 USDT). Both deposits enter an automated smart escrow before move 1, and the victor claims 95% of the combined pot upon checkmate or resignation."
+      "text": "In Web3 chess ecosystems, players challenge opponents within their exact rating bracket for equal USDT stakes (e.g., 1, 5, 10, or 25 USDT). Both stakes are locked by the platform before move 1, and the victor claims 95% of the combined pot upon checkmate or resignation."
     },
     {
       "type": "callout",
@@ -64,7 +65,7 @@
       "type": "list",
       "items": [
         "Strict Bankroll Allocation: Never risk more than 2% to 5% of your available funds in a single game.",
-        "Anti-Cheat Verification: Ensure authoritative server-side move engines (Stockfish 16) audit all plies.",
+        "Anti-Cheat Honesty: Ensure an authoritative server validates every move, then check exactly what the platform does about engine use; a legal move is not proof of an unaided one.",
         "Start with Free Practice: Warm up against engine levels in the Academy before wagering real crypto."
       ]
     }

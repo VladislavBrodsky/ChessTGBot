@@ -12,12 +12,13 @@
     "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-29",
   "readingTime": "5 min read",
   "takeaways": [
     "Cheat detection evaluates statistical centipawn loss (ACPL) across complex tactical branches.",
     "Latency variance analysis spots unnatural delays indicative of second-screen engine entry.",
     "Server-side deterministic validation guarantees no client-side move modification or clock hacks.",
-    "Automated pot escrow guarantees refunds to players if opponent engine assistance is verified."
+    "Web3Chess validates every move on the server, but a legal move is not proof of an unaided one."
   ],
   "content": [
     {
@@ -30,7 +31,7 @@
     },
     {
       "type": "paragraph",
-      "text": "Anti-cheat engines audit every match using Average Centipawn Loss (ACPL). A grandmaster might play an incredible game with an ACPL of 15 to 20 in complex tactical positions. A player playing at 2 or 3 ACPL over 40 complex moves exhibits statistical correlation that human calculation cannot reproduce."
+      "text": "Platforms that run engine-based anti-cheat audit games using Average Centipawn Loss (ACPL). A grandmaster might play an incredible game with an ACPL of 15 to 20 in complex tactical positions. A player playing at 2 or 3 ACPL over 40 complex moves exhibits statistical correlation that human calculation cannot reproduce."
     },
     {
       "type": "subheading",
@@ -52,8 +53,9 @@
       "type": "list",
       "items": [
         "Deterministic Validation: Every ply is validated on authoritative backend servers before execution.",
-        "Tamper-Proof Clocks: Server-side monotonic timestamps prevent client-side time manipulation.",
-        "Smart Escrow Security: Suspected foul play triggers instant stake freezes and administrative review."
+        "Tamper-Proof Clocks: Server-side timestamps prevent client-side time manipulation.",
+        "Anti-Collusion Pairing: Wager matchmaking never pairs two accounts on the same IP address, a referrer with their own referral, or recent opponents.",
+        "No Automated Engine Detection Yet: Web3Chess does not run ACPL or move-timing analysis today. Engine use is banned by the rules, and a reported game can be reviewed from the move list the server stored."
       ]
     }
   ],
