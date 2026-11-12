@@ -110,27 +110,29 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 800 
   });
 }
 
-test('incoming play request takes priority over onboarding and accepts only after a tap', async ({ page }) => {
+test('incoming free play request takes priority over onboarding but can only be declined', async ({ page }) => {
+  // Every human game is staked: a (free) friend request explains the rule and can only be closed.
   await prepare(page);
   await page.addInitScript(() => localStorage.removeItem('onboarding_completed'));
-  let accepted = false;
+  let responded: unknown = null;
   await page.route('**/api/v1/game/friends/**', async route => {
     const path = new URL(route.request().url()).pathname;
     let response: unknown = {};
     if (path.endsWith('/inbox')) response = { launch: null, invitations: [{ ...friendRequest, role: 'host' }] };
-    if (path.endsWith('/respond')) { accepted = true; expect(route.request().postDataJSON()).toEqual({ action: 'accept' }); response = { ...friendRequest, role: 'host', status: 'ready', game_id: 'e2e-ai-game' }; }
+    if (path.endsWith('/respond')) { responded = route.request().postDataJSON(); response = { ...friendRequest, role: 'host', status: 'declined' }; }
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify(response) });
   });
   await page.goto('/en/home');
   await expect(page.getByRole('heading', { name: 'A friend wants to play', exact: true })).toBeVisible();
   await expect(page.getByRole('dialog')).toHaveCount(1);
-  expect(accepted).toBe(false);
-  await page.getByRole('button', { name: 'Accept and play' }).click();
-  await expect(page).toHaveURL(/\/en\/game\?id=e2e-ai-game/);
-  expect(accepted).toBe(true);
+  await expect(page.getByText(/need a stake of at least \$1\.00/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Accept and play' })).toHaveCount(0);
+  expect(responded).toBeNull();
+  await page.getByRole('button', { name: 'Decline' }).click();
+  await expect.poll(() => responded).toEqual({ action: 'decline' });
 });
 
-test('reported legacy game shows a named preview and expired links have a clear exit', async ({ page }) => {
+test('reported legacy free game shows a named preview without a free join, and expired links have a clear exit', async ({ page }) => {
   await prepare(page);
   let expired = false;
   await page.route('**/api/v1/game/friends/**', async route => {
@@ -140,7 +142,8 @@ test('reported legacy game shows a named preview and expired links have a clear 
   });
   await page.goto('/en/home?startapp=4e044c66');
   await expect(page.getByRole('heading', { name: 'Join your friend', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Join free game' })).toBeEnabled();
+  await expect(page.getByText(/need a stake of at least \$1\.00/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Join free game' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
   expired = true;
   await page.goto('/en/home?startapp=oldmissing');
@@ -160,7 +163,8 @@ test('Arabic light direct invitation remains readable with reduced motion and sa
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify(preview ? { kind: 'game', opponent: friendRequest.opponent, parameter: '4e044c66', game_id: '4e044c66', free: true, time_control: 600 } : { launch: null, invitations: [] }) });
   });
   await page.goto('/ar/home?startapp=4e044c66');
-  await expect(page.getByRole('button', { name: 'انضم مجانًا', exact: true })).toBeVisible();
+  await expect(page.getByText('تتطلب المباريات ضد لاعبين آخرين رهانًا', { exact: false })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'انضم مجانًا', exact: true })).toHaveCount(0);
   await expect(page.getByRole('dialog')).toHaveCount(1);
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('dialog').screenshot({ path: '/tmp/chess-pilot-validation/invitation-ar.png' });
