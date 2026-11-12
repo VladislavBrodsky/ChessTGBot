@@ -38,3 +38,5 @@ __all__ = [
 from app.models.player_tracking import PlayerActivity, PlayerAcquisition, LaunchToken, ArenaGameResult, CampaignDelivery
 
 from app.models.friend_invite import FriendInvite, PlayerLaunchIntent
+
+from app.models.fair_play import FairPlayAnalysis, FairPlayReview

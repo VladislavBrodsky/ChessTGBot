@@ -22,8 +22,12 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install system dependencies (if needed for python libs)
-# RUN apt-get update && apt-get install -y gcc
+# Stockfish for post-hoc fair-play screening of wagered games (app/services/fair_play.py).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends stockfish \
+    && rm -rf /var/lib/apt/lists/*
+ENV STOCKFISH_PATH=/usr/games/stockfish
+
 
 # Configuration
 ENV PYTHONDONTWRITEBYTECODE=1

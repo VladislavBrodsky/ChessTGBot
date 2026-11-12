@@ -5,6 +5,12 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Stockfish for post-hoc fair-play screening of wagered games (app/services/fair_play.py).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends stockfish \
+    && rm -rf /var/lib/apt/lists/*
+ENV STOCKFISH_PATH=/usr/games/stockfish
+
 # Copy Backend Requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir --require-hashes -r requirements.txt

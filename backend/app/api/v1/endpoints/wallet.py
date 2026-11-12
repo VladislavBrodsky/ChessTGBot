@@ -465,7 +465,10 @@ async def withdraw_funds(
         create_withdrawal,
     )
 
-    review_required = needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS)
+    from app.services.fair_play import has_open_review
+    # A player under fair-play review has every withdrawal held for the owner, whatever its size.
+    review_required = (needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS)
+                       or await has_open_review(db, current_user.telegram_id))
     confirmation_required = settings.WITHDRAWAL_CONFIRMATION_ENABLED and settings.TELEGRAM_BOT_TOKEN
     if review_required:
         initial_status = "pending_review"
