@@ -73,6 +73,45 @@ def profile(handle: str, markup: str, now: datetime | None = None) -> tuple[dict
     return lead, candidate_handles(markup, posts, handle)
 
 
+COUNT_RE = re.compile(r"([0-9][0-9 \u00a0.,]*)\s*(members|subscribers|участник|подписчик)", re.I)
+
+
+def info_url(handle: str) -> str:
+    if not tp.CHANNEL_RE.fullmatch(handle):
+        raise ValueError("Invalid Telegram handle")
+    return f"https://t.me/{handle}"
+
+
+def profile_info_page(handle: str, markup: str, now: datetime | None = None) -> tuple[dict, set[str]]:
+    """Groups (and channels with the preview disabled) have no /s/ page; t.me/<handle> still shows the title,
+    the member count and the description."""
+    now = now or datetime.now(timezone.utc)
+    root = tp.parse_dom(markup)
+    title = root.find("tgme_page_title")
+    extra = root.find("tgme_page_extra")
+    desc = root.find("tgme_page_description")
+    name = title.text().strip() if title else None
+    description = tp.plain_text(desc)[:500] if desc else ""
+    extra_text = extra.text().strip() if extra else ""
+    match = COUNT_RE.search(extra_text)
+    audience = int(re.sub(r"[^0-9]", "", match.group(1))) if match else None
+    is_group = "member" in extra_text.lower() or "участник" in extra_text.lower()
+    lead = {
+        "platform": "telegram", "handle": handle.lower(), "url": f"https://t.me/{handle}", "name": name,
+        "segment": "telegram_chess_group" if is_group else "telegram_chess_channel",
+        "audience": audience, "audience_source": f"t.me page {now.date().isoformat()}" if audience else None,
+        "median_views": None, "last_post_at": None, "posts_30d": None, "description": description,
+        "relevance": scoring.relevance(name, description, []),
+        "language": scoring.guess_language(name, description),
+        "contact_route": scoring.contact_route(description, handle) or ("tg:group chat (ask an admin there)" if is_group else ""),
+        "source": "telegram_info_page",
+    }
+    # a bot or a private person has no extra counter: not a community
+    if not extra_text or "bot" in handle.lower():
+        lead["name"] = None
+    return lead, candidate_handles(markup, [], handle)
+
+
 def crawl(db, budget: int, fetcher=None, min_relevance: float = 0.3, max_depth: int = 4, now=None) -> dict:
     """Profile up to `budget` frontier handles. Relevant channels become leads and spread the frontier;
     irrelevant ones are marked and never fetched again."""
@@ -98,6 +137,12 @@ def crawl(db, budget: int, fetcher=None, min_relevance: float = 0.3, max_depth: 
                 stats["errors"] += 1
                 continue
             lead, candidates = profile(handle, markup, now=now)
+            if not lead["name"] and attempts < budget:  # no public preview: try the plain t.me page once
+                try:
+                    lead, candidates = profile_info_page(handle, fetcher(info_url(handle)), now=now)
+                    attempts += 1
+                except Exception:
+                    pass
             stats["profiled"] += 1
             bad = scoring.negative(lead["name"], lead["description"])
             if not lead["name"] or lead["relevance"] < min_relevance or bad:

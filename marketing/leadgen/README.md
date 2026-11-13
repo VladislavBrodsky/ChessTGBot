@@ -43,6 +43,9 @@ Weekly attribution: export the admin `/player-metrics` JSON and run `leadgen.py 
 
 Optional keys in `marketing/.env`: `YOUTUBE_API_KEY` (YouTube Data API v3; 8 searches ≈ 800 of the free 10,000
 daily units). Tuning in `config.local.json` (ignored by Git), e.g. `{"slate_size": 40, "telegram_budget": 200}`.
+The slate is ranked by score, with no platform taking more than `platform_cap` (default 0.6) of it. Competitor
+properties are never pitched: Telegram handles in `crawl_only` are crawled for mentions only, and other-platform ids
+in `competitor_ids` are disqualified on every run.
 
 Daily schedule: `com.web3chess.leadgen.plist` runs `daily` at 07:00. The owner installs it (commands are in the
 file). It only reads public pages and writes local files.

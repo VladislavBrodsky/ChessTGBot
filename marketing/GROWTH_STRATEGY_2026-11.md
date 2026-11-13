@@ -124,7 +124,9 @@ headline in acquisition channels.
 3. **Catalogs and Apps tab** ($0, one day): tApps Center, findmini.app, PlayToEarn, DappRadar, Product Hunt; Main
    Mini App with screenshots and a video preview; pitch @trendingapps "Game Friday".
 4. **Brand surfaces**: a Web3Chess-branded X profile (rename or new handle), consistent bio and pinned post on
-   @chess_hub, GRAM wording where the token is meant.
+   @chess_hub, GRAM wording where the token is meant. Rewrite the @chesshub_chat description: it currently says
+   "Turn every move into rewards" and "earn crypto", which breaks our own no-earnings-promise rule and is the first
+   thing a partner admin sees when they check us out.
 5. **Cut cadence**: Telegram to 2 posts/day (puzzle + one lesson or product moment), X paused until credits are
    topped up and the profile is branded. This is a config and code change in `content-ops` (6 slots are hardcoded
    in `orchestrator.generate_telegram_daily_batch`; see memory audit). Add `ANTHROPIC_API_KEY` so the AI writer

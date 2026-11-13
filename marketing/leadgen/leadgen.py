@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import os
 import sys
 from datetime import datetime, timedelta, timezone
@@ -34,13 +35,16 @@ DEFAULTS = {
     "telegram_budget": 120,       # preview pages per day (~5 min at 2.5 s each)
     "youtube_searches": 8,        # 800 quota units of the free 10,000/day
     "slate_size": 25,             # new first-contact drafts per day
+    "platform_cap": 0.6,          # max share of the slate from one platform
     "followup_days": [4, 10],     # follow-up 1 and 2 after the first contact; then stop
     "min_score": 45,
     "min_relevance": 0.3,
     "max_depth": 4,
     "exclude": ["chess_hub", "chesshub_chat", "chess_matbot"],
     # competitors: crawled for the channels they mention, never pitched
-    "crawl_only": ["edchessss", "edchess", "chesscom_ru", "chess_com", "lichess"],
+    "crawl_only": ["edchessss", "edchess", "chesscom_ru", "chess_com", "lichess", "lichessdotorg", "chessnode"],
+    # official competitor properties on other platforms: never pitched
+    "competitor_ids": ["discord:chesscom-387637011965804544", "x:lichess", "x:chessable", "x:fide_chess"],
 }
 
 
@@ -68,6 +72,12 @@ def rescore(db, now=None) -> int:
         db.execute("UPDATE leads SET score=?, score_reasons=? WHERE id=?", (total, "; ".join(reasons), row["id"]))
     db.commit()
     return len(rows)
+
+
+def exclude_ids(db, ids) -> None:
+    for lid in ids:
+        db.execute("UPDATE leads SET stage='disqualified', notes='competitor' WHERE id=? AND stage IN ('new','queued')", (lid,))
+    db.commit()
 
 
 def exclude(db, handles) -> None:
@@ -106,9 +116,22 @@ def build_slate(db, cfg, now=None) -> dict:
     """Pick today's first contacts (highest score, not yet queued) and the follow-ups that are due."""
     now = now or store.utcnow()
     today = now.date().isoformat()
-    fresh = db.execute(
-        "SELECT * FROM leads WHERE stage='new' AND score>=? ORDER BY score DESC, audience DESC LIMIT ?",
-        (cfg["min_score"], cfg["slate_size"])).fetchall()
+    candidates = db.execute(
+        "SELECT * FROM leads WHERE stage='new' AND score>=? ORDER BY score DESC, audience DESC",
+        (cfg["min_score"],)).fetchall()
+    # best score first, but no platform takes more than `platform_cap` of the slate, so creators and clubs get
+    # a look-in next to Telegram channels; leftover places fill by score
+    cap = max(1, math.ceil(cfg["slate_size"] * cfg["platform_cap"]))
+    fresh, counts, overflow = [], {}, []
+    for row in candidates:
+        if len(fresh) >= cfg["slate_size"]:
+            break
+        if counts.get(row["platform"], 0) < cap:
+            fresh.append(row)
+            counts[row["platform"]] = counts.get(row["platform"], 0) + 1
+        else:
+            overflow.append(row)
+    fresh += overflow[: cfg["slate_size"] - len(fresh)]
     for row in fresh:
         store.set_stage(db, row["id"], "queued", f"slate {today}")
     queued = db.execute("SELECT * FROM leads WHERE stage='queued' ORDER BY score DESC").fetchall()
@@ -265,6 +288,7 @@ def main(argv=None) -> int:
     cfg = config()
     db = store.open_db(args.db)
     exclude(db, cfg["exclude"])
+    exclude_ids(db, cfg["competitor_ids"])
     if args.cmd in ("daily", "discover"):
         discovery = discover(db, cfg)
         rescore(db)

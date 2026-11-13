@@ -54,6 +54,11 @@ PAGES = {
 }
 
 
+GROUP_PAGE = """<html><body><div class="tgme_page_title" dir="auto"><span>Rumah Catur Online</span></div>
+<div class="tgme_page_extra">2 115 members, 40 online</div>
+<div class="tgme_page_description">Grup catur untuk semua. Turnamen Lichess tiap minggu. Admin: @rc_admin</div></body></html>"""
+
+
 class FakeFetcher:
     def __init__(self, pages):
         self.pages, self.requests = pages, 0
@@ -61,6 +66,12 @@ class FakeFetcher:
     def __call__(self, url):
         self.requests += 1
         handle = url.rstrip("/").split("/")[-1].split("?")[0]
+        if "/s/" not in url and handle in self.pages:
+            return self.pages[handle]
+        if "/s/" in url and handle == "rumahcatur":
+            return "<html><body></body></html>"  # groups have no public preview
+        if handle == "rumahcatur":
+            return GROUP_PAGE
         if handle not in self.pages:
             raise OSError("404")
         return self.pages[handle]
@@ -135,6 +146,28 @@ class LeadgenTest(unittest.TestCase):
         store.add_frontier(db, "telegram", "handleone", "m", 0)
         store.add_frontier(db, "telegram", "handletwo", "m", 0)
         self.assertEqual(tg_source.crawl(db, budget=1, fetcher=fetcher, now=NOW)["requests"], 1)  # budget is a hard cap
+
+    def test_groups_without_preview_are_profiled_from_their_page(self):
+        store.add_frontier(self.db, "telegram", "rumahcatur", "seed-csv", 0)
+        fetcher = FakeFetcher({})
+        stats = tg_source.crawl(self.db, budget=5, fetcher=fetcher, now=NOW)
+        self.assertEqual((stats["new_leads"], stats["requests"]), (1, 2))
+        lead = store.get(self.db, "telegram:rumahcatur")
+        self.assertEqual((lead["segment"], lead["audience"], lead["language"], lead["contact_route"]),
+                         ("telegram_chess_group", 2115, "id", "tg:@rc_admin"))
+
+    def test_slate_mixes_platforms(self):
+        for i in range(6):
+            store.upsert(self.db, {"platform": "telegram", "handle": f"tgchess{i}", "name": f"Chess {i}", "segment": "telegram_chess_channel",
+                                   "relevance": 1.0, "audience": 10_000, "median_views": 4_000, "contact_route": "tg:@a",
+                                   "last_post_at": NOW.isoformat(), "language": "en"})
+        store.upsert(self.db, {"platform": "youtube", "handle": "ytchess", "name": "YT Chess", "segment": "youtube_chess_creator",
+                               "relevance": 0.8, "audience": 40_000, "contact_route": "email:a@b.co", "language": "en"})
+        leadgen.rescore(self.db, now=NOW)
+        slate = leadgen.build_slate(self.db, dict(leadgen.DEFAULTS, slate_size=3, min_score=10), now=NOW)
+        platforms = [r["platform"] for r in slate["queued"]]
+        self.assertEqual(len(platforms), 3)
+        self.assertIn("youtube", platforms)
 
     def test_discovery_never_overwrites_stage_or_notes(self):
         db = self.db
