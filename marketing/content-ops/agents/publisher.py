@@ -74,6 +74,8 @@ class PublisherAgent:
         limit: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Dispatches or dry-run previews approved X (Twitter) posts and threads."""
+        if not queue.enabled("x"):
+            return {"dry_run": dry_run, "count": 0, "entries": [], "reason": "X is paused in pipeline/config.json"}
         entries = []
         now_iso = queue.iso(queue.utcnow())
         earliest_due = queue.iso(queue.utcnow() - timedelta(hours=3))

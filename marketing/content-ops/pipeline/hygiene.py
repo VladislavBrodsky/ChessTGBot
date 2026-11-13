@@ -29,12 +29,15 @@ def engine_fingerprint() -> str:
 
 
 def in_current_plan(entry: dict) -> bool:
-    """A slot of the current plan: id `<date>-tg|x-N` with N in 1..6, scheduled at the configured UTC time for N."""
+    """A slot of the current plan: id `<date>-tg|x-N` with N within the configured slots, scheduled at the configured UTC time for N."""
     match = SLOT_ID.match(entry["id"])
     if not match:
         return False
     slots = queue.CONFIG["telegram" if match.group(1) == "tg" else "x"]["slots_utc"]
-    return entry.get("scheduled_at") == f"{entry.get('date')}T{slots[int(match.group(2)) - 1]}:00Z"
+    n = int(match.group(2))
+    if n > len(slots):  # the plan shrank (2026-11-12: Telegram 6 -> 2); higher slots are no longer part of it
+        return False
+    return entry.get("scheduled_at") == f"{entry.get('date')}T{slots[n - 1]}:00Z"
 
 
 def review_state(entry: dict, now: datetime | None = None) -> tuple[str, list[str]]:
@@ -43,7 +46,7 @@ def review_state(entry: dict, now: datetime | None = None) -> tuple[str, list[st
     if entry.get("date", "") < now.date().isoformat():
         return "legacy", ["dated before today"]
     if not in_current_plan(entry):
-        return "legacy", ["not part of the current six-slot plan"]
+        return "legacy", ["not part of the current slot plan"]
     if entry.get("scheduled_at", "") < queue.iso(now - gate.WINDOW):
         return "late", ["slot passed more than 3 hours ago"]
     if entry.get("status") == "approved" and not gate.blockers(entry, now, due=False):
@@ -71,7 +74,7 @@ def archive(entry: dict, reason: str, dry_run: bool = False) -> None:
 def repair(now: datetime | None = None, dry_run: bool = False, render: bool = True) -> dict:
     """Bring the active queue back to the current plan.
 
-    - unpublished entries from before today, outside the six-slot plan, or absurdly far ahead are archived;
+    - unpublished entries from before today, outside the slot plan, or absurdly far ahead are archived;
     - approvals that are not fully cleared (no person, edited since, drawn on an older canvas) go back to draft;
     - drafts whose slot is still open are re-rendered so they show the current canvases.
     `publishing` and `failed` entries are never touched: their send outcome needs a human to reconcile the receipt."""

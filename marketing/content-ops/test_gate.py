@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from datetime import date, datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -26,10 +27,75 @@ X = {"id": "2099-05-01-x-5", "kind": "x_post", "date": "2099-05-01", "scheduled_
      "qa": {"passed": True, "issues": []}, "status": "approved"}
 
 
+# The fixtures above are written against the original six-slot day with X switched on. These tests exercise the gate,
+# not the cadence (that lives in pipeline/config.json and is checked in test_pipeline.Plan), so they pin that plan.
+SIX_SLOT_PLAN = {
+    "telegram": {"slots_utc": ["06:30", "09:30", "12:30", "15:30", "18:30", "21:30"],
+                 "formats": ["tactics", "opening_trap", "mystery_drop", "academy_lesson", "friend_duel", "match_setup"],
+                 "rotation": {day: ["Tactics", "Chess News", "Academy", "Openings", "Chess Culture", "Product"]
+                              for day in queue.WEEKDAYS}},
+    "x": {"slots_utc": ["06:00", "09:00", "12:00", "15:00", "18:00", "21:00"], "enabled": True},
+}
+_PLAN_PATCHES = [patch.dict(queue.CONFIG[channel], values) for channel, values in SIX_SLOT_PLAN.items()]
+
+
+def setUpModule():
+    for p in _PLAN_PATCHES:
+        p.start()
+
+
+def tearDownModule():
+    for p in reversed(_PLAN_PATCHES):
+        p.stop()
+
+
 def reviewed(entry, by="human:test"):
     entry = copy.deepcopy(entry)
     entry["approval"] = gate.approval(entry, by)
     return entry
+
+
+class PublishedCorpus(unittest.TestCase):
+    def test_channel_corpus_reads_post_copy_instead_of_article_blocks(self):
+        entries = [
+            {"kind": "telegram", "status": "published", "text": "<b>Telegram lesson</b>"},
+            {"kind": "x_post", "status": "published", "text": "X lesson"},
+            {"kind": "x_thread", "status": "published", "tweets": [{"text": "Thread one"}, {"text": "Thread two"}]},
+            {"kind": "article", "status": "published", "article": {"content": [{"text": "Article lesson"}]}},
+        ]
+        with patch.object(queue, "all_entries", side_effect=lambda kind=None, **_: [e for e in entries if kind is None or e["kind"] == kind]):
+            self.assertEqual(daily._published_corpus("telegram"), ["Telegram lesson"])
+            self.assertEqual(daily._published_corpus("x_post"), ["X lesson"])
+            self.assertEqual(daily._published_corpus("x_thread"), ["Thread one Thread two"])
+            self.assertEqual(daily._published_corpus("article"), ["Article lesson"])
+
+
+class RenderInputIsolation(unittest.TestCase):
+    def test_overlapping_renders_get_distinct_temporary_specs_and_clean_them_up(self):
+        seen = []
+        output_paths = []
+
+        def fake_run(command, **_kwargs):
+            spec_path = Path(command[2])
+            output_path = Path(command[3])
+            self.assertTrue(spec_path.exists())
+            self.assertTrue(output_path.exists())
+            seen.append(spec_path)
+            output_paths.append(output_path)
+            return SimpleNamespace(returncode=1, stderr="expected test failure", stdout="")
+
+        entry = {"id": "2099-05-01-x-1", "date": "2099-05-01"}
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.object(queue, "QUEUE", Path(directory)), \
+                patch.object(renderer.subprocess, "run", side_effect=fake_run):
+            renderer._render_spec(entry, {"template": "tip"}, "", 1)
+            renderer._render_spec(entry, {"template": "tip"}, "", 1)
+
+        self.assertEqual(len(seen), 2)
+        self.assertNotEqual(seen[0], seen[1])
+        self.assertTrue(all(not path.exists() for path in seen))
+        self.assertNotEqual(output_paths[0], output_paths[1])
+        self.assertTrue(all(not path.exists() for path in output_paths))
 
 
 class DispatchGate(unittest.TestCase):

@@ -14,7 +14,8 @@ from typing import Any, Dict, List
 
 from pipeline import brand, gate, hygiene, qa, queue, renderer
 
-REPEAT_DAYS = 7  # the weekly rotation: a hook that ran this week is not a fresh post
+REPEAT_DAYS = 45  # small audience: the same followers see every post, so a hook or body that ran in the last ~6 weeks is a repeat
+# (2026-11-12 audit: on a 7-day window one Telegram post shipped 5 times and two others 4 times within a month)
 DATE_BADGE = re.compile(r"\s*\([A-Z][a-z]{2} \d{1,2}\)\s*$")  # how the pools disguise a recycled hook
 
 @dataclass

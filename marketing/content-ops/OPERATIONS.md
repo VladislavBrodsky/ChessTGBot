@@ -1,10 +1,10 @@
-# Viral content operations: six Telegram drafts, six X drafts, and three article slots
+# Viral content operations: two Telegram drafts, X paused, and three article slots
 
 This is the runbook for the content engine in `pipeline/`, the exact-position board renderer in `../templates/tg/`, and the campaign [Creatives Studio](https://web3chess.online/CREATIVES). It supersedes the
 older one-article-a-day sections of [WORKFLOW.md](WORKFLOW.md) for channel production and the blog; the research and review
 rules there still apply.
 
-**Status (2026-10-24):** the pipeline plans, briefs, gates, renders and can publish approved items when the channel runner has its credentials. The repository's current mode is **cmo** for Telegram and X: the CMO agent approves each draft automatically ([the CMO release review](#the-cmo-release-review)), and **nothing sends unless an approval bound to its exact copy and current canvas is on record** (see [the dispatch gate](#the-dispatch-gate)). Articles stay in human `review` mode. The current maximum daily plan is six Telegram drafts, six X drafts, and three article slots. Check queue state before preparing or rescheduling an item; prior entries may already be approved or published. The editorial desk remains a separate review workflow from social publication.
+**Status (2026-10-24):** the pipeline plans, briefs, gates, renders and can publish approved items when the channel runner has its credentials. The repository's current mode is **cmo** for Telegram and X: the CMO agent approves each draft automatically ([the CMO release review](#the-cmo-release-review)), and **nothing sends unless an approval bound to its exact copy and current canvas is on record** (see [the dispatch gate](#the-dispatch-gate)). Articles stay in human `review` mode. The current maximum daily plan is two Telegram drafts (09:30 and 15:30 UTC: an engine-checked puzzle, then an Academy lesson) and three article slots; X is paused (`x.enabled: false` in `pipeline/config.json`) while its API credits are depleted. Slot times and the post format of each slot are `telegram.slots_utc` and `telegram.formats`. When the plan changes, the next top-up archives unsent drafts left at old slot times and rebuilds those slots (decision D3 of `marketing/GROWTH_STRATEGY_2026-11.md`, 2026-11-12). Check queue state before preparing or rescheduling an item; prior entries may already be approved or published. The editorial desk remains a separate review workflow from social publication.
 
 ## 1. Who does what
 
@@ -95,7 +95,7 @@ For the daily editorial package, `node marketing/content-ops/export-creative.mjs
 1. Create the bot (or reuse `@chess_matbot`) and add it as an **administrator** of the channel with "Post messages".
 2. Provide secrets as environment variables on the machine that runs `publish` (never in the repo):
    `W3_TG_BOT_TOKEN`, `W3_TG_CHANNEL` (`@channelusername` or the numeric id). Optional drafting: `ANTHROPIC_API_KEY`, `W3_WRITER_MODEL`.
-3. Install the image engine once: `cd frontend && npm install && npx playwright install chromium` (Node 20+).
+3. Install the image engine once with the locked toolchain: `cd frontend && npm ci --include=optional && npx playwright install chromium` (Node 20, matching CI). If Chromium is managed separately, set `W3_CHROMIUM_EXECUTABLE_PATH` for the trusted runner; the renderer reports a direct setup hint when its binary is missing.
 4. Review the first week's items by hand in `review` mode. Consider `auto` only after the team has read ~50 items and the
    gates have never let a bad one through. In `auto`, anything that passes QA publishes.
 5. Confirm with the product owner (not verified by this repo): the geo rules for wager messaging, and Telegram's rules for

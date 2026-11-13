@@ -1,3 +1,5 @@
 # Chess move validation for the standalone content QA pipeline.
 chess==1.11.2
 requests-oauthlib>=2,<3
+# AI writer for empty or refused slots (pipeline/writer.py, pipeline/ai_refill.py).
+anthropic>=0.122,<1

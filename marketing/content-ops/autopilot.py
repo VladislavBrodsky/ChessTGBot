@@ -31,7 +31,7 @@ sys.path.insert(0, str(HERE))
 from agents.cmo import CmoAgent
 from agents.orchestrator import ContentEngineOrchestrator
 from agents.publisher import PublisherAgent
-from pipeline import analytics, cleanup, gate, hygiene, queue, renderer, reply_sniper, site_publisher, telegram_publisher
+from pipeline import ai_refill, analytics, cleanup, gate, hygiene, queue, renderer, reply_sniper, site_publisher, telegram_publisher
 
 LOG_DIR = HERE / "state"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -146,7 +146,9 @@ def _published_today(kind: str, day: str) -> int:
 
 
 def ensure_x_queue_replenished(now: datetime, render_images: bool = True, lookahead_days: int = 1) -> int:
-    """Prepare missing X drafts while preserving reviewed or published entries."""
+    """Prepare missing X drafts while preserving reviewed or published entries. Nothing while X is paused."""
+    if not queue.enabled("x"):
+        return 0
     created_total = 0
     today = now.date()
 
@@ -190,8 +192,11 @@ def ensure_tg_queue_replenished(now: datetime, render_images: bool = True, looka
         target_day = today + timedelta(days=offset)
         target_day_str = target_day.isoformat()
         day_entries = [e for e in queue.all_entries(day=target_day_str) if e.get("kind") == "telegram"]
+        # Drafts left at another plan's slot times do not fill today's plan (the CMO skips them as legacy), so count
+        # only sends and in-plan slots; the batch archives and rebuilds the stale ones.
+        current = [e for e in day_entries if e.get("status") in ("published", "publishing", "failed") or hygiene.in_current_plan(e)]
 
-        if len([e for e in day_entries if e.get("id", "").rsplit("-", 1)[-1].isdigit()]) < len(queue.CONFIG["telegram"]["slots_utc"]) or any(e.get("status") == "planned" for e in day_entries):
+        if len(current) < len(queue.CONFIG["telegram"]["slots_utc"]) or any(e.get("status") == "planned" for e in day_entries):
             try:
                 logger.info(f"Proactive Buffer: Auto-generating Telegram batch for {target_day_str}...")
                 orchestrator = ContentEngineOrchestrator(plan_date=target_day)
@@ -215,6 +220,9 @@ def ensure_tg_queue_replenished(now: datetime, render_images: bool = True, looka
                         logger.error(f"Failed rendering Telegram creative for {entry['id']}: {e}")
 
     return created_total
+
+
+_AI_IDLE_LOGGED_AT: Optional[datetime] = None  # throttles the "no API key" notice to once an hour
 
 
 def run_tick(
@@ -257,6 +265,7 @@ def run_tick(
         "cmo_routine": None,
         "blocked": {},
         "cmo_review": [],
+        "ai_refill": None,
     }
 
     # 1. Stage any approved blog articles to website
@@ -278,6 +287,21 @@ def run_tick(
         except Exception as e:
             logger.error(f"CMO release review error: {e}", exc_info=True)
 
+    # 1c. AI writer: rewrite slots the canned pools could not fill (empty, failed QA, or refused as recycled). It only drafts;
+    # the next tick's CMO review and the dispatch gate still decide. No-op without ANTHROPIC_API_KEY in marketing/.env.
+    try:
+        refill = ai_refill.run(now, dry_run=dry_run)
+        results["ai_refill"] = refill
+        for item in refill["written"]:
+            logger.info(f"AI writer drafted {item['id']}: {item['status']}" + (f" ({'; '.join(item['issues'])})" if item["issues"] else ""))
+        global _AI_IDLE_LOGGED_AT
+        idle = refill["candidates"] and not refill["configured"] and not dry_run
+        if idle and (_AI_IDLE_LOGGED_AT is None or now - _AI_IDLE_LOGGED_AT >= timedelta(hours=1)):
+            _AI_IDLE_LOGGED_AT = now
+            logger.info(f"AI writer idle: {len(refill['candidates'])} slot(s) need fresh copy but ANTHROPIC_API_KEY is not set.")
+    except Exception as e:
+        logger.error(f"AI writer refill error: {e}", exc_info=True)
+
     # 2. Check X publication queue (and auto-replenish if empty)
     if should_replenish:
         try:
@@ -286,7 +310,7 @@ def run_tick(
             logger.error(f"X queue auto-replenish error: {e}", exc_info=True)
 
     last_x = get_last_published_x_time()
-    can_post_x = _published_today("x", today_utc) < len(queue.CONFIG["x"]["slots_utc"])
+    can_post_x = queue.enabled("x") and _published_today("x", today_utc) < len(queue.CONFIG["x"]["slots_utc"])
     if last_x:
         spacing_elapsed = (now - last_x).total_seconds() / 60.0
         if not force_next and spacing_elapsed < min_spacing_minutes:
@@ -299,7 +323,7 @@ def run_tick(
     publisher = PublisherAgent()
 
     blocked: Dict[str, List[str]] = {}
-    due_x_entries = _cleared_today({"x_post", "x_thread"}, today_utc, now, force_next, blocked)
+    due_x_entries = _cleared_today({"x_post", "x_thread"}, today_utc, now, force_next, blocked) if queue.enabled("x") else []
 
     if due_x_entries:
         next_entry = due_x_entries[0]

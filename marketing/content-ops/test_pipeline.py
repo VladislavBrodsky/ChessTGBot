@@ -1,4 +1,5 @@
 import json, sys, tempfile, unittest
+from datetime import datetime, timezone
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pipeline import brand, chesscheck, idea_bank, qa, queue, renderer, site_publisher, telegram_publisher, writer
@@ -241,13 +242,25 @@ class Plan(unittest.TestCase):
     def test_configured_slots_are_three_hours_apart_and_use_known_pillars(self):
         cfg = queue.CONFIG["telegram"]
         hours = [int(s[:2]) * 60 + int(s[3:]) for s in cfg["slots_utc"]]
-        self.assertGreaterEqual(len(hours), 5)
+        self.assertGreaterEqual(len(hours), 1)
+        self.assertEqual(len(cfg["formats"]), len(hours))
         self.assertTrue(all(b - a >= queue.CONFIG["telegram"]["min_gap_hours"] * 60 for a, b in zip(hours, hours[1:])))
         for day, pillars in cfg["rotation"].items():
             self.assertEqual(len(pillars), len(hours), day)
             self.assertTrue(set(pillars) <= set(brand.CATEGORIES), day)
-        # wager content only on Wednesday evening, and never beside youth-adjacent Academy slots
-        self.assertEqual([d for d, p in cfg["rotation"].items() if "Match Rules" in p], ["wed"])
+        # wager content at most on Wednesday evening, and never beside youth-adjacent Academy slots
+        self.assertLessEqual({d for d, p in cfg["rotation"].items() if "Match Rules" in p}, {"wed"})
+
+    def test_slots_dropped_from_a_shrunk_plan_are_legacy_not_a_crash(self):
+        from pipeline import hygiene
+        slots = queue.CONFIG["telegram"]["slots_utc"]
+        now = datetime(2099, 1, 1, 0, 0, tzinfo=timezone.utc)
+        kept = {"id": "2099-01-01-tg-1", "date": "2099-01-01", "scheduled_at": f"2099-01-01T{slots[0]}:00Z", "status": "draft"}
+        dropped = {"id": f"2099-01-01-tg-{len(slots) + 1}", "date": "2099-01-01",
+                   "scheduled_at": "2099-01-01T21:30:00Z", "status": "draft"}
+        self.assertTrue(hygiene.in_current_plan(kept))
+        self.assertFalse(hygiene.in_current_plan(dropped))
+        self.assertEqual(hygiene.review_state(dropped, now), ("legacy", ["not part of the current slot plan"]))
 
     def test_brief_carries_audit_patterns_for_the_pillar(self):
         brief = writer.brief_for({"id": "x", "kind": "telegram", "date": "2026-10-11", "slot": 1, "category": "Tactics", "scheduled_at": "2026-10-11T07:30:00Z"})

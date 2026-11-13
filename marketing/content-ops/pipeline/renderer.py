@@ -7,7 +7,7 @@ Rendering failures reject the entry; a missing Node/Chromium install leaves it u
 post an entry that has a `creative` but no image (it never silently falls back to text only).
 """
 from __future__ import annotations
-import hashlib, json, re, shutil, subprocess
+import hashlib, json, os, re, shutil, subprocess, tempfile
 from pathlib import Path
 from urllib.parse import urlsplit
 from . import brand, queue
@@ -294,19 +294,32 @@ def _render_spec(entry: dict, spec: dict, suffix: str, timeout: int) -> dict:
     out_dir = queue.QUEUE / entry["date"]
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = f"{entry['id']}{suffix}"
-    spec_path, png = out_dir / f"{stem}.spec.json", out_dir / f"{stem}.png"
-    spec_path.write_text(json.dumps(spec, ensure_ascii=False, indent=2) + "\n")
-    png.unlink(missing_ok=True)
+    png = out_dir / f"{stem}.png"
+    # Each render gets its own input file: the daemon, QA command, and manual renderer
+    # can overlap on the same queue ID. A shared `<id>.spec.json` let one run unlink
+    # another run's input before Node had read it.
+    with tempfile.NamedTemporaryFile(
+        mode="w", encoding="utf-8", prefix=f".{stem}.", suffix=".spec.json", dir=out_dir, delete=False
+    ) as handle:
+        json.dump(spec, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+        spec_path = Path(handle.name)
+    with tempfile.NamedTemporaryFile(prefix=f".{stem}.", suffix=".png", dir=out_dir, delete=False) as handle:
+        temp_png = Path(handle.name)
     if suffix == "" and spec.get("studio"):
         spec_path.write_text(json.dumps(spec["studio"], ensure_ascii=False, indent=2) + "\n")
-        command = ["node", str(STUDIO_ENGINE), str(spec_path), str(png)]
+        command = ["node", str(STUDIO_ENGINE), str(spec_path), str(temp_png)]
     else:
-        command = ["node", str(ENGINE / "render.mjs"), str(spec_path), str(png)]
-    proc = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
-    spec_path.unlink(missing_ok=True)
-    if proc.returncode != 0 or not png.exists():
-        return {"ok": False, "skipped": False, "error": (proc.stderr or proc.stdout).strip()[-600:]}
-    return {"ok": True, "image": str(png.relative_to(queue.ROOT)), "size": png.stat().st_size, "template": spec["template"]}
+        command = ["node", str(ENGINE / "render.mjs"), str(spec_path), str(temp_png)]
+    try:
+        proc = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+        if proc.returncode != 0 or not temp_png.exists() or temp_png.stat().st_size == 0:
+            return {"ok": False, "skipped": False, "error": (proc.stderr or proc.stdout).strip()[-600:]}
+        os.replace(temp_png, png)
+        return {"ok": True, "image": str(png.relative_to(queue.ROOT)), "size": png.stat().st_size, "template": spec["template"]}
+    finally:
+        spec_path.unlink(missing_ok=True)
+        temp_png.unlink(missing_ok=True)
 
 def render(entry: dict, timeout: int = 120) -> dict:
     """Render entry['creative'] (and entry['reveal']['creative']) to queue/<day>/<id>[.reveal].png. Mutates the entry; caller saves."""

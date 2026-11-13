@@ -67,7 +67,8 @@ class TestAutopilot(unittest.TestCase):
     def test_auto_replenish_generates_non_duplicate_x_batch(self):
         from datetime import date
         test_dt = datetime(2099, 2, 1, 12, 0, 0, tzinfo=timezone.utc)
-        with tempfile.TemporaryDirectory() as directory, patch.object(queue, "QUEUE", Path(directory)):
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, "QUEUE", Path(directory)), \
+                patch.dict(queue.CONFIG["x"], {"enabled": True}):
             created = autopilot.ensure_x_queue_replenished(test_dt, render_images=False)
             self.assertEqual(created, 12)  # today and the one-day lookahead, six slots each
             orch = autopilot.ContentEngineOrchestrator(plan_date=date(2099, 2, 1))
@@ -76,6 +77,43 @@ class TestAutopilot(unittest.TestCase):
             hooks = [queue.load(p["id"])["hook"] for p in batch["posts"]]
             self.assertEqual(len(set(hooks)), 6)
             self.assertEqual({e["status"] for e in queue.all_entries()}, {"draft"})  # review mode never self-approves
+
+    def test_plan_change_rebuilds_stale_telegram_drafts(self):
+        from datetime import date
+        old_times = ["06:30", "09:30", "12:30", "15:30", "18:30", "21:30"]
+        now = datetime(2099, 2, 1, 5, 0, tzinfo=timezone.utc)
+        plan = {"slots_utc": ["09:30", "15:30"], "formats": ["tactics", "academy_lesson"]}
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, "QUEUE", Path(directory)), \
+                patch.object(queue, "utcnow", return_value=now), patch.dict(queue.CONFIG["telegram"], plan):
+            for slot, hhmm in enumerate(old_times, start=1):
+                queue.save({"id": f"2099-02-01-tg-{slot}", "kind": "telegram", "date": "2099-02-01", "slot": slot,
+                            "status": "published" if slot == 6 else "draft", "scheduled_at": f"2099-02-01T{hhmm}:00Z",
+                            "hook": f"old {slot}", "text": "old"})
+            created = autopilot.ensure_tg_queue_replenished(now, render_images=False, lookahead_days=0)
+            self.assertEqual(created, 2)
+            fresh = [queue.load(f"2099-02-01-tg-{n}") for n in (1, 2)]
+            self.assertEqual([e["scheduled_at"] for e in fresh], ["2099-02-01T09:30:00Z", "2099-02-01T15:30:00Z"])
+            self.assertEqual([e["category"] for e in fresh], ["Tactics", "Academy"])
+            archived = sorted(p.name for p in (Path(directory) / "_archive" / "2099-02-01").glob("*.json"))
+            self.assertEqual(archived, ["2099-02-01-tg-1.json", "2099-02-01-tg-2.json"])
+            self.assertEqual(queue.load("2099-02-01-tg-6")["status"], "published")  # a send is never touched
+            # a second top-up finds the plan full and changes nothing
+            self.assertEqual(autopilot.ensure_tg_queue_replenished(now, render_images=False, lookahead_days=0), 0)
+
+    def test_paused_x_prepares_and_dispatches_nothing(self):
+        from agents.publisher import PublisherAgent
+        now = datetime(2099, 2, 1, 15, 5, tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, "QUEUE", Path(directory)), \
+                patch.object(queue, "utcnow", return_value=now), patch.dict(queue.CONFIG["x"], {"enabled": False}):
+            self.assertEqual(autopilot.ensure_x_queue_replenished(now, render_images=False), 0)
+            self.assertEqual([e for e in queue.all_entries() if e.get("kind") == "x_post"], [])
+            queue.save({"id": "2099-02-01-x-4", "kind": "x_post", "date": "2099-02-01", "status": "approved",
+                        "scheduled_at": "2099-02-01T15:00:00Z", "text": "Chess"})
+            res = PublisherAgent().dispatch_x_posts(dry_run=True, due_only=False)
+            self.assertEqual((res["count"], res["reason"]), (0, "X is paused in pipeline/config.json"))
+            tick = autopilot.run_tick(dry_run=True, force_next=True, auto_replenish=False)
+            self.assertEqual(tick["x_dispatched"], [])
+            self.assertIsNone(tick["next_up_x"])
 
     def test_reply_sniper_intent_classification(self):
         from pipeline import reply_sniper
