@@ -11,9 +11,11 @@ import asyncio
 settings = get_settings()
 
 @pytest.mark.asyncio
-async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch):
+async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch, request):
     if hasattr(db_session, "users"):
         return
+    from app.api.v1.endpoints import wallet as wallet_module
+    monkeypatch.setitem(wallet_module._master_usdt_jetton_wallet_cache, "hex", None)
 
     # 1. Create a user who made a deposit
     user = User(
@@ -44,6 +46,7 @@ async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch):
                             },
                             "amount": "1050000",  # 1.05 USDT (6 decimals)
                             "comment": "ref_1016749901",
+                            "recipients_wallet": "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83",
                             "jetton": {
                                 "address": settings.USDT_MASTER,
                                 "symbol": "USDT"
@@ -74,6 +77,8 @@ async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch):
             return self._json_data
 
     async def mock_get(url, *args, **kwargs):
+        if "/jettons/" in url:
+            return MockResponse(200, {"wallet_address": {"address": "0:c3be92349a44b732b39708915ce4f7a56ec58e9b57ef0da1515b6213c7deaf83"}})
         if "events" in url:
             return MockResponse(200, mock_events)
         elif "rates" in url:
@@ -90,6 +95,7 @@ async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch):
     
     from unittest.mock import patch
     mock_tg = patch("app.services.telegram_bot.TelegramService.send_notification", new_callable=AsyncMock).start()
+    request.addfinalizer(patch.stopall)
 
     # 3. Patch AsyncSessionLocal inside deposit_crawler to yield db_session
     from app.services import deposit_crawler
@@ -154,9 +160,9 @@ async def test_deposit_crawler_sync(db_session: AsyncSession, monkeypatch):
     admin_calls = {call[0][0]: call[0][1] for call in calls[1:]}
     assert set(admin_calls.keys()) == {1016749901, 716720099}
     for admin_id, msg in admin_calls.items():
-        assert "New USDT deposit" in msg
-        assert "User: ID 1016749901" in msg
-        assert "Amount: $1.05" in msg
-        assert "Transaction ID: 3b9e9d5c3f2167e95a508da322f2c90f1260e6616066c7691a7dbbfd93f5c" in msg
+        assert "Новое пополнение в USDT" in msg
+        assert 'tg://user?id=1016749901">ID 1016749901</a>' in msg
+        assert "<b>$1.05</b>" in msg
+        assert "Transaction ID:" in msg and "3b9e9d5c3f2167e95a508da322f2c90f1260e6616066c7691a7dbbfd93f5c" in msg
 
     patch.stopall()

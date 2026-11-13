@@ -45,7 +45,12 @@ for (const file of pages) {
     const text = heading[2].replace(/<[^>]*>/g, "").trim();
     assert(!text.endsWith("."), `${route || "/"}: titles must not end with a full stop: ${text}`);
   }
-  assert(sitemapUrls.has(url), `${route || "/"}: missing from sitemap`);
+  // A deliberately noindex page (e.g. the internal /CREATIVES tool) must stay OUT of the sitemap;
+  // every indexable page must be in it.
+  const robotsTag = html.match(/<meta\b[^>]*\bname="robots"[^>]*>/i)?.[0];
+  const noindex = /\bnoindex\b/i.test(robotsTag ? attribute(robotsTag, "content") ?? "" : "");
+  if (noindex) assert(!sitemapUrls.has(url), `${route || "/"}: noindex page listed in sitemap`);
+  else assert(sitemapUrls.has(url), `${route || "/"}: missing from sitemap`);
 }
 
 const keywordPath = path.join(websiteRoot, "docs", "KEYWORD_MAP_150.csv");

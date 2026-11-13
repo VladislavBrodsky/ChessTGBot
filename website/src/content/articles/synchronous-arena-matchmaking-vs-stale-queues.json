@@ -12,6 +12,7 @@
     "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-29",
   "readingTime": "5 min read",
   "takeaways": [
     "Asynchronous matchmaking often leads to long wait times and rating mismatches.",
@@ -42,7 +43,7 @@
     },
     {
       "type": "paragraph",
-      "text": "In open 24-hour queues, bad actors can attempt to synchronize button clicks to match against colluding accounts or burner bots. Synchronous tournament brackets completely eliminate this vulnerability. Pairings are generated deterministically by the matchmaking server using Swiss and double-elimination seedings, preventing players from handpicking their opponents or farming artificial rating gains."
+      "text": "In open 24-hour queues, bad actors can attempt to synchronize button clicks to match against colluding accounts or burner bots. Arena windows make that harder: the server pairs waiting players at random, avoids an immediate rematch when another opponent is free, and arena games carry no stake. Players cannot handpick their opponents, although no pairing system rules out collusion entirely."
     },
     {
       "type": "paragraph",

@@ -8,7 +8,6 @@ import { useTranslations, useLocale } from 'next-intl';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { getFullPhotoUrl } from '@/lib/api';
 import Leaderboard from '@/components/Leaderboard';
-import ArenaBanner from '@/components/game/ArenaBanner';
 import { useClaimableTasks } from '@/hooks/useClaimableTasks';
 import { useUser } from '@/context/UserContext';
 import { Button } from '@/components/ui/Button';
@@ -82,7 +81,8 @@ export default function Home() {
                     <MetaLine className="mt-1 text-caption font-medium text-brand-muted"><span>{t('elo')}</span><span>{t('nav_profile')}</span></MetaLine>
                   </span>
                 </Link>
-                <Link href={`/${locale}/wallet`} className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-brand-border bg-brand-elevated px-3 transition-colors hover:border-brand-border-opacity-30" onClick={() => telegramHaptic('selection')}>
+                {/* With nothing to withdraw, tapping the balance can only mean "add funds": open the drawer. */}
+                <Link href={!balanceError && !loadingBalance && walletBalance === 0 ? `/${locale}/wallet?deposit=1` : `/${locale}/wallet`} className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-brand-border bg-brand-elevated px-3 transition-colors hover:border-brand-border-opacity-30" onClick={() => telegramHaptic('selection')}>
                   <FiCreditCard size={18} aria-hidden="true" className="text-brand-muted" />
                   <span className={`text-sm font-bold tabular-nums ${balanceError ? 'text-brand-danger' : 'text-brand-primary'}`}>{balanceError || loadingBalance ? '$ —' : `$${(walletBalance / 100).toFixed(2)}`}</span>
                   <span className="sr-only">{t('nav_wallet')}</span>
@@ -109,7 +109,6 @@ export default function Home() {
           <InvitationInboxCard />
           <EngagementQuest />
           <GramVaultPreview />
-          <div className="w-full"><ArenaBanner /></div>
           <div className="ui-quick-grid">
             <QuickTile href={`/${locale}/academy`} icon={<FaGraduationCap size={20} />} tone="info" label={t('academy')} />
             <QuickTile href={`/${locale}/marketplace`} icon={<FiShoppingBag size={20} />} tone="gold" label={t('nav_marketplace')} />

@@ -77,9 +77,11 @@ async def test_reconcile_paid_stripe_deposit(db, monkeypatch):
     db.add(pending_tx)
     await db.commit()
 
-    mock_session = MagicMock()
-    mock_session.status = "complete"
-    mock_session.payment_status = "paid"
+    mock_session = {
+        "id": "cs_test_paid", "status": "complete", "payment_status": "paid",
+        "mode": "payment", "currency": "usd", "amount_total": 1000,
+        "metadata": {"tx_id": "501", "user_id": "1001"},
+    }
 
     with patch("stripe.checkout.Session.retrieve", return_value=mock_session), \
          patch("app.services.telegram_bot.TelegramService.send_notification") as mock_notify:
@@ -161,7 +163,7 @@ async def test_reconcile_aged_open_stripe_deposit(db, monkeypatch):
     mock_session.payment_status = "unpaid"
 
     with patch("stripe.checkout.Session.retrieve", return_value=mock_session), \
-         patch("stripe.checkout.Session.expire") as mock_expire:
+         patch("stripe.checkout.Session.expire", return_value={"status": "expired"}) as mock_expire:
         stats = await reconcile_stripe_deposits(db)
 
     assert stats["expired"] == 1
@@ -170,6 +172,28 @@ async def test_reconcile_aged_open_stripe_deposit(db, monkeypatch):
 
     await db.refresh(pending_tx)
     assert pending_tx.status == "failed"
+
+
+@pytest.mark.asyncio
+async def test_failed_stripe_expiry_keeps_pending_deposit_recoverable(db, monkeypatch):
+    monkeypatch.setattr(get_settings(), "STRIPE_SECRET_KEY", "sk_test_mock")
+    user = User(telegram_id=1005, first_name="TestUser5", balance=0, elo=1000)
+    pending_tx = Transaction(
+        user_id=1005, type="deposit", amount=950, fee=50,
+        status="pending", reference_id="cs_test_expire_failed",
+        created_at=datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=2),
+    )
+    db.add_all([user, pending_tx])
+    await db.commit()
+
+    with patch("stripe.checkout.Session.retrieve", return_value={"status": "open", "payment_status": "unpaid"}), \
+         patch("stripe.checkout.Session.expire", side_effect=RuntimeError("temporary outage")):
+        stats = await reconcile_stripe_deposits(db)
+
+    await db.refresh(pending_tx)
+    assert stats["errors"] == 1
+    assert stats["expired"] == 0
+    assert pending_tx.status == "pending"
 
 
 @pytest.mark.asyncio

@@ -97,7 +97,23 @@ class ReferralEarningPoint(BaseModel):
     date: str   # ISO date string e.g. "2025-06-10"
     amount: float  # In USDT (cents / 100)
 
+class ReferralRewardTerms(BaseModel):
+    required_games: int = 3
+    referrer_bonus_cents: int
+    gram_reward_nano: str = "1000000000"
+    gram_requires_deposit: bool = True
+    daily_bonus_cap: int
+
+class ReferralProgress(BaseModel):
+    joined: int
+    pending_activity: int
+    qualified: int
+    usdt_credited: int
+    gram_credited: int
+
 class ReferralStats(BaseModel):
+    reward_terms: Optional[ReferralRewardTerms] = None
+    milestone_progress: Optional[ReferralProgress] = None
     qualifying_min_moves: int = 10
     gram_rewards_nano: str = "0"
     gram_rewarded_referrals: int = 0
@@ -216,7 +232,26 @@ async def get_referral_stats(
     from app.models.gram_reward import GramReward
     gram_result = (await db.execute(select(func.coalesce(func.sum(GramReward.amount_nano), 0), func.count(GramReward.id)).where(
         GramReward.user_id == current_user.id, GramReward.source_kind == "referral"))).one()
+    # Aggregate server-confirmed progress; qualification and credit are independent.
+    from app.models.game_history import GameHistory
+    from app.services.referral_qualification import qualifying_referral_games
+    game_count = (select(func.count(GameHistory.id)).where(
+        *qualifying_referral_games(User.telegram_id, Referral.created_at, settings.REFERRAL_MILESTONE_MIN_MOVES)
+    ).correlate(User, Referral).scalar_subquery())
+    qualified = int((await db.execute(select(func.count(Referral.id)).join(
+        User, User.id == Referral.referred_user_id).where(
+            Referral.referrer_id == current_user.id, game_count >= 3))).scalar() or 0)
+    credited = int((await db.execute(select(func.count(func.distinct(Transaction.reference_id))).where(
+        Transaction.user_id == current_user.telegram_id,
+        Transaction.type == "referral_commission", Transaction.status == "completed",
+        Transaction.reference_id.like("ref_signup_bonus_%"),
+        ~Transaction.reference_id.like("ref_signup_bonus_recruit_%"),
+    ))).scalar() or 0)
     return ReferralStats(
+        reward_terms=ReferralRewardTerms(referrer_bonus_cents=20 if current_user.is_premium_active else 10,
+            daily_bonus_cap=settings.REFERRAL_SIGNUP_BONUS_DAILY_CAP),
+        milestone_progress=ReferralProgress(joined=total_referrals, pending_activity=max(0, total_referrals-qualified),
+            qualified=qualified, usdt_credited=credited, gram_credited=int(gram_result[1])),
         qualifying_min_moves=settings.REFERRAL_MILESTONE_MIN_MOVES,
         gram_rewards_nano=str(gram_result[0]), gram_rewarded_referrals=int(gram_result[1]),
         total_referrals=total_referrals,

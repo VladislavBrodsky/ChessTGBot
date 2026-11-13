@@ -113,7 +113,7 @@ python3 marketing/content-ops/daily.py doctor                               # co
 
 The reply sniper and the legacy five-post CMO routine are off. Do not start them from the plist.
 
-The normal CI workflow runs content engine unit tests on every PR and push to `main`. The GitHub workflow `.github/workflows/content-ops.yml` re-runs tests and queue QA gates on demand. It does **not**
+The normal CI workflow runs content engine unit tests on every PR and push to `main`. Its browser-E2E job also runs a real Creatives Studio 1080×1080 render smoke check; E2E screenshots belong in Playwright's per-test output directory so they work on both local and hosted runners. The GitHub workflow `.github/workflows/content-ops.yml` re-runs tests and queue QA gates on demand. It does **not**
 publish: live posting needs durable queue state (at-most-once), which should live on one trusted runner until the team
 chooses where it belongs.
 

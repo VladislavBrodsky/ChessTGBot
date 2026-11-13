@@ -1,4 +1,6 @@
 'use client';
+import { logTelemetryEvent } from '@/lib/telemetry';
+import { BalanceOpportunity } from './BalanceOpportunity';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -87,6 +89,7 @@ export default function QuickMatchModal({ isOpen, onClose, initialWagerCents = 5
       if (!activeRef.current || typeof data.game_id !== 'string' || !data.game_id) return;
       activeRef.current = false;
       confirmedRef.current = cancelRef.current = false;
+      logTelemetryEvent('match_found', { source: 'quick_match', game_id: data.game_id });
       callbacks.current.playAudio('start');
       telegramHaptic('success');
       callbacks.current.onClose();
@@ -146,7 +149,7 @@ export default function QuickMatchModal({ isOpen, onClose, initialWagerCents = 5
 
   const start = () => {
     if (activeRef.current || loadingBalance || balanceError) return;
-    if (insufficient) { setShowDeposit(true); return; }
+    if (insufficient) { logTelemetryEvent('balance_opportunity_topup', { source: 'quick_match', stake_cents: wagerCents }); setShowDeposit(true); return; }
     const socket = getSocket();
     if (!socket.connected) { setConnected(false); setError(t('connection_error')); return; }
     activeRef.current = true;
@@ -198,7 +201,7 @@ export default function QuickMatchModal({ isOpen, onClose, initialWagerCents = 5
           <div className="flex flex-wrap justify-between gap-2 text-sm"><span>{t('payout')}</span><bdi className="numeric-body font-semibold text-brand-success">{money(winnerCents(wagerCents))}</bdi></div>
           <MetaLine className="text-caption text-brand-muted"><span>{tg('includes_stake')}</span><span>{tg('lobby_payout_note')}</span></MetaLine>
         </Card>
-        {insufficient && <p className="text-sm text-brand-muted">{t('shortfall', { amount: money(wagerCents - walletBalance) })}</p>}
+        <BalanceOpportunity stake={wagerCents} source="quick_match" showTopUp={false} onTopUp={() => setShowDeposit(true)} timeControl={timeControl} />
         {balanceError && <p role="alert" className="text-sm text-brand-danger">{tw('balance_unavailable')}</p>}
         {error && <p role="alert" className="text-sm text-brand-danger">{error}</p>}
       </> : <Card variant="solid" className="p-4 space-y-3 text-center">
@@ -209,6 +212,6 @@ export default function QuickMatchModal({ isOpen, onClose, initialWagerCents = 5
       </Card>}
       {!connected && <p role="status" className="text-caption text-brand-muted">{t('connection_error')}</p>}
     </Drawer>
-    {isOpen && showDeposit && <DepositDialog onClose={() => setShowDeposit(false)} onSuccess={() => { void syncBalance(); }} />}
+    {isOpen && showDeposit && <DepositDialog chosenWager={wagerCents} walletBalance={walletBalance} onClose={() => setShowDeposit(false)} onSuccess={() => { void syncBalance(); }} />}
   </>;
 }

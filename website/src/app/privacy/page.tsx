@@ -38,7 +38,7 @@ export default function PrivacyPage() {
             <span>Back to Home</span>
           </Link>
           <span className="text-caption text-fg-muted">
-            Last updated: October 2026
+            Last updated: November 2026
           </span>
         </div>
 
@@ -105,6 +105,22 @@ export default function PrivacyPage() {
               stored web authentication from that device. We do not deploy
               third-party advertising trackers or sell player data to data
               brokers.
+            </p>
+            <p>
+              This website uses Google Analytics to count visits and see which
+              pages and buttons people use. The analytics script is served from
+              our own domain, and advertising features are turned off. In the
+              EEA, the UK and Switzerland, analytics cookies are off by default
+              and Google receives only cookieless, aggregated signals. Elsewhere,
+              Google Analytics sets the <code>_ga</code> cookies to tell visits
+              apart. We also set a <code>w3c_cc</code> cookie holding only your
+              two-letter country code, used to apply those defaults. To find
+              your country we look up your IP address in{" "}
+              <a href="https://db-ip.com" className="underline">
+                IP Geolocation by DB-IP
+              </a>{" "}
+              on our own server; your IP address is not stored. You can block or
+              delete these cookies in your browser settings at any time.
             </p>
           </section>
         </Card>

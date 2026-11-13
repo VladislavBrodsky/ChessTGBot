@@ -36,7 +36,7 @@ async function prepare(page: Page) {
 }
 
 for (const [locale, width] of [['en', 320], ['ar', 390], ['en', 1280]] as const) {
-  test(`free friend challenge works without a balance at ${width}px ${locale}`, async ({ page }) => {
+  test(`human friend challenge requires a confirmed balance at ${width}px ${locale}`, async ({ page }) => {
     await prepare(page);
     await page.setViewportSize({ width, height: 900 });
     // Community launches authenticate on Home before navigating to Play.
@@ -48,12 +48,8 @@ for (const [locale, width] of [['en', 320], ['ar', 390], ['en', 1280]] as const)
     await button.click();
     const drawer = page.getByRole('dialog');
     await expect(drawer).toBeVisible();
-    const request = page.waitForRequest(request => request.url().includes('/game/create'));
-    await drawer.getByRole('button', { name: locale === 'ar' ? 'إنشاء مباراة مجانية' : 'Create free game' }).click();
-    const url = new URL((await request).url());
-    expect(url.searchParams.get('type')).toBe('online');
-    expect(url.searchParams.get('wager')).toBe('0');
-    await expect(page).toHaveURL(new RegExp(`/${locale}/game\\?id=e2e-ai-game`), { timeout: 30000 });
+    await expect(drawer.getByRole('button', { name: /Create and stake|إنشاء/ }).last()).toBeDisabled();
+    await expect(drawer.getByText(locale === 'ar' ? 'إنشاء مباراة مجانية' : 'Create free game')).toHaveCount(0);
   });
 }
 
@@ -74,6 +70,7 @@ test('player dashboard shows unknown history and creates an attributed community
 });
 
 const friendRequest = { kind: 'request', id: 'pilotrequest', status: 'pending', role: 'guest', opponent: { name: 'Dana', elo: 1450 }, game_id: null, free: true, time_control: 600, url: 'https://t.me/chess_matbot?startapp=fi_pilotrequest' };
+const stakedGame = { kind: 'game', parameter: 'e2e-ai-game', game_id: 'e2e-ai-game', opponent: friendRequest.opponent, free: false, wager: 100, time_control: 600 };
 
 test('public referral starts free computer practice without notifying the referral owner', async ({ page }) => {
   await prepare(page);
@@ -114,27 +111,76 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1280, height: 800 
   });
 }
 
-test('incoming play request takes priority over onboarding and accepts only after a tap', async ({ page }) => {
+test('incoming free play request takes priority over onboarding but can only be declined', async ({ page }) => {
+  // Every human game is staked: a (free) friend request explains the rule and can only be closed.
   await prepare(page);
   await page.addInitScript(() => localStorage.removeItem('onboarding_completed'));
-  let accepted = false;
+  let responded: unknown = null;
   await page.route('**/api/v1/game/friends/**', async route => {
     const path = new URL(route.request().url()).pathname;
     let response: unknown = {};
     if (path.endsWith('/inbox')) response = { launch: null, invitations: [{ ...friendRequest, role: 'host' }] };
-    if (path.endsWith('/respond')) { accepted = true; expect(route.request().postDataJSON()).toEqual({ action: 'accept' }); response = { ...friendRequest, role: 'host', status: 'ready', game_id: 'e2e-ai-game' }; }
+    if (path.endsWith('/respond')) { responded = route.request().postDataJSON(); response = { ...friendRequest, role: 'host', status: 'declined' }; }
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify(response) });
   });
   await page.goto('/en/home');
   await expect(page.getByRole('heading', { name: 'A friend wants to play', exact: true })).toBeVisible();
   await expect(page.getByRole('dialog')).toHaveCount(1);
-  expect(accepted).toBe(false);
-  await page.getByRole('button', { name: 'Accept and play' }).click();
-  await expect(page).toHaveURL(/\/en\/game\?id=e2e-ai-game/);
-  expect(accepted).toBe(true);
+  await expect(page.getByText(/need a stake of at least \$1\.00/)).toBeVisible();
+  await expect(page.getByText(/Free friend games have ended\. Decline this request/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Accept and play' })).toHaveCount(0);
+  expect(responded).toBeNull();
+  await page.getByRole('button', { name: 'Decline' }).click();
+  await expect.poll(() => responded).toEqual({ action: 'decline' });
+  await expect(page.getByRole('heading', { name: 'Invitation declined', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Back to app' })).toBeVisible();
 });
 
-test('reported legacy game shows a named preview and expired links have a clear exit', async ({ page }) => {
+test('a waiting free request can be cancelled by the friend who sent it, with the stake explanation', async ({ page }) => {
+  await prepare(page);
+  let responded: unknown = null;
+  await page.route('**/api/v1/game/friends/**', async route => {
+    const path = new URL(route.request().url()).pathname;
+    let response: unknown = {};
+    if (path.endsWith('/inbox')) response = { launch: null, invitations: [friendRequest] };
+    if (path.endsWith('/respond')) { responded = route.request().postDataJSON(); response = { ...friendRequest, status: 'cancelled' }; }
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(response) });
+  });
+  await page.goto('/en/home');
+  // A request the player sent waits in the Home inbox instead of interrupting them.
+  await expect(page.getByText('Waiting for your friend', { exact: true })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await page.getByRole('button', { name: 'View', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Waiting for your friend', exact: true })).toBeVisible();
+  await expect(page.getByText(/need a stake of at least \$1\.00/)).toBeVisible();
+  await expect(page.getByText(/Free friend games have ended\. Cancel this request/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Decline' })).toHaveCount(0);
+  expect(responded).toBeNull();
+  await page.getByRole('button', { name: 'Cancel request', exact: true }).click();
+  await expect.poll(() => responded).toEqual({ action: 'cancel' });
+  await expect(page.getByRole('heading', { name: 'Invitation cancelled', exact: true })).toBeVisible();
+});
+
+test('a staked direct invitation takes priority over onboarding and opens the board only after a tap', async ({ page }) => {
+  await prepare(page);
+  await page.addInitScript(() => localStorage.removeItem('onboarding_completed'));
+  await page.route('**/api/v1/game/friends/**', async route => {
+    const preview = new URL(route.request().url()).pathname.endsWith('/preview');
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(preview ? stakedGame : { launch: null, invitations: [] }) });
+  });
+  await page.goto('/en/home?startapp=e2e-ai-game');
+  await expect(page.getByRole('heading', { name: 'Join your friend', exact: true })).toBeVisible();
+  await expect(page.getByRole('dialog')).toHaveCount(1);
+  await expect(page.getByText('Stake $1.00', { exact: true })).toBeVisible();
+  await expect(page.getByText('This game has a stake — review the amount before joining', { exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/en\/home/);
+  await page.getByRole('button', { name: 'Review 1.00 game', exact: true }).click();
+  await expect(page).toHaveURL(/\/en\/game\?id=e2e-ai-game/);
+  // Reviewing is not accepting: the stake is confirmed on the board, so the link stays reusable.
+  expect(await page.evaluate(() => sessionStorage.getItem('chess-invitation:123456789:e2e-ai-game'))).toBeNull();
+});
+
+test('reported legacy free game shows a named preview without a free join, and expired links have a clear exit', async ({ page }) => {
   await prepare(page);
   let expired = false;
   await page.route('**/api/v1/game/friends/**', async route => {
@@ -144,7 +190,8 @@ test('reported legacy game shows a named preview and expired links have a clear 
   });
   await page.goto('/en/home?startapp=4e044c66');
   await expect(page.getByRole('heading', { name: 'Join your friend', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Join free game' })).toBeEnabled();
+  await expect(page.getByText(/need a stake of at least \$1\.00/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Join free game' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
   expired = true;
   await page.goto('/en/home?startapp=oldmissing');
@@ -155,16 +202,22 @@ test('reported legacy game shows a named preview and expired links have a clear 
 });
 
 
-test('Arabic light direct invitation remains readable with reduced motion and safe mobile width', async ({ page }) => {
+test('Arabic light staked invitation remains readable with reduced motion and safe mobile width', async ({ page }) => {
   await prepare(page);
   await page.addInitScript(() => localStorage.setItem('theme', 'light'));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.route('**/api/v1/game/friends/**', async route => {
     const preview = new URL(route.request().url()).pathname.endsWith('/preview');
-    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(preview ? { kind: 'game', opponent: friendRequest.opponent, parameter: '4e044c66', game_id: '4e044c66', free: true, time_control: 600 } : { launch: null, invitations: [] }) });
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(preview ? stakedGame : { launch: null, invitations: [] }) });
   });
-  await page.goto('/ar/home?startapp=4e044c66');
-  await expect(page.getByRole('button', { name: 'انضم مجانًا', exact: true })).toBeVisible();
+  await page.goto('/ar/home?startapp=e2e-ai-game');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expect(page.locator('html')).toHaveAttribute('data-reduce-motion', 'true');
+  await expect(page.getByRole('heading', { name: 'انضم إلى صديقك', exact: true })).toBeVisible();
+  await expect(page.getByText('هذه المباراة لها رهان — راجع المبلغ قبل الانضمام', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'مراجعة مباراة بقيمة 1.00', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'انضم مجانًا', exact: true })).toHaveCount(0);
   await expect(page.getByRole('dialog')).toHaveCount(1);
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('dialog').screenshot({ path: '/tmp/chess-pilot-validation/invitation-ar.png' });

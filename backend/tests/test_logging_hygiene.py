@@ -9,7 +9,7 @@ getChatMember / getUserProfilePhotos call.
 import logging
 import sys
 
-from app.core.logger import exception_summary, setup_logging
+from app.core.logger import RepeatCollapsingHandler, exception_summary, setup_logging
 
 
 def test_httpx_request_urls_not_logged_at_info():
@@ -28,10 +28,11 @@ def test_root_json_logs_use_stdout_and_uvicorn_propagates():
     root_stream_handlers = [
         handler
         for handler in logging.getLogger().handlers
-        if type(handler) is logging.StreamHandler
+        if isinstance(handler, logging.StreamHandler) and getattr(handler, "stream", None) in (sys.stdout, sys.stderr)
     ]
     assert len(root_stream_handlers) == 1
     assert root_stream_handlers[0].stream is sys.stdout
+    assert isinstance(root_stream_handlers[0], RepeatCollapsingHandler)
 
     for name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
         uvicorn_logger = logging.getLogger(name)

@@ -1,5 +1,6 @@
 import { Icon } from "@/icons";
 import { CurrencyBadge } from "./ui/CurrencyBadge";
+import { MetaLine } from "./ui/MetaLine";
 
 export function HeroPaymentCaption() {
   return (
@@ -11,7 +12,7 @@ export function HeroPaymentCaption() {
         <CurrencyBadge asset="usdt" />
         <span>in app</span>
       </span>
-      <span className="hero-payment-note">Withdrawals are separate · No download required</span>
+      <MetaLine className="hero-payment-note" items="Withdrawals are separate · No download required" />
     </div>
   );
 }

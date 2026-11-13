@@ -13,6 +13,9 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { SettlementBreakdown } from "@/components/SettlementBreakdown";
 import { pageMetadata, jsonLd, breadcrumbData, faqData } from "@/lib/seo";
+import { LARGEST_LOBBY_PRESET, MATCH_RULES } from "@/lib/config";
+
+const STAKE_RANGE = `${MATCH_RULES.minStakeUsdt} to ${LARGEST_LOBBY_PRESET.toLocaleString("en-US")} USDT`;
 
 const WAGERS_FAQS = [
   {
@@ -23,7 +26,7 @@ const WAGERS_FAQS = [
   {
     question: "How do USDT match stakes and 95% pot payouts work?",
     answer:
-      "Both players commit equal USDT stakes from their app balances before play. In decided matches, 95% of the combined pot is credited to the winner's app balance (+90% net gain on the winner's stake).",
+      `Both players commit equal USDT stakes from their app balances before play. The lobby offers presets from ${STAKE_RANGE} or a custom amount, and a friend challenge takes any stake from ${MATCH_RULES.minStakeUsdt} USDT, up to your balance. In decided matches, 95% of the combined pot is credited to the winner's app balance (+90% net gain on the winner's stake).`,
   },
   {
     question: "What happens if a match ends in a draw or stalemate?",
@@ -38,7 +41,7 @@ const WAGERS_FAQS = [
   {
     question: "Can I practice for free before wagering real stakes?",
     answer:
-      "Yes. The Web3Chess Academy offers 100 tactical puzzle levels and unlimited practice matches against the Stockfish 16 engine completely free with zero deposit requirement.",
+      "Yes. The Web3Chess Academy offers 100 tactical puzzle levels and unlimited practice matches against Free Coach, a computer opponent with three levels (Easy, Medium, and Hard), completely free with zero deposit requirement.",
   },
 ] as const;
 
@@ -116,7 +119,7 @@ export default function WagersPage() {
                 Do the math before the match
               </h2>
               <p className="mt-3 max-w-[56ch] section-lead text-fg-muted">
-                Select any stake tier to model the combined prize pool. In decided matches, 95% of the total pot is credited directly to the winner’s balance, yielding a +90% net gain on your stake.
+                Pick one of the lobby&rsquo;s stake presets, from {STAKE_RANGE}, to model the combined prize pool. In decided matches, 95% of the total pot is credited directly to the winner’s balance, yielding a +90% net gain on your stake.
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2 text-caption text-fg-muted">
@@ -145,14 +148,14 @@ export default function WagersPage() {
           </h2>
 
           <DetailGrid>
-            <DetailCard span="wide" tone="accent" icon="wallet" badge="Deposit Rails" status="Sub-cent network gas" title="Deposit USDT on GRAM" meta="USDT on GRAM · Instant credit with ref comment">
-              <p>Use the deposit instructions in the Wallet tab, including your unique reference comment. Check the network, token, address, and displayed fee before sending. Fast finality credits in seconds.</p>
+            <DetailCard span="wide" tone="accent" icon="wallet" badge="Deposit Rails" status="Reference comment required" title="Deposit USDT on GRAM" meta="USDT on GRAM · Credited by ref comment">
+              <p>Use the deposit instructions in the Wallet tab, including your unique reference comment. Check the network, token, address, and displayed fee before sending. The deposit is credited to your platform balance once the transfer is confirmed on-chain.</p>
             </DetailCard>
             <DetailCard icon="lightning" badge="Match Escrow" status="95% pot credit" title="Match escrow & settlement" meta="Locked pot settlement">
               <p>Both rivals commit matching stakes into match escrow at start. The decided victor claims 95% of the total pot instantly upon checkmate, resignation, or timeout.</p>
             </DetailCard>
             <DetailCard icon="paper-plane-tilt" badge="Telegram Confirmation" status="1-tap HMAC verification" title="Request & confirm withdrawal" meta="Bot chat confirmation">
-              <p>Choose your withdrawal details in the app, then tap Confirm in the Telegram bot chat. Standard requests process immediately to your wallet.</p>
+              <p>Choose your withdrawal details in the app, then tap Confirm in the Telegram bot chat. Standard requests are sent to your wallet after you confirm; larger ones also wait for a manual review.</p>
             </DetailCard>
             <DetailCard span="wide" tone="accent" icon="shield-check" badge="On-Chain Audit" status="Tonviewer verification" title="Track the completed transfer" meta="Verifiable on Tonviewer · Public ledger finality">
               <p>Once a transfer is broadcast, verify it on Tonviewer using the immutable blockchain hash. Web3Chess holds platform balances securely until withdrawal.</p>
@@ -171,7 +174,7 @@ export default function WagersPage() {
                 Common questions on real-stakes chess
               </h2>
               <p className="text-body text-fg-muted">
-                How pot settlements, pure-skill legal frameworks, and non-custodial crypto withdrawals operate.
+                How pot settlements, pure-skill legal frameworks, and Telegram-confirmed crypto withdrawals operate.
               </p>
             </div>
             <Card>

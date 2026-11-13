@@ -83,6 +83,9 @@ async def credit_reward(db, user, amount_nano, source_key, source_kind, text):
             db.add(GramReward(user_id=user.id, amount_nano=amount_nano, source_key=source_key,
                               source_kind=source_kind, notification_text=text))
             await db.flush()
+            from app.models.telemetry import TelemetryLog
+            db.add(TelemetryLog(user_id=user.telegram_id, event_type="reward_credited",
+                event_data={"asset": "GRAM", "amount_nano": str(amount_nano), "source_kind": source_kind, "source_key": source_key}))
         return True
     except IntegrityError:
         # Do not swallow unrelated foreign-key/check failures as duplicates.

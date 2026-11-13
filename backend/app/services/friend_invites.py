@@ -1,4 +1,4 @@
-"""Explicit free friend requests, durable inbox and lost-launch recovery."""
+"""Friend requests (legacy, decline/cancel only), durable inbox and lost-launch recovery."""
 import asyncio
 from contextvars import Context
 from datetime import timedelta
@@ -220,6 +220,11 @@ async def respond(db, user, invite_id, action):
         if action == 'accept':
             if user.telegram_id != row.host_id:
                 fail('invalid_action', 403)
+            # Friend requests always created free games. Every human game is now
+            # staked, so a request can only be declined or cancelled; the staked
+            # challenge (POST /game/create with a wager) is the way to play a friend.
+            from app.services.game_rules import HUMAN_STAKE_REQUIRED_CODE
+            fail(HUMAN_STAKE_REQUIRED_CODE, 410)
             for uid in (row.host_id, row.guest_id):
                 active = await service.get_active_game_for_user(uid)
                 if active and active != row.game_id:

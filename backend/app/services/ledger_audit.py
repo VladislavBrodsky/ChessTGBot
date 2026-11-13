@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_, or_, exists, literal, cast, String
+from sqlalchemy.orm import aliased
 from app.models.user import User
 from app.models.transaction import Transaction
 
@@ -11,8 +12,38 @@ BALANCE_TYPES = [
     "deposit", "withdrawal", "game_wager", "game_win",
     "refund", "game_refund", "subscription",
     "referral_commission", "subscription_commission", "referral_commission_leakage",
-    "deposit_reversal", "ledger_adjustment", "chargeback", "withdrawal_refund"
+    "deposit_reversal", "ledger_adjustment", "chargeback", "withdrawal_refund",
+    "marketplace_purchase",
 ]
+
+
+def balance_affecting():
+    """Rows whose amount is already reflected in User.balance.
+
+    Completed rows of BALANCE_TYPES, plus debits that hit the balance before
+    their row is final:
+    - withdrawals: debited at creation in every status. A failure writes a
+      separate withdrawal_refund row ("withdrawal_refund:<id>"), so a failed
+      debit counts when that row exists. Before refund rows existed (mid-2026)
+      a failure credited the balance silently; such a failed debit has no
+      refund row and is left out, exactly as its silent refund is.
+    - matchmaking holds: a pending game_wager is already debited; a refund
+      flips it to failed (no separate row), so only pending ones are added.
+    Without these, every in-flight payout or queued stake looked like a ledger
+    mismatch, and every refunded withdrawal looked like one permanently.
+    """
+    refund = aliased(Transaction)
+    has_refund_row = exists().where(
+        refund.type == "withdrawal_refund",
+        refund.reference_id == literal("withdrawal_refund:") + cast(Transaction.id, String),
+    )
+    return or_(
+        and_(Transaction.status == "completed", Transaction.type.in_(BALANCE_TYPES)),
+        and_(Transaction.type == "withdrawal", Transaction.status != "failed"),
+        and_(Transaction.type == "withdrawal", Transaction.status == "failed", has_refund_row),
+        and_(Transaction.type == "game_wager", Transaction.status == "pending"),
+    )
+
 
 class LedgerAuditService:
     @classmethod
@@ -31,9 +62,7 @@ class LedgerAuditService:
             )
             .outerjoin(
                 Transaction,
-                (User.telegram_id == Transaction.user_id) &
-                (Transaction.status == "completed") &
-                (Transaction.type.in_(BALANCE_TYPES))
+                (User.telegram_id == Transaction.user_id) & balance_affecting()
             )
             .group_by(User.id, User.telegram_id, User.first_name, User.balance)
             .having(User.balance != func.coalesce(func.sum(Transaction.amount), 0))

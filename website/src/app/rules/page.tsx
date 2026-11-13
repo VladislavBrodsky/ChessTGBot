@@ -95,7 +95,7 @@ export default function RulesPage() {
                     },
                     {
                       name: "Play with Clocks and Time Controls",
-                      text: "Manage time controls such as Bullet (1+0), Blitz (3+2), or Rapid (10+0) with server-synchronized timers.",
+                      text: "Choose a flat clock of 1 to 60 minutes per side, such as 1 min Bullet, 3 min Blitz, or 10 min Rapid. There is no increment, and the server keeps the time.",
                     },
                   ],
                 }),
@@ -274,12 +274,13 @@ export default function RulesPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <DetailCard tone="accent" icon="clock" badge="Time Controls" status="Bullet · Blitz · Rapid" title="Chess Time Controls Explained">
-              <p>Each player has an individual clock that counts down only when it is their turn to move. In Web3Chess, choose from standard FIDE paces:</p>
+              <p>Each player has an individual clock that counts down only when it is their turn to move. In Web3Chess, each side gets a flat clock with no increment:</p>
               <ul className="detail-checks">
-                <li><Icon name="clock" size={14} /><span><strong className="text-fg">1+0 Bullet:</strong> 1 minute total per player. Lightning pace.</span></li>
-                <li><Icon name="clock" size={14} /><span><strong className="text-fg">3+2 Blitz:</strong> 3 minutes + 2 seconds added per move. Standard competitive format.</span></li>
-                <li><Icon name="clock" size={14} /><span><strong className="text-fg">5+0 Blitz:</strong> 5 minutes flat. High tactical intensity.</span></li>
-                <li><Icon name="clock" size={14} /><span><strong className="text-fg">10+0 Rapid:</strong> 10 minutes total. Strategic room for calculation.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">1 min Bullet:</strong> 1 minute total per player. Lightning pace.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">3 min Blitz:</strong> 3 minutes per player, with no time added per move. Standard competitive format.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">5 min Blitz:</strong> 5 minutes flat. High tactical intensity.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">10 min Rapid:</strong> 10 minutes total. Strategic room for calculation.</span></li>
+                <li><Icon name="clock" size={14} /><span><strong className="text-fg">15, 30, or 60 min:</strong> Longer Rapid and Classical games with room for deep planning.</span></li>
               </ul>
             </DetailCard>
             <DetailCard icon="lightning" badge="Flagging" status="0:00 Timeout" title="What Happens When Clock Runs Out">

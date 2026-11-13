@@ -79,6 +79,19 @@ export function winnerReceives(stake: number): number {
 export const GA_MEASUREMENT_ID =
   process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-JXR1D3D5E3";
 
+/**
+ * First-party path for Google tag gateway for advertisers. gtag.js and its
+ * measurement hits go through web3chess.online/<path> (src/app/a3k) instead
+ * of googletagmanager.com / google-analytics.com, which Brave Shields,
+ * uBlock, AdGuard and Safari's tracker blocking drop. A neutral name keeps it
+ * out of generic "/analytics/" filter rules. Keep it in sync with the
+ * src/app/a3k route folder and the matcher in src/proxy.ts.
+ */
+export const GA_GATEWAY_PATH = "/a3k";
+
+/** Visitor ISO country, set by src/proxy.ts and read by the consent default. */
+export const GEO_COOKIE = "w3c_cc";
+
 export const SITE = {
   name: "Web3Chess",
   /** Set NEXT_PUBLIC_SITE_URL once the final domain is decided. */
@@ -99,7 +112,8 @@ export const SITE = {
  * First move: backend/app/services/game_service.py monitor_first_move_abort (30s per side, then the
  * match is aborted and refunded); players matched while the app was closed get
  * OFFLINE_FIRST_MOVE_GRACE_SECONDS in backend/app/socket_events.py.
- * In game_service.py a draw refunds both stakes and a flagged clock always loses.
+ * In game_service.py a draw refunds both stakes. A flagged clock loses unless the opponent cannot
+ * checkmate (bare king, K+N, K+B): flag_fall_result then scores a draw (FIDE 6.9) and refunds both stakes.
  */
 export const MATCH_RULES = {
   clockMinutes: [1, 3, 5, 10, 15, 30, 60],
@@ -107,4 +121,15 @@ export const MATCH_RULES = {
   firstMoveSeconds: 30,
   offlineFirstMoveMinutes: 3,
 } as const;
-export const WAGER_TIERS = [1, 5, 10, 25] as const;
+
+/**
+ * Stake range, verified 2026-11-11. The owner chose to advertise the full range the app allows.
+ * Lobby presets (USDT): frontend/src/components/game/lobby/BetSlip.tsx STAKES_CENTS. The lobby also
+ * takes a custom amount, and a friend challenge takes any typed amount. The backend enforces only the
+ * 1 USDT minimum (MIN_HUMAN_STAKE_CENTS in backend/app/services/game_rules.py, used by game create,
+ * matchmaking, rematch and friend invites) and the player's balance; there is no fixed maximum, so
+ * never state one. Every game against a person carries a stake; only Free Coach games are free.
+ * scripts/stakes.spec-node.mjs fails CI if these presets, the app's or llms.txt drift apart.
+ */
+export const LOBBY_STAKE_PRESETS = [1, 5, 10, 25, 50, 100, 250, 500, 1000] as const;
+export const LARGEST_LOBBY_PRESET = LOBBY_STAKE_PRESETS[LOBBY_STAKE_PRESETS.length - 1];

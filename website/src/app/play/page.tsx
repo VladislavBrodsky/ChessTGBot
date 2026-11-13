@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PlayButton } from "@/components/PlayButton";
+import { Footer } from "@/components/Footer";
 import { ChessSculpture } from "@/components/ChessSculpture";
 import { Logo } from "@/components/Logo";
 import { buttonClass } from "@/components/ui/button-styles";
@@ -38,7 +39,7 @@ const PLAY_FAQS = [
 
 export const metadata: Metadata = pageMetadata(
   "Play Chess Online: Telegram Bot & Web Arena",
-  "Launch Web3Chess in Telegram or play in your web browser. Practice free against Stockfish, explore 100 tactical levels, and learn the rules for optional USDT matches.",
+  "Open the Web3Chess chess bot in Telegram or play in your browser. Practice free with Free Coach, solve 100 tactics levels, and learn the USDT match rules.",
   "/play",
   [
     "telegram chess bot",
@@ -55,6 +56,7 @@ export const metadata: Metadata = pageMetadata(
 export default async function PlayPage() {
   const svg = await qrSvg(telegramLink(WEBSITE_CAMPAIGNS.play));
   return (
+    <>
     <div className="shell-wide">
       <script
         type="application/ld+json"
@@ -135,7 +137,7 @@ export default async function PlayPage() {
 
               <ul className="play-checks">
                 <li><Icon name="check" size={14} /><span>Expanded widescreen board layout</span></li>
-                <li><Icon name="check" size={14} /><span>Stockfish 16 engine analysis</span></li>
+                <li><Icon name="check" size={14} /><span>Stockfish post-game review</span></li>
                 <li><Icon name="check" size={14} /><span>Synchronized cloud profile state</span></li>
               </ul>
               <div className="mt-auto w-full">
@@ -185,11 +187,11 @@ export default async function PlayPage() {
           </div>
           <div className="flex items-center justify-center gap-1.5 text-fg font-medium border-y sm:border-y-0 sm:border-x border-line py-2 sm:py-0">
             <Icon name="lightning" size={16} className="text-fg-caution shrink-0" />
-            <span>Sub-Second Finality</span>
+            <span>Bot-Confirmed Withdrawals</span>
           </div>
           <div className="flex items-center justify-center gap-1.5 text-fg font-medium py-1 sm:py-0">
             <Icon name="cpu" size={16} className="text-fg-muted shrink-0" />
-            <span>Stockfish Anti-Cheat</span>
+            <span>Server Move Validation</span>
           </div>
         </div>
 
@@ -228,5 +230,8 @@ export default async function PlayPage() {
         </p>
       </main>
     </div>
+    {/* Site-wide links: without them /play was a dead end for crawlers (3 internal links). */}
+    <Footer />
+    </>
   );
 }

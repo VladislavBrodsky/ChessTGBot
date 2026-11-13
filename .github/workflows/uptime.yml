@@ -1,0 +1,43 @@
+name: Uptime probe
+
+# External check of api / realtime / app / website every 5 minutes (scripts/uptime_probe.py).
+# Telegram alerts need two repository secrets: TELEGRAM_BOT_TOKEN (any bot the owner
+# has started a chat with) and ALERT_CHAT_ID (the owner's Telegram user id). Without
+# them a failed run still emails the owner through GitHub's scheduled-workflow notices.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: uptime-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/uptime_probe.py
+          sparse-checkout-cone-mode: false
+      - name: Previous run state
+        id: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow uptime.yml --branch main \
+            --status completed --limit 1 --json conclusion -q '.[0].conclusion' 2>/dev/null || true)
+          echo "state=${state}" >> "$GITHUB_OUTPUT"
+          echo "Previous run: ${state:-none}"
+      - name: Probe production
+        env:
+          PREVIOUS_STATE: ${{ steps.prev.outputs.state }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          ALERT_CHAT_ID: ${{ secrets.ALERT_CHAT_ID }}
+        run: python3 scripts/uptime_probe.py

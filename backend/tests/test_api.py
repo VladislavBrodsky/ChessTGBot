@@ -47,7 +47,7 @@ async def test_create_game_computer(client):
 async def test_create_game_online_enforces_minimum_wager(client):
     response = await client.post("/api/v1/game/create?type=online&wager=50")
     assert response.status_code == 400
-    assert "Minimum wager is $1.00" in response.json()["detail"]
+    assert "at least $1.00" in response.json()["detail"]
 
 @pytest.mark.asyncio
 async def test_nonexistent_api_returns_json_404(client):
@@ -540,22 +540,17 @@ async def test_get_active_game_endpoint(client, db_session):
 
 
 @pytest.mark.asyncio
-async def test_free_friend_creation_and_launch(client, db_session):
+async def test_a_free_friend_game_cannot_be_created(client, db_session):
     from app.services.session_manager import SessionManager
     from app.models.transaction import Transaction
     from sqlalchemy import select
+    before = set(SessionManager._memory_store) if SessionManager._use_memory else None
     response = await client.post("/api/v1/game/create?type=online&wager=0")
-    assert response.status_code == 200
-    game = response.json()
-    assert 'startapp=go_' in game['invite_link']
-    state = await SessionManager().get_game(game['game_id'])
-    assert state.bid_amount == 0
-    assert state.white_player_id == 123456789
-    assert state.invite_token
-    resolved = await client.get(f"/api/v1/game/launch/{state.invite_token}")
-    assert resolved.status_code == 200
-    assert resolved.json() == {"destination": "game", "game_id": game['game_id']}
-    rows = (await db_session.execute(select(Transaction).where(Transaction.reference_id == game['game_id']))).scalars().all()
+    assert response.status_code == 400
+    assert "Free Coach" in response.json()["detail"]
+    if before is not None:
+        assert set(SessionManager._memory_store) == before
+    rows = (await db_session.execute(select(Transaction).where(Transaction.type == "game_wager"))).scalars().all()
     assert rows == []
 
 

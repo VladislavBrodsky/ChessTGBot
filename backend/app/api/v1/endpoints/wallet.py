@@ -168,6 +168,25 @@ async def get_master_usdt_jetton_wallet_hex() -> Optional[str]:
         return None
 
 
+async def is_master_usdt_receipt(jetton_transfer: dict) -> bool:
+    """True only if the tokens landed in the master's real USDT jetton wallet.
+
+    TonAPI labels a JettonTransfer with the master the sending jetton wallet
+    claims; a fake jetton wallet can claim USDT's master. The receiving jetton
+    wallet is derived by the real USDT master for our owner address, so
+    matching it proves genuine USDT. Unknown (lookup failed) means "not yet":
+    callers retry rather than credit.
+    """
+    expected = await get_master_usdt_jetton_wallet_hex()
+    received = jetton_transfer.get("recipients_wallet") or ""
+    if not expected or not received:
+        return False
+    try:
+        return convert_ton_address_to_hex(received) == expected
+    except Exception:
+        return False
+
+
 _prices_cache = {
     "prices": None,
     "last_fetched": 0.0
@@ -446,7 +465,10 @@ async def withdraw_funds(
         create_withdrawal,
     )
 
-    review_required = needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS)
+    from app.services.fair_play import has_open_review
+    # A player under fair-play review has every withdrawal held for the owner, whatever its size.
+    review_required = (needs_manual_review(request.amount, settings.WITHDRAWAL_REVIEW_THRESHOLD_CENTS)
+                       or await has_open_review(db, current_user.telegram_id))
     confirmation_required = settings.WITHDRAWAL_CONFIRMATION_ENABLED and settings.TELEGRAM_BOT_TOKEN
     if review_required:
         initial_status = "pending_review"
@@ -882,6 +904,22 @@ async def receive_ton_deposit_webhook(
         except (ValueError, IndexError):
             raise HTTPException(status_code=400, detail="Malformed Telegram ID in transaction comment")
 
+        # Key the credit on the trace id (the sender's root transaction), the
+        # same reference /deposit/verify and the deposit crawler use. Keying on
+        # the master's own receiving transaction would never collide with
+        # theirs, so the same deposit could be credited twice.
+        trace_id = None
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                ev = await client.get(f"https://tonapi.io/v2/events/{tx_hash}", headers=headers)
+                if ev.status_code == 200:
+                    trace_id = ev.json().get("event_id")
+        except Exception as ev_err:
+            logger.warning(f"Webhook: could not resolve trace for {tx_hash}: {ev_err}")
+        if not trace_id:
+            raise HTTPException(status_code=503, detail="Deposit trace not resolvable yet; the deposit crawler will credit it.")
+        tx_hash = trace_id
+
     else:
         # 3. Developer simulated deposit webhook
         from app.core.database import engine
@@ -1199,6 +1237,12 @@ async def verify_deposit(
             detail="Transaction trace not found. Please wait a few seconds and try again."
         )
 
+    if event_data.get("in_progress"):
+        raise HTTPException(
+            status_code=409,
+            detail="Your transfer is still being confirmed on-chain. Please try again in a few seconds."
+        )
+
     # 3. Resolve the true on-chain transaction/event hash
     tx_hash = event_data.get("event_id") or message_hash
 
@@ -1260,6 +1304,9 @@ async def verify_deposit(
             is_matching_ref = (clean_comment == expected_ref) or clean_comment.startswith(f"{expected_ref}_")
             if recipient_raw == master_raw and is_matching_ref:
                 if _is_usdt_master(jetton_master):
+                    if not await is_master_usdt_receipt(jetton_transfer):
+                        logger.warning("Deposit verify: USDT-labelled transfer did not reach the master's USDT jetton wallet")
+                        continue
                     # Verified USDT transfer — credit at face value (6 decimals,
                     # 1 USDT = 100 cents). No price feed needed.
                     token_amount = amount_raw / (10 ** 6)
@@ -1415,88 +1462,33 @@ class StripeVerifyResponse(BaseModel):
 async def stripe_create_session(
     request: StripeSessionRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
-    from app.core.config import get_settings
-    settings = get_settings()
-    
-    if not settings.STRIPE_SECRET_KEY:
-        raise HTTPException(status_code=501, detail="Stripe configuration is missing on server.")
-        
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    
-    if request.amount < 1.0:
-        raise HTTPException(status_code=400, detail="Minimum deposit amount is $1.00 USD.")
-        
-    # Calculate charged amount (the total entered by user) and subtract 5% platform fee for credit
-    charged_amount_cents = int(round(request.amount * 100))
-    credited_amount_cents = int(round(request.amount * 0.95 * 100))
-    fee_cents = charged_amount_cents - credited_amount_cents
-    
-    # Generate pending transaction in DB
-    pending_tx = Transaction(
-        user_id=current_user.telegram_id,
-        type="deposit",
-        amount=credited_amount_cents,
-        fee=fee_cents,
-        status="pending",
-        reference_id=None  # will be set to session ID shortly
+    """Do not create card-funded, withdrawable wager balances.
+
+    Preserve the route so older clients receive an explicit refusal. Existing
+    Checkout sessions remain eligible for verified settlement below.
+    """
+    raise HTTPException(status_code=403, detail="Card balance top-ups are unavailable.")
+
+
+def _stripe_session_matches_deposit(session, tx: Transaction) -> bool:
+    """Require Stripe's paid Checkout facts to match our pending ledger row."""
+    metadata = stripe_get(session, "metadata", {})
+    return (
+        tx.type == "deposit"
+        and tx.status == "pending"
+        and tx.reference_id == stripe_get(session, "id")
+        and stripe_get(session, "mode") == "payment"
+        and stripe_get(session, "payment_status") == "paid"
+        and stripe_get(session, "currency") == "usd"
+        and stripe_get(session, "amount_total") == tx.amount + tx.fee
+        and stripe_get(metadata, "tx_id") == str(tx.id)
+        and stripe_get(metadata, "user_id") == str(tx.user_id)
     )
-    db.add(pending_tx)
-    await db.flush() # get ID
-    
-    # Sanitize redirect path
-    redirect_path = request.redirect_path or "/wallet"
-    if not redirect_path.startswith("/"):
-        redirect_path = "/" + redirect_path
 
-    try:
-        # Create Stripe Checkout Session off the main event loop
-        checkout_session = await asyncio.to_thread(
-            stripe.checkout.Session.create,
-            payment_method_types=['card'],
-            line_items=[
-                {
-                    'price_data': {
-                        'currency': 'usd',
-                        'product_data': {
-                            'name': 'Web3Chess Platform Balance Top-Up',
-                            'description': f'Credited: ${(request.amount * 0.95):.2f} USD | Fee (5%): ${(request.amount * 0.05):.2f} USD',
-                        },
-                        'unit_amount': charged_amount_cents,
-                    },
-                    'quantity': 1,
-                },
-            ],
-            mode='payment',
-            metadata={
-                'user_id': str(current_user.telegram_id),
-                'tx_id': str(pending_tx.id)
-            },
-            payment_intent_data={
-                'metadata': {
-                    'user_id': str(current_user.telegram_id),
-                    'tx_id': str(pending_tx.id)
-                }
-            },
-            success_url=f"{settings.WEBAPP_URL}{redirect_path}?status=success&session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{settings.WEBAPP_URL}{redirect_path}?status=cancel",
-            idempotency_key=f"session_{pending_tx.id}",
-        )
-        
-        pending_tx.reference_id = checkout_session.id
-        await db.commit()
-        
-        return StripeSessionResponse(
-            session_id=checkout_session.id,
-            checkout_url=checkout_session.url
-        )
-    except Exception as e:
-        await db.rollback()
-        logger.error(f"Failed to create Stripe checkout session: {e}")
-        raise HTTPException(status_code=500, detail="Stripe session creation failed.")
 
-async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, session_id: str) -> bool:
+async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, session) -> bool:
     """
     Idempotent, row-locked credit function for Stripe deposits.
     Returns True if credited just now, False if already credited or failed.
@@ -1509,7 +1501,15 @@ async def _credit_stripe_deposit(db: AsyncSession, tx_id: int, user_id: int, ses
     )
     tx = tx_result.scalars().first()
     
+    if tx and tx.status == "pending" and not _stripe_session_matches_deposit(session, tx):
+        logger.error(
+            "Stripe checkout mismatch for pending top-up tx=%s session=%s",
+            tx.id, stripe_get(session, "id"),
+        )
+        return False
+
     if tx and tx.status == "pending":
+        session_id = stripe_get(session, "id")
         user_result = await db.execute(
             select(User).filter(User.telegram_id == user_id).with_for_update()
         )
@@ -1626,7 +1626,7 @@ async def stripe_verify_session(
             try:
                 session = await asyncio.to_thread(stripe.checkout.Session.retrieve, session_id)
                 if stripe_get(session, "payment_status") == "paid":
-                    await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session_id)
+                    await _credit_stripe_deposit(db, tx.id, current_user.telegram_id, session)
                     await db.refresh(tx)
             except Exception as e:
                 logger.error(f"Error querying stripe in verify: {e}")
@@ -1864,7 +1864,7 @@ async def stripe_webhook(
     if not await _claim_stripe_event(db, event):
         return {"status": "ignored", "message": "Stripe event already processed."}
         
-    if event['type'] == 'checkout.session.completed':
+    if event['type'] in ('checkout.session.completed', 'checkout.session.async_payment_succeeded'):
         session = event['data']['object']
         
         # Handle Subscriptions
@@ -1909,7 +1909,7 @@ async def stripe_webhook(
             tx_id = int(tx_id_str)
             user_id = int(user_id_str)
             
-            credited = await _credit_stripe_deposit(db, tx_id, user_id, stripe_get(session, 'id', ''))
+            credited = await _credit_stripe_deposit(db, tx_id, user_id, session)
             
             if credited:
                 return {"status": "success", "message": "Transaction credited successfully."}
@@ -1917,14 +1917,21 @@ async def stripe_webhook(
                 await db.commit()
                 return {"status": "ignored", "message": "Transaction already completed or not found."}
                 
-    elif event['type'] == 'checkout.session.expired':
+    elif event['type'] in ('checkout.session.expired', 'checkout.session.async_payment_failed'):
         session = event['data']['object']
         metadata = stripe_get(session, 'metadata', {})
         tx_id_str = stripe_get(metadata, 'tx_id')
         user_id_str = stripe_get(metadata, 'user_id')
         if tx_id_str and user_id_str:
             tx_id = int(tx_id_str)
-            tx_result = await db.execute(select(Transaction).filter(Transaction.id == tx_id).with_for_update())
+            tx_result = await db.execute(
+                select(Transaction).filter(
+                    Transaction.id == tx_id,
+                    Transaction.user_id == int(user_id_str),
+                    Transaction.type == "deposit",
+                    Transaction.reference_id == stripe_get(session, 'id'),
+                ).with_for_update()
+            )
             tx = tx_result.scalars().first()
             if tx and tx.status == "pending":
                 tx.status = "failed"
@@ -1958,7 +1965,8 @@ async def stripe_webhook(
                 )
                 top_up_tx = top_up_result.scalars().first()
                 gross_charge = int(stripe_get(charge, 'amount', 0) or 0)
-                if not top_up_tx or gross_charge <= 0:
+                if (not top_up_tx or top_up_tx.status != "completed"
+                        or gross_charge != top_up_tx.amount + top_up_tx.fee):
                     logger.error("Refund references an unknown or malformed top-up: tx=%s charge=%s", tx_id, stripe_get(charge, 'id'))
                     return {"status": "ignored", "message": "Top-up not found for refund."}
 
@@ -2018,9 +2026,24 @@ async def stripe_webhook(
             # We must fetch the charge from stripe to get the metadata since dispute object might not inherit it
             try:
                 charge = await asyncio.to_thread(stripe.Charge.retrieve, charge_id)
-                user_id_str = stripe_get(stripe_get(charge, 'metadata', {}), 'user_id')
-                if user_id_str:
+                charge_metadata = stripe_get(charge, 'metadata', {})
+                user_id_str = stripe_get(charge_metadata, 'user_id')
+                tx_id_str = stripe_get(charge_metadata, 'tx_id')
+                if user_id_str and tx_id_str:
                     user_id = int(user_id_str)
+                    top_up_result = await db.execute(
+                        select(Transaction).filter(
+                            Transaction.id == int(tx_id_str),
+                            Transaction.user_id == user_id,
+                            Transaction.type == "deposit",
+                            Transaction.status == "completed",
+                        ).with_for_update()
+                    )
+                    top_up_tx = top_up_result.scalars().first()
+                    gross_charge = int(stripe_get(charge, 'amount', 0) or 0)
+                    if not top_up_tx or gross_charge != top_up_tx.amount + top_up_tx.fee:
+                        logger.error("Dispute references an unknown or malformed top-up: charge=%s", charge_id)
+                        return {"status": "ignored", "message": "Top-up not found for dispute."}
                     dispute_ref = f"dispute_{stripe_get(dispute, 'id', '')}"
                     prior_dispute = await db.execute(
                         select(Transaction.id).where(Transaction.reference_id == dispute_ref)
@@ -2038,8 +2061,12 @@ async def stripe_webhook(
                         # wallet adjustment.  We freeze the account when a user
                         # has already spent the top-up instead of inventing an
                         # untracked negative balance.
-                        dispute_amount = stripe_get(dispute, 'amount', 0)
-                        wallet_debit = min(user.balance, dispute_amount)
+                        dispute_amount = int(stripe_get(dispute, 'amount', 0) or 0)
+                        net_disputed = min(
+                            top_up_tx.amount,
+                            (dispute_amount * top_up_tx.amount + gross_charge // 2) // gross_charge,
+                        )
+                        wallet_debit = min(max(user.balance, 0), net_disputed)
                         user.balance -= wallet_debit
                         
                         penalty_tx = Transaction(

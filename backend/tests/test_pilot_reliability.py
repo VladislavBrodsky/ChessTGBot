@@ -292,7 +292,7 @@ async def workers(real_services, tmp_path):
             log.close()
 
 
-async def test_two_workers_free_friend_moves_and_reconnect(workers):
+async def test_two_workers_staked_friend_moves_and_reconnect(workers):
     import socketio
     urls, (redis_client, factory) = workers
     sockets = [socketio.AsyncClient(reconnection=False), socketio.AsyncClient(reconnection=False)]
@@ -307,9 +307,14 @@ async def test_two_workers_free_friend_moves_and_reconnect(workers):
                 state = await q.get()
                 if predicate(state):
                     return state
+    # Every human game is staked (free play is the AI coach only): fund both players.
+    from app.models.user import User
+    async with factory() as db:
+        db.add_all([User(telegram_id=uid, first_name=f"Friend {uid}", balance=1000) for uid in uids])
+        await db.commit()
     try:
         async with httpx.AsyncClient() as http:
-            response = await http.post(urls[0] + "/api/v1/game/create?type=online&wager=0", headers={"X-Telegram-Init-Data": signed_user(uids[0])})
+            response = await http.post(urls[0] + "/api/v1/game/create?type=online&wager=100", headers={"X-Telegram-Init-Data": signed_user(uids[0])})
             assert response.status_code == 200, response.text
             game = response.json()
             token = game['invite_link'].split("go_", 1)[1]
@@ -317,9 +322,9 @@ async def test_two_workers_free_friend_moves_and_reconnect(workers):
             assert resolved.status_code == 200, resolved.text
         for index, client in enumerate(sockets):
             await client.connect(urls[index], auth={"initData": signed_user(uids[index])}, transports=["websocket"])
-            await client.emit("join_room", {"room": game['game_id']})
+            await client.emit("join_room", {"room": game['game_id'], "accept_wager": True})
         state = await state_where(queues[0], lambda s: s.get('white_player_id') and s.get('black_player_id'))
-        assert state['bid_amount'] == 0
+        assert state['bid_amount'] == 100
         white = uids.index(state['white_player_id'])
         black = 1 - white
         await sockets[white].emit("make_move", {"game_id": game['game_id'], "uci": "e2e4"})
@@ -335,15 +340,14 @@ async def test_two_workers_free_friend_moves_and_reconnect(workers):
         for index, client in enumerate(sockets):
             client.on("match_found", lambda payload, q=rematches[index]: q.put_nowait(payload))
         await sockets[white].call("offer_rematch", {"game_id": game['game_id'], "double_stakes": True}, timeout=15)
-        # Duplicate acceptance must create only one free game, even with a
-        # malicious doubled-stake flag on the original zero-stake offer.
+        # Duplicate acceptance must create (and charge for) only one doubled-stake rematch.
         await asyncio.gather(*(sockets[black].call("accept_rematch", {"game_id": game['game_id']}, timeout=15) for _ in range(2)))
         async with asyncio.timeout(10):
             rematch_a, rematch_b = await rematches[0].get(), await rematches[1].get()
         assert rematch_a['game_id'] == rematch_b['game_id']
         assert rematches[0].empty() and rematches[1].empty()
         next_game = await SessionManager().get_game(rematch_a['game_id'])
-        assert next_game.bid_amount == 0 and next_game.matched_at is not None
+        assert next_game.bid_amount == 200 and next_game.matched_at is not None
         await player_tracking.flush_activity(redis_client)
         async with factory() as db:
             assert (await player_tracking.gameplay_counts(db))["dau"] == 2
@@ -351,11 +355,22 @@ async def test_two_workers_free_friend_moves_and_reconnect(workers):
             from app.models.player_tracking import PlayerAcquisition
             acquired = await db.get(PlayerAcquisition, uids[1])
             assert acquired.campaign == 'friend_challenge' and acquired.inviter_id == uids[0]
-            rows = (await db.execute(select(Transaction))).scalars().all()
-            assert len(rows) == 2 and all(row.type == 'game_free_pvp' and row.amount == 0 and row.fee == 0 for row in rows)
-            from app.models.user import User
-            balances = (await db.execute(select(User.balance).where(User.telegram_id.in_(uids)))).scalars().all()
-            assert balances == [0, 0]
+            rows = (await db.execute(select(Transaction).where(Transaction.user_id.in_(uids)))).scalars().all()
+            ledger = sorted((row.reference_id, row.user_id, row.type, row.amount, row.fee) for row in rows)
+            # Each player staked $1 (creator on create, guest on join). White resigned, so
+            # black won the $2 pot less 5% (3% rake + 2% referral pool), recorded as
+            # game_win +190 (fee 10) and a game_rake -6 ledger entry. The doubled $2
+            # rematch was charged exactly once per player despite the duplicate accept.
+            assert ledger == sorted([
+                (game['game_id'], uids[0], 'game_wager', -100, 0),
+                (game['game_id'], uids[1], 'game_wager', -100, 0),
+                (game['game_id'], uids[black], 'game_win', 190, 10),
+                (game['game_id'], uids[black], 'game_rake', -6, 0),
+                (f"rematch_wager_{game['game_id']}", uids[0], 'game_wager', -200, 0),
+                (f"rematch_wager_{game['game_id']}", uids[1], 'game_wager', -200, 0),
+            ])
+            balances = dict((await db.execute(select(User.telegram_id, User.balance).where(User.telegram_id.in_(uids)))).all())
+            assert balances == {uids[white]: 1000 - 100 - 200, uids[black]: 1000 - 100 + 190 - 200}
     finally:
         for client in sockets:
             if client.connected:
@@ -372,7 +387,7 @@ async def test_pilot_players_across_two_workers(workers, tmp_path):
     assert 2 <= player_count <= 2000 and player_count % 2 == 0
     uids = list(range(91000000, 91000000 + player_count))
     async with factory() as db:
-        db.add_all([User(telegram_id=uid, first_name=f"Pilot {uid}", balance=0) for uid in uids])
+        db.add_all([User(telegram_id=uid, first_name=f"Pilot {uid}", balance=100) for uid in uids])
         await db.commit()
     clients, queues, errors, latencies = {}, {}, [], []
     gate = asyncio.Semaphore(20)
@@ -398,11 +413,11 @@ async def test_pilot_players_across_two_workers(workers, tmp_path):
     async def play_pair(index, http):
         a, b = uids[index * 2:index * 2 + 2]
         async with gate:
-            response = await http.post(urls[0] + '/api/v1/game/create?type=online&wager=0', headers={'X-Telegram-Init-Data': signed_user(a)})
+            response = await http.post(urls[0] + '/api/v1/game/create?type=online&wager=100', headers={'X-Telegram-Init-Data': signed_user(a)})
             assert response.status_code == 200, response.text
             game_id = response.json()['game_id']
             await clients[a].emit('join_room', {'room': game_id})
-            await clients[b].emit('join_room', {'room': game_id})
+            await clients[b].emit('join_room', {'room': game_id, 'accept_wager': True})
             state = await next_state(a, lambda s: bool(s.get('black_player_id')))
         actors = [state['white_player_id'], state['black_player_id']]
         for number, move in enumerate(('e2e4', 'e7e5', 'g1f3', 'b8c6'), 1):
@@ -419,6 +434,15 @@ async def test_pilot_players_across_two_workers(workers, tmp_path):
         await player_tracking.flush_activity(redis_client)
         async with factory() as db:
             assert (await player_tracking.gameplay_counts(db))['dau'] == player_count
+            # Every player funded exactly one $1 stake and every game holds both stakes.
+            from app.models.transaction import Transaction
+            stakes = (await db.execute(select(Transaction.user_id, Transaction.amount, Transaction.reference_id).where(Transaction.type == 'game_wager'))).all()
+            assert sorted(uid for uid, _, _ in stakes) == uids and all(amount == -100 for _, amount, _ in stakes)
+            per_game = {}
+            for uid, _, game_id in stakes:
+                per_game.setdefault(game_id, set()).add(uid)
+            assert len(per_game) == player_count // 2 and all(len(players) == 2 for players in per_game.values())
+            assert not (await db.execute(select(User.telegram_id).where(User.telegram_id.in_(uids), User.balance != 0))).all()
         report = {'connected_players': player_count, 'api_workers': 2, 'human_games': player_count // 2,
                   'accepted_moves': len(latencies), 'unexpected_errors': len(errors),
                   'round_trip_p50_ms': round(statistics.median(latencies), 2),

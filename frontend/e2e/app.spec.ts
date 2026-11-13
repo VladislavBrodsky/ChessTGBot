@@ -134,7 +134,7 @@ test.describe('browser safety net', () => {
     await page.goto('/en/game', { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: /Play Free Coach/i }).click();
     await expect(page.getByRole('dialog', { name: 'Choose Free Coach difficulty' })).toBeVisible();
-    await expect(page.getByText('Play free against a computer opponent. Choose a difficulty.')).toBeVisible();
+    await expect(page.getByText('Choose a Free Coach level')).toBeVisible();
     await page.getByRole('button', { name: 'Easy 800 Elo' }).click();
     await expect(page.getByRole('button', { name: 'Start practice game' })).toBeVisible();
   });
@@ -159,6 +159,10 @@ test.describe('browser safety net', () => {
     await page.goto('/en/wallet', { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: /Deposit/i }).click();
     const depositDialog = page.getByRole('dialog', { name: 'Deposit USDT', exact: true });
+    const methods = depositDialog.getByRole('tablist');
+    await expect(methods.getByRole('tab', { name: 'Crypto Wallet' })).toHaveAttribute('aria-selected', 'true');
+    await expect(methods.getByRole('tab', { name: 'Direct Transfer' })).toBeVisible();
+    await expect(methods.getByRole('tab', { name: /Card/i })).toHaveCount(0);
     await expect(depositDialog.getByRole('button', { name: /Reconnect Wallet App|Connect Wallet to Top Up/i })).toBeVisible();
     await depositDialog.getByRole('button', { name: 'Close dialog' }).click();
     await expect(depositDialog).toBeHidden({ timeout: 10_000 });

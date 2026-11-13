@@ -20,7 +20,6 @@ jest.mock('@/lib/telemetry', () => ({ logTelemetryEvent: jest.fn() }));
 jest.mock('@/hooks/useLobbyStats', () => ({ useLobbyStats: () => ({ loaded: true, searching: 0, games24h: 0, recent: [] }) }));
 jest.mock('@/components/game/lobby/BetSlip', () => ({ BetSlip: () => null }));
 jest.mock('@/components/game/lobby/DailyGoal', () => ({ DailyGoal: () => null }));
-jest.mock('@/components/game/ArenaBanner', () => () => null);
 jest.mock('@/components/EngagementQuest', () => () => null);
 jest.mock('@/components/game/AiDifficultyDrawer', () => () => null);
 jest.mock('@/components/game/RakeInfoDrawer', () => () => null);

@@ -37,6 +37,8 @@ jobs:
       SECRET_KEY: ci-pilot-only
       WEBHOOK_SECRET: ci-pilot-only
       ADMIN_TELEGRAM_IDS: '999999'
+      # Production-mode config now requires an explicit custody address (CI placeholder).
+      MASTER_WALLET_ADDRESS: UQD_n02bdxQxFztKTXpWBaFDxo713qIuETyefIeK7wiUB0DN
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -70,7 +72,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci --include=optional
       - run: npx playwright install --with-deps chromium
-      - name: Free challenge and player tracking journeys
+      - name: Staked challenge and player tracking journeys
         run: npm run test:pilot
       - uses: actions/upload-artifact@v4
         if: failure()

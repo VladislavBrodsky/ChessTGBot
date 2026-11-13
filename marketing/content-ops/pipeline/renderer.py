@@ -295,9 +295,8 @@ def _render_spec(entry: dict, spec: dict, suffix: str, timeout: int) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = f"{entry['id']}{suffix}"
     png = out_dir / f"{stem}.png"
-    # Each render gets its own input file: the daemon, QA command, and manual renderer
-    # can overlap on the same queue ID. A shared `<id>.spec.json` let one run unlink
-    # another run's input before Node had read it.
+    # The daemon, QA command, and manual renderer can overlap on the same queue ID.
+    # Per-render temporary files prevent one run deleting another's input/output.
     with tempfile.NamedTemporaryFile(
         mode="w", encoding="utf-8", prefix=f".{stem}.", suffix=".spec.json", dir=out_dir, delete=False
     ) as handle:

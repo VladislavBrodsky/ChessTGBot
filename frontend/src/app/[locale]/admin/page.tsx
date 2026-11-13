@@ -1,6 +1,7 @@
 'use client';
 
 import PlayerTrackingPanel from '@/components/PlayerTrackingPanel';
+import TreasuryPanel from '@/components/TreasuryPanel';
 
 import { Badge, BadgeRow, type BadgeVariant } from '@/components/ui/Badge';
 import { useEffect, useState } from 'react';
@@ -647,6 +648,8 @@ function TransactionsTab() {
           </button>
         </div>
       )}
+
+      <TreasuryPanel />
 
       {/* Pending Withdrawals Review Panel */}
       {pendingWithdrawals.length > 0 && (

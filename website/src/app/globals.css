@@ -79,6 +79,7 @@ textarea,
   .site-button:active:not(:disabled) { transform: scale(0.98); }
   .site-button:disabled { cursor: not-allowed; opacity: 0.45; }
   .site-segmented { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.375rem; padding: 0.375rem; background: var(--surface-inset); border-radius: var(--radius-media); }
+  .site-segmented[data-columns='3'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .site-segmented > .site-button { min-width: 0; padding-inline: 0.25rem; font-variant-numeric: tabular-nums; }
   .site-segmented [aria-pressed='true'] { background: var(--surface-inverse); color: var(--fg-inverse); }
   .site-header { border-block-end: 1px solid var(--line-hairline); }
@@ -851,12 +852,21 @@ textarea,
   .hero-payment-label svg { flex: none; }
   .hero-payment-currencies > span:last-child { color: var(--fg-default); font-weight: 500; }
   .hero-payment-note { flex-basis: 100%; }
+  .hero-payment-note { container-type: inline-size; }
+  .hero-payment-note .meta-line-track { justify-content: center; }
+  /* Centred MetaLine cannot clip a wrapped row's leading divider, so a column too narrow for one
+     line stacks the two facts without dividers instead of wrapping them. */
+  @container (max-width: 21.5rem) {
+    .hero-payment-note .meta-line-track { flex-direction: column; align-items: center; row-gap: 0.125rem; margin-inline-start: 0; }
+    .hero-payment-note .meta-line-item { padding-inline-start: 0; border-inline-start: 0; }
+  }
   .page-flow, .home-main { padding-block-end: max(4.5rem, calc(4.75rem + var(--site-safe-bottom))); }
   @media (max-width: 767px) {
     .hero-context { flex-direction: column; gap: 0.5rem; width: 100%; text-align: center; }
     .hero-context-details .meta-line-track { justify-content: center; }
     .hero-context-details { max-width: 100%; }
     .hero-payment-support { flex-direction: column; gap: 0.5rem; }
+    .hero-payment-note { flex-basis: auto; align-self: stretch; }
   }
   @media (max-width: 1023px) {
     .page-flow, .home-main { padding-block-end: max(6rem, calc(4.75rem + var(--site-safe-bottom))); }
@@ -1452,5 +1462,97 @@ textarea,
   @media (min-width: 1024px) {
     .app-screens-list { grid-auto-columns: minmax(0, 1fr); gap: 1.5rem; padding-block-end: 0; overflow: visible; scroll-snap-type: none; }
     .app-screens-figure { margin-inline: auto; }
+  }
+}
+
+/* Free Mystery Box offer under the home hero CTA (2026-11-12). One white card: gift tile + rule,
+   a static 3-games-then-box track, and the possible rewards as passive chips. */
+@layer components {
+  .offer-card {
+    display: grid;
+    gap: 0.875rem;
+    inline-size: 100%;
+    max-inline-size: 30rem;
+    padding: 1rem;
+    border: 1px solid var(--line-hairline);
+    border-radius: var(--radius-card-compact);
+    background: var(--surface-card);
+    text-align: start;
+    container-type: inline-size;
+  }
+  .offer-card-head { display: flex; align-items: flex-start; gap: 0.75rem; min-width: 0; }
+  .offer-card-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: var(--radius-control);
+    background: color-mix(in srgb, var(--fg-premium) 10%, transparent);
+    color: var(--fg-premium);
+  }
+  .offer-card-copy { display: grid; gap: 0.125rem; min-width: 0; }
+  .offer-card-eyebrow { font-size: var(--text-caption); line-height: 1.4; font-weight: 600; color: var(--fg-premium); text-wrap: balance; }
+  .offer-card-title { margin: 0; font-size: var(--text-body); line-height: 1.4; font-weight: 600; color: var(--fg-default); text-wrap: balance; }
+
+  /* Three numbered game marks joined by a hairline, ending at the box. */
+  .offer-steps { display: flex; align-items: center; margin: 0; padding: 0 0 0 3.25rem; list-style: none; }
+  .offer-step { display: flex; align-items: center; flex: 1 1 0; min-width: 0; }
+  .offer-step::after { content: ""; flex: 1 1 auto; block-size: 1px; margin-inline: 0.375rem; background: var(--line-hairline); }
+  .offer-step--box { flex: none; }
+  .offer-step--box::after { content: none; }
+  .offer-step-mark {
+    display: grid;
+    place-items: center;
+    flex: none;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    line-height: 1;
+    font-weight: 600;
+    color: var(--fg-muted);
+  }
+  .offer-step--box .offer-step-mark { border-color: transparent; background: var(--fg-premium); color: var(--fg-inverse); }
+
+  .offer-card-rewards {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding-block-start: 0.875rem;
+    border-block-start: 1px solid var(--line-hairline);
+  }
+  .offer-card-label { font-size: var(--text-caption); line-height: 1.4; color: var(--fg-muted); }
+  .offer-rewards { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+  .offer-reward {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-block-size: 1.75rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-control);
+    background: var(--surface-inset);
+    font-size: var(--text-caption);
+    line-height: 1.4;
+    font-weight: 500;
+    color: var(--fg-default);
+  }
+  .offer-reward svg { flex: none; color: var(--fg-premium); }
+
+  @media (max-width: 639px) {
+    .offer-card { margin-inline: auto; }
+  }
+  /* Narrow card (phones, and the tablet hero column): label on its own row, compact chips. */
+  @container (max-width: 26rem) {
+    .offer-steps { padding-inline-start: 0; }
+    .offer-card-label { flex-basis: 100%; }
+    .offer-rewards { flex: 1 1 100%; gap: 0.375rem; }
+    .offer-reward { gap: 0.25rem; padding-inline: 0.5rem; }
+  }
+  /* Smallest phones: drop the chip icons so all three rewards stay on one row. */
+  @container (max-width: 18rem) {
+    .offer-reward svg { display: none; }
   }
 }
