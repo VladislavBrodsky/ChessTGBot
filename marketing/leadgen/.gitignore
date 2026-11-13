@@ -1,0 +1,5 @@
+state/
+reports/
+__pycache__/
+config.local.json
+launchd.log

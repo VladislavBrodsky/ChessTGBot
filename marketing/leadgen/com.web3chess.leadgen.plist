@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Daily partner-lead discovery at 07:00 local time. Read-only public fetches; it never sends a message.
+     Install (owner only):
+       cp marketing/leadgen/com.web3chess.leadgen.plist ~/Library/LaunchAgents/
+       launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.web3chess.leadgen.plist
+     Stop: launchctl bootout gui/$(id -u)/com.web3chess.leadgen -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.web3chess.leadgen</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/env</string><string>python3</string>
+    <string>/Users/grandmaestro/Developer/ChessTGBot/marketing/leadgen/leadgen.py</string>
+    <string>daily</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/grandmaestro/Developer/ChessTGBot</string>
+  <key>StartCalendarInterval</key><dict><key>Hour</key><integer>7</integer><key>Minute</key><integer>0</integer></dict>
+  <key>StandardOutPath</key><string>/Users/grandmaestro/Developer/ChessTGBot/marketing/leadgen/launchd.log</string>
+  <key>StandardErrorPath</key><string>/Users/grandmaestro/Developer/ChessTGBot/marketing/leadgen/launchd.log</string>
+  <key>RunAtLoad</key><false/>
+</dict>
+</plist>
