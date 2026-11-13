@@ -852,12 +852,21 @@ textarea,
   .hero-payment-label svg { flex: none; }
   .hero-payment-currencies > span:last-child { color: var(--fg-default); font-weight: 500; }
   .hero-payment-note { flex-basis: 100%; }
+  .hero-payment-note { container-type: inline-size; }
+  .hero-payment-note .meta-line-track { justify-content: center; }
+  /* Centred MetaLine cannot clip a wrapped row's leading divider, so a column too narrow for one
+     line stacks the two facts without dividers instead of wrapping them. */
+  @container (max-width: 21.5rem) {
+    .hero-payment-note .meta-line-track { flex-direction: column; align-items: center; row-gap: 0.125rem; margin-inline-start: 0; }
+    .hero-payment-note .meta-line-item { padding-inline-start: 0; border-inline-start: 0; }
+  }
   .page-flow, .home-main { padding-block-end: max(4.5rem, calc(4.75rem + var(--site-safe-bottom))); }
   @media (max-width: 767px) {
     .hero-context { flex-direction: column; gap: 0.5rem; width: 100%; text-align: center; }
     .hero-context-details .meta-line-track { justify-content: center; }
     .hero-context-details { max-width: 100%; }
     .hero-payment-support { flex-direction: column; gap: 0.5rem; }
+    .hero-payment-note { flex-basis: auto; align-self: stretch; }
   }
   @media (max-width: 1023px) {
     .page-flow, .home-main { padding-block-end: max(6rem, calc(4.75rem + var(--site-safe-bottom))); }
@@ -1469,6 +1478,7 @@ textarea,
     border-radius: var(--radius-card-compact);
     background: var(--surface-card);
     text-align: start;
+    container-type: inline-size;
   }
   .offer-card-head { display: flex; align-items: flex-start; gap: 0.75rem; min-width: 0; }
   .offer-card-icon {
@@ -1482,7 +1492,7 @@ textarea,
     color: var(--fg-premium);
   }
   .offer-card-copy { display: grid; gap: 0.125rem; min-width: 0; }
-  .offer-card-eyebrow { font-size: var(--text-caption); line-height: 1.4; font-weight: 600; color: var(--fg-premium); }
+  .offer-card-eyebrow { font-size: var(--text-caption); line-height: 1.4; font-weight: 600; color: var(--fg-premium); text-wrap: balance; }
   .offer-card-title { margin: 0; font-size: var(--text-body); line-height: 1.4; font-weight: 600; color: var(--fg-default); text-wrap: balance; }
 
   /* Three numbered game marks joined by a hairline, ending at the box. */
@@ -1533,9 +1543,16 @@ textarea,
 
   @media (max-width: 639px) {
     .offer-card { margin-inline: auto; }
+  }
+  /* Narrow card (phones, and the tablet hero column): label on its own row, compact chips. */
+  @container (max-width: 26rem) {
     .offer-steps { padding-inline-start: 0; }
     .offer-card-label { flex-basis: 100%; }
     .offer-rewards { flex: 1 1 100%; gap: 0.375rem; }
     .offer-reward { gap: 0.25rem; padding-inline: 0.5rem; }
+  }
+  /* Smallest phones: drop the chip icons so all three rewards stay on one row. */
+  @container (max-width: 18rem) {
+    .offer-reward svg { display: none; }
   }
 }

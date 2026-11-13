@@ -18,7 +18,7 @@ export function PlayOfferStrip() {
           <Icon name="gift" size={20} />
         </span>
         <div className="offer-card-copy">
-          <span className="offer-card-eyebrow">Free to start, no deposit needed</span>
+          <span className="offer-card-eyebrow">Free to start, no deposit</span>
           <p id="offer-card-title" className="offer-card-title">
             Play 3 qualifying games to earn one Mystery Box
           </p>
