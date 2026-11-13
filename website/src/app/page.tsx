@@ -37,12 +37,12 @@ const GlobeShowcase = dynamic(
 );
 import { home } from "@/content/home";
 import { getPublishedPosts } from "@/content/blog";
-import { SITE, SETTLEMENT, winnerReceives } from "@/lib/config";
+import { BOT_USERNAME, SITE, SETTLEMENT, winnerReceives } from "@/lib/config";
 import { jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata(
   "Play Chess Online in Telegram & Win Real Crypto",
-  "Play chess inside Telegram with Web3Chess. Practice free against Free Coach, a computer opponent, explore 100 tactical levels, and learn the rules for optional USDT chess matches.",
+  "Play chess inside Telegram. Practise free with Free Coach and 100 tactics levels, or play optional USDT matches with equal stakes. No download needed.",
   "",
   [
     "telegram chess bot",
@@ -107,7 +107,7 @@ const STAKE_LADDER = [
   { tier: "Blitz Favorite", pace: "3 min Blitz", stake: 5, tag: "Most Popular" },
   { tier: "Arena Contender", pace: "5 min Blitz", stake: 10, tag: "Active Pool" },
   { tier: "High Roller", pace: "10 min Rapid", stake: 25, tag: "Trending" },
-  { tier: "Championship Pot", pace: "3 min Blitz", stake: 50, tag: "+90% Net ROI" },
+  { tier: "Championship Pot", pace: "3 min Blitz", stake: 50, tag: "Win +45 · Lose −50 USDT" },
   { tier: "Grandmaster Table", pace: "15 min Rapid", stake: 100, tag: "VIP Table" },
   { tier: "Whales Arena", pace: "5 min Blitz", stake: 250, tag: "Whales Club" },
 ];
@@ -133,7 +133,8 @@ export default function HomePage() {
         name: SITE.name,
         url: SITE.url,
         logo: `${SITE.url}/brand/w3chess-avatar.png`,
-        sameAs: [SITE.telegramChannel, SITE.telegramChat],
+        description: SITE.description,
+        sameAs: [`https://t.me/${BOT_USERNAME}`, SITE.telegramChannel, SITE.telegramChat],
       },
       {
         "@type": "WebSite",
@@ -474,7 +475,7 @@ export default function HomePage() {
                     <strong>Popular Stakes &amp; Payouts</strong>
                     <Badge tone="accent">Payout examples</Badge>
                   </span>
-                  <span>+90% Net ROI on win</span>
+                  <span>Win: +90% of your stake · Loss: the full stake</span>
                 </div>
                 <div className="home-payout-stream w-full">
                   <AnimatedList delay={2200} maxItems={4}>

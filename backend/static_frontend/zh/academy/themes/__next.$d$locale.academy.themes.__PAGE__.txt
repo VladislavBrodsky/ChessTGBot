@@ -1,22 +1,22 @@
 3:"$Sreact.fragment"
-4:I[33661,[],""]
-5:I[95305,[],""]
-c:I[98164,[],"ClientPageRoot"]
-d:"static/chunks/56d8c321-beb58797958ae935.js"
-e:"static/chunks/2946cbf1-e7292ff48137570c.js"
-f:"static/chunks/9842-3c3eacdc06b88926.js"
-10:"static/chunks/8128-a761e1a6ae2eae64.js"
-11:"static/chunks/5472-ca410acc0d85e36f.js"
-12:"static/chunks/1562-ceeaee9f2b2a3793.js"
-13:"static/chunks/7594-90637318346059b3.js"
-14:"static/chunks/app/%5Blocale%5D/academy/themes/page-7639988d23682d43.js"
-15:I[33462,["83","$d","7054","$e","9842","$f","8128","$10","5472","$11","1562","$12","7594","$13","3291","$14"],"default"]
-18:I[82336,[],"OutletBoundary"]
+4:I[22604,[],""]
+5:I[41018,[],""]
+c:I[22633,[],"ClientPageRoot"]
+d:"static/chunks/b5872a9c-47d009bdfaa62421.js"
+e:"static/chunks/75a5757e-86ab340cd20d6e8f.js"
+f:"static/chunks/3672-6e16bbc52ca8a22f.js"
+10:"static/chunks/6013-6eee0b31216c90c7.js"
+11:"static/chunks/5655-c47d1ad9585beab8.js"
+12:"static/chunks/3146-3f05d1f3dd66455f.js"
+13:"static/chunks/275-200517656bc8b9d9.js"
+14:"static/chunks/app/%5Blocale%5D/academy/themes/page-7fb3224160831eec.js"
+15:I[49959,["2596","$d","3413","$e","3672","$f","6013","$10","5655","$11","3146","$12","275","$13","3291","$14"],"default"]
+18:I[7257,[],"OutletBoundary"]
 19:"$Sreact.suspense"
 1c:"ViewportBoundary"
-1d:I[82336,[],"$1c"]
+1d:I[7257,[],"$1c"]
 1e:"MetadataBoundary"
-1f:I[82336,[],"$1e"]
+1f:I[7257,[],"$1e"]
 7:X
 7:C
 8:X
@@ -24,7 +24,7 @@ b:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[["$",
 9:[["children",{"s":"themes","h":96,"d":{"r":["$","$3","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]]}],"p":"$@a","v":"$7","s":"$8"},"c":"$Qb"}]]
 2:[["children",{"s":"academy","h":64,"d":{"r":["$","$3","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]]}],"p":"$@6","v":"$7","s":"$8"},"c":"$Q9"}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"zh","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L1d",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","$L1f",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$19",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}]]}]}],null]}],null]}],"p":"$@20","v":null,"s":"$8"}},"a":"$@21","u":"$@22","b":"OIMAz7RcHqWpdtStgBQUz"}
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L1d",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","$L1f",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$19",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}],["$","meta","2",{"name":"robots","content":"noindex, follow"}]]}]}],null]}],null]}],"p":"$@20","v":null,"s":"$8"}},"a":"$@21","u":"$@22","b":"lV8CqkRE-SmtsFAtNLToF"}
 16:{}
 17:"$b:0:1:d:r:props:children:0:props:serverProvidedParams:params"
 1a:null

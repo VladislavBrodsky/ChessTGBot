@@ -3,13 +3,17 @@ import { Footer } from "@/components/Footer";
 import { CreativeStudio } from "@/components/creatives/CreativeStudio";
 import { pageMetadata } from "@/lib/seo";
 
-export const metadata = pageMetadata(
-  "Creatives Studio — Build Web3Chess Campaign Graphics",
-  "Create branded Web3Chess graphics for square, portrait, story, and wide canvases. Edit the words, place 3D chess artwork, and export a full-size PNG.",
-  "/CREATIVES",
-  ["Web3Chess creative studio", "chess social media graphics", "chess campaign canvas"],
-  "https://web3chess.online/opengraph-image",
-);
+// Internal campaign-graphics tool: reachable by link, kept out of search results and the sitemap.
+export const metadata = {
+  ...pageMetadata(
+    "Creatives Studio — Build Web3Chess Campaign Graphics",
+    "Create branded Web3Chess graphics for square, portrait, story, and wide canvases. Edit the words, place 3D chess artwork, and export a full-size PNG.",
+    "/CREATIVES",
+    ["Web3Chess creative studio", "chess social media graphics", "chess campaign canvas"],
+    "https://web3chess.online/opengraph-image",
+  ),
+  robots: { index: false, follow: true },
+};
 
 export default function CreativesPage() {
   return (

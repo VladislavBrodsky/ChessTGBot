@@ -16,6 +16,9 @@ import { ToastProvider } from "@/context/ToastContext";
 export const metadata: Metadata = {
     title: { default: "Web3Chess", template: "%s · Web3Chess" },
     description: "Chess in Telegram: play real-time games, train with puzzles and follow your daily goals.",
+    // The app is a signed-in client; web3chess.online is the indexable site. Without this,
+    // Google indexed thin app screens (/en/academy, /zh/marketplace) that competed with it.
+    robots: { index: false, follow: true },
 };
 
 export const viewport = {

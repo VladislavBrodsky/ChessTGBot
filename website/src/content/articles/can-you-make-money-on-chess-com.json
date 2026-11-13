@@ -6,10 +6,10 @@
   "metaDescription": "Can you make money playing chess online? Compare Chess.com titled prize pools with skill-based crypto wager arenas for everyday players.",
   "category": "Chess Culture",
   "author": {
-    "name": "Viktor Vance",
-    "role": "Speed Chess Strategist",
-    "avatar": "/avatars/avatar-03.jpg",
-    "kind": "Person"
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
   "updatedAt": "2026-10-29",
@@ -23,7 +23,7 @@
   "content": [
     {
       "type": "paragraph",
-      "text": "Every competitive chess player has wondered: is it possible to monetize the thousands of hours poured into tactical puzzles and speed chess duels? On dominant legacy platforms, the answer for 99.9% of players is a firm no."
+      "text": "Every competitive chess player has wondered: is it possible to monetize the thousands of hours poured into tactical puzzles and speed chess duels? On dominant legacy platforms, the answer for almost every player is no."
     },
     {
       "type": "heading",

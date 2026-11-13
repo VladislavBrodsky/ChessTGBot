@@ -91,7 +91,7 @@ export function WagerDemo() {
             <dt className="flex flex-wrap items-center justify-between gap-2 text-caption font-medium text-fg-muted">
               Winner claims (95% of pot)
               <span className="rounded-full border border-line bg-inset px-2.5 py-0.5 text-caption font-bold text-fg">
-                +90% Net ROI
+                +90% of stake on a win
               </span>
             </dt>
             <dd
