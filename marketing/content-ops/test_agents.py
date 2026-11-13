@@ -1,11 +1,13 @@
 """Tests for the Multi-Agent Content and Marketing Engine."""
 from __future__ import annotations
 
+import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
+from pipeline import queue
 from agents import (
     CmoAgent,
     ScraperAgent,
@@ -25,9 +27,9 @@ class TestAgents(unittest.TestCase):
         from pipeline import queue
         import shutil
         for day in ("2099-01-01", "2099-01-02"):
-            test_dir = queue.QUEUE / day
-            if test_dir.exists():
-                shutil.rmtree(test_dir, ignore_errors=True)
+            for test_dir in (queue.QUEUE / day, queue.QUEUE / "_archive" / day):  # batches archive stale-plan drafts
+                if test_dir.exists():
+                    shutil.rmtree(test_dir, ignore_errors=True)
 
     def setUp(self):
         self.orchestrator = ContentEngineOrchestrator(
@@ -102,7 +104,8 @@ class TestAgents(unittest.TestCase):
         self.assertEqual(result["status"], "success")
         self.assertTrue(result["qa_summary"]["telegram_passed"])
         self.assertTrue(result["qa_summary"]["article_passed"])
-        self.assertEqual(result["telegram_post"]["status"], "approved")
+        # review mode: the pipeline drafts, a person approves
+        self.assertEqual(result["telegram_post"]["status"], "approved" if queue.CONFIG["mode"]["telegram"] == "auto" else "draft")
 
     def test_x_single_post_and_qa(self):
         post = self.orchestrator.copywriter.draft_x_single_post(
@@ -412,8 +415,37 @@ class TestAgents(unittest.TestCase):
     def test_viral_telegram_daily_batch(self):
         batch = self.orchestrator.generate_telegram_daily_batch(target_date=date(2099, 1, 1), render_images=False)
         self.assertEqual(batch["status"], "success")
-        self.assertEqual(batch["posts_created"], 6)
+        self.assertEqual(batch["posts_created"], len(queue.CONFIG["telegram"]["slots_utc"]))
         self.assertTrue(all(p["qa_passed"] for p in batch["posts"]))
+
+    def test_telegram_batch_builds_one_post_per_configured_slot(self):
+        plan = {"slots_utc": ["09:30", "15:30"], "formats": ["tactics", "academy_lesson"]}
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, "QUEUE", Path(directory)), \
+                patch.dict(queue.CONFIG["telegram"], plan):
+            batch = self.orchestrator.generate_telegram_daily_batch(target_date=date(2099, 1, 2), render_images=False)
+            self.assertEqual([p["id"] for p in batch["posts"]], ["2099-01-02-tg-1", "2099-01-02-tg-2"])
+            self.assertEqual([p["scheduled_at"] for p in batch["posts"]], ["2099-01-02T09:30:00Z", "2099-01-02T15:30:00Z"])
+            self.assertEqual([p["category"] for p in batch["posts"]], ["Tactics", "Academy"])
+            self.assertEqual(sorted(f.name for f in (Path(directory) / "2099-01-02").glob("*.json")),
+                             ["2099-01-02-tg-1.json", "2099-01-02-tg-2.json"])
+
+    def test_every_legacy_telegram_format_still_builds(self):
+        from agents.orchestrator import LEGACY_TG_FORMATS
+        plan = {"slots_utc": ["06:30", "09:30", "12:30", "15:30", "18:30", "21:30"], "formats": list(LEGACY_TG_FORMATS)}
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, "QUEUE", Path(directory)), \
+                patch.dict(queue.CONFIG["telegram"], plan):
+            batch = self.orchestrator.generate_telegram_daily_batch(target_date=date(2099, 1, 3), render_images=False)
+        self.assertEqual(batch["posts_created"], 6)
+        self.assertTrue(all(p["qa_passed"] for p in batch["posts"]), batch["posts"])
+
+    def test_telegram_formats_must_match_the_slots(self):
+        from agents.orchestrator import telegram_formats
+        with patch.dict(queue.CONFIG["telegram"], {"slots_utc": ["09:30", "15:30"], "formats": ["tactics"]}):
+            with self.assertRaisesRegex(ValueError, "1 entries but telegram.slots_utc has 2"):
+                telegram_formats()
+        with patch.dict(queue.CONFIG["telegram"], {"slots_utc": ["09:30"], "formats": ["giveaway"]}):
+            with self.assertRaisesRegex(ValueError, "unknown telegram.formats: giveaway"):
+                telegram_formats()
 
     def test_viral_youtube_breakdowns(self):
         from pipeline.idea_bank import VIRAL_YOUTUBE_VAULT

@@ -1,0 +1,92 @@
+{
+  "id": "2026-10-25-tg-4",
+  "kind": "telegram",
+  "date": "2026-10-25",
+  "category": "Academy",
+  "format": "news",
+  "hook": "An active knight in the center out-evaluates a passive rook on the rim",
+  "cta": "academy",
+  "text": "<b>An active knight in the center out-evaluates a passive rook on the rim</b>\n\nMaterial count is deceptive in 3-minute blitz. Piece mobility wins games.\n\nKeep pieces pointing at the enemy king and control open outposts.\n\nSharpen your piece activity in our free Academy.",
+  "status": "draft",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "creative": {
+    "template": "tip",
+    "size": "square",
+    "tag": "Pro Tip: Piece Activity",
+    "headline": "PIECE ACTIVITY\n*MASTER PATTERN*",
+    "subhead": "Three candidate moves before any capture",
+    "cta_label": "Open Academy",
+    "steps": [
+      "Scan every check first",
+      "List all direct captures",
+      "Calculate forcing threats"
+    ],
+    "footer": "Free structured lessons inside Web3Chess Academy.",
+    "studio": {
+      "version": 1,
+      "name": "2026-10-25-tg-4",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Pro Tip: Piece Activity",
+      "title": "PIECE ACTIVITY MASTER PATTERN",
+      "subtitle": "Three candidate moves before any capture",
+      "proofs": [
+        "Scan every check first",
+        "List all direct captures",
+        "Calculate forcing threats"
+      ],
+      "proofIcons": [
+        "graduation-cap",
+        "strategy",
+        "book-open-text"
+      ],
+      "cta": "Open Academy",
+      "urlLabel": "web3chess.online",
+      "note": "Free structured lessons inside Web3Chess Academy",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "academy",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "scheduled_at": "2026-10-25T15:30:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-24T16:48:26Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-25/2026-10-25-tg-4.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
+    "images": 1
+  },
+  "cmo_review": {
+    "content": "f31687c86fa72060",
+    "canvas": "9ceba1b8b490",
+    "approved": false,
+    "issues": [
+      "hook already ran in 2026-10-21-tg-4 within 7 days"
+    ],
+    "viral_score": 85,
+    "at": "2026-10-24T17:14:48Z"
+  },
+  "updated_at": "2026-10-24T17:14:51Z"
+}

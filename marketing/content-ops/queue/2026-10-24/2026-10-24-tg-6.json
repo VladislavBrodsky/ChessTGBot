@@ -7,7 +7,7 @@
   "hook": "Before a USDT match, check these three numbers",
   "cta": "rules",
   "text": "<b>Before a USDT match, check these three numbers</b>\n\nChoose the stake, confirm the displayed payout, and check the time control before matching. A 5 USDT selection is only an example; the selector shows the available options.\n\nUSDT matches are for adults (18+) where permitted. You can lose your stake.",
-  "status": "draft",
+  "status": "approved",
   "sources": [
     {
       "kind": "own",
@@ -73,7 +73,17 @@
   "render": {
     "ok": true,
     "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-6.png"
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-6.png",
+  "approval": {
+    "by": "human:grandmaestro",
+    "at": "2026-10-24T17:10:01Z",
+    "content": "ab4fd8fd25cefceb",
+    "canvas": "9ceba1b8b490"
+  },
+  "approved_by": "human:grandmaestro",
+  "updated_at": "2026-10-24T17:10:01Z"
 }

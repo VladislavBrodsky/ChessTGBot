@@ -6,11 +6,11 @@ and Publisher agents into a high-performance content engine for Web3Chess (web3c
 from __future__ import annotations
 
 import json
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .cmo import CmoAgent, StrategicDirective
+from .cmo import CmoAgent, StrategicDirective, DATE_BADGE
 from .scraper import ScraperAgent
 from .audit import AuditAgent
 from .planner import PlannerAgent
@@ -19,6 +19,13 @@ from .smm_copywriter import SmmCopywriterAgent
 from .qa_compliance import QaComplianceAgent
 from .publisher import PublisherAgent
 from pipeline import queue, brand, renderer
+
+
+def _settle(entry: Dict[str, Any], channel: str) -> Dict[str, Any]:
+    """Review mode leaves a QA-passed post as a draft for a person; only auto mode lets the pipeline mark it approved."""
+    if queue.CONFIG["mode"][channel] == "auto":
+        return queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+    return queue.set_status(entry, "draft")
 
 
 def _render_and_gate(post: Dict[str, Any]) -> bool:
@@ -47,6 +54,26 @@ def _render_and_gate(post: Dict[str, Any]) -> bool:
     post["qa"] = qa_result
     post["status"] = "rejected"
     return False
+
+
+# Formats of the old fixed six-slot day, in slot order: used when config.json predates `telegram.formats`.
+# Statuses that record a send (or one a person must reconcile): never archived or rebuilt when the plan changes.
+SENT_OR_SENDING = ("published", "publishing", "failed")
+LEGACY_TG_FORMATS = ("tactics", "opening_trap", "mystery_drop", "academy_lesson", "friend_duel", "match_setup")
+
+
+def telegram_formats(known=None) -> List[str]:
+    """The post format for each configured Telegram slot. Fails loudly when the two lists drift apart, so a config
+    edit can never silently drop or invent a slot."""
+    cfg = queue.CONFIG["telegram"]
+    slots = cfg["slots_utc"]
+    formats = list(cfg.get("formats") or LEGACY_TG_FORMATS[:len(slots)])
+    if len(formats) != len(slots):
+        raise ValueError(f"telegram.formats has {len(formats)} entries but telegram.slots_utc has {len(slots)}")
+    unknown = sorted(set(formats) - set(known or LEGACY_TG_FORMATS))
+    if unknown:
+        raise ValueError(f"unknown telegram.formats: {', '.join(unknown)}")
+    return formats
 
 
 class ContentEngineOrchestrator:
@@ -133,7 +160,7 @@ class ContentEngineOrchestrator:
             if k in {"hook", "text", "cta", "creative", "chess", "sources", "format", "reveal", "category"}
         })
         entry["qa"] = {**qa_result, "checked_at": queue.iso(queue.utcnow())}
-        queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+        _settle(entry, "telegram")
         queue.save(entry)
 
         # 5. Draft and stage the paired high-converting Blog article for web3chess.online
@@ -466,9 +493,9 @@ class ContentEngineOrchestrator:
             entry = queue.load(slot_id) if queue.path_for(slot_id).exists() else post
             entry.update({k: v for k, v in post.items() if k in {"hook", "text", "cta", "creative", "chess", "sources", "format", "reveal", "category"}})
             entry["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
-            queue.set_status(entry, "approved", approved_by="cmo_orchestrator")
+            _settle(entry, "telegram")
             queue.save(entry)
-            tg_results.append({"id": slot_id, "hook": post["hook"], "status": "approved"})
+            tg_results.append({"id": slot_id, "hook": post["hook"], "status": entry["status"]})
 
         # -------------------------------------------------------------
         # 2. THE 5 BLOG ARTICLES FOR AUMERA.TOP
@@ -901,9 +928,9 @@ class ContentEngineOrchestrator:
         }
 
     def generate_telegram_daily_batch(self, target_date: Optional[date] = None, render_images: bool = True) -> Dict[str, Any]:
-        """Generates, verifies, renders, and stages 8 daily Telegram posts spaced every 3 hours.
-        
-        Six reviewed Telegram slots follow pipeline/config.json, three hours apart.
+        """Generates, verifies, renders, and stages one Telegram post per configured slot.
+
+        Slots (`telegram.slots_utc`) and the post format for each (`telegram.formats`) come from pipeline/config.json.
         Each post requires original chess or product value and passes QA before review.
         """
         d = target_date or self.plan_date
@@ -1199,39 +1226,26 @@ class ContentEngineOrchestrator:
             fallback["hook"] = f"{fallback['hook']} ({date_badge})"
             return fallback
 
-        # 1. TG-1: Tactics Interactive Academy Drill
-        t1_spec = _pick_tg_unique(tg_tactics_pool, 0)
-        p1 = self.copywriter.draft_interactive_academy_drill(
-            slot_id=f"{d_str}-tg-1",
-            fen=t1_spec["fen"],
-            solution=t1_spec["solution"],
-            tactic_name=t1_spec["tactic_name"],
-            claim=t1_spec["claim"],
-            hook=t1_spec["hook"],
-            body=t1_spec["body"],
-        )
-        p1["scheduled_at"] = f"{d_str}T{slots_utc[0]}:00Z"
+        # One builder per post format; `telegram.formats` in pipeline/config.json picks the format for each slot.
+        def _tactics(slot_id: str) -> Dict[str, Any]:
+            spec = _pick_tg_unique(tg_tactics_pool, 0)
+            return self.copywriter.draft_interactive_academy_drill(
+                slot_id=slot_id, fen=spec["fen"], solution=spec["solution"], tactic_name=spec["tactic_name"],
+                claim=spec["claim"], hook=spec["hook"], body=spec["body"],
+            )
 
-        # 2. TG-2: Opening Trap Refutation (Academy)
-        t2_spec = _pick_tg_unique(tg_traps_pool, 1)
-        p2 = self.copywriter.draft_opening_trap_telegram_post(
-            slot_id=f"{d_str}-tg-2",
-            trap_name=t2_spec["trap_name"],
-            hook=t2_spec["hook"],
-            body=t2_spec["body"],
-            fen=t2_spec["fen"],
-            solution=t2_spec["solution"],
-        )
-        p2["scheduled_at"] = f"{d_str}T{slots_utc[1]}:00Z"
+        def _opening_trap(slot_id: str) -> Dict[str, Any]:
+            spec = _pick_tg_unique(tg_traps_pool, 1)
+            return self.copywriter.draft_opening_trap_telegram_post(
+                slot_id=slot_id, trap_name=spec["trap_name"], hook=spec["hook"], body=spec["body"],
+                fen=spec["fen"], solution=spec["solution"],
+            )
 
-        # 3. TG-3: Mystery Vault Drop
-        p3 = self.copywriter.draft_mystery_box_drop(
-            slot_id=f"{d_str}-tg-3",
-            box_tier="Epic" if d.weekday() % 2 == 0 else "Legendary",
-        )
-        p3["scheduled_at"] = f"{d_str}T{slots_utc[2]}:00Z"
+        def _mystery_drop(slot_id: str) -> Dict[str, Any]:
+            return self.copywriter.draft_mystery_box_drop(
+                slot_id=slot_id, box_tier="Epic" if d.weekday() % 2 == 0 else "Legendary",
+            )
 
-        # 4. TG-4: Academy Pro Tip
         academy_topics = [
             ("Candidate Moves", "Stop looking for the best move before you calculate all forcing checks",
              "In 3-minute blitz, players jump at the first plausible recapture.\n\n"
@@ -1253,36 +1267,39 @@ class ContentEngineOrchestrator:
              "A rook behind a passed pawn controls the entire promotion file.\n\n"
              "Master practical endgame technique in the Web3Chess Academy."),
         ]
-        topic_spec = academy_topics[d.weekday() % len(academy_topics)]
-        p4 = self.copywriter.draft_academy_lesson_telegram_post(
-            slot_id=f"{d_str}-tg-4",
-            topic=topic_spec[0],
-            hook=topic_spec[1],
-            body=topic_spec[2],
-        )
-        p4["scheduled_at"] = f"{d_str}T{slots_utc[3]}:00Z"
 
-        # 5. TG-5: 1-Tap Viral Friend Duel
-        p5 = self.copywriter.draft_viral_friend_duel(
-            slot_id=f"{d_str}-tg-5",
-        )
-        p5["scheduled_at"] = f"{d_str}T{slots_utc[4]}:00Z"
+        def _academy_lesson(slot_id: str) -> Dict[str, Any]:
+            topic, hook, body = academy_topics[d.weekday() % len(academy_topics)]
+            return self.copywriter.draft_academy_lesson_telegram_post(slot_id=slot_id, topic=topic, hook=hook, body=body)
 
-        # 6. TG-6: evergreen, factual match setup explainer
-        p6 = self.copywriter.draft_fomo_arena_alert(
-            slot_id=f"{d_str}-tg-6",
-            tournament_name="Competitive match setup",
-            start_time_utc="18:00 UTC",
-            minutes_remaining=15,
-            wager_entry=5,
-        )
-        p6["scheduled_at"] = f"{d_str}T{slots_utc[5]}:00Z"
+        def _friend_duel(slot_id: str) -> Dict[str, Any]:
+            return self.copywriter.draft_viral_friend_duel(slot_id=slot_id)
 
-        posts = [p1, p2, p3, p4, p5, p6]
+        def _match_setup(slot_id: str) -> Dict[str, Any]:  # evergreen, factual match setup explainer
+            return self.copywriter.draft_fomo_arena_alert(
+                slot_id=slot_id, tournament_name="Competitive match setup", start_time_utc="18:00 UTC",
+                minutes_remaining=15, wager_entry=5,
+            )
+
+        builders = {"tactics": _tactics, "opening_trap": _opening_trap, "mystery_drop": _mystery_drop,
+                    "academy_lesson": _academy_lesson, "friend_duel": _friend_duel, "match_setup": _match_setup}
+        formats = telegram_formats(builders)
+        posts = []
+        for idx, (hhmm, fmt) in enumerate(zip(slots_utc, formats), start=1):
+            post = builders[fmt](f"{d_str}-tg-{idx}")
+            post["scheduled_at"] = f"{d_str}T{hhmm}:00Z"
+            posts.append(post)
+
+        from pipeline import hygiene  # local: keeps the module's import block untouched
 
         for p in posts:
-            if queue.path_for(p["id"]).exists() and queue.load(p["id"]).get("status") != "planned":
-                existing = queue.load(p["id"])
+            existing = queue.load(p["id"]) if queue.path_for(p["id"]).exists() else None
+            if (existing and existing.get("status") not in SENT_OR_SENDING and existing.get("status") != "planned"
+                    and not hygiene.in_current_plan(existing)):
+                # The slot plan changed (time or format) since this draft was made: archive it and build the slot afresh.
+                hygiene.archive(existing, "slot plan changed; rebuilt for the current plan")
+                existing = None
+            if existing and existing.get("status") != "planned":
                 if render_images and existing.get("creative") and not (existing.get("render") or {}).get("ok"):
                     _render_and_gate(existing)
                     queue.save(existing)
@@ -1326,18 +1343,16 @@ class ContentEngineOrchestrator:
         """Generate six distinct, QA-gated X drafts at configured three-hour slots."""
         d = target_date or self.plan_date
         d_str = d.isoformat()
-        date_badge = d.strftime("%b %d")
         results: List[Dict[str, Any]] = []
 
-        # Collect already-published or queued hooks/texts from other dates to guarantee zero X 403 duplicates
+        # Reserve recent committed/drafted hooks; abandoned old drafts do not exhaust the pool.
         used_hooks = set()
-        used_texts = set()
         for existing in queue.all_entries():
-            if existing.get("kind") == "x_post" and existing.get("date") != d_str:
+            if (existing.get("kind") == "x_post"
+                    and (d - timedelta(days=7)).isoformat() <= existing.get("date", "") <= d_str
+                    and existing.get("status") in {"draft", "approved", "publishing", "published"}):
                 if existing.get("hook"):
-                    used_hooks.add(existing["hook"].strip().lower())
-                if existing.get("text"):
-                    used_texts.add(existing["text"].strip().lower())
+                    used_hooks.add(DATE_BADGE.sub("", existing["hook"]).strip().lower())
 
         tactics_pool = [
             {
@@ -1541,8 +1556,8 @@ class ContentEngineOrchestrator:
                 "category": "Tactical Matrix",
                 "hook": "Checks. Captures. Threats. The 2-second scan that stops blunders",
                 "body": (
-                    "Grandmasters do not calculate 15 moves deep in blitz.\n\n"
-                    "They run a strict 3-step forcing filter before touching any piece."
+                    "Before committing to a move, check your opponent's forcing replies.\n\n"
+                    "Look for checks, captures, and threats on both sides."
                 ),
                 "reply": (
                     "Drill candidate move selection in the free Web3Chess Academy:\n"
@@ -1646,16 +1661,14 @@ class ContentEngineOrchestrator:
             },
         ]
 
-        def _pick_unique(pool: List[Dict[str, Any]], seed_offset: int) -> Dict[str, Any]:
+        def _pick_unique(pool: List[Dict[str, Any]], seed_offset: int) -> Optional[Dict[str, Any]]:
             start_idx = (d.toordinal() + seed_offset) % len(pool)
             for i in range(len(pool)):
                 candidate = dict(pool[(start_idx + i) % len(pool)])
                 if candidate["hook"].strip().lower() not in used_hooks:
                     return candidate
-            # Fallback if entire pool has been used across history: stamp with date badge
-            fallback = dict(pool[start_idx])
-            fallback["hook"] = f"{fallback['hook']} ({date_badge})"
-            return fallback
+            # Leave exhausted slots for the editorial desk instead of disguising repeats.
+            return None
 
         slots = queue.CONFIG["x"]["slots_utc"]
         families = ("tactics", "culture", "arena", "culture", "tactics", "arena")
@@ -1673,6 +1686,9 @@ class ContentEngineOrchestrator:
                                 "image": existing.get("image"), "preserved": True})
                 continue
             spec = _pick_unique(pools[family], idx)
+            if spec is None:
+                results.append({"id": post_id, "qa_passed": False, "reason": "fresh editorial copy needed"})
+                continue
             used_hooks.add(spec["hook"].strip().lower())
             kwargs = {"slot_id": post_id, "category": "Tactics" if family == "tactics" else spec["category"],
                       "hook": spec["hook"], "body": spec["body"], "docked_reply_text": spec["reply"], "size": "square"}
@@ -1748,7 +1764,7 @@ class ContentEngineOrchestrator:
             raise RuntimeError(f"X Thread QA failed: {qa_res['issues']}")
 
         thread["qa"] = {**qa_res, "checked_at": queue.iso(queue.utcnow())}
-        thread["status"] = "approved"
+        _settle(thread, "x")
         queue.save(thread)
 
         return {

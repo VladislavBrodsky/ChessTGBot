@@ -658,37 +658,8 @@ class SmmCopywriterAgent:
         canvas_size = "square"
         clean_hook = hook.strip().rstrip(".")
         
-        # Inject 2-3 targeted algorithmic hashtags based on category & audience preset
-        hashtags_to_add = []
-        if "#" not in body:
-            if category in brand.AUDIENCE_TAG_PRESETS:
-                hashtags_to_add = brand.AUDIENCE_TAG_PRESETS[category]
-            else:
-                cat_key = category.lower()
-                if "tactic" in cat_key:
-                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("tactics", ["#Chess", "#SpeedChess", "#ChessTactics"])
-                elif "culture" in cat_key or "news" in cat_key:
-                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("culture", ["#Chess", "#BlitzChess", "#ChessLife"])
-                elif "psycholog" in cat_key:
-                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("psychology", ["#Chess", "#MentalStamina", "#CognitivePerformance"])
-                elif "debate" in cat_key:
-                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("debate", ["#Chess", "#SpeedChess", "#ChessCommunity"])
-                elif "engineer" in cat_key:
-                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("engineering", ["#TelegramMiniApp", "#WebSockets", "#BuildInPublic"])
-                elif "arena" in cat_key or "rule" in cat_key or "wager" in cat_key:
-                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("arena", ["#SkillGaming", "#iGaming", "#PvP"])
-                elif "product" in cat_key or "telegram" in cat_key:
-                    hashtags_to_add = brand.VIRAL_HASHTAG_CLUSTERS.get("telegram", ["#TelegramGaming", "#TON", "#Web3Gaming"])
-                else:
-                    hashtags_to_add = ["#Chess", "#SpeedChess"]
-
-        tag_str = " ".join(hashtags_to_add[:3])
-        if tag_str and tag_str not in body:
-            body_with_tags = f"{body.strip()}\n\n{tag_str}".strip()
-        else:
-            body_with_tags = body.strip()
-
-        post_text = f"{clean_hook}\n\n{body_with_tags}".strip()
+        # Keep native copy intact; tags are an editorial choice, not an automatic suffix.
+        post_text = f"{clean_hook}\n\n{body.strip()}".strip()
         post: Dict[str, Any] = {
             "id": slot_id,
             "kind": "x_post",
@@ -793,7 +764,7 @@ class SmmCopywriterAgent:
                 "size": canvas_size,
                 "tag": "Pattern Matrix",
                 "headline": "4 MOTIFS\n*ONE FAST SCAN*",
-                "subhead": "The core tactical patterns every 1500+ player must master",
+                "subhead": "Scan checks, captures, and threats",
                 "cta_label": "Save Pattern",
                 "panels": [
                     {"label": "Deflection", "text": "Remove defender", "piece": "R"},

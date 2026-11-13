@@ -7,7 +7,7 @@
   "hook": "White to move. Black's king is boxed in (Oct 21)",
   "cta": "academy_app",
   "text": "<b>White to move. Black's king is boxed in (Oct 21)</b>\n\nBlack's king on g8 has three pawns acting as walls.\nOne rook move delivers instant checkmate.\n\n❤ Ra8#   🔥 Rd1   👏 f4\nAnswer reveals in 6 hours.",
-  "status": "approved",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -47,7 +47,11 @@
       "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
       "cta_label": "Solve More in Academy"
     },
-    "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-viral-1.reveal.png"
+    "sent": {
+      "at": "2026-10-24T07:03:53Z",
+      "claimed": true,
+      "message_id": 92
+    }
   },
   "slot": 1,
   "scheduled_at": "2026-10-21T07:30:00Z",
@@ -57,10 +61,15 @@
     "gate_summary": "Passed all deterministic Telegram gates",
     "checked_at": "2026-10-21T12:09:40Z"
   },
-  "image": "marketing/content-ops/queue/2026-10-21/2026-10-21-tg-viral-1.png",
   "render": {
     "ok": true,
     "skipped": false,
     "images": 2
-  }
+  },
+  "updated_at": "2026-10-24T01:03:09Z",
+  "published": {
+    "message_id": 90,
+    "at": "2026-10-24T01:03:09Z"
+  },
+  "media_cleaned": true
 }

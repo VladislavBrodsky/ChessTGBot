@@ -7,7 +7,7 @@ Rendering failures reject the entry; a missing Node/Chromium install leaves it u
 post an entry that has a `creative` but no image (it never silently falls back to text only).
 """
 from __future__ import annotations
-import json, os, re, shutil, subprocess, tempfile
+import hashlib, json, os, re, shutil, subprocess, tempfile
 from pathlib import Path
 from urllib.parse import urlsplit
 from . import brand, queue
@@ -34,6 +34,41 @@ STUDIO_CONTEXT = {
     "Player Spotlight": ("sculpture", ["trophy", "strategy", "users-three"]),
     "Leaderboard": ("sculpture", ["trophy", "users-three", "target"]),
 }
+
+
+def exact_board(post: dict) -> bool:
+    """True when the creative shows a checked chess position and so must stay on the exact board renderer."""
+    spec = post.get("creative") or {}
+    return bool(spec.get("fen") or post.get("chess") or spec.get("template") in FEN_TEMPLATES)
+
+
+_canvas_memo: tuple[tuple, str] | None = None
+
+def _canvas_files() -> list[Path]:
+    """Every file that decides what a rendered canvas looks like: both engines, their templates, fonts and art."""
+    root = queue.ROOT
+    files = [queue.HERE / "studio-render.mjs", Path(__file__).resolve(), ENGINE / "render.mjs", ENGINE / "pieces.json",
+             root / "website/src/components/creatives/model.ts", root / "website/src/components/creatives/render.ts",
+             root / "website/src/icons/generated.ts", root / "website/src/lib/chess-art.ts"]
+    for folder in (ENGINE / "templates", ENGINE / "lib", root / "website/public/fonts", root / "website/public/illustrations",
+                   root / "website/public/brand"):
+        files += sorted(p for p in folder.rglob("*") if p.is_file())
+    return [p for p in files if p.exists()]
+
+def canvas_version() -> str:
+    """Short digest of the canvas sources. Approvals and rendered images carry it, so improving a template makes every
+    image drawn with the old one stale instead of letting it ship. Re-hashes only when a file's size or mtime moves."""
+    global _canvas_memo
+    files = _canvas_files()
+    signature = tuple((str(p), p.stat().st_mtime_ns, p.stat().st_size) for p in files)
+    if _canvas_memo and _canvas_memo[0] == signature:
+        return _canvas_memo[1]
+    digest = hashlib.sha256()
+    for p in files:
+        name = p.relative_to(queue.ROOT) if p.is_relative_to(queue.ROOT) else p
+        digest.update(str(name).encode() + b"\0" + p.read_bytes())
+    _canvas_memo = (signature, digest.hexdigest()[:12])
+    return _canvas_memo[1]
 
 
 def _clean_ui(value: object, limit: int) -> str:
@@ -92,7 +127,7 @@ def prepare(post: dict) -> dict:
     spec = post.get("creative")
     if not isinstance(spec, dict) or spec.get("studio") is not None:
         return post
-    if spec.get("fen") or post.get("chess") or spec.get("template") in FEN_TEMPLATES:
+    if exact_board(post):
         return post
     category = post.get("category") or spec.get("category") or "Product"
     art, icons = STUDIO_CONTEXT.get(category, ("sculpture", ["target", "strategy", "users-three"]))
@@ -182,7 +217,7 @@ def _check_studio(post: dict, spec: dict, project: object) -> list[str]:
     if not isinstance(project, dict):
         return ["creative.studio must be an editable Studio project object"]
     issues = []
-    if spec.get("fen") or post.get("chess") or spec.get("template") in FEN_TEMPLATES:
+    if exact_board(post):
         issues.append("a chess-position creative must use the exact board renderer, not Studio art")
     fmt = project.get("format")
     if not isinstance(fmt, str) or fmt not in STUDIO_FORMATS or (project.get("width"), project.get("height")) != STUDIO_FORMATS.get(fmt):
@@ -314,7 +349,10 @@ def render(entry: dict, timeout: int = 120) -> dict:
     if reveal and reveal["ok"]: entry["reveal"]["image"] = reveal["image"]
     elif reveal: entry["reveal"].pop("image", None)
     failed = [r for r in results.values() if not r["ok"]]
-    entry["render"] = {"ok": not failed, "skipped": False, **({"error": failed[0]["error"]} if failed else {"images": len(results)})}
+    # `engine` and `canvas` say which renderer drew the pixels and with which template sources; the dispatch gate
+    # refuses any image whose stamp is missing (drawn before stamping existed) or no longer matches the sources.
+    entry["render"] = {"ok": not failed, "skipped": False, "engine": "board" if exact_board(entry) else "studio",
+                       "canvas": canvas_version(), **({"error": failed[0]["error"]} if failed else {"images": len(results)})}
     import gc
     gc.collect()
     return entry

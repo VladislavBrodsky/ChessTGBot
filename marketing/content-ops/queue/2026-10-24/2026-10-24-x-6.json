@@ -5,7 +5,7 @@
   "category": "Product",
   "hook": "Fair play starts with server-validated legal moves",
   "text": "Fair play starts with server-validated legal moves\n\nThe game service validates legal moves and keeps the authoritative match state.\n\nUSDT matches: adults (18+) only. You can lose your stake.\n\n#TelegramGaming #TON #Web3Gaming",
-  "status": "draft",
+  "status": "approved",
   "sources": [
     {
       "kind": "own",
@@ -75,7 +75,17 @@
   "render": {
     "ok": true,
     "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-6.png"
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-6.png",
+  "approval": {
+    "by": "human:grandmaestro",
+    "at": "2026-10-24T17:10:01Z",
+    "content": "5f40ed325b815ff4",
+    "canvas": "9ceba1b8b490"
+  },
+  "approved_by": "human:grandmaestro",
+  "updated_at": "2026-10-24T17:10:01Z"
 }

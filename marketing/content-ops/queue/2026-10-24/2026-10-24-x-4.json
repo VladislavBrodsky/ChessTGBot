@@ -5,7 +5,7 @@
   "category": "Engineering",
   "hook": "Why the server, not the browser, owns the match clock",
   "text": "Why the server, not the browser, owns the match clock\n\nA browser can pause or reconnect. The server keeps the authoritative match state and validates each move.\n\nThat makes reconnect and timing behavior easier to audit.\n\n#TelegramMiniApp #WebSockets #BuildInPublic",
-  "status": "draft",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -75,7 +75,28 @@
   "render": {
     "ok": true,
     "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-x-4.png"
+  "approval": {
+    "by": "human:grandmaestro",
+    "at": "2026-10-24T17:10:01Z",
+    "content": "3aa802ce633682dc",
+    "canvas": "9ceba1b8b490"
+  },
+  "approved_by": "human:grandmaestro",
+  "updated_at": "2026-10-24T17:14:59Z",
+  "x_receipt": {
+    "success": true,
+    "root_id": "2114042984228434098",
+    "reply_id": "2114042986833101052",
+    "root_url": "https://x.com/defi_ambassador/status/2114042984228434098"
+  },
+  "published": {
+    "root_id": "2114042984228434098",
+    "root_url": "https://x.com/defi_ambassador/status/2114042984228434098",
+    "at": "2026-10-24T17:14:59Z"
+  },
+  "media_cleaned": true
 }

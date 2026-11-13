@@ -1,0 +1,90 @@
+{
+  "id": "2026-10-25-x-4",
+  "kind": "x_post",
+  "date": "2026-10-25",
+  "category": "Tactical Matrix",
+  "hook": "Checks. Captures. Threats. The 2-second scan that stops blunders (Oct 25)",
+  "text": "Checks. Captures. Threats. The 2-second scan that stops blunders (Oct 25)\n\nGrandmasters do not calculate 15 moves deep in blitz.\n\nThey run a strict 3-step forcing filter before touching any piece.\n\n#Chess #SpeedChess #ChessTactics",
+  "status": "rejected",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Pattern Matrix",
+    "headline": "4 MOTIFS\n*ONE FAST SCAN*",
+    "subhead": "The core tactical patterns every 1500+ player must master",
+    "cta_label": "Save Pattern",
+    "panels": [
+      {
+        "label": "Deflection",
+        "text": "Remove defender",
+        "piece": "R"
+      },
+      {
+        "label": "Fork / Pin",
+        "text": "Double attack geometry",
+        "piece": "N"
+      }
+    ],
+    "studio": {
+      "version": 1,
+      "name": "2026-10-25-x-4",
+      "format": "square",
+      "width": 1080,
+      "height": 1080,
+      "theme": "canvas",
+      "tag": "Pattern Matrix",
+      "title": "4 MOTIFS ONE FAST SCAN",
+      "subtitle": "The core tactical patterns every 1500+ player must master",
+      "proofs": [
+        "Deflection: Remove defender",
+        "Fork / Pin: Double attack geometry",
+        "Check every check"
+      ],
+      "proofIcons": [
+        "target",
+        "strategy",
+        "book-open-text"
+      ],
+      "cta": "Save Pattern",
+      "urlLabel": "web3chess.online",
+      "note": "Web3Chess editorial",
+      "layers": [
+        {
+          "id": "art-1",
+          "kind": "academy",
+          "x": 0.75,
+          "y": 0.56,
+          "size": 0.43,
+          "rotation": 0
+        }
+      ]
+    },
+    "studio_source": "pipeline-v1"
+  },
+  "docked_reply": {
+    "text": "Drill candidate move selection in the free Web3Chess Academy:\nhttps://web3chess.online/academy",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-25T15:00:00Z",
+  "qa": {
+    "passed": false,
+    "issues": [
+      "creative render failed: file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:95\n      throw new Error([...errors, ...blocked.map((url) => `Blocked request: ${url}`), ...result.warnings].join('; '));\n            ^\n\nError: Subtitle is too long for this size. Shorten it before export.\n    at"
+    ],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-24T16:50:38Z"
+  },
+  "render": {
+    "ok": false,
+    "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
+    "error": "file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:95\n      throw new Error([...errors, ...blocked.map((url) => `Blocked request: ${url}`), ...result.warnings].join('; '));\n            ^\n\nError: Subtitle is too long for this size. Shorten it before export.\n    at Object.render (file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:95:13)\n    at async file:///Users/grandmaestro/Developer/ChessTGBot/marketing/content-ops/studio-render.mjs:146:20\n\nNode.js v24.12.0"
+  }
+}

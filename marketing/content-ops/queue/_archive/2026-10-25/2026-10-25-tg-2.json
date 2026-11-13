@@ -1,0 +1,58 @@
+{
+  "id": "2026-10-25-tg-2",
+  "kind": "telegram",
+  "date": "2026-10-25",
+  "category": "Openings",
+  "format": "trap",
+  "hook": "Why 2000-Elo players still fall for the Stafford Gambit in 3-minute blitz (Oct 25)",
+  "cta": "academy",
+  "text": "<b>Why 2000-Elo players still fall for the Stafford Gambit in 3-minute blitz (Oct 25)</b>\n\nGreedy opening captures without king development lead directly to devastating tactical refutations.\nWhen White takes on e5 and holds material, Black's pieces unleash a devastating barrage.\n\nSpot the master refutation: neutralize the dark-squared bishop early and castle immediately.",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online/academy"
+    }
+  ],
+  "chess": {
+    "fen": "r1bBk2r/ppp2ppp/2p5/2b5/4n3/3P4/PPP2PPP/RN1QKB1R b KQkq - 0 7",
+    "solution": [
+      "Bxf2+",
+      "Ke2",
+      "Bg4#"
+    ],
+    "claim": "line_legal"
+  },
+  "creative": {
+    "template": "trap",
+    "size": "square",
+    "tag": "Trap Breakdown: Stafford Gambit",
+    "headline": "STAFFORD GAMBIT\n*PUNISH GREED*",
+    "subhead": "Can you spot the refutation line?",
+    "fen": "r1bBk2r/ppp2ppp/2p5/2b5/4n3/3P4/PPP2PPP/RN1QKB1R b KQkq - 0 7",
+    "moves": [
+      "Bxf2+",
+      "Ke2",
+      "Bg4#"
+    ],
+    "cta_label": "Learn in Academy",
+    "footer": "Study full lines in the Web3Chess Academy."
+  },
+  "scheduled_at": "2026-10-25T03:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic Telegram gates",
+    "checked_at": "2026-10-24T00:02:26Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-25/2026-10-25-tg-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "archived": {
+    "reason": "not part of the current six-slot plan",
+    "at": "2026-10-24T16:45:41Z"
+  }
+}

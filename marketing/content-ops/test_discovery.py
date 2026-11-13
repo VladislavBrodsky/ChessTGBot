@@ -62,15 +62,23 @@ class DiscoveryTests(unittest.TestCase):
         self.assertIsNone(rows[0]['views'])
         self.assertEqual(rows[0]['permalink'], post['permalink'])
 
-    def test_schedule_is_six_slots_three_hours_apart(self):
+    def test_schedule_slots_are_spaced_and_rotation_matches(self):
         cfg = json.loads((Path(__file__).parent / 'pipeline/config.json').read_text())
         for channel in ('telegram', 'x'):
             times = cfg[channel]['slots_utc']
-            self.assertEqual(len(times), 6)
+            self.assertGreaterEqual(len(times), 1)
             minutes = [int(t[:2]) * 60 + int(t[3:]) for t in times]
-            self.assertEqual([b - a for a, b in zip(minutes, minutes[1:])], [180] * 5)
-            self.assertTrue(all(len(rotation) == 6 for rotation in cfg[channel]['rotation'].values()))
-            self.assertEqual(cfg['mode'][channel], 'review')
+            self.assertTrue(all(b - a >= cfg[channel]['min_gap_hours'] * 60 for a, b in zip(minutes, minutes[1:])))
+            self.assertTrue(all(len(rotation) == len(times) for rotation in cfg[channel]['rotation'].values()))
+            self.assertIn(cfg['mode'][channel], ('review', 'cmo'))  # never 'auto': an approval record is always required
+
+    def test_current_cadence_is_two_telegram_posts_and_x_paused(self):
+        # 2026-11-12 audit: 61 subscribers saw 10-16 views/post at 1-2 posts/day and 4-6 at 6/day; X API credits ran out.
+        cfg = json.loads((Path(__file__).parent / 'pipeline/config.json').read_text())
+        self.assertEqual(cfg['telegram']['formats'], ['tactics', 'academy_lesson'])
+        self.assertEqual(len(cfg['telegram']['slots_utc']), 2)
+        self.assertIs(cfg['x']['enabled'], False)
+        self.assertEqual(len(cfg['x']['slots_utc']), 6)  # kept, so resuming X is one flag
 
     def test_x_batch_fills_planned_slots_without_rewriting_reviewed_post(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(queue, 'QUEUE', Path(directory)):
@@ -85,6 +93,17 @@ class DiscoveryTests(unittest.TestCase):
             agent.generate_x_daily_batch(render_images=False)
             self.assertEqual(queue.load(first['id'])['status'], 'approved')
             self.assertEqual(len(queue.all_entries(kind='x_post', day=str(day))), 6)
+
+    def test_x_pool_exhaustion_holds_slots_without_date_badges(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, 'QUEUE', Path(directory)):
+            agent = ContentEngineOrchestrator(plan_date=date(2099, 5, 1))
+            batches = [agent.generate_x_daily_batch(target_date=date(2099, 5, day)) for day in range(1, 8)]
+            entries = queue.all_entries(kind='x_post')
+            hooks = [entry['hook'] for entry in entries]
+            self.assertEqual(len(hooks), len(set(hooks)))
+            self.assertFalse(any('(May ' in hook for hook in hooks))
+            self.assertTrue(any(item.get('reason') == 'fresh editorial copy needed'
+                                for batch in batches for item in batch['posts']))
 
     def test_x_brief_uses_x_contract_and_marks_research_unverified(self):
         entry = {'id': '2099-05-01-x-1', 'kind': 'x_post', 'date': '2099-05-01', 'slot': 1,
@@ -104,7 +123,8 @@ class DiscoveryTests(unittest.TestCase):
 
     def test_daily_caps_block_approved_backlog(self):
         now = datetime(2099, 5, 1, 22, tzinfo=timezone.utc)
-        with tempfile.TemporaryDirectory() as directory, patch.object(queue, 'QUEUE', Path(directory)), patch.object(queue, 'utcnow', return_value=now):
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, 'QUEUE', Path(directory)), patch.object(queue, 'utcnow', return_value=now), \
+                patch.dict(queue.CONFIG['x'], {'enabled': True}):
             for kind, prefix in (('telegram', 'tg'), ('x_post', 'x')):
                 for slot in range(1, 7):
                     queue.save({'id': f'2099-05-01-{prefix}-{slot}', 'date': '2099-05-01', 'kind': kind,
@@ -116,7 +136,8 @@ class DiscoveryTests(unittest.TestCase):
 
     def test_stale_approved_posts_are_not_sent_as_catchup(self):
         now = datetime(2099, 5, 1, 18, tzinfo=timezone.utc)
-        with tempfile.TemporaryDirectory() as directory, patch.object(queue, 'QUEUE', Path(directory)), patch.object(queue, 'utcnow', return_value=now):
+        with tempfile.TemporaryDirectory() as directory, patch.object(queue, 'QUEUE', Path(directory)), patch.object(queue, 'utcnow', return_value=now), \
+                patch.dict(queue.CONFIG['x'], {'enabled': True}):
             for kind, prefix in (('telegram', 'tg'), ('x_post', 'x')):
                 queue.save({'id': f'2099-05-01-{prefix}-1', 'date': '2099-05-01', 'kind': kind,
                             'status': 'approved', 'scheduled_at': '2099-05-01T06:00:00Z', 'text': 'Chess'})

@@ -1,78 +1,50 @@
 {
   "version": 3,
   "mode": {
-    "telegram": "review",
+    "telegram": "cmo",
     "site": "review",
-    "x": "review"
+    "x": "cmo"
   },
-  "note": "Six reviewable posts per channel per day, spaced three hours during active UTC windows. Publication requires approved queue entries and a trusted runner.",
+  "note": "Telegram: two posts a day (an engine-checked puzzle, then an Academy lesson); `telegram.formats` names the post built for each slot in `slots_utc` and must have the same length. X is paused (`x.enabled: false`) while its API credits are depleted (402 since 2026-11-04); its six slots stay configured, set enabled to true to resume. In cmo mode the CMO agent approves each draft (agents/cmo.py release_review) and the dispatch gate re-checks it; articles stay in human review. Publication requires approved queue entries and a trusted runner.",
   "telegram": {
     "channel_env": "W3_TG_CHANNEL",
     "token_env": "W3_TG_BOT_TOKEN",
     "slots_utc": [
-      "06:30",
       "09:30",
-      "12:30",
-      "15:30",
-      "18:30",
-      "21:30"
+      "15:30"
+    ],
+    "formats": [
+      "tactics",
+      "academy_lesson"
     ],
     "rotation": {
       "mon": [
         "Tactics",
-        "Chess News",
-        "Academy",
-        "Openings",
-        "Chess Culture",
-        "Product"
+        "Academy"
       ],
       "tue": [
         "Tactics",
-        "Chess News",
-        "Openings",
-        "Academy",
-        "Chess Culture",
-        "Chess Culture"
+        "Academy"
       ],
       "wed": [
         "Tactics",
-        "Chess News",
-        "Academy",
-        "Openings",
-        "Chess Culture",
-        "Match Rules"
+        "Academy"
       ],
       "thu": [
         "Tactics",
-        "Chess News",
-        "Openings",
-        "Academy",
-        "Chess Culture",
-        "Product"
+        "Academy"
       ],
       "fri": [
         "Tactics",
-        "Chess News",
-        "Academy",
-        "Openings",
-        "Chess Culture",
-        "Chess Culture"
+        "Academy"
       ],
       "sat": [
         "Tactics",
-        "Chess News",
-        "Openings",
-        "Academy",
-        "Chess Culture",
-        "Tactics"
+        "Academy"
       ],
       "sun": [
         "Tactics",
-        "Chess News",
-        "Academy",
-        "Openings",
-        "Chess Culture",
-        "Chess News"
+        "Academy"
       ]
     },
     "creative_defaults": {
@@ -108,6 +80,7 @@
     "min_gap_hours": 3
   },
   "x": {
+    "enabled": false,
     "slots_utc": [
       "06:00",
       "09:00",
@@ -254,5 +227,14 @@
       ]
     },
     "cover_template": "cover"
+  },
+  "ai_writer": {
+    "enabled": true,
+    "channels": [
+      "telegram"
+    ],
+    "max_per_tick": 1,
+    "max_per_day": 12,
+    "note": "pipeline/ai_refill.py rewrites empty, QA-failed or recycled-refused slots via pipeline/writer.py (needs ANTHROPIC_API_KEY in marketing/.env). X is left out while its API credits are depleted (since 2026-11-04); add x to channels after a top-up."
   }
 }

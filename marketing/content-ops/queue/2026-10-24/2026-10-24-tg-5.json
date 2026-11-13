@@ -7,7 +7,7 @@
   "hook": "Challenge a Friend: Settle your chess debates in 3 minutes",
   "cta": "duel_friend",
   "text": "⚡ <b>Stop arguing about chess in group chats.</b>\n\nShare Web3Chess with a friend or group chat. Both players can open the Mini App, choose how to play, and meet on the board.\n\nPick the same time control before you start the challenge.",
-  "status": "draft",
+  "status": "approved",
   "sources": [
     {
       "kind": "own",
@@ -74,7 +74,17 @@
   "render": {
     "ok": true,
     "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-5.png"
+  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-5.png",
+  "approval": {
+    "by": "human:grandmaestro",
+    "at": "2026-10-24T17:10:01Z",
+    "content": "a343bb8e3336922e",
+    "canvas": "9ceba1b8b490"
+  },
+  "approved_by": "human:grandmaestro",
+  "updated_at": "2026-10-24T17:10:01Z"
 }

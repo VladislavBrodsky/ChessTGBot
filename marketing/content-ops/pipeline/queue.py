@@ -11,6 +11,11 @@ CONFIG = json.loads((Path(__file__).resolve().parent / "config.json").read_text(
 STATUSES = ("planned", "draft", "approved", "publishing", "rejected", "published", "failed")
 WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
+def enabled(channel: str) -> bool:
+    """False when a channel is paused in config.json (`"enabled": false`): no drafts are prepared and nothing is
+    dispatched. Its slots stay configured so switching it back on is one flag."""
+    return CONFIG.get(channel, {}).get("enabled", True) is not False
+
 def utcnow() -> datetime:
     return datetime.now(timezone.utc)
 

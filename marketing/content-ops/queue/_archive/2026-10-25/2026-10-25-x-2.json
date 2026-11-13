@@ -1,0 +1,56 @@
+{
+  "id": "2026-10-25-x-2",
+  "kind": "x_post",
+  "date": "2026-10-25",
+  "category": "Psychology",
+  "hook": "Bank 25 seconds in the first 10 moves or lose the scramble (Oct 25)",
+  "text": "Bank 25 seconds in the first 10 moves or lose the scramble (Oct 25)\n\nIn 3+0 blitz, each move averages 4.5 seconds.\n\nBurning 40 seconds on move 8 guarantees panic when the endgame gets sharp.\n\n#Chess #MentalStamina #CognitivePerformance",
+  "status": "approved",
+  "sources": [
+    {
+      "kind": "own",
+      "url": "https://web3chess.online"
+    }
+  ],
+  "creative": {
+    "template": "culture",
+    "size": "square",
+    "tag": "Neuro Performance",
+    "headline": "THE 6-SECOND TILT\n*ADRENALINE OVERLOAD*",
+    "subhead": "How tunnel vision destroys calculation in speed chess",
+    "cta_label": "Test Instincts",
+    "panels": [
+      {
+        "label": "State 1",
+        "text": "Calculation collapses",
+        "piece": "N"
+      },
+      {
+        "label": "State 2",
+        "text": "Subconscious instinct takes over",
+        "piece": "R"
+      }
+    ]
+  },
+  "docked_reply": {
+    "text": "Time on the digital clock is a physical piece on the board.\n\nPlay zero-lag 3+0 blitz inside Telegram:\nhttps://t.me/chess_matbot/Web3Chess",
+    "delay_seconds": 30
+  },
+  "scheduled_at": "2026-10-25T08:00:00Z",
+  "qa": {
+    "passed": true,
+    "issues": [],
+    "gate_summary": "Passed all deterministic X post gates",
+    "checked_at": "2026-10-24T00:01:07Z"
+  },
+  "image": "marketing/content-ops/queue/2026-10-25/2026-10-25-x-2.png",
+  "render": {
+    "ok": true,
+    "skipped": false,
+    "images": 1
+  },
+  "archived": {
+    "reason": "not part of the current six-slot plan",
+    "at": "2026-10-24T16:45:41Z"
+  }
+}

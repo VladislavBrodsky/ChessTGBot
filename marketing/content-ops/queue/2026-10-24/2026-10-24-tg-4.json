@@ -7,7 +7,7 @@
   "hook": "Ask what your opponent wants before you calculate your own attack",
   "cta": "academy",
   "text": "<b>Ask what your opponent wants before you calculate your own attack</b>\n\nIn blitz scrambles, overlooked counter-threats often decide the position.\n\nBefore committing an attacking piece, take 1 second to spot their best reply.\n\nStudy prophylactic thinking inside the Web3Chess Academy.",
-  "status": "draft",
+  "status": "published",
   "sources": [
     {
       "kind": "own",
@@ -73,7 +73,21 @@
   "render": {
     "ok": true,
     "skipped": false,
+    "engine": "studio",
+    "canvas": "9ceba1b8b490",
     "images": 1
   },
-  "image": "marketing/content-ops/queue/2026-10-24/2026-10-24-tg-4.png"
+  "approval": {
+    "by": "human:grandmaestro",
+    "at": "2026-10-24T17:10:01Z",
+    "content": "ee516cb420138472",
+    "canvas": "9ceba1b8b490"
+  },
+  "approved_by": "human:grandmaestro",
+  "updated_at": "2026-10-24T17:15:03Z",
+  "published": {
+    "message_id": 96,
+    "at": "2026-10-24T17:15:03Z"
+  },
+  "media_cleaned": true
 }
