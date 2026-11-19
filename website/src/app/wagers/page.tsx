@@ -14,6 +14,7 @@ import { Icon } from "@/icons";
 import { SettlementBreakdown } from "@/components/SettlementBreakdown";
 import { pageMetadata, jsonLd, breadcrumbData, faqData } from "@/lib/seo";
 import { LARGEST_LOBBY_PRESET, MATCH_RULES } from "@/lib/config";
+import { RelatedGuides } from "@/components/RelatedGuides";
 
 const STAKE_RANGE = `${MATCH_RULES.minStakeUsdt} to ${LARGEST_LOBBY_PRESET.toLocaleString("en-US")} USDT`;
 
@@ -222,6 +223,10 @@ export default function WagersPage() {
             </div>
           </div>
         </section>
+        <RelatedGuides
+          heading="Read before you stake"
+          slugs={["bankroll-management-for-competitive-chess-wagers", "can-you-make-money-on-chess-com", "how-to-monetize-your-chess-rating-legally"]}
+        />
       </main>
       <Footer />
       <QrDock />

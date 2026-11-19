@@ -13,6 +13,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { AcademyRoadmap } from "@/components/AcademyRoadmap";
 import { pageMetadata, jsonLd, breadcrumbData, faqData } from "@/lib/seo";
+import { RelatedGuides } from "@/components/RelatedGuides";
 
 const ACADEMY_FAQS = [
   {
@@ -257,6 +258,10 @@ export default function AcademyPage() {
             </div>
           </div>
         </section>
+        <RelatedGuides
+          heading="Tactics to study next"
+          slugs={["top-5-opening-traps-every-beginner-falls-into", "how-to-calculate-candidate-moves-in-30-seconds", "the-art-of-the-in-between-move-zwischenzug"]}
+        />
       </main>
       <Footer />
       <QrDock />

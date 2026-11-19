@@ -13,6 +13,7 @@ import { qrSvg } from "@/lib/qr";
 import { telegramLink, SITE, WEBSITE_CAMPAIGNS } from "@/lib/config";
 import { BRAND } from "@/lib/brand";
 import { pageMetadata, jsonLd, softwareApplicationData, breadcrumbData, faqData } from "@/lib/seo";
+import { RelatedGuides } from "@/components/RelatedGuides";
 
 const PLAY_FAQS = [
   {
@@ -228,6 +229,11 @@ export default async function PlayPage() {
         <p className="mt-6 max-w-[65ch] text-caption text-fg-muted">
           Free Coach practice and tactics puzzles are 100% free with unlimited games. Real-money matches use optional USDT stakes on GRAM rails. Wager matches are 18+ where available; play responsibly.
         </p>
+        <RelatedGuides
+          className="mt-12 sm:mt-16"
+          heading="New to chess in Telegram?"
+          slugs={["why-telegram-mini-apps-for-chess", "the-future-of-chess-in-the-telegram-ecosystem", "free-ai-chess-practice-three-game-threat-drill"]}
+        />
       </main>
     </div>
     {/* Site-wide links: without them /play was a dead end for crawlers (3 internal links). */}

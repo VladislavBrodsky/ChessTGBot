@@ -14,6 +14,7 @@ import { Icon } from "@/icons";
 import { pageMetadata, jsonLd, breadcrumbData, faqData, howToData } from "@/lib/seo";
 import { ArenaBento } from "@/components/ArenaBento";
 import { AppScreens } from "@/components/AppScreens";
+import { RelatedGuides } from "@/components/RelatedGuides";
 
 export const metadata = pageMetadata(
   "How to Play Chess in Telegram: Match Guide",
@@ -199,6 +200,10 @@ export default function HowItWorksPage() {
             </div>
           </div>
         </section>
+        <RelatedGuides
+          heading="Guides for your first matches"
+          slugs={["why-telegram-mini-apps-for-chess", "free-ai-chess-practice-three-game-threat-drill", "bankroll-management-for-competitive-chess-wagers"]}
+        />
       </main>
       <Footer />
       <QrDock />
