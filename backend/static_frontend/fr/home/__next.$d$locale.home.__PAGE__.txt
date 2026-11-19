@@ -16,7 +16,7 @@ f:"static/chunks/5655-c47d1ad9585beab8.js"
 16:"static/chunks/4754-5fb7ca28e8dd5367.js"
 17:"static/chunks/2828-386dc6066f613b04.js"
 18:"static/chunks/1806-12c0c39745bf23af.js"
-19:"static/chunks/app/%5Blocale%5D/home/page-4d91cba31e06c629.js"
+19:"static/chunks/app/%5Blocale%5D/home/page-4541fdbd9d2cb162.js"
 1a:I[67907,["2596","$b","3413","$c","3672","$d","6013","$e","5655","$f","8600","$10","1693","$11","9206","$12","992","$13","3146","$14","275","$15","4754","$16","2828","$17","1806","$18","6121","$19"],"default"]
 1d:I[7257,[],"OutletBoundary"]
 1e:"$Sreact.suspense"
@@ -30,7 +30,7 @@ f:"static/chunks/5655-c47d1ad9585beab8.js"
 9:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[["$","$La",null,{"Component":"$1a","serverProvidedParams":{"searchParams":{},"params":{"locale":"fr"},"promises":["$@1b","$@1c"]}}],null,["$","$L1d",null,{"children":["$","$1e",null,{"name":"Next.MetadataOutlet","children":"$@1f"}]}]]}],"p":"$@20","v":null,"s":"$8"}}]]
 2:[["children",{"s":"home","h":64,"d":{"r":["$","$3","c",{"children":[null,["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]]}],"p":"$@6","v":"$7","s":"$8"},"c":"$Q9"}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"fr","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L22",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","$L24",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$1e",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}],["$","meta","2",{"name":"robots","content":"noindex, follow"}]]}]}],null]}],null]}],"p":"$@25","v":null,"s":"$8"}},"a":"$@26","u":"$@27","b":"lV8CqkRE-SmtsFAtNLToF"}
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L22",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}]]}],["$","$L24",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$1e",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Web3Chess"}],["$","meta","1",{"name":"description","content":"Chess in Telegram: play real-time games, train with puzzles and follow your daily goals."}],["$","meta","2",{"name":"robots","content":"noindex, follow"}]]}]}],null]}],null]}],"p":"$@25","v":null,"s":"$8"}},"a":"$@26","u":"$@27","b":"OOps-4JU7cNFcteTBMDB6"}
 1b:{}
 1c:"$9:0:1:d:r:props:children:0:props:serverProvidedParams:params"
 1f:null

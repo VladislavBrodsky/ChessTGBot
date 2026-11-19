@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { getSocket } from "@/lib/socket";
 import { Chess } from "chess.js";
 import { logClientMessage } from "@/lib/logger";
-import { computeStockfishMove } from "@/lib/stockfishEngine";
 
 export const useGameSocket = (gameId: string) => {
     const [fen, setFen] = useState("start");
@@ -18,7 +17,6 @@ export const useGameSocket = (gameId: string) => {
     useEffect(() => {
         const socket = getSocket();
         setIsConnected(socket.connected);
-        let botMoveTimeout: any = null;
         let joinAttempts = 0;
         const requestState = (force = false) => {
             if (!socket.connected || awaitingConsentRef.current || (!force && gameStateRef.current) || joinAttempts >= 8) return;
@@ -60,36 +58,11 @@ export const useGameSocket = (gameId: string) => {
                 );
             }
 
-            // Client-side Bot move calculation
-            const isBotTurn = !data.is_game_over && (
-                (data.black_player_id === -1 && data.turn === 'b') ||
-                (data.white_player_id === -1 && data.turn === 'w')
-            );
-            if (isBotTurn) {
-                if (botMoveTimeout) {
-                    clearTimeout(botMoveTimeout);
-                }
-                
-                // Natural human thinking delay (1.6s - 3.1s) so it feels like a real human ponder
-                const humanThinkDelay = Math.floor(Math.random() * 1500) + 1600;
-                botMoveTimeout = setTimeout(async () => {
-                    try {
-                        const botUci = await computeStockfishMove(data.fen, data.difficulty || "hard");
-                        if (botUci) {
-                            console.log("Opponent computed move:", botUci);
-                            logClientMessage("INFO", `Opponent computed move: ${botUci} for game ${gameId}`);
-                            
-                            socket.emit("make_move", {
-                                game_id: gameId,
-                                uci: botUci
-                            });
-                        }
-                    } catch {
-                        console.error("Stockfish/Minimax execution failed entirely");
-                        logClientMessage("WARNING", `Stockfish/Minimax failed entirely`);
-                    }
-                }, humanThinkDelay);
-            }
+            // The Free Coach's replies are computed and applied by the server
+            // (socket_events._schedule_coach_turn, also re-armed on join_room).
+            // The client must never send the coach's move: by the time a
+            // client-side engine answered, the server had already moved, so the
+            // late emit was rejected and flashed "Illegal move" at the player.
         };
 
         const onError = (data: { message: string }) => {
@@ -135,9 +108,6 @@ export const useGameSocket = (gameId: string) => {
             socket.off("game_state", onGameState);
             socket.off("wager_consent_required", onWagerConsent);
             socket.off("error", onError);
-            if (botMoveTimeout) {
-                clearTimeout(botMoveTimeout);
-            }
         };
     }, [gameId, chess]);
 
