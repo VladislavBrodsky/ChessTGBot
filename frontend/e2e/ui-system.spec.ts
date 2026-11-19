@@ -90,7 +90,8 @@ test('language dialog traps focus, closes with Escape, and restores the trigger'
   await trigger.click();
   const dialog = page.getByRole('dialog', { name: /Choose language/i });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('button', { name: 'Close dialog' })).toBeFocused();
+  // The panel itself takes focus on open (no focus ring on the X); Tab/Shift+Tab cycle the controls.
+  await expect(dialog).toBeFocused();
   await page.keyboard.press('Shift+Tab');
   await expect(dialog.getByRole('button', { name: '日本語' })).toBeFocused();
   await page.keyboard.press('Tab');
