@@ -1,7 +1,7 @@
-:HL["/_next/static/css/6047e5a874b4e451.css","style"]
+:HL["/_next/static/css/948b6504e6915abf.css","style"]
 :HL["/_next/static/css/4373ddba3d9abc4d.css","style"]
 4:[["children",{"s":"__PAGE__","h":160}]]
 3:[["children",{"s":"achievements","h":96,"c":"$Q4"}]]
 2:[["children",{"s":"academy","h":64,"c":"$Q3"}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"ru","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"b":"OOps-4JU7cNFcteTBMDB6","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"lYlOlSPErzBH6RVwSit6L","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
