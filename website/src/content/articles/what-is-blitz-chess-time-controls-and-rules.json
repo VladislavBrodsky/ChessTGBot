@@ -1,0 +1,186 @@
+{
+  "slug": "what-is-blitz-chess-time-controls-and-rules",
+  "title": "What Is Blitz Chess? Time Controls and Rules Explained",
+  "subtitle": "How 3+2 and 5+0 work, where blitz ends and rapid or bullet begins, and the clock rules that decide fast games.",
+  "excerpt": "Blitz chess gives each player 10 minutes or less. Learn how to read time controls, how FIDE's formula works, and how blitz differs from rapid and bullet.",
+  "metaDescription": "What is blitz chess? Each player gets 10 minutes or less. How 3+2 works, the FIDE formula, blitz vs rapid vs bullet, and the rules on running out of time.",
+  "category": "Match Rules",
+  "author": {
+    "name": "Web3Chess Editorial",
+    "role": "Chess and product editorial",
+    "avatar": "",
+    "kind": "Organization"
+  },
+  "publishedAt": "2026-11-19",
+  "readingTime": "5 min read",
+  "takeaways": [
+    "Blitz means 10 minutes or less per player, counting the starting time plus 60 times any increment.",
+    "3+2 means three minutes each plus two seconds per move. By FIDE's formula it counts as 5 minutes, so it is blitz.",
+    "A 10-minute game is blitz under FIDE's rules but rapid on Chess.com and Lichess.",
+    "Running out of time loses, unless your opponent cannot possibly checkmate. Then the game is a draw.",
+    "Bullet is under 3 minutes and rapid is over 10. Each format trains different skills."
+  ],
+  "content": [
+    {
+      "type": "paragraph",
+      "text": "Blitz chess is chess played fast: each player has 10 minutes or less on the clock for the whole game. That covers most of it, but the details decide real games. A 3+2 clock is blitz, a 10-minute game is blitz under FIDE's rules but rapid on most chess sites, and running out of time does not always mean losing. This guide covers how time controls are written, where blitz ends and rapid or bullet begins, and the clock rules that matter most."
+    },
+    {
+      "type": "heading",
+      "text": "Blitz, bullet, rapid and classical at a glance"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Bullet: less than 3 minutes per player. This is an online category used by Chess.com and Lichess; FIDE's Laws of Chess have no bullet category. The most common bullet control is one minute with no increment.",
+        "Blitz: 10 minutes or less per player under FIDE's rules. Typical blitz controls are 3+0, 3+2 and 5+0.",
+        "Rapid: more than 10 but less than 60 minutes per player under FIDE's rules. Chess.com and Lichess also file 10-minute games under rapid.",
+        "Classical (also called standard): 60 minutes or more per player."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "FIDE measures every time control the same way: the starting time plus 60 times any increment. The 60 stands for a nominal 60-move game, so the formula estimates how much clock each player could use over a long game."
+    },
+    {
+      "type": "heading",
+      "text": "How to read 3+2, 5+0 and other time controls"
+    },
+    {
+      "type": "paragraph",
+      "text": "The first number is the minutes each player starts with. The second is the seconds added after every move, called the increment. So 3+2 means three minutes each, plus two seconds for every move you make. 5+0 means five minutes with nothing added: when your clock reaches zero, your time is up."
+    },
+    {
+      "type": "paragraph",
+      "text": "Clocks can add time in three common ways:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Increment, also called Fischer or bonus time: a fixed amount is added after each move, as long as your time has not already run out.",
+        "Bronstein delay: a fixed amount is added after each move, but never more than the time you spent on that move, so your clock can never grow.",
+        "Simple delay: on each move the clock waits for a fixed period before your main time starts counting down."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "Online blitz usually uses either no increment or a small Fischer increment."
+    },
+    {
+      "type": "heading",
+      "text": "The FIDE formula in practice"
+    },
+    {
+      "type": "paragraph",
+      "text": "Because FIDE counts the increment 60 times, even a small bonus moves a game up quickly. Here are common controls, worked out:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "1+0: 1 minute. Bullet on chess sites; blitz under FIDE, which has no separate bullet category.",
+        "3+0: 3 minutes. Blitz everywhere.",
+        "3+2: 3 minutes plus 60 × 2 seconds, which makes 5 minutes. Blitz.",
+        "5+0: 5 minutes. Blitz.",
+        "5+3: 5 minutes plus 60 × 3 seconds, which makes 8 minutes. Blitz.",
+        "10+0: exactly 10 minutes. Blitz under FIDE, because the limit is 10 minutes or less, but rapid on Chess.com and Lichess.",
+        "10+5: 10 minutes plus 60 × 5 seconds, which makes 15 minutes. Rapid.",
+        "15+10: 15 minutes plus 60 × 10 seconds, which makes 25 minutes. Rapid."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "So if someone asks whether 10-minute chess is blitz or rapid, both answers can be right. Over the board under FIDE's Laws it is blitz; on the big chess sites it is rapid."
+    },
+    {
+      "type": "heading",
+      "text": "Blitz chess rules that decide games"
+    },
+    {
+      "type": "paragraph",
+      "text": "Blitz uses the normal rules of chess. What changes is how the clock and mistakes are handled."
+    },
+    {
+      "type": "subheading",
+      "text": "Running out of time"
+    },
+    {
+      "type": "paragraph",
+      "text": "If your clock reaches zero, you lose, unless your opponent cannot checkmate you by any series of legal moves. In that case the game is a draw. A lone king can never deliver mate, for example, so running out of time against a bare king draws rather than loses."
+    },
+    {
+      "type": "subheading",
+      "text": "Illegal moves over the board"
+    },
+    {
+      "type": "paragraph",
+      "text": "Event regulations can vary, but under FIDE's rapid and blitz rules a completed illegal move is only dealt with if the opponent claims it, or the arbiter steps in, before the opponent makes their next move. The first illegal move gives the opponent extra time; a second completed illegal move by the same player loses the game. If nobody acts in time, the move stands and play continues. Online, the software simply refuses illegal moves."
+    },
+    {
+      "type": "subheading",
+      "text": "Premoves and flagging online"
+    },
+    {
+      "type": "paragraph",
+      "text": "Online blitz adds two habits you will not meet over the board. A premove lets you commit to your next move before your opponent has played, so it is made instantly and uses almost no clock. Flagging means winning because the other player ran out of time. Without an increment, players often keep going in lost or drawn positions to try to win on time, which is called dirty flagging. Our guides to [premove traps](/blog/premove-traps-and-speed-chess-scrambles) and [clock psychology](/blog/digital-clock-psychology-flagging-vs-increment-in-online-blitz) go deeper."
+    },
+    {
+      "type": "heading",
+      "text": "Blitz vs rapid vs bullet: which should you play?"
+    },
+    {
+      "type": "paragraph",
+      "text": "Each speed tests something different, and none is simply better."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Bullet rewards fast hands, premoves and pattern recognition. There is little time to think, so it is the hardest format to learn from.",
+        "Blitz leaves time for a short think in critical moments, but not on every move. Opening knowledge and quick tactics matter, and clock management starts to decide games.",
+        "Rapid gives enough time to calculate, check your opponent's threats and make plans. It is the most forgiving format for learning."
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "If your goal is to improve, rapid games that you review afterwards teach the most, while blitz is good practice for openings and tactical patterns. When you play blitz, a simple routine helps: check the threat, compare candidate moves, and save time for the critical moments. Our guide on [how to get better at blitz chess](/blog/the-3-minute-blitz-blueprint-tactics-time-management) walks through it."
+    },
+    {
+      "type": "heading",
+      "text": "Time controls in Web3Chess"
+    },
+    {
+      "type": "paragraph",
+      "text": "Web3Chess runs inside Telegram, and every game uses a flat clock with no increment. You can choose 1 minute for bullet, 3 or 5 minutes for blitz, 10 minutes (rapid, as on most chess sites), or 15, 30 or 60 minutes for longer games. Quick match offers 3, 5 and 10 minutes. The full clock rules are on the [rules page](/rules)."
+    },
+    {
+      "type": "paragraph",
+      "text": "With no increment, the clock never gives time back, so late in a game a quick, safe move is often worth more than a perfect one. If your clock runs out, you lose unless your opponent cannot checkmate, in which case the game is a draw. You can practise any of these speeds free against Free Coach, the computer opponent, before you play people."
+    },
+    {
+      "type": "callout",
+      "text": "New to fast chess? Start with 5 minutes, not 1. Bullet looks exciting but leaves no time to see threats; 5-minute blitz is fast enough to be fun and slow enough to learn from."
+    }
+  ],
+  "relatedSlugs": [
+    "the-3-minute-blitz-blueprint-tactics-time-management",
+    "digital-clock-psychology-flagging-vs-increment-in-online-blitz",
+    "premove-traps-and-speed-chess-scrambles"
+  ],
+  "sources": [
+    {
+      "title": "FIDE Laws of Chess, Appendices A (Rapid) and B (Blitz), effective 1 January 2023",
+      "url": "https://handbook.fide.com/chapter/E012023"
+    },
+    {
+      "title": "Fast chess: bullet, blitz and rapid (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Fast_chess"
+    },
+    {
+      "title": "Time control: increment, delay and FIDE categories (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Time_control"
+    }
+  ],
+  "cta": {
+    "label": "Practise blitz free with Free Coach",
+    "href": "/play"
+  }
+}

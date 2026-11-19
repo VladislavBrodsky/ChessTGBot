@@ -330,7 +330,7 @@ export default function RulesPage() {
         </section>
         <RelatedGuides
           heading="Rules in practice"
-          slugs={["can-you-castle-if-rook-is-attacked", "the-5-second-pawn-endgame-rules-every-player-needs", "digital-clock-psychology-flagging-vs-increment-in-online-blitz"]}
+          slugs={["what-is-blitz-chess-time-controls-and-rules", "the-5-second-pawn-endgame-rules-every-player-needs", "digital-clock-psychology-flagging-vs-increment-in-online-blitz"]}
         />
       </main>
       <Footer />
