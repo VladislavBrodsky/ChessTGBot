@@ -32,10 +32,10 @@ export function Modal({ isOpen, onClose, title, description, children, className
       initial={animations ? { opacity: 0, scale: 0.98, y: 8 } : false} animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={animations ? { opacity: 0, scale: 0.98, y: 8 } : { opacity: 0 }} transition={{ duration: animations ? 0.24 : 0 }}
       className={`ui-dialog relative z-10 flex w-full ${widths[maxWidth]} flex-col overflow-hidden rounded-3xl border border-brand-border bg-brand-surface shadow-2xl ${className}`}>
-      <div className="shrink-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6">
+      <div className="shrink-0 px-5 pt-5 pb-2.5 sm:px-6 sm:pt-6">
         <DialogHeader title={title} description={description} titleId={titleId} descriptionId={descriptionId} onClose={onClose} showClose={showCloseButton} />
       </div>
-      <div className={`ui-dialog-body min-h-0 overflow-y-auto overscroll-contain px-5 sm:px-6 ${footer ? 'pb-4' : 'pb-5 sm:pb-6'}`}>{children}</div>
+      <div className={`ui-dialog-body min-h-0 overflow-y-auto overscroll-contain px-5 pt-1.5 sm:px-6 ${footer ? 'pb-4' : 'pb-5 sm:pb-6'}`}>{children}</div>
       {footer && <div className="shrink-0 border-t border-brand-border px-5 py-4 sm:px-6">{footer}</div>}
     </motion.div>
   </div>}</AnimatePresence>, document.body);

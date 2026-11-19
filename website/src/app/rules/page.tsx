@@ -13,6 +13,7 @@ import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { pageMetadata, jsonLd, breadcrumbData, faqData, howToData } from "@/lib/seo";
+import { RelatedGuides } from "@/components/RelatedGuides";
 
 export const metadata = pageMetadata(
   "Chess Rules for Beginners: Step-by-Step Guide",
@@ -327,6 +328,10 @@ export default function RulesPage() {
             </div>
           </Card>
         </section>
+        <RelatedGuides
+          heading="Rules in practice"
+          slugs={["can-you-castle-if-rook-is-attacked", "the-5-second-pawn-endgame-rules-every-player-needs", "digital-clock-psychology-flagging-vs-increment-in-online-blitz"]}
+        />
       </main>
       <Footer />
       <QrDock />

@@ -46,7 +46,9 @@ const review = {
 async function route(path, method, requestBody = {}) {
   const now = Date.now();
   if (path.endsWith('/telemetry/log')) return { ok: true };
-  if (path.endsWith('/daily-checkin/status')) return { can_claim: process.env.MOCK_CHECKIN === '1', streak: 3, claimed_today: process.env.MOCK_CHECKIN !== '1' };
+  // Same shape as backend DailyCheckinStatus. MOCK_CHECKIN=1 opens the modal; MOCK_CHECKIN_STREAK picks the current day.
+  if (path.endsWith('/daily-checkin/claim') && method === 'POST') { const streak = Number(process.env.MOCK_CHECKIN_STREAK || 0) + 1; return { status: 'success', message: 'Claimed', xp_granted: [50, 100, 150, 200, 250, 300, 1000][(streak - 1) % 7], new_streak: streak }; }
+  if (path.endsWith('/daily-checkin/status')) return { can_claim_today: process.env.MOCK_CHECKIN === '1', current_streak: Number(process.env.MOCK_CHECKIN_STREAK || 0), last_checkin_date: null, rewards: [50, 100, 150, 200, 250, 300, 1000] };
   if (path.endsWith('/users/sync') || /\/users\/\d+$/.test(path)) return user;
   if (path.endsWith('/wallet/balance')) return { gram_rewards_nano: mockGramRewardsNano.toString(), gram_leaderboard_visible: mockGramVisible, balance: 1250, wallet_address: 'EQDevPreview0000000000000000000000000000000000' };
   if (path.endsWith('/wallet/gram-leaderboard-visibility') && method === 'PUT') {

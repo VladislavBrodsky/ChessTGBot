@@ -1,6 +1,6 @@
-:HL["/_next/static/css/4c55429bb40e2d80.css","style"]
+:HL["/_next/static/css/90f8f1d2c980ef4a.css","style"]
 :HL["/_next/static/css/4373ddba3d9abc4d.css","style"]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":"qr","h":64,"c":"$Q3"}]]
 1:[["children",{"s":{"n":"locale","t":"d","k":"hi","s":["_not-found","_global-error"]},"h":32,"c":"$Q2"}]]
-0:{"b":"prM-nXLbA5hb9eZCEthov","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"ztxEwurWxmGoBUFyqGP_6","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

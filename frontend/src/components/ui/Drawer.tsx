@@ -40,11 +40,11 @@ export function Drawer({ isOpen, onClose, title, description, children, classNam
       transition={animations ? { type: 'spring', damping: 28, stiffness: 300 } : { duration: 0 }}
       style={{ maxHeight: `min(${maxHeight}, calc(100dvh - var(--app-safe-top) - 32px))` }}
       className={`ui-drawer relative z-10 flex w-full max-w-lg flex-col overflow-hidden rounded-t-3xl sm:rounded-3xl border-t border-brand-border bg-brand-surface shadow-2xl ${className}`}>
-      <div className="shrink-0 px-5 pt-4 pb-4">
+      <div className="shrink-0 px-5 pt-4 pb-2.5">
         {showHandle && <div onPointerDown={event => controls.start(event)} className="mx-auto -mt-2 mb-2 flex h-8 w-16 cursor-grab items-center justify-center touch-none" aria-hidden="true"><span className="h-1 w-10 rounded-full bg-brand-muted/40" /></div>}
         <DialogHeader title={title} description={description} titleId={titleId} descriptionId={descriptionId} onClose={onClose} />
       </div>
-      <div className={`ui-dialog-body min-h-0 overflow-y-auto overscroll-contain px-5 space-y-4 ${footer ? 'pb-4' : 'pb-[calc(1.25rem+var(--app-safe-bottom))]'}`}>{children}</div>
+      <div className={`ui-dialog-body min-h-0 overflow-y-auto overscroll-contain px-5 pt-1.5 space-y-4 ${footer ? 'pb-4' : 'pb-[calc(1.25rem+var(--app-safe-bottom))]'}`}>{children}</div>
       {footer && <div className="shrink-0 border-t border-brand-border bg-brand-surface px-5 pt-3 pb-[calc(1.25rem+var(--app-safe-bottom))]">{footer}</div>}
     </motion.div>
   </div>}</AnimatePresence>, document.body);

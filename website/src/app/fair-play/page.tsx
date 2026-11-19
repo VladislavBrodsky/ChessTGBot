@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/icons";
 import { pageMetadata, jsonLd, breadcrumbData, faqData } from "@/lib/seo";
+import { RelatedGuides } from "@/components/RelatedGuides";
 
 const FAIR_PLAY_FAQS = [
   {
@@ -210,6 +211,10 @@ export default function FairPlayPage() {
             </div>
           </Card>
         </section>
+        <RelatedGuides
+          heading="More on fair play"
+          slugs={["fair-play-in-web3-chess", "chess-cheating-scandals-and-stockfish-telemetry", "synchronous-arena-matchmaking-vs-stale-queues"]}
+        />
       </main>
       <Footer />
       <QrDock />

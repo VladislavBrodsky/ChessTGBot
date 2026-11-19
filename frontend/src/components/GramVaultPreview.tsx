@@ -188,7 +188,7 @@ export function GramVaultPreview() {
       >
         <div className="space-y-4 pt-1">
           {/* Hero Banner with Celestial Glow & Floating Vibing GRAM */}
-          <div className="relative overflow-hidden rounded-3xl border border-sky-500/30 bg-gradient-to-b from-sky-950/40 via-brand-surface to-brand-surface p-5 sm:p-6 text-center shadow-[0_0_30px_rgba(56,189,248,0.12)]">
+          <div className="relative overflow-hidden rounded-3xl border border-sky-500/30 bg-gradient-to-b from-sky-950/40 via-brand-surface to-brand-surface p-5 sm:p-6 text-center shadow-[inset_0_0_30px_rgba(56,189,248,0.12)]">
             {/* Concentric ambient atmospheric glows */}
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full bg-sky-500/20 blur-3xl pointer-events-none animate-pulse" />
             <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-36 h-20 rounded-full bg-amber-400/10 blur-2xl pointer-events-none" />

@@ -420,7 +420,12 @@
 
 /* The shell owns safe areas; only the dialog body scrolls. */
 .ui-dialog-header { display: flex; align-items: flex-start; gap: var(--space-gap-stack); min-width: 0; }
-.ui-dialog-body { -webkit-overflow-scrolling: touch; scrollbar-gutter: stable; }
+/* No scrollbar-gutter here: `stable` reserved an empty strip on the right of EVERY dialog body on
+   desktop (classic scrollbars), so body content stopped short of the header and footer edges. A
+   thin scrollbar appears only when the body actually overflows. */
+.ui-dialog-body { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+/* The dialog panel receives initial focus (see useDialog); it is a container, not a control. */
+.ui-dialog:focus, .ui-drawer:focus { outline: none; }
 .ui-drawer-viewport { padding-block-start: calc(16px + var(--app-safe-top)); }
 
 /* Hero metric rows share typography and dividers instead of nesting more hero cards. */
