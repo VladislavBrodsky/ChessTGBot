@@ -357,6 +357,75 @@ async def test_private_wager_join_keeps_stake_if_store_times_out_after_write(soc
     assert [(tx.type, tx.amount) for tx in transactions] == [("game_wager", -BID_CENTS)]
 
 
+async def test_open_challenge_accept_charges_guest_once_and_calls_back_away_creator(socket_server, monkeypatch):
+    """The creator posted an open challenge and closed the app. A guest accepts
+    from the lobby: the guest pays once on consent, the challenge leaves the
+    listing, and the creator gets an escaped Telegram call-back with the extended
+    first-move window."""
+    from app.services import open_challenges
+    from app.services.game_service import GameService
+    from app.services.telegram_bot import TelegramService
+
+    url, factory = socket_server["url"], socket_server["factory"]
+    await _seed_players(factory)
+    sent = []
+
+    async def capture(telegram_id, text):
+        sent.append((telegram_id, text))
+
+    monkeypatch.setattr(TelegramService, "send_notification", capture)
+    game_id = "open_challenge_accept_test"
+    service = GameService()
+    state = await service.create_game(game_id, time_control_seconds=300, bid_amount=BID_CENTS)
+    state.white_player_id = PLAYER_A
+    state.white_username = "E2E-A"
+    state.open_challenge = True
+    state.first_move_grace_seconds = open_challenges.ACCEPTED_FIRST_MOVE_GRACE_SECONDS
+    await service.session_manager.save_game(game_id, state)
+    await open_challenges.publish(service.session_manager, game_id)
+    async with factory() as db:
+        host = (await db.execute(select(User).where(User.telegram_id == PLAYER_A))).scalar_one()
+        host.balance -= BID_CENTS
+        guest = (await db.execute(select(User).where(User.telegram_id == PLAYER_B))).scalar_one()
+        guest.first_name = "<Eve>"
+        db.add(Transaction(user_id=PLAYER_A, type="game_wager", amount=-BID_CENTS,
+                           fee=0, status="completed", reference_id=game_id))
+        await db.commit()
+    assert [c["game_id"] for c in await open_challenges.list_open(service.session_manager, PLAYER_B)] == [game_id]
+
+    guest_client = E2EClient()
+    await guest_client.connect(url, PLAYER_B, "<Eve>", ip="203.0.113.20")
+    try:
+        await guest_client.sio.emit("join_room", {"room": game_id})
+        await asyncio.wait_for(guest_client.wager_consent.get(), WHITE_TIMEOUT)
+        assert sent == []
+        await guest_client.sio.emit("join_room", {"room": game_id, "accept_wager": True})
+        joined = await guest_client.next_state()
+        assert {joined["white_player_id"], joined["black_player_id"]} == {PLAYER_A, PLAYER_B}
+        assert joined["first_move_grace_seconds"] == open_challenges.ACCEPTED_FIRST_MOVE_GRACE_SECONDS
+
+        for _ in range(100):
+            if sent:
+                break
+            await asyncio.sleep(0.05)
+        assert len(sent) == 1
+        creator_id, text = sent[0]
+        assert creator_id == PLAYER_A
+        assert "&lt;Eve&gt;" in text and "<Eve>" not in text
+        assert await open_challenges.list_open(service.session_manager, PLAYER_B) == []
+
+        host_after, guest_after = await _fetch_players(factory)
+        assert host_after.balance == START_BALANCE - BID_CENTS
+        assert guest_after.balance == START_BALANCE - BID_CENTS
+        async with factory() as db:
+            guest_txs = (await db.execute(select(Transaction).where(
+                Transaction.user_id == PLAYER_B, Transaction.reference_id == game_id
+            ))).scalars().all()
+        assert [(tx.type, tx.amount) for tx in guest_txs] == [("game_wager", -BID_CENTS)]
+    finally:
+        await guest_client.sio.disconnect()
+
+
 async def test_two_clients_match_play_checkmate_and_settle(socket_server):
     url, factory = socket_server["url"], socket_server["factory"]
     await _seed_players(factory)

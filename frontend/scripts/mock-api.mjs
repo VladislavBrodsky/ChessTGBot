@@ -87,6 +87,11 @@ async function route(path, method, requestBody = {}) {
   if (path.includes('/leaderboard')) return players;
   if (path.endsWith('/game/active')) return { active_game_id: null };
   if (path.endsWith('/game/lobby-stats')) return { searching: Number(process.env.MOCK_SEARCHING ?? 3), games_24h: Number(process.env.MOCK_GAMES_24H ?? 128), recent: [{ result_type: 'checkmate', elo_gain: 12, ended_at: new Date(now - 4 * 60e3).toISOString() }, { result_type: 'timeout', elo_gain: 9, ended_at: new Date(now - 19 * 60e3).toISOString() }, { result_type: 'resignation', elo_gain: null, ended_at: new Date(now - 52 * 60e3).toISOString() }], counted_at: Math.floor(now / 1000) };
+  // MOCK_OPEN_CHALLENGES=1 lists one of the player's own and one from another player.
+  if (path.endsWith('/game/open-challenges')) return { challenges: process.env.MOCK_OPEN_CHALLENGES ? [
+    { game_id: 'mock-open-own', bid_amount: 100, time_control: 300, creator_name: 'You', creator_elo: 1000, created_at: Math.floor(now / 1000) - 240, expires_at: Math.floor(now / 1000) + 1500, mine: true },
+    { game_id: 'mock-open-1', bid_amount: 200, time_control: 600, creator_name: 'Alexandra Petrovna', creator_elo: 1240, created_at: Math.floor(now / 1000) - 120, expires_at: Math.floor(now / 1000) + 1620, mine: false },
+  ] : [] };
   if (/\/game\/history\/[\w-]+$/.test(path)) return review;
   if (path.includes('/referrals/stats')) return { qualifying_min_moves: 10, gram_rewards_nano: '1000000000', gram_rewarded_referrals: 1, total_referrals: 3, active_referrals: 2, total_earnings_usdt: 1.25, earnings_chart: [] };
   if (path.endsWith('/arena/status')) return {

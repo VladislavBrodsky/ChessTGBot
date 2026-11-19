@@ -50,6 +50,7 @@ async def create_game(
     time_control: int = 600,
     wager: int = 100,
     difficulty: Optional[str] = "medium",
+    open_challenge: bool = False,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -94,9 +95,18 @@ async def create_game(
         state.white_username = current_user.first_name
         state.white_elo = current_user.elo
         state.invite_token = launch.token if launch else None
+        listed = open_challenge and not is_bot_game
+        if listed:
+            from app.services.open_challenges import ACCEPTED_FIRST_MOVE_GRACE_SECONDS
+            state.open_challenge = True
+            state.first_move_grace_seconds = ACCEPTED_FIRST_MOVE_GRACE_SECONDS
         from app.services.engagement_campaign import ensure_enrolled
         await ensure_enrolled(db, current_user)
         await service.session_manager.save_game(game_id, state)
+        if listed:
+            # Before the debit commits: a challenge nobody can see must not cost anything.
+            from app.services.open_challenges import publish
+            await publish(service.session_manager, game_id)
         await db.commit()
     except Exception:
         await db.rollback()
@@ -252,6 +262,15 @@ async def get_lobby_stats(
     from app.services.lobby_stats import lobby_stats_service
 
     return await lobby_stats_service.get(db, current_user.telegram_id)
+
+
+@router.get("/open-challenges", dependencies=[Depends(rate_limit(limit=30, window=60))])
+async def get_open_challenges(current_user: User = Depends(get_current_user)):
+    """Staked games anyone can accept right now, real ones only: an empty list is a valid answer."""
+    from app.services.open_challenges import list_open
+
+    challenges = await list_open(GameService().session_manager, current_user.telegram_id)
+    return {"challenges": challenges}
 
 
 @router.get("/active")

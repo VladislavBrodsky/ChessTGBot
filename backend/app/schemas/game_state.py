@@ -33,6 +33,9 @@ class GameState(BaseModel):
     # a player was offline — they were notified via Telegram and need time to
     # open the app. None = the default 30s window.
     first_move_grace_seconds: Optional[float] = None
+    # Listed in the Play lobby for anyone to accept (app/services/open_challenges.py).
+    # False = a private invitation reachable only through its link.
+    open_challenge: bool = False
 
     # Cached Player info (to avoid db calls on moves/fetches)
     white_username: Optional[str] = None

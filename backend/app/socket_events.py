@@ -405,6 +405,15 @@ async def join_room(sid, data):
                 # Start White's first-move abort timer if it's not a bot game
                 if state.black_player_id != -1:
                     service.start_abort_monitor(room, expected_move_count=0, time_limit=state.first_move_grace_seconds or 30.0, player_color='w')
+
+                # An open challenge's creator has usually left the app: call them back.
+                if state.open_challenge:
+                    try:
+                        from app.services.open_challenges import notify_creator_accepted, unpublish
+                        await unpublish(service.session_manager, room)
+                        await notify_creator_accepted(state, room, user_id)
+                    except Exception as e:
+                        logger.warning(f"Failed to call back open challenge creator for game {room}: {e}")
             elif state:
                 # Just send state to this user
                 await sio.emit('game_state', state.model_dump(), room=sid)

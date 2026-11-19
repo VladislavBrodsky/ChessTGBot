@@ -19,7 +19,9 @@ import { BetSlip } from './lobby/BetSlip';
 import { LobbyHero } from './lobby/LobbyHero';
 import { DailyGoal } from './lobby/DailyGoal';
 import { RecentResults } from './lobby/RecentResults';
+import { OpenChallenges } from './lobby/OpenChallenges';
 import { useLobbyStats } from '@/hooks/useLobbyStats';
+import { useOpenChallenges } from '@/hooks/useOpenChallenges';
 import { formatUsd, winnerCents } from '@/lib/settlement';
 import EngagementQuest from '@/components/EngagementQuest';
 import RakeInfoDrawer from './RakeInfoDrawer';
@@ -74,6 +76,14 @@ export default function PlayLobby() {
   // Quick Top-up states
   const [showDepositDrawer, setShowDepositDrawer] = useState<boolean>(false);
   const [depositTarget, setDepositTarget] = useState<number | null>(null);
+
+  // Open challenges. A staked search lives ~2 minutes and only while the app is
+  // open, so two funded players rarely overlap. The player can instead keep the
+  // same stake open in the lobby for 30 minutes for anyone to accept.
+  const lastSearchRef = useRef<{ stake: number; time: number } | null>(null);
+  const pendingOpenChallengeRef = useRef<{ stake: number; time: number } | null>(null);
+  const [timedOutSearch, setTimedOutSearch] = useState<{ stake: number; time: number } | null>(null);
+  const postOpenChallengeRef = useRef<(stake: number, time: number, source: string) => void>(() => {});
 
   const submittingRef = useRef<boolean>(false);
   const keepSearchingOnExitRef = useRef<boolean>(false);
@@ -164,8 +174,10 @@ export default function PlayLobby() {
     keepSearchingOnExitRef.current = false;
     setNotifySearchEnabled(false);
     setNotifyRequestPending(false);
+    setTimedOutSearch(null);
+    lastSearchRef.current = { stake: wagerInCents, time: timeControl };
     setMatchmakingState('searching');
-    socket.emit('join_matchmaking', { 
+    socket.emit('join_matchmaking', {
       bid_amount: wagerInCents,
       time_control: timeControl 
     });
@@ -233,6 +245,7 @@ export default function PlayLobby() {
 
     const onMatchFound = (data: any) => {
       console.log("Match matched!", data);
+      pendingOpenChallengeRef.current = null;
       keepSearchingOnExitRef.current = false;
       setNotifySearchEnabled(false);
       setNotifyRequestPending(false);
@@ -249,6 +262,7 @@ export default function PlayLobby() {
 
     const onMatchmakingError = (data: any) => {
       console.error("Matchmaking error:", data.message);
+      pendingOpenChallengeRef.current = null;
       setMatchmakingError(data.message);
       keepSearchingOnExitRef.current = false;
       setNotifySearchEnabled(false);
@@ -267,6 +281,9 @@ export default function PlayLobby() {
           setTimeControl(Number(data.time_control));
         }
         setSearchTimer(Math.max(0, Math.floor(Number(data.duration_waited ?? 0))));
+        if (restoredWager > 0) {
+          lastSearchRef.current = { stake: restoredWager, time: Number(data.time_control) || 600 };
+        }
         const notificationsEnabled = Boolean(data.notify_when_matched);
         keepSearchingOnExitRef.current = notificationsEnabled;
         setNotifySearchEnabled(notificationsEnabled);
@@ -279,8 +296,18 @@ export default function PlayLobby() {
         setNotifyRequestPending(false);
         setMatchmakingState('idle');
         submittingRef.current = false;
+        // The server sends idle only after the queued stake is refunded, so the
+        // same stake can now be posted as an open challenge.
+        const pending = pendingOpenChallengeRef.current;
+        pendingOpenChallengeRef.current = null;
+        if (pending) {
+          postOpenChallengeRef.current(pending.stake, pending.time, 'search');
+          return;
+        }
         if (data.message) {
           setMatchmakingError(data.message);
+          const last = lastSearchRef.current;
+          if (last && last.stake > 0) setTimedOutSearch(last);
         }
       }
     };
@@ -365,6 +392,46 @@ export default function PlayLobby() {
     submittingRef.current = false;
   };
 
+  const postOpenChallenge = async (stake: number, time: number, source: string) => {
+    if (isCreating) return;
+    telegramHaptic('selection');
+    setIsCreating(true);
+    setMatchmakingError('');
+    setTimedOutSearch(null);
+    try {
+      const res = await apiFetch(`/api/v1/game/create?type=online&time_control=${time}&wager=${stake}&open_challenge=true`, {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(typeof errData.detail === 'string' ? errData.detail : '');
+      }
+      const data = await res.json();
+      void syncBalance().catch(() => {});
+      logTelemetryEvent('open_challenge_created', { wager_cents: stake, time_control: time, source });
+      router.push(`/${locale}/game?id=${data.game_id}`);
+    } catch (e: any) {
+      console.error('Failed to post open challenge', e);
+      setMatchmakingError(e?.message || tg('open_challenge_failed'));
+      void syncBalance().catch(() => {});
+    } finally {
+      setIsCreating(false);
+    }
+  };
+  useEffect(() => {
+    postOpenChallengeRef.current = (stake, time, source) => { void postOpenChallenge(stake, time, source); };
+  });
+
+  // Leave the queue first: its stake is refunded before the server reports idle,
+  // and the idle handler then posts the same stake as an open challenge.
+  const keepSearchOpen = () => {
+    const last = lastSearchRef.current;
+    if (!last || last.stake <= 0 || pendingOpenChallengeRef.current) return;
+    pendingOpenChallengeRef.current = last;
+    keepSearchingOnExitRef.current = false;
+    getSocket().emit('leave_matchmaking', {});
+  };
+
   const enableMatchNotifications = () => {
     if (chosenWager !== 0 || notifySearchEnabled || notifyRequestPending) return;
     keepSearchingOnExitRef.current = true;
@@ -447,6 +514,12 @@ export default function PlayLobby() {
   }, [autoPracticeRequested, startAiGame]);
   
   const lobby = useLobbyStats();
+  const { challenges: openChallenges } = useOpenChallenges();
+  const openGame = (gameId: string) => {
+    telegramHaptic('selection');
+    logTelemetryEvent('open_challenge_opened', { game_id: gameId });
+    router.push(`/${locale}/game?id=${gameId}`);
+  };
 
   return (
     <LayoutWrapper className="justify-start ">
@@ -594,6 +667,15 @@ export default function PlayLobby() {
                 </div>
               )}
 
+              {searchTimer >= 20 && chosenWager > 0 && (
+                <div className="lobby-open-offer">
+                  <p className="lobby-open-offer__hint">{tg('open_challenge_hint')}</p>
+                  <Button variant="secondary" className="w-full" onClick={keepSearchOpen} isLoading={isCreating}>
+                    {tg('open_challenge_keep_open', { amount: formatUsd(chosenWager) })}
+                  </Button>
+                </div>
+              )}
+
               {searchTimer >= 15 && chosenWager === 0 && (
                 notifySearchEnabled ? (
                   <div className="w-full rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3.5 text-cyan-500">
@@ -621,6 +703,8 @@ export default function PlayLobby() {
               transition={{ duration: 0.2, ease: "easeInOut" }}
               className="lobby-stack"
             >
+              <OpenChallenges challenges={openChallenges} onOpen={openGame} t={tg} />
+
               <BetSlip
                 selectedWager={selectedWager}
                 isCustomWager={isCustomWager}
@@ -652,6 +736,16 @@ export default function PlayLobby() {
               {matchmakingError && (
                 <div role="alert" className="rounded-2xl border border-brand-rose-opacity-20 bg-brand-rose-opacity-10 p-3 text-center text-caption font-semibold normal-case tracking-normal text-rose-400">
                   {matchmakingError}
+                </div>
+              )}
+
+              {timedOutSearch && (
+                <div className="lobby-open-offer">
+                  <p className="lobby-open-offer__hint">{tg('open_challenge_hint')}</p>
+                  <Button variant="primary" className="w-full" isLoading={isCreating}
+                    onClick={() => { void postOpenChallenge(timedOutSearch.stake, timedOutSearch.time, 'timeout'); }}>
+                    {tg('open_challenge_keep_open', { amount: formatUsd(timedOutSearch.stake) })}
+                  </Button>
                 </div>
               )}
 

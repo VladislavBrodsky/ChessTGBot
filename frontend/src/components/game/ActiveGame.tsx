@@ -160,13 +160,17 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
     userIdRef.current = userId;
   }, [userId]);
 
-  // Automatically abort and refund if the creator leaves/unmounts the lobby before opponent joins
+  // Automatically abort and refund if the creator leaves/unmounts the lobby before opponent joins.
+  // An open challenge is the exception: it is listed in the lobby so it can be accepted while
+  // the creator is elsewhere (the creator gets a Telegram call-back, and the server refunds an
+  // unaccepted one after 30 minutes). The creator cancels it from this screen.
   useEffect(() => {
     return () => {
       const latestState = gameStateRef.current;
       const latestUserId = userIdRef.current;
       if (
         latestState &&
+        !latestState.open_challenge &&
         !latestState.is_game_over &&
         !latestState.black_player_id &&
         latestState.white_player_id === latestUserId
@@ -954,7 +958,7 @@ export default function ActiveGame({ gameId }: ActiveGameProps) {
           tTimeControl={tg('time_control')}
           tInviteOnTelegram={tg('invite_on_telegram')}
           tCancelRefundMatch={tg('cancel_refund_match')}
-          tWaitingKeepOpen={gameState?.bid_amount > 0 ? tg('friend_waiting_paid') : tg('waiting_keep_open')}
+          tWaitingKeepOpen={gameState?.open_challenge ? tg('open_challenge_waiting') : gameState?.bid_amount > 0 ? tg('friend_waiting_paid') : tg('waiting_keep_open')}
         />
       ) : (
         <div className="active-game-stack w-full max-w-md md:max-w-xl lg:max-w-2xl flex flex-col items-center gap-4 mx-auto">
