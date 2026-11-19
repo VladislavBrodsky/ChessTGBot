@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { apiFetch } from "@/lib/api";
 import { telegramHaptic, telegramAlert } from "@/lib/telegram";
 import Confetti from "react-confetti";
-import { FaCheckCircle, FaLock, FaGift } from "react-icons/fa";
+import { FaCheckCircle, FaLock, FaLockOpen, FaGift } from "react-icons/fa";
 import { useTranslations } from 'next-intl';
 import { useUser } from '@/context/UserContext';
 import { Modal } from '@/components/ui/Modal';
@@ -96,7 +96,7 @@ export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = 
         setStatus(prev => prev ? {
           ...prev,
           can_claim_today: false,
-          current_streak: data.new_streak
+          current_streak: typeof data.new_streak === 'number' ? data.new_streak : prev.current_streak + 1
         } : null);
 
       } else {
@@ -120,68 +120,24 @@ export default function DailyCheckinModal({ onClose }: DailyCheckinModalProps = 
       {claiming ? tc('claiming') : status.can_claim_today ? t('claim_reward') : t('return_tomorrow')}
     </Button>{status.can_claim_today && <Button className="w-full" variant="ghost" onClick={closeModal} disabled={claiming}>{t('skip_now')}</Button>}</div>}>
     {showConfetti && animations && <div className="fixed inset-0 pointer-events-none"><Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={windowSize.width < 768 ? 56 : 100} /></div>}
-    <div className="grid grid-cols-4 gap-2 mb-2">{status.rewards.slice(0, 4).map((reward, idx) => <RewardDay key={idx} day={idx + 1} reward={reward} status={idx < currentDayIndex ? 'past' : idx === currentDayIndex ? 'current' : 'future'} />)}</div>
-    <div className="grid grid-cols-3 gap-2">{status.rewards.slice(4, 7).map((reward, idx) => <RewardDay key={idx + 4} day={idx + 5} reward={reward} isBig={idx === 2} status={idx + 4 < currentDayIndex ? 'past' : idx + 4 === currentDayIndex ? 'current' : 'future'} />)}</div>
+    {/* One 4-column grid: days 1-4, then 5, 6 and a double-width day 7, so every column lines up. */}
+    <ol className="reward-week" aria-label={t('daily_reward')}>
+      {status.rewards.slice(0, 7).map((reward, idx) => <RewardDay key={idx} day={idx + 1} reward={reward} isBig={idx === 6}
+        status={idx < currentDayIndex ? 'past' : idx === currentDayIndex && status.can_claim_today ? 'current' : 'future'} />)}
+    </ol>
   </Modal>;
 }
 
 function RewardDay({ day, reward, status, isBig = false }: { day: number, reward: number, status: 'past' | 'current' | 'future', isBig?: boolean }) {
   const t = useTranslations('Gamification');
-  const isPast = status === 'past';
-  const isCurrent = status === 'current';
-  const isFuture = status === 'future';
-
+  const Icon = status === 'past' ? FaCheckCircle : isBig ? FaGift : status === 'current' ? FaLockOpen : FaLock;
+  // Fixed rows (label / icon / amount) keep every tile the same height; the current day is marked
+  // with colour and border only, never scale or an outer glow, which the scrolling dialog body clips.
   return (
-    <div className={`relative flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all duration-300 ${
-      isCurrent
-        ? 'border-emerald-500/70 bg-emerald-500/15 shadow-[0_0_20px_rgba(16,185,129,0.25)] scale-[1.03] z-10'
-        : isPast
-          ? 'border-brand-border/30 bg-brand-surface/40 opacity-70'
-          : 'border-brand-border/40 bg-brand-surface/70'
-    } ${isBig && !isCurrent ? 'border-purple-500/40 bg-purple-500/10' : ''}`}>
-
-      {isCurrent && (
-        <div className="absolute inset-0 bg-emerald-500/10 blur-md rounded-2xl z-0 pointer-events-none" />
-      )}
-
-      <span className={`relative z-10 text-caption font-semibold normal-case tracking-normal mb-1 ${
-        isCurrent ? 'text-emerald-400' : isPast ? 'text-brand-muted' : 'text-brand-muted'
-      }`}>
-        {t('reward_day', { day })}
-      </span>
-
-      <div className="relative z-10 flex h-8 w-full flex-col items-center justify-center">
-        {isPast ? (
-          <FaCheckCircle className="text-emerald-500 text-lg drop-shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
-        ) : isFuture && !isBig ? (
-          <div className="flex flex-col items-center gap-0.5">
-            <FaLock className="text-brand-muted text-sm" />
-            <span className="text-caption font-bold text-brand-muted">{reward} XP</span>
-          </div>
-        ) : isBig ? (
-          <div className="flex flex-col items-center">
-            <FaGift className={`text-2xl ${
-              isCurrent
-                ? 'text-emerald-400 drop-shadow-[0_0_12px_rgba(16,185,129,0.7)]'
-                : 'text-purple-400/80'
-            }`} />
-            {!isCurrent && (
-              <span className="text-caption font-semibold text-purple-300/90">{reward} XP</span>
-            )}
-          </div>
-        ) : (
-          <div className={`flex flex-col items-center ${isCurrent ? 'text-emerald-400' : 'text-brand-primary'}`}>
-            <span className={`font-semibold tracking-tight ${
-              isCurrent ? 'text-lg text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'text-base opacity-90'
-            }`}>
-              {reward}
-            </span>
-            <span className={`text-caption font-bold ${isCurrent ? 'text-emerald-400/90' : 'text-brand-muted'}`}>
-              XP
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
+    <li className={`reward-day reward-day--${status}${isBig ? ' reward-day--big' : ''}`} aria-current={status === 'current' ? 'date' : undefined}>
+      <span className="reward-day__label">{t('reward_day', { day })}</span>
+      <Icon className="reward-day__icon" aria-hidden="true" />
+      <span className="reward-day__amount">{reward} XP</span>
+    </li>
   );
 }

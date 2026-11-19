@@ -27,7 +27,11 @@ export function useDialog(open: boolean, ref: RefObject<HTMLElement | null>, onC
     dialogs.push(dialog);
     const elements = () => Array.from(dialog.querySelectorAll<HTMLElement>(focusable))
       .filter(element => !element.hidden && element.getAttribute('aria-hidden') !== 'true' && element.getClientRects().length > 0);
-    (elements()[0] || dialog).focus({ preventScroll: true });
+    // Focus the panel, not its first control: the first control is usually the close button, and a
+    // dialog that opens on its own (daily reward, onboarding) then painted a keyboard focus ring
+    // around the X. Screen readers still announce the dialog via aria-labelledby; Tab reaches the
+    // first control next.
+    dialog.focus({ preventScroll: true });
 
     const handleKey = (event: KeyboardEvent) => {
       if (dialogs.at(-1) !== dialog) return;
@@ -43,7 +47,7 @@ export function useDialog(open: boolean, ref: RefObject<HTMLElement | null>, onC
       if (!first) {
         event.preventDefault();
         dialog.focus();
-      } else if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+      } else if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog || !dialog.contains(document.activeElement))) {
         event.preventDefault();
         last?.focus();
       } else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {

@@ -59,7 +59,7 @@ export default function MatchOverModal({ matchResultLabel, eloChange, netPayout,
             router.push(`/${locale}/home?claim_box=1`);
           }
         }}
-        className="p-3 mb-3 rounded-2xl bg-gradient-to-r from-cyan-950/80 via-brand-surface to-cyan-950/80 border border-cyan-400/60 flex items-center justify-between gap-3 cursor-pointer hover:border-cyan-300 transition-all shadow-[0_0_16px_rgba(0,240,255,0.22)] active:scale-98"
+        className="p-3 mb-3 rounded-2xl bg-gradient-to-r from-cyan-950/80 via-brand-surface to-cyan-950/80 border border-cyan-400/60 flex items-center justify-between gap-3 cursor-pointer hover:border-cyan-300 transition-all shadow-[inset_0_0_16px_rgba(0,240,255,0.18)] active:scale-98"
       >
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center shrink-0">

@@ -4,7 +4,7 @@ import React from 'react';
 import DailyCheckinModal from '@/components/DailyCheckinModal';
 
 // apiFetch: return a claimable status, then a successful claim.
-const apiFetch = jest.fn((url: string, _opts?: unknown) => {
+const apiFetch = jest.fn((url: string, _opts?: unknown): Promise<{ ok: boolean; json: () => Promise<unknown> }> => {
   if (url.includes('/daily-checkin/status')) {
     return Promise.resolve({
       ok: true,
@@ -97,6 +97,37 @@ describe('DailyCheckinModal', () => {
       expect(screen.queryByRole('button', { name: /come back tomorrow/i })).toBeNull();
     });
     expect(screen.queryByText(/daily reward/i)).toBeNull();
+  });
+
+  it('renders one 7-day grid with a double-width day 7 and moves "today" correctly after claiming', async () => {
+    // Claim response without new_streak must not turn the streak into NaN (every day showed locked).
+    apiFetch.mockImplementation((url: string) => url.includes('/daily-checkin/status')
+      ? Promise.resolve({ ok: true, json: () => Promise.resolve({ can_claim_today: true, current_streak: 1, last_checkin_date: null, rewards: [100, 150, 200, 250, 300, 350, 500] }) })
+      : Promise.resolve({ ok: true, json: () => Promise.resolve({ status: 'success' }) }));
+    render(<DailyCheckinModal />);
+    const claimBtn = await screen.findByRole('button', { name: /claim reward/i });
+
+    const days = screen.getAllByRole('listitem');
+    expect(days).toHaveLength(7);
+    expect(days[0].closest('ol')).toBe(days[6].closest('ol'));
+    expect(days[6]).toHaveClass('reward-day--big');
+    expect(days[0]).toHaveClass('reward-day--past');
+    expect(days[1]).toHaveAttribute('aria-current', 'date');
+    expect(days[1]).toHaveTextContent('150 XP');
+
+    await act(async () => { fireEvent.click(claimBtn); });
+    await screen.findByRole('button', { name: /come back tomorrow/i });
+
+    // Day 2 is now claimed; day 3 is tomorrow's locked day, not a highlighted "current" day.
+    expect(days[1]).toHaveClass('reward-day--past');
+    expect(days[2]).toHaveClass('reward-day--future');
+    expect(screen.getAllByRole('listitem').some(day => day.hasAttribute('aria-current'))).toBe(false);
+  });
+
+  it('focuses the dialog panel, not the close button, when it opens on its own', async () => {
+    render(<DailyCheckinModal />);
+    await screen.findByRole('button', { name: /claim reward/i });
+    expect(screen.getByRole('dialog')).toHaveFocus();
   });
 });
 
