@@ -12,7 +12,7 @@
     "kind": "Organization"
   },
   "publishedAt": "2026-10-12",
-  "updatedAt": "2026-10-29",
+  "updatedAt": "2026-11-19",
   "readingTime": "4 min read",
   "takeaways": [
     "Chess is legally recognized globally as a game of 100% skill, distinct from chance-based gambling.",
@@ -31,7 +31,7 @@
     },
     {
       "type": "paragraph",
-      "text": "In contrast to casino games or sports betting, chess contains zero random variance: no dice, no shuffled cards, and no weather interference. Every piece moves identically under universal FIDE laws. As a result, courts and regulatory bodies worldwide classify chess as a pure game of skill."
+      "text": "Unlike casino games or sports betting, chess has no dice, no shuffled cards and no weather: every move is a player's choice, under the same FIDE laws. That does not settle the legal question on its own. How a paid match is treated depends on where you live; in the United States, for example, most states ask whether skill or chance mainly decides the result, and some take a stricter view. Check your local rules and the platform's terms before you play for a stake."
     },
     {
       "type": "subheading",
@@ -71,6 +71,10 @@
     {
       "title": "Web3Chess Settlement Engine",
       "url": "https://web3chess.online/wagers"
+    },
+    {
+      "title": "Dominant Factor Test (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Dominant_Factor_Test"
     }
   ],
   "cta": {

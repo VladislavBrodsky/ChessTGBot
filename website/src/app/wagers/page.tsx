@@ -175,7 +175,7 @@ export default function WagersPage() {
                 Common questions on real-stakes chess
               </h2>
               <p className="text-body text-fg-muted">
-                How pot settlements, pure-skill legal frameworks, and Telegram-confirmed crypto withdrawals operate.
+                How pot settlements, local eligibility rules, and Telegram-confirmed crypto withdrawals work.
               </p>
             </div>
             <Card>
