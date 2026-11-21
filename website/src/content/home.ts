@@ -106,6 +106,10 @@ export const home = {
             label: "Chess Rules Guide",
             href: "/rules",
           },
+          {
+            label: "Canvas & Templates",
+            href: "/canvas",
+          },
         ],
       },
       {
