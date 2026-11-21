@@ -58,6 +58,7 @@ function iconDataUrl(name: IconName, color: string): string {
 
 export interface RenderOptions {
   showGuides?: boolean;
+  flipped?: boolean;
 }
 
 /**
@@ -234,7 +235,7 @@ export async function renderCanvas(
 
     if (template.art === "board") {
       const boardSize = Math.min(visualH + 80, rw);
-      drawChessBoard(ctx, rx + (rw - boardSize) / 2, top + 10, boardSize, template.fen);
+      drawChessBoard(ctx, rx + (rw - boardSize) / 2, top + 10, boardSize, template.fen, options.flipped);
     } else {
       const artSize = Math.min(visualH + 120, rw);
       try {
@@ -251,7 +252,7 @@ export async function renderCanvas(
     // Vertical / Square / Story
     if (template.art === "board") {
       const boardSize = Math.min(visualH, Math.round(w * (isStory ? 0.6 : 0.48)));
-      drawChessBoard(ctx, x, visualTop + (visualH - boardSize) / 2, boardSize, template.fen);
+      drawChessBoard(ctx, x, visualTop + (visualH - boardSize) / 2, boardSize, template.fen, options.flipped);
 
       const proofX = x + boardSize + 28;
       const proofW = w - boardSize - 28;
@@ -345,7 +346,8 @@ function drawChessBoard(
   bx: number,
   by: number,
   size: number,
-  fen?: string
+  fen?: string,
+  flipped: boolean = false
 ) {
   const pad = size * 0.075;
   const cell = (size - 2 * pad) / 8;
@@ -370,8 +372,8 @@ function drawChessBoard(
   ctx.font = `600 ${Math.max(14, Math.round(size * 0.035))}px "Onest", monospace`;
   ctx.textBaseline = "middle";
   for (let i = 0; i < 8; i++) {
-    const fileChar = "abcdefgh"[i];
-    const rankNum = String(8 - i);
+    const fileChar = flipped ? "hgfedcba"[i] : "abcdefgh"[i];
+    const rankNum = flipped ? String(1 + i) : String(8 - i);
     ctx.fillText(fileChar, bx + pad + i * cell + cell * 0.38, by + size - pad * 0.45);
     ctx.fillText(rankNum, bx + pad * 0.28, by + pad + i * cell + cell * 0.5);
   }
@@ -392,8 +394,12 @@ function drawChessBoard(
   const pieceList = fen ? parseFenPieces(fen) : defaultPieces;
 
   for (const [sq, type, isWhite] of pieceList) {
-    const file = sq.charCodeAt(0) - 97;
-    const rank = 8 - parseInt(sq[1], 10);
+    let file = sq.charCodeAt(0) - 97;
+    let rank = 8 - parseInt(sq[1], 10);
+    if (flipped) {
+      file = 7 - file;
+      rank = 7 - rank;
+    }
     const piecePath = PIECE_PATHS[type.toLowerCase()];
     if (!piecePath) continue;
 

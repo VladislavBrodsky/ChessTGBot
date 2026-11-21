@@ -19,8 +19,24 @@ import {
 
 const FEN_PRESETS = [
   {
-    name: "Smothered Mate",
+    name: "Smothered Mate (Philidor)",
     fen: "6k1/5ppp/8/8/8/8/5QPP/4R1K1 w - - 0 1",
+  },
+  {
+    name: "Opera Game (Morphy 1858)",
+    fen: "4kb1r/p2n1ppp/4p3/1B1p4/3P4/4PN2/1P1B1PPP/R3K2R w KQk - 0 1",
+  },
+  {
+    name: "Kasparov's Immortal (1999)",
+    fen: "b2r3r/k4p1p/p2q1np1/NppP4/3p1Q2/P4PPB/1PP4P/1K1RR3 w - - 0 25",
+  },
+  {
+    name: "Fischer's Game of Century",
+    fen: "r3r1k1/pp3pbp/1qp1b1p1/2B5/2BP4/1Pn2N2/P1Q2PPP/R4RK1 b - - 4 17",
+  },
+  {
+    name: "The Immortal Game (1851)",
+    fen: "r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1 b - - 1 23",
   },
   {
     name: "Tactics Drill (Qh6)",
@@ -46,6 +62,7 @@ export function CanvasStudio({
   );
   const [format, setFormat] = useState<CanvasFormat>("square");
   const [showGuides, setShowGuides] = useState<boolean>(false);
+  const [flipped, setFlipped] = useState<boolean>(false);
   const [showBroadcastModal, setShowBroadcastModal] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [, startTransition] = useTransition();
@@ -94,7 +111,7 @@ export function CanvasStudio({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    renderCanvas(canvas, activeTemplate, format, { showGuides }).catch(
+    renderCanvas(canvas, activeTemplate, format, { showGuides, flipped }).catch(
       (err) => {
         if (!isCancelled) {
           console.error("Canvas render error:", err);
@@ -105,7 +122,7 @@ export function CanvasStudio({
     return () => {
       isCancelled = true;
     };
-  }, [activeTemplate, format, showGuides]);
+  }, [activeTemplate, format, showGuides, flipped]);
 
   // Copy Bot Command
   async function handleCopyBotCommand() {
@@ -495,9 +512,23 @@ export function CanvasStudio({
           {/* 7. If Board: FEN Position & Presets */}
           {activeTemplate.art === "board" && (
             <div className="flex flex-col gap-2 p-3 bg-wash rounded-media border border-line-soft">
-              <label htmlFor="input-fen" className="text-caption font-semibold text-fg">
-                Board FEN Position
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="input-fen" className="text-caption font-semibold text-fg">
+                  Board FEN Position
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setFlipped(!flipped)}
+                  className={`text-overline font-semibold px-2 py-0.5 rounded-control transition-colors ${
+                    flipped
+                      ? "bg-mint text-black"
+                      : "bg-surface text-fg border border-line hover:bg-wash"
+                  }`}
+                  title="Flip board perspective between White and Black"
+                >
+                  {flipped ? "Black's View ♟" : "White's View ♙"}
+                </button>
+              </div>
               <input
                 id="input-fen"
                 type="text"

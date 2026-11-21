@@ -46,6 +46,11 @@ const nextConfig: NextConfig = {
         destination: "https://app.web3chess.online/en/login",
         permanent: true,
       },
+      {
+        source: "/creatives",
+        destination: "/canvas",
+        permanent: true,
+      },
     ];
   },
   async headers() {
